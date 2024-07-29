@@ -1,0 +1,41 @@
+﻿@model ConfigurationModel
+
+@{
+    ViewBag.PageTitle = T("Plugin.Misc.NopStation.ERPIntegrationCore.Admin.Configuration.Title").Text;
+
+    NopHtml.SetActiveMenuItemSystemName("NopStation.ERPIntegrationCore.Configuration");
+}
+
+@{
+    const string hideSettingsBlockAttributeName = "ERPIntegrationCoreSettings.HideSettingsBlock";
+    var hideSettingsBlock = await genericAttributeService.GetAttributeAsync<bool>(await workContext.GetCurrentCustomerAsync(), hideSettingsBlockAttributeName);
+}
+
+<form asp-controller="ERPIntegrationCore" asp-action="Configure" method="post" id="ERPIntegrationCore-config-form">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Plugin.Misc.NopStation.ERPIntegrationCore.Admin.Configuration.Title")
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.Save")
+            </button>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="form-horizontal">
+                <div class="form-horizontal">
+                    @await Component.InvokeAsync(typeof(StoreScopeConfigurationViewComponent))
+                    <div asp-validation-summary="All"></div>
+
+                    <nop-cards id="erpIntegrationCoreSettings-panels">
+                        <nop-card asp-name="erpIntegrationCoreSettings" asp-icon="fa fa-lock" asp-title="@T("Plugin.Misc.NopStation.ERPIntegrationCore.Admin.Configuration.BlockTitle.Settings")" asp-hide-block-attribute-name="@hideSettingsBlockAttributeName" asp-hide="@hideSettingsBlock" asp-advanced="true">@await Html.PartialAsync("_Configure.Settings.cshtml", Model)</nop-card>
+                    </nop-cards>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>

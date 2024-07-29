@@ -1,0 +1,38 @@
+﻿using System;
+using Nop.Core;
+using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
+
+namespace NopStation.Plugin.B2B.ERPIntegrationCore.Domain
+{
+    public partial class ErpLogs:BaseEntity
+    {
+        public int ErpLogLevelId { get; set; }
+
+        public int ErpSyncLavelId { get; set; }
+         
+        public string ShortMessage { get; set; }
+         
+        public string FullMessage { get; set; }
+         
+        public string IpAddress { get; set; }
+         
+        public int? CustomerId { get; set; }
+         
+        public string PageUrl { get; set; }
+         
+        public string ReferrerUrl { get; set; }
+         
+        public DateTime CreatedOnUtc { get; set; }
+         
+        public ErpLogLevel LogLevel
+        {
+            get => (ErpLogLevel)ErpLogLevelId;
+            set => ErpLogLevelId = (int)value;
+        }
+        public ErpSyncLavel ErpSyncLavel
+        {
+            get => (ErpSyncLavel)ErpSyncLavelId;
+            set => ErpSyncLavelId = (int)value;
+        }
+    }
+}

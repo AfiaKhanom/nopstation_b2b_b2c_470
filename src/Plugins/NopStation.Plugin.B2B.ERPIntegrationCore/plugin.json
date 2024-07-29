@@ -1,0 +1,12 @@
+﻿{
+  "Group": "Nop-Station",
+  "FriendlyName": "Nopstation b2b b2c ERPIntegrationCore",
+  "SystemName": "NopStation.Plugin.B2B.ERPIntegrationCore",
+  "Version": "4.70.1.0",
+  "SupportedVersions": [ "4.70" ],
+  "Author": "nopstation team",
+  "DisplayOrder": -10,
+  "FileName": "NopStation.Plugin.B2B.ERPIntegrationCore.dll",
+  "Description": "This plugin allows to sync data with ERP system. It helps to run b2b b2c business with nopcommerce.",
+  "DependsOnSystemNames": [ "NopStation.Core" ]
+}

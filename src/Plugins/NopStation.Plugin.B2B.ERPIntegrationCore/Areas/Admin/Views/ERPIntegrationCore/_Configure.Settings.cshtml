@@ -1,0 +1,13 @@
+﻿@model ConfigurationModel
+
+<div class="card-body">
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-override-store-checkbox asp-for="SelectedErpIntegrationPlugin_OverrideForStore" asp-input="SelectedErpIntegrationPlugin" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+            <nop-label asp-for="SelectedErpIntegrationPlugin" />
+        </div>
+        <div class="col-md-9">
+            <nop-Select asp-for="SelectedErpIntegrationPlugin" asp-items="Model.AvailableErpIntegrationPlugins" />
+        </div>
+    </div>
+</div>
