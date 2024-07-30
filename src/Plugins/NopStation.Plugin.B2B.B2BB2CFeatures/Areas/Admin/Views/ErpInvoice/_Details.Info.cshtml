@@ -1,0 +1,93 @@
+﻿@model ErpInvoiceModel
+
+<div class="card-body">
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="ErpAccountId" />
+        </div>
+        <div class="col-md-9">
+            <input type="hidden" asp-for="ErpAccountId" />
+            <a asp-controller="ErpAccount" asp-action="ErpAccountEdit" asp-route-id="@Model.ErpAccountId">@Model.ErpAccountName</a>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="ErpOrderNumber" />
+        </div>
+        <div class="col-md-9">
+            <input type="hidden" asp-for="ErpOrderNumber" />
+            <div class="form-text-row">@Model.ErpOrderNumber</div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="DocumentDisplayName" />
+        </div>
+        <div class="col-md-9">
+            <input type="hidden" asp-for="DocumentDisplayName" />
+            <div class="form-text-row">@Model.DocumentDisplayName</div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="DueDateUtc" />
+        </div>
+        <div class="col-md-9">
+            <input type="hidden" asp-for="DueDateUtc" />
+            <div class="form-text-row">@Model.DueDateUtc</div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="RelatedDocumentNo" />
+        </div>
+        <div class="col-md-9">
+            <input type="hidden" asp-for="RelatedDocumentNo" />
+            <div class="form-text-row">@Model.RelatedDocumentNo</div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="ShipmentDateUtc" />
+        </div>
+        <div class="col-md-9">
+            <input type="hidden" asp-for="ShipmentDateUtc" />
+            <div class="form-text-row">@Model.ShipmentDateUtc</div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="ItemCount" />
+        </div>
+        <div class="col-md-9">
+            <input type="hidden" asp-for="ItemCount" />
+            <div class="form-text-row">@Model.ItemCount</div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="DocumentDateUtc" />
+        </div>
+        <div class="col-md-9">
+            <input type="hidden" asp-for="DocumentDateUtc" />
+            <div class="form-text-row">@Model.DocumentDateUtc</div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="PODSignedOnUtc" />
+        </div>
+        <div class="col-md-9">
+            <input type="hidden" asp-for="PODSignedOnUtc" />
+            <div class="form-text-row">@Model.PODSignedOnUtc</div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,68 @@
+﻿@model ErpPriceGroupProductPricingSearchModel
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models
+
+<div class="card-body">
+    <div class="card card-default">
+        <div class="card-body">
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="@Model.AddErpPriceGroupProductPricing.ErpGroupPriceCodeId" />
+                </div>
+                <div class="col-md-9">
+                    <nop-select asp-for="@Model.AddErpPriceGroupProductPricing.ErpGroupPriceCodeId" asp-items="@Model.AddErpPriceGroupProductPricing.AvailableErpPriceGroupCodes" />
+                    <span asp-validation-for="@Model.AddErpPriceGroupProductPricing.ErpGroupPriceCodeId"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="@Model.AddErpPriceGroupProductPricing.Price" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="@Model.AddErpPriceGroupProductPricing.Price" />
+                    <span asp-validation-for="@Model.AddErpPriceGroupProductPricing.Price"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                    <button type="button" id="addPriceGroupProductPricing" class="btn btn-primary">@T("Admin.Common.AddNewRecord")</button>
+                </div>
+            </div>
+        </div>
+        <script>
+            $(document).ready(function () {
+                $('#addPriceGroupProductPricing').click(function () {
+                    $('#addPriceGroupProductPricing').attr('disabled', true);
+                    var postData = {
+                        ErpGroupPriceCodeId: $("#@Html.IdFor(model => model.AddErpPriceGroupProductPricing.ErpGroupPriceCodeId)").val(),
+                        Price: $("#@Html.IdFor(model => model.AddErpPriceGroupProductPricing.Price)").val()
+                    };
+                    addAntiForgeryToken(postData);
+
+                    $.ajax({
+                        cache: false,
+                        type: "POST",
+                        url: "@Html.Raw(Url.Action("CreatePriceGroupProductPricing", "ErpProductPricing", new { productId = Model.ProductId }))",
+                        data: postData,
+                        success: function (data, textStatus, jqXHR) {
+                            if (data.Result) {
+                                //reload grid
+                                updateTable('#price-group-product-pricing-grid');
+
+                                //clear input value
+                                @*$("#@Html.IdFor(model => model.AddB2BPriceGroupProductPricing.B2BPriceGroupCodeId)").val('');*@
+                                $("#@Html.IdFor(model => model.AddErpPriceGroupProductPricing.Price)").val('0');
+                            } else {
+                                //display errors if returned
+                                display_nop_error(data);
+                            }
+                        },
+                        complete: function (jqXHR, textStatus) {
+                            $('#addPriceGroupProductPricing').attr('disabled', false);
+                        }
+                    });
+                });
+            });
+        </script>
+    </div>
+</div>

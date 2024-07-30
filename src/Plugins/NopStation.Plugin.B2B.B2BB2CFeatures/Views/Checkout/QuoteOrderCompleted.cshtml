@@ -1,0 +1,1047 @@
+﻿@using Nop.Core.Domain.Catalog;
+@*@model OrderDetailsModel*@
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.OrderSummary
+@model ErpOrderDetailsModel
+@using Newtonsoft.Json
+@using Nop.Core
+@using Nop.Core.Domain.Orders
+@using NopStation.Plugin.B2B.B2BB2CFeatures
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Services
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Enums
+
+@inject IWorkContext workContext
+@inject IErpAccountService erpAccountService
+@inject IErpNopUserService erpNopUserService
+@inject B2BB2CFeaturesSettings b2BB2CFeaturesSettings
+@inject IErpOrderAdditionalDataService erpOrderService
+@inject OrderSettings orderSettings
+@inject AddressSettings AddressSettings
+
+@{
+    var currCustomer = await workContext.GetCurrentCustomerAsync();
+    var erpAccountOfCurrCustomer = await erpAccountService.GetActiveErpAccountByCustomerIdAsync(currCustomer.Id);
+    var erpNopUserOfCurrCustomer = await erpNopUserService.GetErpNopUserByCustomerIdAsync(currCustomer.Id);
+    var isB2BUser = erpAccountOfCurrCustomer != null && erpNopUserOfCurrCustomer != null && erpNopUserOfCurrCustomer.ErpUserType == ErpUserType.B2BUser;
+    var isB2CUser = erpNopUserOfCurrCustomer != null && erpNopUserOfCurrCustomer.ErpUserType == ErpUserType.B2CUser;
+    var isERPOrder = false;
+    var isQuoteOrder = false;
+    var checkQuoteOrderStatus = false;
+    var isQuoteExpired = true;
+    var isQuoteAlreadyConverted = true;
+    var hasQuoteExpireDate = false;
+    var isQuoteRejectedorFailed = true;
+
+    if (isB2BUser)
+    {
+        var b2bOrder = await erpOrderService.GetErpOrderAdditionalDataByNopOrderIdAsync(Model.Id);
+        if (b2bOrder != null && (b2bOrder.ErpOrderType == ErpOrderType.B2BSalesOrder || b2bOrder.ErpOrderType == ErpOrderType.B2BQuote))
+        {
+            isERPOrder = b2bOrder.ErpOrderOriginType == ErpOrderOriginType.ERPOrder ? true : false;
+            isQuoteOrder = b2bOrder.ErpOrderType == ErpOrderType.B2BSalesOrder ? false : true;
+            if (isQuoteOrder)
+            {
+                checkQuoteOrderStatus = await erpOrderService.CheckQuoteOrderStatusAsync(b2bOrder);
+                if (b2bOrder.QuoteExpiryDate != null)
+                {
+                    isQuoteExpired = DateTime.UtcNow.Date >= b2bOrder.QuoteExpiryDate.Value.Date ? true : false;
+                    hasQuoteExpireDate = true;
+                }
+                isQuoteRejectedorFailed = b2bOrder.ERPOrderStatus == "Failed" || b2bOrder.ERPOrderStatus == "Rejected";
+                isQuoteAlreadyConverted = b2bOrder.QuoteSalesOrderId.HasValue && b2bOrder.QuoteSalesOrderId.Value > 0;
+            }
+        }
+    }
+}
+
+@{
+
+    Layout = "_ColumnsOne";
+
+
+    NopHtml.AddTitleParts(T("PageTitle.QuoteOrderDetails").Text);
+    //page class
+    NopHtml.AppendPageCssClassParts("html-order-details-page");
+}
+<div class="page order-details-page">
+
+    <div class="page checkout-page order-completed-page">
+        @if (!orderSettings.OnePageCheckoutEnabled)
+        {
+            @* @await Component.InvokeAsync(typeof(CheckoutProgressViewComponent),  new { step = CheckoutProgressStep.Complete })*@
+        }
+
+        @if (isQuoteOrder)
+        {
+            <div class="page-title">
+                <h1>@T("Plugin.Misc.NopStation.B2BB2CFeatures.Checkout.ThankYou")</h1>
+            </div>
+        }
+        <div class="page-body checkout-data">
+
+            <div class="section order-completed">
+                <div class="title">
+                    @if (isQuoteOrder)
+                    {
+                        <strong>@T("Plugin.Misc.NopStation.B2BB2CFeatures.Checkout.YourQuoteHasBeenSuccessfullyProcessed")</strong>
+                    }
+                </div>
+                <div class="row" style="text-align:center">
+                    <a href="@Url.RouteUrl("GetOrderPdfInvoice", new { orderId=Model.Id })" class="button-2 pdf-invoice-button">@T("Order.GetPDFInvoice")</a>
+                    @if (isQuoteOrder)
+                    {
+                        <input type="button" value="@T("NopStation.Plugin.NopStation.B2BB2CFeatures.Quote.Completed.ConvertToOrder")" class="button-1 re-order-button quote-order-details-reorder-button" onclick="CheckItemsInCart('@Model.Id')" />
+                    }
+                    else
+                    {
+                        <input type="button" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Reorder")" class="button-1 re-order-button quote-order-details-reorder-button" onclick="CheckItemsInCart('@Model.Id')" />
+                    }
+                    <div class="order-overview">
+                        <div class="order-number">
+                            <strong>@T("NopStation.Plugin.NopStation.B2BB2CFeatures.Quote.QuoteNumber.Label#"): @Model.Id</strong>
+                        </div>
+                        <ul class="order-overview-content">
+                            <li class="order-date">
+                                @T("Order.OrderDate"): @Model.CreatedOn.ToString("D")
+                            </li>
+                            <li class="order-status">
+                                @T("Order.OrderStatus"): @Model.ERPOrderStatus
+                            </li>
+                            <li class="order-total">
+                                @T("Order.OrderTotal"): <strong>@Model.TotalPriceWithOutSavingsExcTax</strong>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page-body">
+            <div class="order-details-area">
+                <div class="billing-shipping-wrapper">
+                    <div class="billing-info-wrap">
+                        <div class="billing-info">
+                            <div class="title">
+                                <strong>@T("Order.BillingAddress")</strong>
+                            </div>
+                            <ul class="info-list">
+                                <li class="name">
+                                    @Model.ErpBillingAddressModel.FirstName @Model.ErpBillingAddressModel.LastName
+                                </li>
+                                <li class="email">
+                                    @T("Order.Email"): @Model.ErpBillingAddressModel.Email
+                                </li>
+                                @if (Model.ErpBillingAddressModel.PhoneEnabled)
+                                {
+                                    <li class="phone">
+                                        @T("Order.Phone"): @Model.ErpBillingAddressModel.PhoneNumber
+                                    </li>
+                                }
+                                @if (Model.ErpBillingAddressModel.FaxEnabled)
+                                {
+                                    <li class="fax">
+                                        @T("Order.Fax"): @Model.ErpBillingAddressModel.FaxNumber
+                                    </li>
+                                }
+                                @if (Model.ErpBillingAddressModel.CompanyEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.Company))
+                                {
+                                    <li class="company">
+                                        @Model.ErpBillingAddressModel.Company
+                                    </li>
+                                }
+                                @if (Model.ErpBillingAddressModel.StreetAddressEnabled)
+                                {
+                                    <li class="address1">
+                                        @Model.ErpBillingAddressModel.Address1
+                                    </li>
+                                }
+                                @if (Model.ErpBillingAddressModel.StreetAddress2Enabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.Address2))
+                                {
+                                    <li class="address2">
+                                        @Model.ErpBillingAddressModel.Address2
+                                    </li>
+                                }
+                                @if (Model.ErpBillingAddressModel.CityEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.City) ||
+                                Model.ErpBillingAddressModel.CountyEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.County) ||
+                                Model.ErpBillingAddressModel.StateProvinceEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.StateProvinceName) ||
+                                Model.ErpBillingAddressModel.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.ZipPostalCode))
+                                {
+                                    <li class="city-state-zip">
+                                        @if (Model.ErpBillingAddressModel.CityEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.City))
+                                        {
+                                            @Model.ErpBillingAddressModel.City
+                                            @if (Model.ErpBillingAddressModel.CountyEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.County) ||
+                                           Model.ErpBillingAddressModel.StateProvinceEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.StateProvinceName) ||
+                                           Model.ErpBillingAddressModel.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.ZipPostalCode))
+                                            {
+                                                <text>,</text>
+                                            }
+                                        }
+                                        @if (Model.ErpBillingAddressModel.CountyEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.County))
+                                        {
+                                            @Model.ErpBillingAddressModel.County
+                                            @if (Model.ErpBillingAddressModel.StateProvinceEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.StateProvinceName) ||
+                                           Model.ErpBillingAddressModel.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.ZipPostalCode))
+                                            {
+                                                <text>,</text>
+                                            }
+                                        }
+                                        @if (Model.ErpBillingAddressModel.StateProvinceEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.StateProvinceName))
+                                        {
+                                            @Model.ErpBillingAddressModel.StateProvinceName
+                                            @if (Model.ErpBillingAddressModel.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.ZipPostalCode))
+                                            {
+                                                <text>,</text>
+                                            }
+                                        }
+                                        @if (Model.ErpBillingAddressModel.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.ZipPostalCode))
+                                        {
+                                            @Model.ErpBillingAddressModel.ZipPostalCode
+                                        }
+                                    </li>
+                                }
+                                @if (Model.ErpBillingAddressModel.CountryEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.CountryName))
+                                {
+                                    <li class="country">
+                                        @Model.ErpBillingAddressModel.CountryName
+                                    </li>
+                                }
+                                @if (!string.IsNullOrEmpty(Model.VatNumber))
+                                {
+                                    <li class="vat">
+                                        <span class="label">
+                                            @T("Order.VATNumber")
+                                        </span>
+                                        <span class="value">
+                                            @Model.VatNumber
+                                        </span>
+                                    </li>
+                                }
+                                @if (!string.IsNullOrEmpty(Model.ErpBillingAddressModel.FormattedCustomAddressAttributes))
+                                {
+                                    <li class="custom-attributes-view">
+                                        @Html.Raw(Model.ErpBillingAddressModel.FormattedCustomAddressAttributes)
+                                    </li>
+                                }
+
+                            </ul>
+                        </div>
+                        @*  Payment Methods *@
+                        @if (!string.IsNullOrEmpty(Model.PaymentMethod))
+                        {
+                            <div class="payment-method-info">
+                                <div class="title">
+                                    <strong>@T("Order.Payment")</strong>
+                                </div>
+                                <ul class="info-list">
+                                    <li class="payment-method">
+                                        <span class="label">
+                                            @T("Order.Payment.Method"):
+                                        </span>
+                                        <span class="value">
+                                            @Model.PaymentMethod
+                                        </span>
+                                    </li>
+
+                                    <li class="payment-method-status">
+                                        <span class="label">
+                                            @T("Order.Payment.Status"):
+                                        </span>
+                                        <span class="value">
+                                            @Model.PaymentMethodStatus
+                                        </span>
+                                    </li>
+
+                                    @if (Model.CanRePostProcessPayment)
+                                    {
+                                        @*Complete payment (for redirection payment methods)*@
+                                        <li class="repost">
+                                            <form asp-route="OrderDetails" method="post">
+                                                <button type="submit" name="repost-payment" class="button-2 re-order-button">@T("Order.RetryPayment")</button>
+                                                <p class="hint">
+                                                    <em>@T("Order.RetryPayment.Hint")</em>
+                                                </p>
+                                            </form>
+                                        </li>
+                                    }
+                                    @if (Model.CustomValues != null)
+                                    {
+                                        foreach (var item in Model.CustomValues)
+                                        {
+                                            <li class="custom-value">
+                                                <span class="label">
+                                                    @item.Key:
+                                                </span>
+                                                <span class="value">
+                                                    @(item.Value != null ? item.Value.ToString() : "")
+                                                </span>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="shipping-info-wrap">
+                        <div class="shipping-info">
+                            <div class="title">
+                                <strong>@(Model.IsPicUpAddressActive ? T("Order.PickupAddress") : T("Order.ShippingAddress"))</strong>
+                            </div>
+                            <ul class="info-list">
+                                @if (!Model.IsPicUpAddressActive)
+                                {
+                                    <li class="email">
+                                        @T("Order.Email"): @Model.ErpShippingAddressModel.EmailAddress
+                                    </li>
+                                    <li class="email">
+                                        @T("Order.RepEmail"): @Model.ErpShippingAddressModel.RepEmail
+                                    </li>
+
+                                    <li class="email">
+                                        @T("Rep Full Name"): @Model.ErpShippingAddressModel.RepFullName
+                                    </li>
+                                    <li class="email">
+                                        @T("Order Rep Number"): @Model.ErpShippingAddressModel.RepNumber
+                                    </li>
+
+                                    <li class="email">
+                                        @T("Order Acc No"): @Model.ErpShippingAddressModel.AccNo
+                                    </li>
+                                    <li class="email">
+                                        @T("Delivery Notes"): @Model.ErpShippingAddressModel.DeliveryNotes
+                                    </li>
+
+                                    <li class="email">
+                                        @T("Rep Phone Number"): @Model.ErpShippingAddressModel.RepPhoneNumber
+                                    </li>
+                                    <li class="email">
+                                        @T("Ship To Name"): @Model.ErpShippingAddressModel.ShipToName
+                                    </li>
+
+                                    <li class="email">
+                                        @T("Suburb"): @Model.ErpShippingAddressModel.Suburb
+                                    </li>
+
+                                    if (AddressSettings.PhoneEnabled)
+                                    {
+                                        <li class="phone">
+                                            @T("Phone"): @Model.ErpShippingAddressModel.PhoneNumber
+                                        </li>
+                                    }
+                                    if (AddressSettings.FaxEnabled)
+                                    {
+                                        <li class="fax">
+                                            @T("Fax"): @Model.ErpShippingAddressModel.FaxNumber
+                                        </li>
+                                    }
+                                    if (AddressSettings.CompanyEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.Company))
+                                    {
+                                        <li class="company">
+                                            @Model.ErpShippingAddressModel.Company
+                                        </li>
+                                    }
+                                    if (AddressSettings.StreetAddressEnabled)
+                                    {
+                                        <li class="address1">
+                                            @Model.ErpShippingAddressModel.Address1
+                                        </li>
+                                    }
+                                    if (AddressSettings.StreetAddress2Enabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.Address2))
+                                    {
+                                        <li class="address2">
+                                            @Model.ErpShippingAddressModel.Address2
+                                        </li>
+                                    }
+                                    @if (AddressSettings.CityEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.City) ||
+                                   AddressSettings.CountyEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.County) ||
+
+                                   AddressSettings.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.ZipPostalCode))
+                                    {
+                                        <li class="city-state-zip">
+                                            @if (AddressSettings.CityEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.City))
+                                            {
+                                                @Model.ErpShippingAddressModel.City
+                                                @if (AddressSettings.CountyEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.County) ||
+
+                                               AddressSettings.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.ZipPostalCode))
+                                                {
+                                                    <text>,</text>
+                                                }
+                                            }
+                                            @if (AddressSettings.CountyEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.County))
+                                            {
+                                                @Model.ErpShippingAddressModel.County
+                                                @if (
+                                               AddressSettings.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.ZipPostalCode))
+                                                {
+                                                    <text>,</text>
+                                                }
+                                            }
+
+                                            @if (AddressSettings.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.ZipPostalCode))
+                                            {
+                                                @Model.ErpShippingAddressModel.ZipPostalCode
+                                            }
+                                        </li>
+                                    }
+                                }
+                                else
+                                {
+                                    if (!string.IsNullOrEmpty(Model.ErpPickUpAddressModel.Address1))
+                                    {
+                                        <li class="address1">
+                                            @Model.ErpPickUpAddressModel.Address1
+                                        </li>
+                                    }
+                                    if (!string.IsNullOrEmpty(Model.ErpPickUpAddressModel.City) ||
+                                    !string.IsNullOrEmpty(Model.ErpPickUpAddressModel.County) ||
+                                    !string.IsNullOrEmpty(Model.ErpPickUpAddressModel.StateProvinceName) ||
+                                    !string.IsNullOrEmpty(Model.ErpPickUpAddressModel.ZipPostalCode))
+                                    {
+                                        <li class="city-state-zip">
+                                            @if (!string.IsNullOrEmpty(Model.ErpPickUpAddressModel.City))
+                                            {
+                                                @Model.ErpPickUpAddressModel.City
+                                                @if (!string.IsNullOrEmpty(Model.ErpPickUpAddressModel.County) ||
+                                               !string.IsNullOrEmpty(Model.ErpPickUpAddressModel.StateProvinceName) ||
+                                               !string.IsNullOrEmpty(Model.ErpPickUpAddressModel.ZipPostalCode))
+                                                {
+                                                    <text>,</text>
+                                                }
+                                            }
+                                            @if (!string.IsNullOrEmpty(Model.ErpPickUpAddressModel.County))
+                                            {
+                                                @Model.ErpPickUpAddressModel.County
+                                                @if (!string.IsNullOrEmpty(Model.ErpPickUpAddressModel.StateProvinceName) ||
+                                               !string.IsNullOrEmpty(Model.ErpPickUpAddressModel.ZipPostalCode))
+                                                {
+                                                    <text>,</text>
+                                                }
+                                            }
+                                            @if (!string.IsNullOrEmpty(Model.ErpPickUpAddressModel.StateProvinceName))
+                                            {
+                                                @Model.ErpPickUpAddressModel.StateProvinceName
+                                                @if (!string.IsNullOrEmpty(Model.ErpPickUpAddressModel.ZipPostalCode))
+                                                {
+                                                    <text>,</text>
+                                                }
+                                            }
+                                            @if (!string.IsNullOrEmpty(Model.ErpPickUpAddressModel.ZipPostalCode))
+                                            {
+                                                @Model.ErpPickUpAddressModel.ZipPostalCode
+                                            }
+                                        </li>
+                                    }
+                                    if (!string.IsNullOrEmpty(Model.ErpPickUpAddressModel.CountryName))
+                                    {
+                                        <li class="country">
+                                            @Model.ErpPickUpAddressModel.CountryName
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                        <div class="shipping-method-info">
+                            <div class="title">
+                                <strong>@T("Order.Shipping")</strong>
+                            </div>
+                            <ul class="info-list">
+                                <li class="shipping-method">
+                                    <span class="label">
+                                        @T("Order.Shipping.Name"):
+                                    </span>
+                                    <span class="value">
+                                        @Model.ShippingMethod
+                                    </span>
+                                </li>
+
+                                <li class="shipping-status">
+                                    <span class="label">
+                                        @T("Order.Shipping.Status"):
+                                    </span>
+                                    <span class="value">
+                                        @Model.ShippingStatus
+                                    </span>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (Model.ShipmentBriefModels.Count > 0)
+            {
+                <div class="section shipments">
+                    <div class="title">
+                        <strong>@T("Order.Shipments")</strong>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <colgroup>
+                                <col width="1" />
+                                <col />
+                                <col />
+                                <col />
+                                <col />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th class="shipment-id">
+                                        @T("Order.Shipments.ID")
+                                    </th>
+                                    <th class="tracking-number">
+                                        @T("Order.Shipments.TrackingNumber")
+                                    </th>
+                                    @if (Model.IsPicUpAddressActive)
+                                    {
+                                        <th class="ready-for-pickup-date">
+                                            @T("Order.Shipments.ReadyForPickupDate")
+                                        </th>
+                                    }
+                                    else
+                                    {
+                                        <th class="shipping-date">
+                                            @T("Order.Shipments.ShippedDate")
+                                        </th>
+                                    }
+                                    <th class="delivery-date">
+                                        @T("Order.Shipments.DeliveryDate")
+                                    </th>
+                                    <th class="view-details">
+                                        @T("Order.Shipments.ViewDetails")
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.ShipmentBriefModels)
+                                {
+                                    <tr>
+                                        <td class="shipment-id">
+                                            <label>@T("Order.Shipments.ID"):</label>
+                                            <span>@item.Id.ToString()</span>
+                                        </td>
+                                        <td class="tracking-number">
+                                            <label>@T("Order.Shipments.TrackingNumber"):</label>
+                                            @item.TrackingNumber
+                                        </td>
+                                        @if (Model.IsPicUpAddressActive)
+                                        {
+                                            <td class="ready-for-pickup-date">
+                                                <label>@T("Order.Shipments.ReadyForPickupDate"):</label>
+                                                @if (item.ReadyForPickupDate.HasValue)
+                                                {
+                                                    <span>@item.ReadyForPickupDate.Value.ToString("D")</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>@T("Order.Shipments.ReadyForPickupDate.NotYet")</span>
+                                                }
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="shipped-date">
+                                                <label>@T("Order.Shipments.ShippedDate"):</label>
+                                                @if (item.ShippedDate.HasValue)
+                                                {
+                                                    <span>@item.ShippedDate.Value.ToString("D")</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>@T("Order.Shipments.ShippedDate.NotYet")</span>
+                                                }
+                                            </td>
+                                        }
+                                        <td class="delivery-date">
+                                            <label>@T("Order.Shipments.DeliveryDate"):</label>
+                                            @if (item.DeliveryDate.HasValue)
+                                            {
+                                                <span>@item.DeliveryDate.Value.ToString("D")</span>
+                                            }
+                                            else
+                                            {
+                                                <span>@T("Order.Shipments.DeliveryDate.NotYet")</span>
+                                            }
+                                        </td>
+                                        <td class="view-details">
+                                            <a href="@Url.RouteUrl("ShipmentDetails", new { shipmentId = item.Id })" title="@T("Order.Shipments.ViewDetails")">@T("Order.Shipments.ViewDetails")</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+            @if (Model.Items.Count > 0)
+            {
+                if (Model.OrderNotes.Count > 0)
+                {
+                    <div class="section order-notes">
+                        <div class="title">
+                            <strong>@T("Order.Notes")</strong>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table">
+                                <colgroup>
+                                    <col />
+                                    <col />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th class="created-on">
+                                            @T("Order.Notes.CreatedOn")
+                                        </th>
+                                        <th class="note">
+                                            @T("Order.Notes.Note")
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.OrderNotes)
+                                    {
+                                        <tr>
+                                            <td class="created-on">
+                                                @item.CreatedOn.ToString()
+                                            </td>
+                                            <td class="note">
+                                                @Html.Raw(item.Note)
+
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+
+                <div class="order-summary-content">
+
+                    <div class="section products">
+                        <div class="title">
+                            <strong>@T("Order.Product(s)")</strong>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table jsmartable">
+                                <colgroup>
+                                    <col width="1" />
+                                    <col width="1" />
+                                    <col width="1" />
+                                    <col width="1" />
+                                    <col width="1" />
+                                    <col width="1" />
+                                    <col width="1" />
+                                    <col width="1" />
+                                    <col width="1" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th class="sku" data-breakpoint="md">
+                                            @T("Order.Product(s).SKU")
+                                        </th>
+                                        <th class="picture">
+                                            @T("Order.Product(s).Image")
+                                        </th>
+                                        <th class="name">
+                                            @T("Order.Product(s).Name")
+                                        </th>
+                                        <th class="price" data-breakpoint="md">
+                                            @T("Order.Product(s).Price")
+                                        </th>
+                                        <th class="quantity" data-breakpoint="sm">
+                                            @T("Order.Product(s).Quantity")
+                                        </th>
+                                        <th class="total">
+                                            @T("Order.Product(s).Total")
+                                        </th>
+                                        <th class="erpOrderLineNum">
+                                            @T("Plugin.Misc.NopStation.B2BB2CFeatures.Admin.ErpOrderItemInOrderDetails.TableHeader.ERPOrderLineNumber")
+                                        </th>
+                                        <th class="erpOrderLineStatus">
+                                            @T("Plugin.Misc.NopStation.B2BB2CFeatures.Admin.ErpOrderItemInOrderDetails.TableHeader.ERPOrderLineStatus")
+                                        </th>
+                                        <th class="erpDataReq">
+                                            @T("Plugin.Misc.NopStation.B2BB2CFeatures.Admin.ErpOrderItemInOrderDetails.TableHeader.ERPDateRequired")
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Items)
+                                    {
+                                        <tr>
+                                            <td class="sku">
+                                                <label class="td-title">@T("Order.Product(s).SKU"):</label>
+                                                <span class="sku-number">@item.Sku</span>
+                                            </td>
+                                            <td class="picture">
+                                                <a href="@(Url.RouteUrl<Product>(new {SeName = item.ProductSeName}))"><img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" /></a>
+                                            </td>
+                                            <td class="product">
+                                                <em><a href="@(Url.RouteUrl("ProductDetails", new { SeName = item.ProductSeName }))">@item.ProductName</a></em>
+
+                                                @if (!string.IsNullOrEmpty(item.AttributeInfo))
+                                                {
+                                                    <div class="attributes">
+                                                        @Html.Raw(item.AttributeInfo)
+                                                    </div>
+                                                }
+                                                @if (!string.IsNullOrEmpty(item.RentalInfo))
+                                                {
+                                                    <div class="rental-info">
+                                                        @Html.Raw(item.RentalInfo)
+                                                    </div>
+                                                }
+                                                @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderDetailsProductLine, additionalData = item })
+                                            </td>
+                                            <td class="unit-price">
+                                                <span class="product-unit-price">@item.UnitPriceWithOutDiscountExcTax</span>
+                                            </td>
+                                            <td class="quantity">
+                                                <span class="product-quantity">@item.Quantity</span>
+                                            </td>
+                                            <td class="total">
+                                                <span class="product-subtotal">@(item.TotalUnitPriceWithOutDiscountExcTax)</span>
+                                            </td>
+                                            <td class="erpOrderLineNum">
+                                                <span class="product-erp-order-line-number">@item.ERPOrderLineNumber</span>
+                                            </td>
+                                            <td class="erpOrderLineStatus">
+                                                <span class="product-erp-order-line-status">@item.ERPOrderLineStatus</span>
+                                            </td>
+                                            <td class="erpDataReq">
+                                                <span class="product-erp-date-required">@item.ERPDateRequired</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        @if (Model.Items.Count > 0 && Model.DisplayTaxShippingInfo)
+                        {
+                            var inclTax = Model.PricesIncludeTax;
+                            //tax info is already included in the price (incl/excl tax). that's why we display only shipping info here
+                            //of course, you can modify appropriate locales to include VAT info there
+                            <div class="tax-shipping-info">
+                                @T(inclTax ? "Order.TaxShipping.InclTax" : "Order.TaxShipping.ExclTax", Url.RouteTopicUrl("shippinginfo"))
+                            </div>
+                        }
+                    </div>
+                    <div class="order-footer">
+                        <div class="section options">
+                            @if (!string.IsNullOrEmpty(Model.CheckoutAttributeInfo))
+                            {
+                                <div class="selected-checkout-attributes">
+                                    @Html.Raw(Model.CheckoutAttributeInfo)
+                                </div>
+                            }
+                        </div>
+
+                        <div class="row">
+                            <div class="float-left" style="float: left">
+
+                                <div class="cart-collaterals">
+                                    <div class="deals">
+                                        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderSummaryContentDeals, additionalData = Model })
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="float-right" style="float:right">
+                                <div class="total-info">
+                                    <table class="cart-total">
+                                        <tbody>
+                                            <tr>
+                                                <td class="cart-total-left">
+                                                    <label>@T("Order.SubTotal"):</label>
+                                                </td>
+                                                <td class="cart-total-right">
+                                                    <span>@Model.OrderSubtotal</span>
+                                                </td>
+                                            </tr>
+                                            @if (!string.IsNullOrEmpty(Model.OrderSubTotalDiscount))
+                                            {
+                                                <tr>
+                                                    <td class="cart-total-left">
+                                                        <label>@T("Order.SubTotalDiscount"):</label>
+                                                    </td>
+                                                    <td class="cart-total-right">
+                                                        <span>@Model.OrderSubTotalDiscount</span>
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                            <tr>
+                                                <td class="cart-total-left">
+                                                    <label>@T("Order.Shipping"):</label>
+                                                </td>
+                                                <td class="cart-total-right">
+                                                    <span>@Model.OrderShipping</span>
+                                                </td>
+                                            </tr>
+
+                                            @if (!string.IsNullOrEmpty(Model.PaymentMethodAdditionalFee))
+                                            {
+                                                <tr>
+                                                    <td class="cart-total-left">
+                                                        <label>@T("Order.PaymentMethodAdditionalFee"):</label>
+                                                    </td>
+                                                    <td class="cart-total-right">
+                                                        <span>@Model.PaymentMethodAdditionalFee</span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            @if (Model.DisplayTaxRates && Model.TaxRates.Count > 0)
+                                            {
+                                                foreach (var taxRate in Model.TaxRates)
+                                                {
+                                                    <tr>
+                                                        <td class="cart-total-left">
+                                                            <label>@string.Format(T("Order.TaxRateLine").Text, taxRate.Rate):</label>
+                                                        </td>
+                                                        <td class="cart-total-right">
+                                                            <span>@taxRate.Value</span>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                            @if (Model.DisplayTax)
+                                            {
+                                                <tr>
+                                                    <td class="cart-total-left">
+                                                        <label>@T("Order.Tax"):</label>
+                                                    </td>
+                                                    <td class="cart-total-right">
+                                                        <span>@Model.Tax</span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            @if (!string.IsNullOrEmpty(Model.OrderTotalDiscount))
+                                            {
+                                                <tr>
+                                                    <td class="cart-total-left">
+                                                        <label>@T("Order.TotalDiscount"):</label>
+                                                    </td>
+                                                    <td class="cart-total-right">
+                                                        <span>@Model.OrderTotalDiscount</span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            @if (Model.GiftCards.Count > 0)
+                                            {
+                                                foreach (var gc in Model.GiftCards)
+                                                {
+                                                    <tr>
+                                                        <td class="cart-total-left">
+                                                            <label>@string.Format(T("Order.GiftCardInfo").Text, gc.CouponCode):</label>
+                                                        </td>
+                                                        <td class="cart-total-right">
+                                                            <span>@gc.Amount</span>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                            @if (Model.RedeemedRewardPoints > 0)
+                                            {
+                                                <tr>
+                                                    <td class="cart-total-left">
+                                                        <label>@string.Format(T("Order.RewardPoints").Text, Model.RedeemedRewardPoints):</label>
+                                                    </td>
+                                                    <td class="cart-total-right">
+                                                        <span>@Model.RedeemedRewardPointsAmount</span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            <tr>
+                                                <td class="cart-total-left">
+                                                    <label>@T("Order.OrderTotal"):</label>
+                                                </td>
+                                                <td class="cart-total-right">
+                                                    <span><strong>@Model.OrderTotal</strong></span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="actions">
+                                    @if (orderSettings.IsReOrderAllowed)
+                                    {
+                                        if (isQuoteOrder)
+                                        {
+                                            if (!hasQuoteExpireDate)
+                                            {
+                                                <input type="button" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Reorder.NoData")" class="btn-disabled" />
+                                            }
+                                            else if (isQuoteAlreadyConverted)
+                                            {
+                                                <input type="button" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Reorder.AlreadyConverted")" class="btn-disabled" />
+                                            }
+                                            else if (isQuoteExpired)
+                                            {
+
+                                                <input type="button" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Reorder.Requote")" class="button-1 re-order-button quote-order-details-reorder-button" onclick="CheckItemsInCart('@Model.Id')" />
+                                            }
+                                            else
+                                            {
+                                                if (isQuoteRejectedorFailed)
+                                                {
+                                                    <input type="button" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Reorder.NewOrder")" class="button-1 re-order-button quote-order-details-reorder-button" onclick="CheckItemsInCart('@Model.Id')" />
+                                                }
+                                                else if (checkQuoteOrderStatus)
+                                                {
+                                                    <input type="button" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Reorder.Convert")" class="button-1 re-order-button quote-order-details-reorder-button" onclick="CheckItemsInCart('@Model.Id')" />
+                                                }
+                                                else
+                                                {
+                                                    <input type="button" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Reorder.Order")" class="button-1 re-order-button quote-order-details-reorder-button" onclick="CheckItemsInCart('@Model.Id')" />
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <input type="button" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Reorder")"
+                                                   class="button-1 re-order-button quote-order-details-reorder-button" onclick="CheckItemsInCart('@Model.Id')" />
+                                        }
+                                    }
+
+                                    @*     @if (orderSettings.IsReturnRequestAllowed && !isQuoteOrder)
+                                {
+                                <input type="button" value="@T("Order.ReturnItems")" class="button-2 return-items-button" onclick="setLocation('@Url.RouteUrl("ReturnRequest", new { orderId=Model.Id }) ')" />
+                                }*@
+
+                                    @*  <button type="button" class="button-1 re-order-button" onclick="setLocation('@Url.RouteUrl("ReOrder", new { orderId = Model.Id })')">@T("Order.Reorder")</button>
+
+                                <button type="button" class="button-2 return-items-button" onclick="setLocation('@Url.RouteUrl("ReturnRequest", new { orderId = Model.Id })')">@T("Order.ReturnItems")</button>
+                                *@
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+
+    <div id="qouteOrderListConvertConfirmAcceptDialog" title="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.ConvertConfirm")" style="display: none;">
+        <form asp-controller="OverridenOrder" asp-action="ReOrder" class="order-confirm-accept-form" method="post" enctype="multipart/form-data">
+            <div>
+                <h4>
+                    @T("Plugin.Misc.NopStation.B2BB2CFeatures.Order.ConfirmRemoveFromCart")
+                </h4>
+            </div>
+            <br />
+            <div class="order-confirm-buttons">
+                <button id="quoteOrderDetailsPopupClearCartButton" type="button" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.Orders.ConfirmAcceptDialog.ClearCart")"
+                        class="button-1 bg-green popup-clearcart-btn qoute-order-details-popup-clear-cart-button" onclick="quoteOrderListpopUpPlaceOrder(this)">
+                    <span>@T("Plugin.Misc.NopStation.B2BB2CFeatures.Orders.ConfirmAcceptDialog.ClearCart")</span>
+                </button>
+                <button type="button" name="addtocartbutton" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ShoppingCart.KeepItemInCart")"
+                        class="button-1 bg-green qoute-order-details-popup-add-to-cart-button" onclick="quoteOrderListpopUpPlaceOrder(this)">
+                    <span>@T("Plugin.Misc.NopStation.B2BB2CFeatures.ShoppingCart.KeepItemInCart")</span>
+                </button>
+            </div>
+            <div class="order-confirm-buttons">
+                <button type="button" name="cancel" onclick="closePopup()" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.Order.TermsAndConditionAccept.Cancel")" class="button-1  bg-red"><span>@T("Plugin.Misc.NopStation.B2BB2CFeatures.Order.TermsAndConditionAccept.Cancel")</span></button>
+            </div>
+            <input id="orderId" name="orderId" style="display:none;" />
+
+            <script asp-location="Footer">
+                function closePopup() {
+                    $("#qouteOrderListConvertConfirmAcceptDialog").dialog("destroy");
+                    $("#orderId").val("")
+                }
+
+
+                function clearCartAndReoder() {
+                    var orderId = $("#orderId").val();
+                    B2BAjaxCart.disableAddToCartButton(orderId);
+                    B2BAjaxCart.disablePopUpAddToCartButton();
+                    displayAjaxLoading(true);
+                    B2BAjaxCart.b2bClearCart()
+                    var reorderActionUrl = "/ReOrder/" + orderId + "";
+                    setLocation(reorderActionUrl);
+                }
+
+                function quoteOrderListpopUpPlaceOrder(popUpData) {
+                    var orderId = $('#orderId').val();
+                    B2BAjaxCart.disableReorderButton(orderId);
+                    B2BAjaxCart.disablePopUpAddToCartButton();
+                    displayAjaxLoading(true);
+
+                    if ($(popUpData).attr('id') == 'quoteOrderDetailsPopupClearCartButton') {
+                        B2BAjaxCart.b2BClearCart(false)
+                    }
+
+                    var reorderActionUrl = "/ReOrder/" + orderId + "";
+                    setLocation(reorderActionUrl);
+                }
+            </script>
+        </form>
+    </div>
+
+</div>
+
+
+
+<script asp-location="Footer">
+
+    function reOrderLinkGenerator(orderId) {
+        $.ajax({
+            cache: false,
+            type: "GET",
+            dataType: "json",
+            url: "/IsItemsInCart/",
+            success: function (response) {
+
+                if (!response.success) {
+                    B2BAjaxCart.disableReorderButton(orderId);
+                    var reorderActionUrl = "/ReOrder/" + orderId + "";
+                    setLocation(reorderActionUrl);
+                }
+                else {
+                    $("#orderId").val(orderId);
+                    $("#qouteOrderListConvertConfirmAcceptDialog").dialog({
+                        modal: true,
+                        draggable: false,
+                        closeOnEscape: true
+                    });
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log("Error. Please Reload");
+            }
+        });
+    }
+
+    function CheckItemsInCart(orderId) {
+        console.log("dskmf")
+        $.ajax({
+            cache: false,
+            type: "GET",
+            dataType: "json",
+            url: "/IsItemsInCart/",
+            success: function (response) {
+                if (!response.success) {
+                    // B2BAjaxCart.disableAddToCartButton();
+                    displayAjaxLoading(true);
+                    var reorderActionUrl = "/ReOrder/" + orderId + "";
+                    setLocation(reorderActionUrl);
+                }
+                else {
+                    $("#orderId").val(orderId);
+                    $("#qouteOrderListConvertConfirmAcceptDialog").dialog({
+                        modal: true,
+                        draggable: false,
+                        closeOnEscape: true
+                    });
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log("Error. Please Reload");
+            }
+        });
+    }
+</script>

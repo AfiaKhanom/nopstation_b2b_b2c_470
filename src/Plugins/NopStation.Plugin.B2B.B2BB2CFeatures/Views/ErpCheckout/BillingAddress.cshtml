@@ -1,0 +1,75 @@
+﻿@using Nop.Core
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.Checkout;
+@using Nop.Services.Customers
+@model CheckoutErpBillingAddressModel
+@inject IWebHelper webHelper
+@inject IWorkContext workContext
+@inject ICustomerService _customerService
+@{
+    Layout = "_ColumnsOne";
+
+    var storeLocation = webHelper.GetStoreLocation();
+
+    //title
+    NopHtml.AddTitleParts(T("PageTitle.Checkout").Text);
+    //page class
+    NopHtml.AppendPageCssClassParts("html-checkout-page");
+    NopHtml.AppendPageCssClassParts("html-billing-address-page");
+}
+
+<script src="~/js/public.billingaddress.js" asp-location="Footer"></script>
+
+<div class="page checkout-page billing-address-page">
+    @await Component.InvokeAsync(typeof(CheckoutProgressViewComponent), new { step = CheckoutProgressStep.Address })
+    <div class="page-title">
+        <h1>@T("Checkout.BillingAddress")</h1>
+    </div>
+    <div class="page-body checkout-data">
+        <form id="billing-form" asp-action="ErpBillingAddress" asp-controller="ErpCheckout" method="post">
+            <div class="billing-addresses">
+                <div id="toggle-billing-address">
+                    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutBillingAddressTop, additionalData = Model })
+                    @if (Model.ShipToSameAddressAllowed)
+                    {
+                        @*<div class="section ship-to-same-address">
+                            <div class="selector">
+                                <input asp-for="ShipToSameAddress" />
+                                <label asp-for="ShipToSameAddress">@T("Checkout.ShipToSameAddress")</label>
+                            </div>
+                        </div>*@
+                    }
+                </div>
+                @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutBillingAddressMiddle, additionalData = Model })
+                <div class="section new-billing-address" id="billingaddress-new-form">
+                    <div class="enter-address">
+                        <div asp-validation-summary="ModelOnly" class="message-error"></div>
+                        @{
+                            var dataDictAddress = new ViewDataDictionary(ViewData);
+                            dataDictAddress.TemplateInfo.HtmlFieldPrefix = "ErpBillingAddress";
+                            @await Html.PartialAsync("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/ErpCheckout/_CreateOrUpdateErpBillingAddresses.cshtml", Model.ErpBillingAddress, dataDictAddress)
+                        }
+                    </div>
+                </div>
+                @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutBillingAddressBottom, additionalData = Model })
+            </div>
+            <div class="buttons">
+                <button id="billingaddress-save-button" type="button" class="button-1" style="display: none" onclick="CheckoutBilling.saveEditAddress('@(storeLocation)checkout/SaveEditBillingAddress/'); return false;">@T("Common.Save")</button>
+
+                <button id="billingaddress-cancel-button" type="button" class="button-1" style="display: none" onclick="setLocation('@Url.RouteUrl("CheckoutBillingAddress")')">@T("Common.Cancel")</button>
+
+                <button id="billingaddress-next-button" type="submit" name="nextstep" class="button-1 new-address-next-step-button">@T("Checkout.NextButton")</button>
+            </div>
+        </form>
+        <script asp-location="Footer">
+            CheckoutBilling.init('#billing-form');            
+            $('#edit-billing-address-button').show();
+            $('#delete-billing-address-button').show();
+        </script>
+        <div class="section order-summary">
+            <div class="title">
+                <strong>@T("Checkout.OrderSummary")</strong>
+            </div>
+            @await Component.InvokeAsync(typeof(OrderSummaryViewComponent))
+        </div>
+    </div>
+</div>

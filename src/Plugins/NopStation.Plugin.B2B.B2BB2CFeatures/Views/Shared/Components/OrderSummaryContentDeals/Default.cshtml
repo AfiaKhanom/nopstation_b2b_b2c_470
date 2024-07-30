@@ -1,0 +1,55 @@
+@model ErpAccountDataModel
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Model
+
+<div class="erp-title" style="text-align:left;">
+    <strong>@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpAccountDataModel.ErpAccountDetails")</strong>
+</div>
+
+<div class="erp-table-wrapper">
+    <div class="erp-table-container">
+        <table class="erp-table">
+            <tbody>
+                <tr class="">
+                    <td class="cart-total-left">
+                        <label> @T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpAccountDataModel.AccNo"):</label>
+                    </td>
+                    <td class="cart-total-right">
+                        <span class="value-summary">@Model.AccNo</span>
+                    </td>
+                </tr>
+                <tr class="">
+                    <td class="cart-total-left">
+                        <label> @T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpAccountDataModel.Name"):</label>
+                    </td>
+                    <td class="cart-total-right">
+                        <span class="value-summary">@Model.Name</span>
+                    </td>
+                </tr>
+                <tr class="">
+                    <td class="cart-total-left">
+                        <label>@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpAccountDataModel.CreditLimitAvailable"):</label>
+                    </td>
+                    <td class="cart-total-right">
+                        <span class="value-summary">@Model.CreditLimitAvailableStr</span>
+                    </td>
+                </tr>
+                <tr class="">
+                    <td class="cart-total-left">
+                        <label> @T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpAccountDataModel.CreditLimitUsed"):</label>
+                    </td>
+                    <td class="cart-total-right">
+                        <span class="value-summary">@Model.CreditLimitUsedStr</span>
+                    </td>
+                </tr>
+                <tr class="">
+                    <td class="cart-total-left">
+                        <label>  @T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpAccountDataModel.Balance"):</label>
+                    </td>
+                    <td class="cart-total-right">
+                        <span class="value-summary">@Model.BalanceStr</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

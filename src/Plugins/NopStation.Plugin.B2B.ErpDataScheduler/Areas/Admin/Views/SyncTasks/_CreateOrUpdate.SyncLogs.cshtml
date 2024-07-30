@@ -1,0 +1,48 @@
+﻿@model SyncTaskModel
+<div class="card-body">
+    @await Html.PartialAsync("Table", new DataTablesModel
+    {
+        Name = "syncLog-list",
+        UrlRead = new DataUrl("SyncLogList", "SyncTasks", 
+        new RouteValueDictionary 
+        { 
+            [nameof(Model.SyncLogSearchModel.SyncTaskName)] = Model.Name, 
+            [nameof(Model.SyncLogSearchModel.SyncTaskId)] = Model.Id 
+        }),
+        UrlDelete = new DataUrl("DeleteSyncLogFile", "SyncTasks", 
+        new RouteValueDictionary
+        {
+            [nameof(Model.SyncLogSearchModel.SyncTaskId)] = Model.Id
+        }),
+        Length = Model.SyncLogSearchModel.PageSize,
+        LengthMenu = Model.SyncLogSearchModel.AvailablePageSizes,
+        ColumnCollection = new List<ColumnProperty>
+        {
+            new ColumnProperty(nameof(SyncLogModel.Name))
+            {
+                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.SyncLogs.FileName").Text
+            },
+            new ColumnProperty(nameof(SyncLogModel.Length))
+            {
+                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.SyncLogs.FileSize").Text
+            },
+            new ColumnProperty(nameof(SyncLogModel.Name))
+            {
+                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.SyncLogs.FileDownloadLink").Text,
+                Width = "150",
+                ClassName = NopColumnClassDefaults.Button,
+                Render = new RenderButtonCustom("sync-log-file-download", "Download")
+                {
+                    Url = Url.Content("/Admin/SyncTasks/DownloadSyncLogFile/" + Model.Id + "~")
+                }
+            },
+            new ColumnProperty(nameof(SyncLogModel.Name))
+            {
+                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.SyncLogs.FileDelete").Text,
+                Render = new RenderButtonRemove(T("Admin.Common.Delete").Text),
+                Width = "80",
+                ClassName = NopColumnClassDefaults.Button
+            }
+        }
+    })
+</div>

@@ -1,0 +1,22 @@
+.return-request-page {
+    .title {
+        font-size: clamp(1rem,3vw,20px);
+        line-height: clamp(16px,3vw,22px);
+        font-style: italic;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--primary-grey_light);
+    }
+
+    .data-table {
+        .product {
+            @media (min-width: $md) {
+                width: 400px;
+            }
+        }
+    }
+
+    .fieldset {
+        width: 100% !important;
+    }
+}

@@ -1,0 +1,33 @@
+@model ConfigurationModel
+
+<div class="card-body">
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="DownloadInvoicesPath" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="DownloadInvoicesPath" />
+            <span asp-validation-for="DownloadInvoicesPath"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="FtpUserName" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="FtpUserName" />
+            <span asp-validation-for="FtpUserName"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="FtpPassword" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="FtpPassword" />
+            <span asp-validation-for="FtpPassword"></span>
+        </div>
+    </div>
+</div>

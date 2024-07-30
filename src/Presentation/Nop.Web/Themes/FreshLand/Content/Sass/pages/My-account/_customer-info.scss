@@ -1,0 +1,75 @@
+.html-account-page {
+    .customer-info-page {
+        .fieldset {
+            .title {
+                padding: 10px;
+                background: var(--primary-grey_light);
+
+                strong {
+                    display: block;
+                    position: relative;
+                    width: 460px;
+                    max-width: 100%;
+                    padding-left: 25px;
+                    margin: auto;
+                    color: var(--black);
+
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        font-family: "icomoon";
+                        left: 0;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        font-weight: bold;
+                        font-size: 15px;
+                        transform: translateY(-50%);
+                        color: var(--black);
+                    }
+                }
+
+                &.personal-details strong::before {
+                    content: '\e94a';
+                }
+
+                &.company-details strong::before {
+                    content: '\e92a';
+                }
+
+                &.address strong::before {
+                    content: '\e92d';
+                }
+
+                &.phone strong::before {
+                    content: '\e902';
+                }
+
+                &.option strong::before {
+                    content: '\e944';
+                }
+
+                &.password strong::before {
+                    content: '\e934';
+                }
+
+                &.privacy-policy strong::before {
+                    content: '\e90c';
+                }
+
+                &::after {
+                    content: none;
+                }
+            }
+        }
+    }
+}
+
+.customer-info-page,
+.change-password-page {
+    .inputs {
+        width: 460px;
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}

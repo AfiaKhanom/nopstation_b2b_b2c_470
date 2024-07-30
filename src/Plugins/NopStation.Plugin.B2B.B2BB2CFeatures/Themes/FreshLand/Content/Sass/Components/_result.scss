@@ -1,0 +1,14 @@
+.result {
+    text-align: center;
+    font-size: clamp(1rem,3vw,20px);
+    line-height: clamp(16px,3vw,22px);
+    font-style: italic;
+}
+
+.message-error {
+    display: block;
+    text-align: left;
+    font-size: 13px;
+    color: var(--red);
+    margin-top: 5px;
+}

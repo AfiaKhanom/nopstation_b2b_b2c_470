@@ -1,0 +1,28 @@
+﻿:root {
+    --sm-container: 100%;
+    --md-container: 950px;
+    --lg-container: 1150px;
+    --xl-container: 1450px;
+    --primary-green: #{$primary-green};
+    --primary-green_dark: #{$primary-green_dark};
+    --primary-green_light: #{$primary-green_light};
+    --primary-grey_light: #{$primary-grey_light};
+    --primary-grey: #{$primary-grey};
+    --primary-grey_dark: #{$primary-grey_dark};
+    --white: #{$white};
+    --black: #{$black};
+    --yellow: #{$yellow};
+    --red: #{$red};
+}
+.dark-theme:root {
+    --primary-green: #{$primary-green};
+    --primary-green_dark: #{$primary-green_dark};
+    --primary-green_light: #{$primary-green_light};
+    --primary-grey_light: #{$primary-grey_light};
+    --primary-grey: #{$primary-grey};
+    --primary-grey_dark: #{$primary-grey_dark};
+    --white: #{$black};
+    --black: #{$white};
+    --yellow: #{$yellow};
+    --red: #{$red};
+}

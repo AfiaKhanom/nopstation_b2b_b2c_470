@@ -1,0 +1,133 @@
+@model ConfigurationModel
+@using Nop.Services;
+@using Nop.Core.Domain.Catalog;
+
+<div class="card-body">
+    <div class="form-group row useNopProductPrice">
+        <div class="col-md-3">
+            <nop-label asp-for="UseNopProductPrice" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="UseNopProductPrice" />
+            <span asp-validation-for="UseNopProductPrice"></span>
+        </div>
+    </div>
+    <div class="form-group row useProductGroupPrice">
+        <div class="col-md-3">
+            <nop-label asp-for="UseProductGroupPrice" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="UseProductGroupPrice" />
+            <span asp-validation-for="UseProductGroupPrice"></span>
+        </div>
+    </div>
+    <div class="form-group row useProductSpecialPrice">
+        <div class="col-md-3">
+            <nop-label asp-for="UseProductSpecialPrice" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="UseProductSpecialPrice" />
+            <span asp-validation-for="UseProductSpecialPrice"></span>
+        </div>
+    </div>
+    <div class="form-group row useProductCombinedPrice">
+        <div class="col-md-3">
+            <nop-label asp-for="UseProductCombinedPrice" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="UseProductCombinedPrice" />
+            <span asp-validation-for="UseProductCombinedPrice"></span>
+        </div>
+    </div>
+    <div class="form-group row usePrefilterFacet">
+        <div class="col-md-3">
+            <nop-label asp-for="UsePrefilterFacet" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="UsePrefilterFacet" />
+            <span asp-validation-for="UsePrefilterFacet"></span>
+        </div>
+    </div>
+    <div class="form-group row preFilterFacetSpecificationAttribute" >
+        <div class="col-md-3">
+            <nop-override-store-checkbox asp-for="PreFilterFacetSpecificationAttributeId_OverrideForStore" asp-input="PreFilterFacetSpecificationAttributeId" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+            <nop-label asp-for="PreFilterFacetSpecificationAttributeId" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="PreFilterFacetSpecificationAttributeId" asp-items="@Model.AvailableSpecificationAttributes" />
+            <span asp-validation-for="PreFilterFacetSpecificationAttributeId"></span>
+        </div>
+    </div> 
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="EnableLivePriceChecks" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="EnableLivePriceChecks" />
+            <span asp-validation-for="EnableLivePriceChecks"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="IsShowLoginForPrice" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="IsShowLoginForPrice" />
+            <span asp-validation-for="IsShowLoginForPrice"></span>
+        </div>
+    </div>     
+</div>
+
+<script asp-location="Footer">
+    $(document).ready(function () {
+        // Initially hide the elements based on checkbox state
+        if ($('#UseNopProductPrice').prop('checked')) {
+            $('#UseProductSpecialPrice').prop('checked', false);
+            $('#UseProductGroupPrice').prop('checked', false);
+            $('#UseProductCombinedPrice').prop('checked', false);
+            $('.useProductSpecialPrice, .useProductGroupPrice, .useProductCombinedPrice').hide();
+        }
+
+        $('#UseNopProductPrice').change(function () {
+            if (this.checked) {
+                $('#UseProductSpecialPrice').prop('checked', false);
+                $('#UseProductGroupPrice').prop('checked', false);
+                $('#UseProductCombinedPrice').prop('checked', false);
+                $('.useProductSpecialPrice, .useProductGroupPrice, .useProductCombinedPrice').hide();
+            } else {
+                $('.useProductSpecialPrice, .useProductGroupPrice, .useProductCombinedPrice').show();
+            }
+        });
+
+        $('#UseProductGroupPrice').change(function () {
+            if (this.checked) {
+                $('#UseProductSpecialPrice').prop('checked', false);
+                $('#UseProductCombinedPrice').prop('checked', false);
+            }
+        });
+        $('#UseProductSpecialPrice').change(function () {
+            if (this.checked) {
+                $('#UseProductGroupPrice').prop('checked', false);
+                $('#UseProductCombinedPrice').prop('checked', false);
+            }
+        });
+        $('#UseProductCombinedPrice').change(function () {
+            if (this.checked) {
+                $('#UseProductGroupPrice').prop('checked', false);
+                $('#UseProductSpecialPrice').prop('checked', false);
+            }
+        });
+        if (!$('#UsePrefilterFacet').prop('checked')) {
+            $('.preFilterFacetSpecificationAttribute').hide();
+        }
+
+        $('#UsePrefilterFacet').change(function () {
+            if (this.checked) {
+                $('.preFilterFacetSpecificationAttribute').show();
+            } else {
+                $('.preFilterFacetSpecificationAttribute').hide();
+            }
+        });
+
+    });
+</script>

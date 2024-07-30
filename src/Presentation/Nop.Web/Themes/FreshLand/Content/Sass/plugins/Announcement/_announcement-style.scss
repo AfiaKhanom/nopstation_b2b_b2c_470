@@ -1,0 +1,105 @@
+.announcement-wrapper {
+    position: relative;
+    background: url(../images/black-pattern.jpg) no-repeat center center;
+    background-size: cover;
+    transition: all 0.3s;
+
+    &::before {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: radial-gradient(circle at center, var(--primary-green_dark), var(--primary-green));
+        z-index: 10;
+        opacity: 0.7;
+    }
+
+    .announcement-bar {
+        position: relative;
+        z-index: 100;
+        color: var(--white);
+        padding: 8px 20px;
+        transition: all 0.3s;
+        max-width: calc(100% - 40px);
+    }
+
+    .swiper {
+        z-index: 15;
+    }
+    div.announcement-bar {
+        text-align: center;
+        white-space: nowrap;
+
+        @media (max-width: $md) {
+            text-align: left;
+        }
+
+        .separator {
+            display: none;
+        }
+    }
+
+    .announcement-description {
+        display: none;
+    }
+
+    #announcement-close {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 15;
+        background: transparent;
+        border: none;
+        color: #fff;
+    }
+
+    #announcement-minimize {
+        position: absolute;
+        right: 50px;
+        top: 100%;
+        z-index: 15;
+        background: transparent;
+        border: none;
+        color: #fff;
+        background: var(--primary-green);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 20px;
+        width: 20px;
+        border-radius: 0 0 50% 50%;
+        cursor: pointer;
+        font-weight: bold;
+
+        &::before {
+            transform: rotateZ(180deg);
+        }
+    }
+
+    &.announcement-minimized {
+        font-size: 0;
+
+        .announcement-bar {
+            padding: 0;
+            font-size: 0;
+        }
+
+        #announcement-close {
+            display: none;
+        }
+
+        #announcement-minimize {
+            &::before {
+                transform: rotateZ(0);
+            }
+        }
+    }
+
+    &.announcement-swiper {
+        max-height: 40px;
+    }
+}

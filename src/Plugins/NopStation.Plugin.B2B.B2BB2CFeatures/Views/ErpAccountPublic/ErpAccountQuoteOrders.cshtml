@@ -1,0 +1,379 @@
+﻿@using NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure;
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.ErpAccountPublic;
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality;
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
+@using Nop.Web.Models.Customer;
+@model ErpAccountQuoteOrderSearchModel
+@inject IStoreContext storeContext
+@inject IErpCustomerFunctionalityService b2BCustomerFunctionality
+@inject IErpAccountService erpAccountService
+@inject IWorkContext workContext
+
+@{
+    Layout = "_ColumnsTwo";
+
+    //title
+    NopHtml.AddTitleParts(T("PageTitle.Account").Text);
+    //page class
+    NopHtml.AppendPageCssClassParts("html-account-page");
+    NopHtml.AppendPageCssClassParts("html-custom-account");
+
+    await Html.PartialAsync("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/Shared/_DatatableScripts.cshtml");
+    //NopHtml.AddCssFileParts("~/Plugins/Payments.B2BCustomerAccount/Themes/Emporium/Content/css/b2bstyles.css?v=3.85");
+    NopHtml.AppendScriptParts(ResourceLocation.Footer, "~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Content/scripts/b2bajaxcart.js");
+
+    var currCustomer = await workContext.GetCurrentCustomerAsync();
+    var erpAccount = await erpAccountService.GetActiveErpAccountByCustomerIdAsync(currCustomer.Id);
+    var hasB2BAccount = erpAccount != null;
+    var erpUser = await b2BCustomerFunctionality.GetActiveErpNopUserByCustomerAsync(currCustomer);
+    var isB2BUser = erpUser?.ErpUserType == NopStation.Plugin.B2B.ERPIntegrationCore.Enums.ErpUserType.B2BUser;
+    var isB2CUser = erpUser?.ErpUserType == NopStation.Plugin.B2B.ERPIntegrationCore.Enums.ErpUserType.B2CUser;
+}
+
+@section left
+{
+    @await Component.InvokeAsync(typeof(CustomerNavigationViewComponent), new { selectedTabId = B2BB2CFeaturesDefaults.ErpCustomerNavigationEnum_ErpAccountQuoteOrders })
+}
+
+<style>
+    th, td {
+        text-align: center !important;
+    }
+
+    .body {
+        font: normal 14px Arial,Helvetica,sans-serif;
+        color: #777;
+    }
+
+    .my-inputs {
+        padding: 5px;
+    }
+
+    #ui-datepicker-div {
+        z-index: 50 !important;
+    }
+
+    .btn-disabled {
+        background-color: #b5b5b5;
+        color: #000000;
+        min-width: 120px;
+    }
+
+        .btn-disabled:hover {
+            background-color: #686868;
+            color: #fff;
+        }
+
+    .btn-default {
+        background-color: #3c8dbc !important;
+        color: #fff;
+        min-width: 120px;
+    }
+
+        .btn-default:hover {
+            color: white;
+        }
+</style>
+
+<div class="page account-page order-list-page-quotes">
+    <div class="page-title">
+        <h1>@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.ErpAccountQuoteOrders")</h1>
+    </div>
+    <div class="page-body">
+        <div class="fieldset">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-md-6 text-right">
+                            <div class="my-inputs">
+                                <label asp-for="SearchQuoteNumberOrName" asp-postfix=":"></label>
+                            </div>
+                        </div>
+                        <div class="col-md-6  text-left">
+                            <div class="my-inputs">
+                                <input asp-for="SearchQuoteNumberOrName" />
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-md-6 text-right">
+                            <div class="my-inputs">
+                                <label asp-for="SearchOrderDateFrom" asp-postfix=":"></label>
+                            </div>
+                        </div>
+                        <div class="col-md-6  text-left">
+                            <div class="my-inputs">
+                                <input asp-for="SearchOrderDateFrom" type="date" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-md-6 text-right">
+                            <div class="my-inputs">
+                                <label asp-for="SearchOrderDateTo" asp-postfix=":"></label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-left">
+                            <div class="my-inputs">
+                                <input asp-for="SearchOrderDateTo" type="date" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <button type="button" id="search-b2baccount-qoutes" class="btn btn-primary btn-search btn-b2b-search">
+                        <i class="fa fa-search"></i>
+                        @T("Admin.Common.Search")
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            @{
+                var url = new DataUrl("LoadErpQuoteOrderList", "ErpAccountPublic", new RouteValueDictionary
+                {
+                    [nameof(Model.ErpAccountNumber)] = Model.ErpAccountNumber,
+                    [nameof(Model.SearchOrderDateFrom)] = Model.SearchOrderDateFrom,
+                    [nameof(Model.SearchOrderDateTo)] = Model.SearchOrderDateTo
+                });
+                if (isB2CUser)
+                {
+                    url = new DataUrl("LoadErpQuoteOrderList", "ErpAccountPublic", new RouteValueDictionary { [nameof(Model.ErpNopUserId)] = Model.ErpNopUserId });
+                }
+
+                var gridModel = new DataTablesModel
+                {
+                    Name = "qoute-order-list-grid",
+                    UrlRead = url,
+                    Length = Model.PageSize,
+                    LengthMenu = Model.AvailablePageSizes,
+                    SearchButtonId = "search-b2baccount-qoutes",
+                    Filters = new List<FilterParameter>
+                    {
+                        new FilterParameter(nameof(Model.SearchQuoteNumberOrName)),
+                        new FilterParameter(nameof(Model.SearchOrderDateFrom)),
+                        // new FilterParameter(nameof(Model.SearchOrderDateFromStr)),
+                        new FilterParameter(nameof(Model.SearchOrderDateTo))
+                    }
+                };
+                    
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpQuoteOrderModel.NopOrderId))
+                {
+                    Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Fields.QuoteNumber").Text,
+                    Width = "200",
+                    Render = new RenderCustom("renderColumnViewOrder"),
+                    ClassName = NopColumnClassDefaults.Button
+                });
+
+                if (isB2BUser)
+                {
+                    gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpQuoteOrderModel.PlacedByCustomerEmail))
+                    {
+                        Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Fields.PlacedByCustomerEmail").Text,
+                        Width = "200"
+                    });
+                    gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpQuoteOrderModel.ErpOrderOriginType))
+                    {
+                        Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Fields.B2BOrderOriginType").Text,
+                        Width = "200"
+                    });
+                }
+
+                if (isB2CUser)
+                {
+                    gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpQuoteOrderModel.CustomerOrder))
+                    {
+                        Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Fields.CustomerOrder").Text,
+                        Width = "200"
+                    });
+                }
+
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpQuoteOrderModel.ERPOrderStatus))
+                {
+                    Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Fields.ERPOrderStatus").Text,
+                    Width = "200",
+                });
+
+                var formatedRenderDate = new RenderDate();
+                formatedRenderDate.Format = B2BB2CFeaturesDefaults.ErpDateFormatForDataTable;
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpQuoteOrderModel.QuoteDate))
+                {
+                    Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Fields.QuoteDate").Text,
+                    Width = "200",
+                    Render = formatedRenderDate
+                });
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpQuoteOrderModel.ExpiryDate))
+                {
+                    Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Fields.ExpiryDate").Text,
+                    Width = "200",
+                    Render = formatedRenderDate
+                });
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpQuoteOrderModel.TotalAmount))
+                {
+                    Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Fields.Amount").Text,
+                    Width = "200"
+                });
+
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpQuoteOrderModel.NopOrderId))
+                {
+                    Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Fields.Action").Text,
+                    Width = "200",
+                    Render = new RenderCustom("renderQouteOrderLink")
+                });
+            }
+            @await Html.PartialAsync("Table", gridModel)
+        </div>
+    </div>
+</div>
+</div>
+
+<div id="qouteOrderListConvertConfirmAcceptDialog" title="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.ConvertConfirm")" style="display: none;">
+    <form asp-controller="OverridenOrder" asp-action="ReOrder" class="order-confirm-accept-form" method="post" enctype="multipart/form-data">
+        <div>
+            <h4>
+                @T("Plugin.Misc.NopStation.B2BB2CFeatures.Order.ConfirmRemoveFromCart")
+            </h4>
+        </div>
+        <br />
+        <div class="order-confirm-buttons">
+            <button id="quoteOrderDetailsPopupClearCartButton" type="button" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.Orders.ConfirmAcceptDialog.ClearCart")"
+                    class="button-1 bg-green popup-clearcart-btn qoute-order-details-popup-clear-cart-button" onclick="quoteOrderListpopUpPlaceOrder(this)">
+                <span>@T("Plugin.Misc.NopStation.B2BB2CFeatures.Orders.ConfirmAcceptDialog.ClearCart")</span>
+            </button>
+            <button type="button" name="addtocartbutton" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ShoppingCart.KeepItemInCart")"
+                    class="button-1 bg-green qoute-order-details-popup-add-to-cart-button" onclick="quoteOrderListpopUpPlaceOrder(this)">
+                <span>@T("Plugin.Misc.NopStation.B2BB2CFeatures.ShoppingCart.KeepItemInCart")</span>
+            </button>
+        </div>
+        <div class="order-confirm-buttons">
+            <button type="button" name="cancel" onclick="closePopup()" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.Order.TermsAndConditionAccept.Cancel")" class="button-1  bg-red"><span>@T("Plugin.Misc.NopStation.B2BB2CFeatures.Order.TermsAndConditionAccept.Cancel")</span></button>
+        </div>
+        <input id="orderId" name="orderId" style="display:none;" />
+
+        <script asp-location="Footer">
+            function closePopup() {
+                $("#qouteOrderListConvertConfirmAcceptDialog").dialog("destroy");
+                $("#orderId").val("")
+            }
+
+            function clearCartAndReoder() {
+                var orderId = $("#orderId").val();
+                B2BAjaxCart.disableAddToCartButton(orderId);
+                B2BAjaxCart.disablePopUpAddToCartButton();
+                displayAjaxLoading(true);
+                B2BAjaxCart.b2bClearCart()
+                var reorderActionUrl = "/ReOrder/" + orderId + "";
+                setLocation(reorderActionUrl);
+            }
+
+            function quoteOrderListpopUpPlaceOrder(popUpData) {
+                var orderId = $('#orderId').val();
+                B2BAjaxCart.disableReorderButton(orderId);
+                B2BAjaxCart.disablePopUpAddToCartButton();
+                displayAjaxLoading(true);
+
+                if ($(popUpData).attr('id') == 'quoteOrderDetailsPopupClearCartButton') {
+                    B2BAjaxCart.b2BClearCart(false)
+                }
+
+                var reorderActionUrl = "/ReOrder/" + orderId + "";
+                setLocation(reorderActionUrl);
+            }
+        </script>
+    </form>
+</div>
+
+<script asp-location="Footer">
+    function renderColumnViewOrder(data, type, row, meta) {
+        return '<button type="button" onclick="viewOrder(' + data + ' )" class="btn btn-default"><i class="fa fa-eye"></i> ' + row.QuoteNumber + '</button>';
+    }
+
+    function viewOrder(orderId) {
+        var orderDetailsActionUrl = "OverridenOrder/QuoteDetails?orderId=" + orderId + "";
+        setLocation(orderDetailsActionUrl);
+    }
+
+    function renderQouteOrderLink(data, type, row, meta) {
+
+        if (row.ExpiryDate == null) {
+            return '<button type="button" class="btn btn-disabled" disabled>@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Reorder.NoData")</button>';
+        }
+        else if (row.IsQuoteConvertedToOrder) {
+            return '<button type="button" class="btn btn-disabled" disabled>@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Reorder.AlreadyConverted")</button>';
+        }
+        else if (row.IsQuoteExpired) {
+    @*return '<button type="button" class="btn btn-disabled" disabled>@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Reorder.Expired")</button>';*@
+                                           return '<button id="quoteOrderListReorderButton' + data + '" type="button" onclick="reOrderLinkGenerator(' + data + ' )" class="btn btn-default">@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Reorder.Requote")</button>';
+        }
+        else {
+            if (row.ERPOrderStatus == "Failed" || row.ERPOrderStatus == "Rejected") {
+                return '<button id="quoteOrderListReorderButton' + data + '" type="button" onclick="reOrderLinkGenerator(' + data + ' )" class="btn btn-default">@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Reorder.NewOrder")</button>';
+            }
+            else if (!row.IsQuoteActive)
+                return '<button id="quoteOrderListReorderButton' + data + '" type="button" onclick="reOrderLinkGenerator(' + data + ' )" class="btn btn-default" >@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Reorder.Order") </button>';
+
+            else {
+                return '<button id="quoteOrderListReorderButton' + data + '" type="button"  onclick="reOrderLinkGenerator(' + data + ' )" class="btn btn-default">@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Reorder.Convert")</button>'
+            }
+        }
+    }
+
+    function reOrderLinkGenerator(orderId) {
+        $.ajax({
+            cache: false,
+            type: "GET",
+            dataType: "json",
+            url: "/IsItemsInCart/",
+            success: function (response) {
+
+                if (!response.success) {
+                    B2BAjaxCart.disableReorderButton(orderId);
+                    var reorderActionUrl = "/ReOrder/" + orderId + "";
+                    setLocation(reorderActionUrl);
+                }
+                else {
+                    $("#orderId").val(orderId);
+                    $("#qouteOrderListConvertConfirmAcceptDialog").dialog({
+                        modal: true,
+                        draggable: false,
+                        closeOnEscape: true
+                    });
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log("Error. Please Reload");
+            }
+        });
+    }
+
+</script>
+<script asp-location="Footer">
+
+    $(document).ready(function () {
+        $('.block-account-navigation .listbox .list>li>a').each(function () {
+            $(this).removeClass("active").addClass("inactive");
+        });
+
+        $('.b2baccount-qoute-orders a').removeClass("inactive").addClass("active");
+
+        $("#search-b2baccount-qoutes").on("click", function (event) {
+            var fromDate = new Date($("#SearchOrderDateFrom").val());
+            var toDate = new Date($("#SearchOrderDateTo").val());
+
+            if (fromDate && toDate && fromDate > toDate) {
+                alert("Invalid search input. Start date cannot be greater than end date");
+                event.preventDefault(); // Prevent form submission
+            }
+        });
+    });
+</script>

@@ -1,0 +1,51 @@
+﻿@model ConfigurationModel
+@{
+    Layout = "_AdminLayout";
+    //page title
+    ViewBag.PageTitle = T("Plugin.Misc.NopStation.IQRetailIntegration.Admin.Configure.Title").Text;
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.IQRetailIntegration.Configuration");
+}
+
+@{
+    var customer = await workContext.GetCurrentCustomerAsync();
+
+    const string hideSettingsBlockAttributeName = "Configure.hideSettingsBlock";
+    var hideSettingsBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideSettingsBlockAttributeName);
+
+    const string hideSellPriceBlockAttributeName = "Configure.hideSellPriceBlock";
+    var hideSellPriceBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideSellPriceBlockAttributeName);
+}
+
+<form asp-controller="IQRetailIntegration" asp-action="Configure" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Plugin.Misc.NopStation.IQRetailIntegration.Admin.Configure.Title")
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.Save")
+            </button>
+        </div>
+    </div>
+    <div asp-validation-summary="All"></div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="form-horizontal">
+                <nop-cards id="iq-retail-integration-cards">
+
+                    <nop-card asp-name="iq-retail-integration-settings" asp-icon="fas fa-info" asp-title="@T("Plugin.Misc.NopStation.IQRetailIntegration.Admin.Configure.Settings")" asp-hide-block-attribute-name="@hideSettingsBlockAttributeName" asp-hide="@hideSettingsBlock" asp-advanced="false">
+                        @await Html.PartialAsync("_Configure.IQRetailIntegrationSettings", Model)
+                    </nop-card>
+
+                    <nop-card asp-name="iq-retail-integration-sellPrice" asp-icon="fas fa-info" asp-title="@T("Plugin.Misc.NopStation.IQRetailIntegration.Admin.Configure.SellPrices")" asp-hide-block-attribute-name="@hideSellPriceBlockAttributeName" asp-hide="@hideSellPriceBlock" asp-advanced="false">
+                        @await Html.PartialAsync("_Configure.IQRetailIntegrationSellPrice", Model)
+                    </nop-card>
+
+                </nop-cards>
+            </div>
+        </div>
+    </section>
+</form>

@@ -1,0 +1,102 @@
+.order-progress {
+    text-align: center;
+
+    @media (min-width: $md) {
+        padding: 26px 0;
+    }
+
+    li {
+        display: inline-block;
+        margin-bottom: 15px;
+        color: var(--primary-grey);
+        opacity: 0.8;
+
+        a {
+            color: var(--primary-grey);
+            font-weight: 500;
+            font-size: 12px;
+            line-height: 14px;
+            vertical-align: middle;
+
+
+
+            &::before {
+                @include icon-font-style($font-size: 16px, $font-weight: 400);
+                display: inline;
+                content: "\e940";
+                vertical-align: middle;
+                line-height: 18px;
+                margin-right: 5px;
+            }
+
+            @media (min-width: $md) {
+                font-size: 16px;
+                line-height: 18px;
+
+                &::before {
+                    font-size: 20px;
+                    line-height: 24px;
+                    margin-right: 10px;
+                }
+            }
+        }
+
+        &.order-progress-address {
+            a::before {
+                content: "\e92d";
+            }
+        }
+
+        &.order-progress-address {
+            a::before {
+                content: "\e92d";
+            }
+        }
+
+        &.order-progress-shipping {
+            a::before {
+                content: "\e93e";
+            }
+        }
+
+        &.order-progress-payment-method {
+            a::before {
+                content: "\e903";
+            }
+        }
+
+        &.order-progress-confirm {
+            a::before {
+                content: "\e91f";
+            }
+        }
+
+        &.order-progress-complete {
+            a::before {
+                content: "\e947";
+            }
+        }
+
+        &.active-step {
+            color: var(--primary-green);
+            opacity: 1;
+
+            a {
+                color: var(--primary-green);
+            }
+        }
+
+        &:not(:last-child)::after {
+            @include icon-font-style($font-size: 12px, $font-weight: 600);
+            display: inline;
+            content: "\e91d";
+            line-height: 18px;
+            margin: 0 5px;
+
+            @media (min-width: $md) {
+                margin: 0 15px;
+                line-height: 24px;
+            }
+        }
+    }
+}

@@ -1,0 +1,44 @@
+﻿.btn-b2b-search,
+.btn-b2b-search:hover,
+#qoute-order-list-grid .btn,
+.html-account-page #qoute-order-list-grid_paginate .page-item.active .page-link,
+.html-account-page #transaction-list-grid_paginate .page-item.active .page-link,
+.html-account-page #qoute-order-list-grid .page-item.active .page-link {
+  background: var(--primary-green);
+  border: var(--primary-green);
+}
+
+  .btn-b2b-search:active,
+  .btn-b2b-search::after{
+    background: #388E3C !important;
+  }
+
+#qoute-order-list-grid .btn {
+  background-color: var(--primary-green) !important;
+}
+
+#finish-impersonation:hover {
+  color: var(--white);
+}
+
+/*.dataTables_scroll a {
+  color: var(--primary-green);
+}*/
+.admin-header-links .impersonate {
+  color: white;
+}
+
+.checkout-buttons {
+  display: flex;
+}
+
+.checkout-button {
+  margin: 5px;
+}
+
+.order-footer .float-left,
+.order-footer .float-right {
+  float: none !important; /* Disable float */
+  margin-left: auto;
+  margin-right: auto;
+}

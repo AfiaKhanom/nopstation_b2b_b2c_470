@@ -1,0 +1,77 @@
+@model ErpSalesOrgModel
+
+@{
+    Layout = "_AdminLayout";
+    //page title
+    ViewBag.PageTitle = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Edit").Text;
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.B2BB2CFeatures.ErpSalesOrgs");
+}
+
+<form asp-area="Admin" asp-controller="ErpSalesOrg" asp-action="ErpSalesOrgEdit" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Edit")
+            <small>
+                <i class="fas fa-arrow-circle-left"></i>
+                <a asp-action="List">@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.BackToList")</a>
+            </small>
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.Save")
+            </button>
+            <button type="submit" name="save-continue" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.SaveContinue")
+            </button>
+            <span id="erpSalesOrg-delete" class="btn btn-danger">
+                <i class="far fa-trash-alt"></i>
+                @T("Admin.Common.Delete")
+            </span>
+        </div>
+    </div>
+    @await Html.PartialAsync("_CreateOrUpdateErpSalesOrg", Model)
+</form>
+
+<script>
+    $(document).ready(function () {
+        $("#erpSalesOrg-delete").bind('click', function () {
+            $.ajax({
+                url: "@(Url.Action("IsMappedWithAnyERPAccount", "ErpSalesOrg"))",
+                cache: false,
+                type: "GET",
+                data: { erpSalesOrgId: @Model.Id },
+                success: function (response) {
+                    if (response.isMapped) {
+                        alert('@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.WarningMsg.CantDeleted")');
+                    }
+                    else {
+                        var confirmDelete = confirm('@T("Admin.Common.DeleteConfirmation")');
+                        if (confirmDelete) {
+                            var postData = { id: @Model.Id };
+                            addAntiForgeryToken(postData);
+                            $.ajax({
+                                url: "@(Url.Action("Delete", "ErpSalesOrg"))",
+                                cache: false,
+                                type: "POST",
+                                data: postData,
+                                success: function (response) {
+                                    console.log("Deletion successful.");
+                                    window.location.href = "@(Url.Action("List", "ErpSalesOrg"))";
+                                },
+                                error: function (xhr, status, error) {
+                                    console.log("Error:", error);
+                                }
+                            });
+                        }
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error:", error);
+                }
+            });
+        });
+    });
+</script>

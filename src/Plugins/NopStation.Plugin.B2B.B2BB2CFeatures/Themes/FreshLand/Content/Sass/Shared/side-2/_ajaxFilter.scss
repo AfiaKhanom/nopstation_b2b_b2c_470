@@ -1,0 +1,33 @@
+.product-filters {
+    .product-filter {
+        &:not(:last-child) {
+            padding-bottom: 15px;
+
+            @media (min-width: $md) {
+                border-bottom: 1px solid var(--primary-grey_light);
+            }
+        }
+
+        @media (min-width: $md) {
+            padding: 15px;
+        }
+    }
+
+    .product-spec-filter {
+        .group {
+            @media (max-width: $md - 1) {
+                padding-bottom: 15px;
+                border-bottom: 1px solid var(--primary-grey_light);
+            }
+        }
+    }
+
+    .price-range-filter {
+        .filter-content {
+            @media (max-width: $md - 1) {
+                padding-bottom: 15px;
+                border-bottom: 1px solid var(--primary-grey_light);
+            }
+        }
+    }
+}

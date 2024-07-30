@@ -1,0 +1,20 @@
+@import "../../../mixins/_layout_width_responsive";
+@import "../../../mixins/_item_grid";
+@import "../../../mixins/_horizontal-productbox-column";
+
+.product-grid.product-horizontal {
+    @include layout_width_responsive;
+    margin: 0 auto 20px;
+
+    @media(min-width: $sm) {
+        margin: 0 auto 50px;
+    }
+
+    .item-grid {
+        @include item-grid;
+
+        .item-box {
+            @include horizontal-productbox-column($grid-column: 4, $width: 100%);
+        }
+    }
+}

@@ -1,0 +1,32 @@
+.block-popular-blogtags,
+.product-tags-all-page,
+.block-popular-tags {
+    .product-tags-list, .tags {
+        margin-bottom: 15px;
+
+        li {
+            display: inline-block;
+            margin-right: 6px;
+            margin-bottom: 6px;
+            vertical-align: middle;
+
+            a {
+                display: block;
+                color: var(--primary-green_dark);
+                background: var(--primary-green_light);
+                border: 1px solid var(--primary-green_light);
+                border-radius: 3px;
+                padding: 6px 15px;
+                font-weight: 400;
+                font-size: 14px;
+                line-height: 1.2;
+            }
+
+            &:nth-child(even) {
+                a {
+                    background: var(--primary-green_light);
+                }
+            }
+        }
+    }
+}

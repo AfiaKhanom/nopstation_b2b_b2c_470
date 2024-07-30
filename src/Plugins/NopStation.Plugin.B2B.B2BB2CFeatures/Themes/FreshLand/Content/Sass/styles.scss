@@ -1,0 +1,13 @@
+/*css variables*/
+@import "variables/allVariables";
+
+/*common global styles*/
+@import "globalstyles/globalstyles";
+
+/*common components styles*/
+@import "Components/components";
+
+/*header styles*/
+@import "Shared/shared"; 
+
+@import "pages/all-pages";

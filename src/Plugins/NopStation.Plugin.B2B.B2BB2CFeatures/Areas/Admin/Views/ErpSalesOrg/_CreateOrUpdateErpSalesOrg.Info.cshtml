@@ -1,0 +1,86 @@
+﻿@model ErpSalesOrgModel
+
+<div class="card-body">
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="Name" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="Name" asp-required="true" />
+            <span asp-validation-for="Name"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="Code" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="Code" asp-required="true" />
+            <span asp-validation-for="Code"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="Email" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="Email" asp-required="true" />
+            <span asp-validation-for="Email"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="IntegrationClientId" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="IntegrationClientId" />
+            <span asp-validation-for="IntegrationClientId"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="AuthenticationKey" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="AuthenticationKey" />
+            <span asp-validation-for="AuthenticationKey"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="IsActive" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="IsActive" />
+            <span asp-validation-for="IsActive"></span>
+        </div>
+    </div>
+
+    @if (Model.Id > 0)
+    {
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="CreatedOn" />
+            </div>
+            <div class="col-md-9 justify-content-center align-self-center">
+                @Model.CreatedOn
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="UpdatedOn" />
+            </div>
+            <div class="col-md-9 justify-content-center align-self-center">
+                @Html.DisplayFor(model => model.UpdatedOn)
+            </div>
+        </div>
+    }
+
+</div>

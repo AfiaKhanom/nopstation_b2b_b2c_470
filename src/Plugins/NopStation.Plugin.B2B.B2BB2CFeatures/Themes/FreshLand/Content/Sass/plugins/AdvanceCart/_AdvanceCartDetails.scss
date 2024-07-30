@@ -1,0 +1,14 @@
+.buynow-wrapper {
+    margin: 15px 0;
+    .button-2 {
+        font-weight: 14px;
+        width: 100%;
+        border: 1px solid var(--primary-green);
+        transition: all linear 0.09s;
+        height: 33px;
+        &:hover {
+            background: var(--primary-green);
+            color: var(--white);
+        }
+    }
+}

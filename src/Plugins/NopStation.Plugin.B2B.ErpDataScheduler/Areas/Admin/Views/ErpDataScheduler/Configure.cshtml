@@ -1,0 +1,39 @@
+﻿@model ConfigurationModel
+
+@{
+    Layout = "_AdminLayout";
+    //page title
+    ViewBag.PageTitle = T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.Configure").Text;
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.ErpDataScheduler.Configuration");
+}
+
+@{
+    var customer = await workContext.GetCurrentCustomerAsync();
+
+    const string hideSyncFromDateBlockAttributeName = "Configure.HideSyncFromDateBlock";
+    var hideSyncFromDateBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideSyncFromDateBlockAttributeName);
+}
+
+<form asp-controller="ErpDataScheduler" asp-action="Configure" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.Configure")
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.Save")
+            </button>
+        </div>
+    </div>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="form-horizontal">
+                <nop-cards id="configure-cards">
+                    <nop-card asp-name="configure-sync-from-date" asp-icon="fas fa-info" asp-title="@T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.Configure.Block.SyncFromDate")" asp-hide-block-attribute-name="@hideSyncFromDateBlockAttributeName" asp-hide="@hideSyncFromDateBlock" asp-advanced="false">@await Html.PartialAsync("_Configure.SyncFromDate", Model)</nop-card>
+                 </nop-cards>
+            </div>
+        </div>
+    </section>
+</form>

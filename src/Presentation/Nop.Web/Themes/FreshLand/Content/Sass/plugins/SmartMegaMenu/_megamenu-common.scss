@@ -1,0 +1,9 @@
+.header-menu.show::before {
+    display: none;
+}
+.top-menu-wrap {
+    @media (min-width: $lg) {
+        display: flex;
+        justify-content: space-between;
+    }
+}

@@ -1,0 +1,50 @@
+.qty-input-wrap {
+    display: inline-block;
+    position: relative;
+
+    .qty-btn {
+        background: var(--primary-grey_light);
+        color: var(--black);
+        border: none;
+        padding: 6px;
+        font-size: 0;
+        line-height: 0;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        border-radius: 3px;
+
+        &::before {
+            content: "\e935";
+            font-family: 'icomoon' !important;
+            font-size: 12px;
+            line-height: 12px;
+            display: inline;
+            font-weight: 600;
+        }
+
+        &.qty-plus {
+            right: 3px;
+        }
+
+        &.qty-minus {
+            left: 3px;
+
+            &::before {
+                content: "\e91b";
+            }
+        }
+    }
+
+    input {
+        display: inline-block;
+        width: auto;
+        max-width: 100px;
+        text-align: center;
+        padding: 8px 25px;
+        font-size: 12px;
+        line-height: 12px;
+        border: 1px solid var(--primary-grey_light);
+        border-radius: 3px;
+    }
+}

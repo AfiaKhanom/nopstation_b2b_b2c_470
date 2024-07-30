@@ -1,0 +1,52 @@
+﻿.product-item {
+    display: block;
+    background: var(--white);
+    border: 1px solid var(--primary-grey_light);
+    padding: 10px;
+    margin-bottom: -1px;
+
+    @media (min-width: $sm) {
+        border-radius: 0;
+        padding: 15px;
+    }
+
+
+    .picture {
+        width: 100%;
+        position: relative;
+        z-index: $back;
+        overflow: hidden;
+
+        a {
+            position: relative;
+            display: block;
+            overflow: hidden;
+
+            &::before {
+                content: "";
+                display: block;
+                padding-top: 100%;
+            }
+
+            img {
+                @include before-image-center;
+                transition: all 0.5s;
+                transform: translate(-50%,-50%) scale(1);
+            }
+        }
+    }
+
+    &:hover {
+        .picture {
+            a {
+                img {
+                    transform: translate(-50%,-50%) scale(1.09);
+                }
+            }
+        }
+    }
+
+    @import "product-box-details";
+
+    @import "buttons";
+}

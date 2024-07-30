@@ -36,6 +36,11 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Data
             Create.TableFor<QuickOrderTemplate>();
             Create.TableFor<QuickOrderItem>();
             Create.TableFor<ErpActivityLogs>();
+            Create.TableFor<ErpAccountCustomerRegistrationForm>();
+            Create.TableFor<ErpAccountCustomerRegistrationBankingDetails>();
+            Create.TableFor<ErpAccountCustomerRegistrationPhysicalTradingAddress>();
+            Create.TableFor<ErpAccountCustomerRegistrationTradeReferences>();
+            Create.TableFor<ErpAccountCustomerRegistrationPremises>();
         }
 
         #endregion

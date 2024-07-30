@@ -1,0 +1,284 @@
+﻿@model ErpShipToAddressModelForCheckout
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.Checkout;
+@using System.Globalization;
+<style>
+    .FullLoadRequired-div {
+        font-size: 15px;
+        margin-top: 0px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .FullLoadRequired-div-hide {
+        display: none !important;
+    }
+
+    #Suburb {
+        text-transform: uppercase;
+    }
+</style>
+<div asp-validation-summary="ModelOnly"></div>
+<input asp-for="Id" type="hidden" />
+<input asp-for="AddressId" type="hidden" />
+<input asp-for="ErpAccountId" type="hidden" />
+<input asp-for="ErpSalesOrganizationId" type="hidden" />
+<input asp-for="DeliveryNotes" type="hidden" />
+<input asp-for="AllowEdit" type="hidden" />
+<input asp-for="ErpToDetermineDate" type="hidden" />
+
+<div class="edit-address">
+    <div class="inputs" style="display:none;">
+        <label asp-for="ShipToCode" asp-postfix=":"></label>
+        <input asp-for="ShipToCode" readonly required />
+        <span asp-validation-for="ShipToCode"></span>
+    </div>
+    <div class="inputs">
+        <label asp-for="ShipToName" asp-postfix=":"></label>
+        <input asp-for="ShipToName" required />
+        <span asp-validation-for="ShipToName"></span>
+    </div>
+    <div class="inputs" style="display:none;">
+        <label asp-for="Company" asp-postfix=":"></label>
+        <input asp-for="Company" readonly required />
+        <nop-required />
+        <span asp-validation-for="Company"></span>
+    </div>
+    @if (Model.AllowEdit)
+    {
+        <div class="inputs">
+            <label asp-for="CountryId" asp-postfix=":"></label>
+            <select asp-for="CountryId" asp-items="Model.AvailableCountries"
+                    data-trigger="country-select"
+                    data-url="@(Url.RouteUrl("GetStatesByCountryId"))"
+                    data-stateprovince="#@Html.IdFor(model => model.StateProvinceId)"
+                    data-loading="#states-loading-progress"></select>
+            <nop-required />
+            <span asp-validation-for="CountryId"></span>
+        </div>
+        <div class="inputs">
+            <label asp-for="StateProvinceId" asp-postfix=":"></label>
+            <select asp-for="StateProvinceId" asp-items="Model.AvailableStates"
+                    data-trigger="state-select">
+            </select>
+            <span id="states-loading-progress" style="display: none;" class="please-wait">@T("Common.Wait")</span>
+            <span asp-validation-for="StateProvinceId"></span>
+        </div>
+    }
+    else
+    {
+        <input asp-for="CountryId" type="hidden" />
+        <div class="inputs">
+            <label asp-for="CountryName" asp-postfix=":"></label>
+            <input asp-for="CountryName" readonly />
+            <span asp-validation-for="CountryName"></span>
+        </div>
+        <div class="inputs">
+            <label asp-for="CountryCode" asp-postfix=":"></label>
+            <input asp-for="CountryCode" readonly />
+            <span asp-validation-for="CountryCode"></span>
+        </div>
+        <input asp-for="StateProvinceId" type="hidden" />
+        <div class="inputs">
+            <label asp-for="StateProvinceName" asp-postfix=":"></label>
+            <input asp-for="StateProvinceName" readonly />
+            <span asp-validation-for="StateProvinceName"></span>
+        </div>
+    }
+    @if (Model.AllowEdit && Model.ErpToDetermineDate)
+    {
+        <div class="inputs">
+            <label asp-for="City" asp-postfix=":"></label>
+            <select asp-for="City" asp-items="Model.AvailableAreas" required></select>
+            <nop-required />
+            <span asp-validation-for="City"></span>
+        </div>
+    }
+    else
+    {
+        <div class="inputs">
+            <label asp-for="City" asp-postfix=":"></label>
+            <input asp-for="City" readonly="@(!Model.AllowEdit)" required />
+            <nop-required />
+            <span asp-validation-for="City"></span>
+        </div>
+    }
+    <div class="inputs">
+        <label asp-for="Address1" asp-postfix=":"></label>
+        <input asp-for="Address1" readonly="@(!Model.AllowEdit)" required />
+        <nop-required />
+        <span asp-validation-for="Address1"></span>
+    </div>
+    <div class="inputs">
+        <label asp-for="Address2" asp-postfix=":"></label>
+        <input asp-for="Address2" readonly="@(!Model.AllowEdit)" />
+        <span asp-validation-for="Address2"></span>
+    </div>
+    <div class="inputs">
+        <label asp-for="Suburb" asp-postfix=":"></label>
+        <input asp-for="Suburb" readonly="@(!Model.AllowEdit)" required />
+        <nop-required />
+        <span asp-validation-for="Suburb"></span>
+    </div>
+    <div class="inputs">
+        <label asp-for="ZipPostalCode" asp-postfix=":"></label>
+        <input asp-for="ZipPostalCode" readonly="@(!Model.AllowEdit)" required />
+        <nop-required />
+        <span asp-validation-for="ZipPostalCode"></span>
+    </div>
+    <div class="inputs">
+        <label asp-for="PhoneNumber" asp-postfix=":"></label>
+        <input asp-for="PhoneNumber" readonly="@(!Model.AllowEdit)" />
+        <span asp-validation-for="PhoneNumber"></span>
+    </div>
+    <div id="deliveryDatePicker" class="inputs" style="@(Model.ErpToDetermineDate == true ? "display: none" : "display: block")">
+        <label asp-for="DeliveryDate" asp-postfix=":"></label>
+        <input asp-for="DeliveryDate" type="date" min="@Model.MinDeliveryDate" max="@Model.MaxDeliveryDate" />
+        <nop-required />
+        <span asp-validation-for="DeliveryDate"></span>
+    </div>
+
+    <input type="hidden" asp-for="IsFullLoadRequired" />
+
+    @*@if (Model.ErpToDetermineDate)
+    {
+    <div id="deliveryDateDropdown" class="inputs">
+    <label asp-for="DeliveryDateString" asp-postfix=":"></label>
+    <h3 class="FullLoadRequired-div FullLoadRequired-div-hide">@T("B2B.DeliveryDate.FullLoadRequired")</h3>
+    <select asp-for="DeliveryDateString" asp-items="Model.AvailableDeliveryDates"></select>
+    <span id="delivery-dates-loading-progress" style="display: none;" class="please-wait">@T("B2B.DeliveryDate.Loading")</span>
+    <nop-required />
+    <span asp-validation-for="DeliveryDate"></span>
+    </div>
+    }*@
+
+    @*<div id="quote-special-instruction-popUp" class="inputs">
+    <label asp-for="SpecialInstructions" asp-postfix=":"></label>
+    <input asp-for="SpecialInstructions" class="quote-special-instructions-input" placeholder="@T("Plugins.Payment.B2BCustomerAccount.B2BCheckout.Fields.SpecialInstructions.Hint")" />
+    <span asp-validation-for="SpecialInstructions"></span>
+    </div>*@
+
+    <!---Customer reference added for Quote Order-->
+    @*@if (Model.IsQuoteOrder){}*@
+</div>
+
+@if (Model.ErpToDetermineDate)
+{
+    <script>
+        $(document).ready(function () {
+            $('#@Html.IdFor(model => model.DeliveryDateString)').prop('required', true);
+            $("#@Html.IdFor(model => model.Suburb)").change(getDeliveryDates);
+            $("#@Html.IdFor(model => model.City)").change(getDeliveryDates);
+            getDeliveryDates();
+        });
+
+        function getDeliveryDates() {
+
+            var ddates = $("#@Html.IdFor(model => model.DeliveryDateString)");
+
+            $('#@Html.IdFor(model => model.DeliveryDateString) option').each(function () {
+                if ($(this).val()) {
+                    $(this).remove();
+                }
+            });
+
+            $("#deliveryDatePicker").css("display", "none");
+            $("#deliveryDateDropdown").css("display", "block");
+            $('#delivery-dates-loading-progress').show();
+
+            var suburbData = $("#@Html.IdFor(model => model.Suburb)").val();
+            var cityData = $("#@Html.IdFor(model => model.City)").val();
+            console.log("suburb: " + suburbData);
+            console.log("city: " + cityData);
+
+            $.ajax({
+                cache: true,
+                url: "@Url.RouteUrl("GetDeliveryDatesBySuburbOrCity")",
+                data: { suburb: suburbData, city: cityData },
+                type: 'POST',
+                success: function (response) {
+                    if (response.isSucceed) {
+                        if (response.isFullLoadRequired) {
+                            $('#@Html.IdFor(model => model.IsFullLoadRequired)').val(true);
+                            //$("#deliveryDateDropdownPopUp").css("display", "none");
+
+                            $('#@Html.IdFor(model => model.DeliveryDateString)').prop('required', false);
+                            $('#@Html.IdFor(model => model.ErpToDetermineDate)').val(false);
+
+                            $(".FullLoadRequired-div").removeClass("FullLoadRequired-div-hide");
+                            $(".FullLoadRequired-div").show();
+                            ddates.hide()
+                        }
+                        else {
+                            $('#@Html.IdFor(model => model.DeliveryDateString)').prop('required', true);
+                            $('#@Html.IdFor(model => model.ErpToDetermineDate)').val(true);
+                            ddates.html('');
+                        }
+
+                        $.each(response.deliveydates, function (id, option) {
+                            ddates.append($('<option></option>').val(option.Value).html(option.Text));
+                        });
+                    }
+                    else {
+                        $("#deliveryDatePicker").css("display", "block");
+                        $("#deliveryDateDropdown").css("display", "none");
+
+                        $('#@Html.IdFor(model => model.DeliveryDateString)').prop('required', false);
+                        $('#@Html.IdFor(model => model.ErpToDetermineDate)').val(false);
+                    }
+                },
+                error: function () {
+                    $('#@Html.IdFor(model => model.DeliveryDateString)').prop('required', false);
+                    $('#@Html.IdFor(model => model.ErpToDetermineDate)').val(false);
+                    console.log("Could Not Load Delivery Dates By Suburb");
+                },
+                complete: function () {
+                    $('#delivery-dates-loading-progress').hide();
+                }
+            });
+        }
+    </script>
+}
+
+<!-- Add JavaScript to handle country dropdown change event -->
+<script>
+    $(document).ready(function () {
+        $('[data-trigger="country-select"]').change(function () {
+            var selectedCountryId = $(this).val();
+            var url = $(this).data('url');
+            var targetStateDropdown = $($(this).data('stateprovince'));
+
+            // Show loading progress
+            $('#states-loading-progress').show();
+
+            // Make AJAX call to fetch states
+            $.ajax({
+                url: url,
+                data: { countryId: selectedCountryId },
+                success: function (data) {
+                    // Update the states dropdown with new data
+                    targetStateDropdown.empty();
+                    $.each(data, function (index, item) {
+                        if (item.text !== null && item.text !== "") {
+                            targetStateDropdown.append($('<option>', {
+                                value: item.value,
+                                text: item.name
+                            }));
+                        }
+                    });
+                    //console.log(data);
+                    // Hide loading progress
+                    $('#states-loading-progress').hide();
+                },
+                error: function () {
+                    // Handle error if needed
+                    console.log('Error fetching states.');
+                }
+            });
+        });
+
+        $('[data-trigger="state-select"]').change(function () {
+            var selectedStateId = $(this).val();
+            //console.log('Selected State:' + selectedStateId);
+        });
+    });
+</script>

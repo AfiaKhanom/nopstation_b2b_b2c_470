@@ -1,0 +1,31 @@
+@import "../../mixins/layout_width_responsive";
+.header-upper {
+    @include layout_width_responsive;
+    padding: 15px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    @media (min-width: $md) {
+        padding: 15px 0;
+    }
+
+    .header-right {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-left: auto;
+        padding-right: 15px;
+
+        a {
+            text-decoration: none;
+            color: var(--black);
+        }
+
+        @media (min-width: $md) {
+            order: 3;
+            margin-left: 0;
+            padding-right: 0;
+        }
+    }
+}

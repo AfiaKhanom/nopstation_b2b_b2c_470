@@ -1,0 +1,24 @@
+.order-details-page {
+    .order-overview {
+        .button-2 {
+            @include buttons;
+            margin-bottom: 15px;
+
+            &:before {
+
+                @include icon-font-style;
+                content: "\e92a";
+                font-weight: bold;
+                margin-right: 4px;
+            }
+        }
+
+        .print-order-button {
+            @include buttons( 
+            $background: var(--primary-grey),
+            $border: 1px solid var(--primary-grey),
+            $hover-border-color: var(--primary-green),
+            $hover-background: var(--primary-green))
+        }
+    }
+}

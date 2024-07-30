@@ -1,0 +1,32 @@
+﻿@model B2BRegisterModel
+@{
+    Layout = "_ColumnsOne";
+
+    //title
+    NopHtml.AddTitleParts(T("PageTitle.Register").Text);
+    //page class
+    NopHtml.AppendPageCssClassParts("html-registration-page");
+}
+
+<div class="page registration-page">
+    <div class="page-title">
+        <h1>@T("NopStation.ERPIntegrationCore.B2B.Register")</h1>
+    </div>
+    <div class="page-body">
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.RegisterTop, additionalData = Model })
+        <form asp-route="B2BRegister" asp-route-returnurl="@Context.Request.Query["ReturnUrl"]" method="post" autocomplete="off">
+            @await Html.PartialAsync("_B2BB2CRegister", Model)
+        </form>
+        @{
+            var externalMethods = await Component.InvokeAsync(typeof(ExternalMethodsViewComponent), "ExternalAuthentication");
+
+            if (!String.IsNullOrEmpty(await externalMethods.RenderHtmlContentAsync()))
+            {
+                <div class="external-authentication">
+                    @externalMethods
+                </div>
+            }
+        }
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.RegisterBottom, additionalData = Model })
+    </div>
+</div>

@@ -122,3 +122,18 @@ VALUES
 
   Alter Table [dbo].[Erp_Account]
   Alter Column [BillingSuburb] [nvarchar](max) NULL
+
+
+
+/****** Card:  refactor/131-Erp-Data-Scheduler-modification    Script Date: 29-Apr-24 ******/
+
+INSERT INTO [dbo].[ActivityLogType] ([SystemKeyword], [Name], [Enabled])
+VALUES
+('Erp_EditSyncTask', 'Edit sync task', 1);
+
+
+
+/****** Card:  bugfix/132-ErpShipToAddress-issue-on-B2C-account-register    Script Date: 29-Apr-24 ******/
+  
+Alter Table [dbo].[Erp_ShipToAddress]
+Alter Column [Suburb] [nvarchar](max) NULL

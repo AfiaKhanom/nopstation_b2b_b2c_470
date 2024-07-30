@@ -1,0 +1,16 @@
+
+@mixin common-title() {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 18px;
+    text-transform: uppercase;
+    color: var(--primary-green_dark);
+    margin-bottom: 15px;
+    @extend .font-korolev;
+
+    @media(min-width: $md) {
+        font-size: 25px;
+        line-height: 25px;
+        margin-bottom: 20px;
+    }
+}

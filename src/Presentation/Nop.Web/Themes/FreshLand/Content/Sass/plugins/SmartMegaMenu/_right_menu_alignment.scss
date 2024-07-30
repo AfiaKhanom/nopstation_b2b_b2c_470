@@ -1,0 +1,27 @@
+.megamenu-right {
+    @media (min-width: $lg) {
+        .mm-outer-wrapper.list-view {
+            .mm-navbar {
+                .nav-menu {
+                    > li {
+                        > .sublist {
+                            left: auto;
+                            right: 100%;
+                        }
+                    }
+                }
+            }
+        }
+
+        .mm-outer-wrapper.grid-view {
+            .nav-menu {
+                > li {
+                    > .sublist {
+                        left: auto;
+                        right: 0;
+                    }
+                }
+            }
+        }
+    }
+}

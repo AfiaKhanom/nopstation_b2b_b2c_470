@@ -1,0 +1,26 @@
+﻿@model CheckoutErpShippingAddressModel
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.Checkout;
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality;
+@inject IErpCustomerFunctionalityService b2BCustomerFunctionality
+
+@{
+    Layout = "_ColumnsOne";
+    var themeFolder = Model.ThemeName;
+    //title
+    NopHtml.AddTitleParts(T("PageTitle.Checkout").Text);
+    //page class
+    NopHtml.AppendPageCssClassParts("html-checkout-page");
+    NopHtml.AppendPageCssClassParts("html-shipping-address-page");
+
+    <script src="~/js/public.billingaddress.js" asp-location="Footer"></script>
+    <script src="~/js/public.shippingaddress.js" asp-location="Footer"></script>
+
+}
+@if (Model.IsB2BUser)
+{
+    @await Html.PartialAsync("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/ErpCheckout/_B2BShippingAddress.cshtml", Model)
+}
+else
+{
+    @await Html.PartialAsync("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/ErpCheckout/_B2CShippingAddress.cshtml", Model)
+}

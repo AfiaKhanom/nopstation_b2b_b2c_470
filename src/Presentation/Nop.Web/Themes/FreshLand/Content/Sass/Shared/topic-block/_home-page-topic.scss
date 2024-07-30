@@ -1,0 +1,27 @@
+﻿@import "../../mixins/_layout_width_responsive.scss";
+@import "../../mixins/_common-title.scss";
+
+.html-home-page {
+    .topic-block {
+        @include layout_width_responsive;
+        margin: 0 auto 20px;
+
+        @media(min-width: $sm) {
+            margin: 0 auto 50px;
+        }
+
+        .topic-block-title {
+            h2 {
+                @extend .font-korolev;
+                @include common-title;
+            }
+        }
+
+        .topic-block-body {
+            font-weight: 600;
+            font-size: 15px;
+            line-height: 24px;
+            color: var(--black);
+        }
+    }
+}

@@ -1,0 +1,233 @@
+@model ErpShipToAddressModel
+
+<div class="card-body">
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="ShipToCode" />
+        </div>
+        <div class="col-md-9">
+            @if (Model.Id == 0)
+            {
+                <nop-editor asp-for="ShipToCode" asp-required="true" />
+            }
+            else
+            {
+                <input readonly="readonly" asp-for="ShipToCode" class="form-control" type="text" id="ShipToCode" name="ShipToCode" value=@Model.ShipToCode />
+            }
+            <span asp-validation-for="ShipToCode"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="ShipToName" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="ShipToName" asp-required="true" />
+            <span asp-validation-for="ShipToName"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="Suburb" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="Suburb" asp-required="true" />
+            <span asp-validation-for="Suburb"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="ProvinceCode" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="ProvinceCode" />
+            <span asp-validation-for="ProvinceCode"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="DeliveryNotes" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="DeliveryNotes" />
+            <span asp-validation-for="DeliveryNotes"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="EmailAddresses" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="EmailAddresses" />
+            <span asp-validation-for="EmailAddresses"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="ErpAccountId" />
+        </div>
+        <div class="col-md-9">
+            @if (Model.ErpAccountId > 0)
+            {
+                <div class="input-group input-group-required">
+                    <input type="hidden" id="ErpAccountId" name="ErpAccountId" value="@Model.ErpAccountId" />
+                    <input type="text" class="form-control text-box single-line" id="ErpAccount" name="ErpAccountId" value="@Model.ErpAccount" disabled="disabled" />
+                    <div class="input-group-btn"><span class="required">*</span></div>
+                </div>
+            }
+            else
+            {
+                <div class="input-group input-group-required">
+                    <input type="text" id="search-account-code" autocomplete="on" placeholder="Search by Erp Account number" class="form-control" />
+                    <div class="input-group-btn"><span class="required">*</span></div>
+                </div>
+
+                <span id="search-account-by-code"></span>
+                <button type="button" id="search-account-clear" class="btn bg-gray" style="display: none; margin-top: 5px;">@T("Admin.Common.Clear")</button>
+                <input asp-for="ErpAccountId" autocomplete="off" style="display: none;" />
+                <script>
+                    $(document).ready(function () {
+                        $('#search-account-code').autocomplete({
+                            delay: 500,
+                            minLength: 3,
+                            source: function (request, response) {
+                                $.ajax({
+                                    url: '@(Url.Action("ErpAccountSearchAutoComplete", "ErpAccount"))',
+                                    dataType: 'json',
+                                    data: { term: request.term },
+                                    success: function (data) {
+                                        // Check if there are no results
+                                        if (data.length === 0) {
+                                            response([{ label: 'No results found', value: '' }]);
+                                        } else {
+                                            response(data);
+                                        }
+                                    }
+                                });
+                            },
+                            select: function (event, ui) {
+                                if (ui.item.value === '' || ui.item.label === 'No results found') {
+                                    // No actual item selected, handle accordingly
+                                    return false;
+                                }
+                                $('#@Html.IdFor(model => model.ErpAccountId)').val(ui.item.erpaccountid);
+                                $('#search-account-by-code').text(ui.item.label);
+
+                                $('#search-account-clear').show();
+                                $('#validationMessageErpAccountId').hide();
+                                return false;
+                            }
+                        });
+
+                        //remove button
+                        $('#search-account-clear').click(function () {
+                            $('#@Html.IdFor(model => model.ErpAccountId)').val('0');
+                            $('#search-account-by-code').text('');
+                            $('#search-account-clear').hide();
+                            return false;
+                        });
+                    });
+
+                </script>
+                <span asp-validation-for="ErpAccountId" id="validationMessageErpAccountId"></span>
+            }
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="RepNumber" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="RepNumber" asp-required="true" />
+            <span asp-validation-for="RepNumber"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="RepFullName" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="RepFullName" />
+            <span asp-validation-for="RepFullName"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="RepPhoneNumber" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="RepPhoneNumber" />
+            <span asp-validation-for="RepPhoneNumber"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="RepEmail" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="RepEmail" />
+            <span asp-validation-for="RepEmail"></span>
+        </div>
+    </div>
+
+    <div class="form-group row" style="display:none;">
+        <div class="col-md-3">
+            <nop-label asp-for="ShipToAddressCreatedByTypeId" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="ShipToAddressCreatedByTypeId" asp-items="Model.AvailableShipToAddressCreatedByTypes" />
+            <span asp-validation-for="ShipToAddressCreatedByTypeId"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="IsActive" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="IsActive" />
+            <span asp-validation-for="IsActive"></span>
+        </div>
+    </div>
+
+    @if (Model.Id > 0)
+    {
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="CreatedOnUtc" />
+            </div>
+            <div class="col-md-9 justify-content-center align-self-center">
+                @Model.CreatedOnUtc
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="UpdatedOnUtc" />
+            </div>
+            <div class="col-md-9 justify-content-center align-self-center">
+                @Html.DisplayFor(model => model.UpdatedOnUtc)
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="LastShipToAddressSyncDate" />
+            </div>
+            <div class="col-md-9 justify-content-center align-self-center">
+                @Model.LastShipToAddressSyncDate
+            </div>
+        </div>
+    }
+</div>

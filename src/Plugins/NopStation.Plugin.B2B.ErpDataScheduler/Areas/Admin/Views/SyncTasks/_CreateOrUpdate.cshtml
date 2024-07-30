@@ -1,0 +1,43 @@
+﻿@model SyncTaskModel
+
+@{
+    //page title
+    ViewBag.PageTitle = T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.Configure").Text;
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.ErpDataScheduler.SyncTaskList");
+}
+
+@{
+    var customer = await workContext.GetCurrentCustomerAsync();
+
+    const string hideErpDataSchedulerSlotBlockAttributeName = "ErpDataSchedulerConfigure.ErpDataSchedulerSlot";
+    var hideErpDataSchedulerSlotBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideErpDataSchedulerSlotBlockAttributeName);
+
+    const string hideErpSyncLogListBlockAttributeName = "ErpDataSchedulerConfigure.ErpDataSchedulerSyncLogList";
+    var hideErpSyncLogListBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideErpSyncLogListBlockAttributeName);
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="form-horizontal">
+            <div class="card-body">
+                <nop-cards id="erp-data-scheduler-settings-cards">
+
+                    <nop-card asp-name="erp-data-scheduler-slot-settings-card" asp-icon="fas fa-info" asp-title="@T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.Scheduler.Settings")" asp-hide-block-attribute-name="@hideErpDataSchedulerSlotBlockAttributeName" asp-hide="@hideErpDataSchedulerSlotBlock" asp-advanced="false">
+                        @* <nop-tabs id="schedulersettings-edit" asp-tab-name-to-select="tab-schedulersettings" asp-render-selected-tab-input="false">
+                            <nop-tab asp-name="tab-schedulersettings" asp-title="@T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.Scheduler.Settings")" asp-default="true">
+                                @await Html.PartialAsync("_CreateOrUpdate.SchedulerSettings", Model)
+                            </nop-tab>
+                        </nop-tabs> *@
+                        @await Html.PartialAsync("_CreateOrUpdate.SchedulerSettings", Model)
+                    </nop-card>
+
+                    <nop-card asp-name="erp-data-scheduler-sync-logs-card" asp-icon="fas fa-list" asp-title="@T("Plugin.Misc.NopStation.ErpDataScheduler.SyncLogs.SyncTaskLogs")" asp-hide-block-attribute-name="@hideErpSyncLogListBlockAttributeName" asp-hide="@hideErpSyncLogListBlock" asp-advanced="false">
+                        @await Html.PartialAsync("_CreateOrUpdate.SyncLogs", Model)
+                    </nop-card>
+
+                </nop-cards>
+            </div>
+        </div>
+    </div>
+</section>

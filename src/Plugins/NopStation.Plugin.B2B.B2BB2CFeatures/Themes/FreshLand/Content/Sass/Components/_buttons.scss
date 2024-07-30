@@ -1,0 +1,22 @@
+@import "../mixins/buttons";
+/*all buttons styles*/
+.button-1 {
+    @include buttons;
+    &:hover {
+        opacity: 0.9;
+    }
+}
+
+.button-2 {
+    background: var(--primary-green_light);
+    color: var(--primary-green_dark);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Lato',sans-serif;
+
+    &:hover {
+        color: var(--primary-green_dark);
+    }
+}

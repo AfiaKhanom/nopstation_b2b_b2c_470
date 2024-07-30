@@ -1,0 +1,766 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Copyright>Copyright © Nop Solutions, Ltd</Copyright>
+    <Company>Nop Solutions, Ltd</Company>
+    <Authors>Nop Solutions, Ltd</Authors>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageProjectUrl>https://www.nopcommerce.com/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/nopSolutions/nopCommerce</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <OutputPath>..\..\Presentation\Nop.Web\Plugins\NopStation.Plugin.B2B.B2BB2CFeatures</OutputPath>
+    <OutDir>$(OutputPath)</OutDir>
+    <!--Set this parameter to true to get the dlls copied from the NuGet cache to the output of your project.
+    You need to set this parameter to true if your plugin has a nuget package
+    to ensure that the dlls copied from the NuGet cache to the output of your project-->
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Areas\Admin\Views\B2BB2CFeatures\Configure.cshtml" />
+    <None Remove="Areas\Admin\Views\B2BB2CFeatures\_Configure.Checkout.cshtml" />
+    <None Remove="Areas\Admin\Views\B2BB2CFeatures\_Configure.Erp.cshtml" />
+    <None Remove="Areas\Admin\Views\B2BB2CFeatures\_Configure.Ftp.cshtml" />
+    <None Remove="Areas\Admin\Views\B2BB2CFeatures\_Configure.General.cshtml" />
+    <None Remove="Areas\Admin\Views\B2BB2CFeatures\_Configure.GoogleMaps.cshtml" />
+    <None Remove="Areas\Admin\Views\B2BB2CFeatures\_Configure.Order.cshtml" />
+    <None Remove="Areas\Admin\Views\B2BB2CFeatures\_Configure.ProductPrice.cshtml" />
+    <None Remove="Areas\Admin\Views\B2BB2CFeatures\_Configure.ProductStock.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpAccount\_CreateOrUpdateErpAccount.ErpNopUsers.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpAccount\_CreateOrUpdateErpAccount.Info.Address.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpAccount\_CreateOrUpdateErpAccount.Info.ErpShipToAddresses.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpActivityLogs\ErpActivityLogs.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpActivityLogs\ErpActivityTypes.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpActivityLog\List.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpActivityLog\View.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpInvoice\_Details.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpInvoice\_Details.Info.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpRegistrationApplication\ApplicationEdit.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpRegistrationApplication\Create.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpRegistrationApplication\List.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpRegistrationApplication\_CreateOrUpdateApplication.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpRegistrationApplication\_CreateOrUpdateApplication.Info.BankingDetails.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpRegistrationApplication\_CreateOrUpdateApplication.Info.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpRegistrationApplication\_CreateOrUpdateApplication.Info.Permises.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpRegistrationApplication\_CreateOrUpdateApplication.Info.PhysicalTradingAddress.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpRegistrationApplication\_CreateOrUpdateApplication.Info.TradeReferences.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpRegistrationApplication\_CreateOrUpdateGMAddress.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpRegistrationApplication\_CreateOrUpdateGMPTAddress.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpSalesOrg\_CreateOrUpdateErpSalesOrg.Info.AddErpWarehouses.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpSalesOrg\_CreateOrUpdateErpSalesOrg.Info.Address.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpSalesOrg\_CreateOrUpdateErpSalesOrg.Info.ErpWarehouses.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpShipToAddress\_CreateOrUpdate.Info.Address.cshtml" />
+    <None Remove="Areas\Admin\Views\SalesRepresentative\Create.cshtml" />
+    <None Remove="Areas\Admin\Views\SalesRepresentative\Edit.cshtml" />
+    <None Remove="Areas\Admin\Views\SalesRepresentative\ErpSalesRepErpAccountAddPopup.cshtml" />
+    <None Remove="Areas\Admin\Views\SalesRepresentative\List.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpAccount\CreateErpAccount.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpAccount\ErpAccountEdit.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpAccount\List.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpAccount\_CreateOrUpdateErpAccount.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpAccount\_CreateOrUpdateErpAccount.Info.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpInvoice\Edit.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpInvoice\List.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpGroupPriceCode\Create.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpGroupPriceCode\Edit.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpGroupPriceCode\List.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpGroupPriceCode\_CreateOrUpdate.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpNopUser\CreateErpNopUser.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpNopUser\ErpNopUserEdit.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpNopUser\List.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpNopUser\_CreateOrUpdateErpNopUser.Accounts.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpNopUser\_CreateOrUpdateErpNopUser.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpNopUser\_CreateOrUpdateErpNopUser.Info.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpNopUser\_CreateOrUpdateNopUserAccountMap.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpNopUser\_ErpNopUserAccountAddPopUp.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpProductPricing\_PriceGroupComponentView.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpProductPricing\_SpecialPriceComponentView.cshtml" />
+    <None Remove="Areas\Admin\Views\Overriden\Edit.cshtml" />
+    <None Remove="Areas\Admin\Views\Overriden\_CreateOrUpdate.cshtml" />
+    <None Remove="Areas\Admin\Views\Overriden\_CreateOrUpdate.Prices.cshtml" />
+    <None Remove="Areas\Admin\Views\SalesRepresentative\_CreateOrUpdate.cshtml" />
+    <None Remove="Areas\Admin\Views\SalesRepresentative\_CreateOrUpdate.Customer.cshtml" />
+    <None Remove="Areas\Admin\Views\SalesRepUsers\List.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpOrder\Edit.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpOrder\List.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpOrder\_CreateOrUpdate.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpProductPricing\AllProductList.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpProductPricing\ProductPricing.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpProductPricing\_CreateOrUpdateSpecialPrice.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpProductPricing\_CreatePriceGroupProductPricing.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpProductPricing\_PriceGroupProductPricing.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpProductPricing\_SpecialPrice.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpProductPricing\_SpecialPriceCreatePopUp.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpProductPricing\_SpecialPriceEditPopUp.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpSalesOrg\CreateErpSalesOrg.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpSalesOrg\ErpSalesOrgEdit.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpSalesOrg\List.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpSalesOrg\_CreateOrUpdateErpSalesOrg.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpSalesOrg\_CreateOrUpdateErpSalesOrg.Info.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpShipToAddress\Create.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpShipToAddress\Edit.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpShipToAddress\List.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpShipToAddress\_CreateOrUpdate.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpShipToAddress\_CreateOrUpdate.Info.cshtml" />
+    <None Remove="Areas\Admin\Views\Shared\Alert.cshtml" />
+    <None Remove="Areas\Admin\Views\Shared\Components\ErpOrderInOrderDetailsAdmin\ErpOrderAdditionalDataForB2B.cshtml" />
+    <None Remove="Areas\Admin\Views\Shared\Components\ErpOrderInOrderDetailsAdmin\ErpOrderAdditionalDataForB2C.cshtml" />
+    <None Remove="Areas\Admin\Views\Shared\Components\ErpOrderItemInOrderDetailsAdmin\ErpOrderItemAdditionalDataForB2B.cshtml" />
+    <None Remove="Areas\Admin\Views\Shared\Components\ErpOrderItemInOrderDetailsAdmin\ErpOrderItemAdditionalDataForB2C.cshtml" />
+    <None Remove="Areas\Admin\Views\Shared\Confirm.cshtml" />
+    <None Remove="Areas\Admin\Views\Shared\Table.cshtml" />
+    <None Remove="Areas\Admin\Views\Shared\_EntityHistoricalRecords.cshtml" />
+    <None Remove="Areas\Admin\Views\Shared\_GridLocalization.cshtml" />
+    <None Remove="Areas\Admin\Views\Shared\_Table.Definition.cshtml" />
+    <None Remove="Areas\Admin\Views\_ViewImports.cshtml" />
+    <None Remove="Areas\Admin\Views\_ViewStart.cshtml" />
+    <None Remove="Content\css\erpStyle.css" />
+    <None Remove="Content\css\quickorderstyles.css" />
+    <None Remove="Content\css\style.css" />
+    <None Remove="Content\img\pencil.png" />
+    <None Remove="Content\scripts\b2baccount.common.js" />
+    <None Remove="Content\scripts\b2bajaxcart.js" />
+    <None Remove="Content\scripts\b2bMiniCart.js" />
+    <None Remove="Content\scripts\jquery.dataTables.min.js" />
+    <None Remove="Content\scripts\quickorder.js" />
+    <None Remove="ResourceString\B2BB2CFeatures.Resources.en-us.xml" />
+    <None Remove="Themes\DefaultClean\Content\css\quicorderkstyles.css" />
+    <None Remove="Themes\DefaultClean\Views\Shared\Components\QuickOrderHeaderLink\Default.cshtml" />
+    <None Remove="Themes\DefaultClean\Views\Shared\_OldInternetExplorerWarning.cshtml" />
+    <None Remove="Themes\DefaultClean\Views\_OldInternetExplorerWarning.cshtml" />
+    <None Remove="Themes\DefaultClean\Views\_ViewImports.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\_OldInternetExplorerWarning.cshtml" />
+    <None Remove="Views\B2BB2CCustomer\ErpAccountCustomerRegistrationForm.cshtml" />
+    <None Remove="Views\B2BB2CCustomer\_CreateOrUpdateGMAddress.cshtml" />
+    <None Remove="Views\B2BB2CCustomer\_CreateOrUpdateGMPTAddress.cshtml" />
+    <None Remove="Views\B2BB2CCustomer\_ErpAccountCustomerRegistrationForm.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="NopStation.Plugin.Misc.Actions">
+      <HintPath>..\NopStation.Plugin.Misc.Core\NopStation.Plugin.Misc.Actions.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Admin\Views\B2BB2CFeatures\_Configure.GoogleMaps.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpActivityLogs\ERPActivityLogs.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpActivityLogs\ERPActivityTypes.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\B2BB2CFeatures\Configure.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\B2BB2CFeatures\_Configure.ProductStock.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\B2BB2CFeatures\_Configure.Ftp.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\B2BB2CFeatures\_Configure.Checkout.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\B2BB2CFeatures\_Configure.Erp.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\B2BB2CFeatures\_Configure.General.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\B2BB2CFeatures\_Configure.Order.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\B2BB2CFeatures\_Configure.ProductPrice.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpAccount\_CreateOrUpdateErpAccount.Info.ErpShipToAddresses.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpAccount\_CreateOrUpdateErpAccount.ErpNopUsers.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpAccount\_CreateOrUpdateErpAccount.Info.Address.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpActivityLog\List.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpActivityLog\View.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpRegistrationApplication\ApplicationEdit.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpRegistrationApplication\Create.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpRegistrationApplication\List.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpRegistrationApplication\_CreateOrUpdateApplication.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpRegistrationApplication\_CreateOrUpdateApplication.Info.BankingDetails.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpRegistrationApplication\_CreateOrUpdateApplication.Info.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpRegistrationApplication\_CreateOrUpdateApplication.Info.Permises.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpRegistrationApplication\_CreateOrUpdateApplication.Info.PhysicalTradingAddress.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpRegistrationApplication\_CreateOrUpdateApplication.Info.TradeReferences.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpRegistrationApplication\_CreateOrUpdateGMAddress.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpRegistrationApplication\_CreateOrUpdateGMPTAddress.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpSalesOrg\_CreateOrUpdateErpSalesOrg.Info.AddErpWarehouses.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpSalesOrg\_CreateOrUpdateErpSalesOrg.Info.ErpWarehouses.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpSalesOrg\_CreateOrUpdateErpSalesOrg.Info.Address.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpShipToAddress\_CreateOrUpdate.Info.Address.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\SalesRepUsers\ErpSalesRepErpAccountAddPopup.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\SalesRepresentative\_CreateOrUpdate.Customer.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\Components\ErpOrderInOrderDetailsAdmin\ErpOrderAdditionalDataForB2C.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\Components\ErpOrderInOrderDetailsAdmin\ErpOrderAdditionalDataForB2B.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\Components\ErpOrderItemInOrderDetailsAdmin\ErpOrderItemAdditionalDataForB2C.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\Components\ErpOrderItemInOrderDetailsAdmin\ErpOrderItemAdditionalDataForB2B.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\css\quickorderstyles.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\css\erpstyle.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\img\pencil.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\scripts\b2bajaxcart.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Areas\Admin\Views\SalesRepresentative\Create.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\SalesRepresentative\Edit.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\SalesRepresentative\List.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpNopUser\_CreateOrUpdateNopUserAccountMap.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpNopUser\_ErpNopUserAccountAddPopUp.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpProductPricing\_PriceGroupComponentView.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpProductPricing\_SpecialPriceComponentView.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\Overriden\Edit.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\Overriden\_CreateOrUpdate.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\Overriden\_CreateOrUpdate.Prices.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\SalesRepresentative\_CreateOrUpdate.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\SalesRepUsers\List.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpAccount\ErpAccountEdit.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpAccount\CreateErpAccount.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpAccount\List.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpAccount\_CreateOrUpdateErpAccount.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpAccount\_CreateOrUpdateErpAccount.Info.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpInvoice\Edit.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpInvoice\List.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpInvoice\_Details.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpInvoice\_Details.Info.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpGroupPriceCode\Create.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpGroupPriceCode\Edit.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpGroupPriceCode\List.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpGroupPriceCode\_CreateOrUpdate.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpNopUser\CreateErpNopUser.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpNopUser\ErpNopUserEdit.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpNopUser\List.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpNopUser\_CreateOrUpdateErpNopUser.Accounts.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpNopUser\_CreateOrUpdateErpNopUser.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpNopUser\_CreateOrUpdateErpNopUser.Info.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpOrder\Edit.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpOrder\_CreateOrUpdate.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpOrder\List.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpProductPricing\AllProductList.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpProductPricing\ProductPricing.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpProductPricing\_CreatePriceGroupProductPricing.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpProductPricing\_CreateOrUpdateSpecialPrice.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpProductPricing\_SpecialPriceCreatePopUp.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpProductPricing\_SpecialPriceEditPopUp.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpProductPricing\_SpecialPrice.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpProductPricing\_PriceGroupProductPricing.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpSalesOrg\ErpSalesOrgEdit.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpSalesOrg\CreateErpSalesOrg.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpSalesOrg\List.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpSalesOrg\_CreateOrUpdateErpSalesOrg.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpSalesOrg\_CreateOrUpdateErpSalesOrg.Info.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpShipToAddress\Create.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpShipToAddress\Edit.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpShipToAddress\List.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpShipToAddress\_CreateOrUpdate.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpShipToAddress\_CreateOrUpdate.Info.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\Alert.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\Confirm.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\Table.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\_EntityHistoricalRecords.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\_GridLocalization.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\_Table.Definition.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\_ViewImports.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\_ViewStart.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\css\style.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\scripts\b2baccount.common.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\scripts\b2bMiniCart.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\scripts\jquery.dataTables.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\scripts\quickorder.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ResourceString\B2BB2CFeatures.Resources.en-us.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\DefaultClean\Content\css\quicorderkstyles.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\DefaultClean\Views\Shared\Components\QuickOrderHeaderLink\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\DefaultClean\Views\Shared\_OldInternetExplorerWarning.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\DefaultClean\Views\_ViewImports.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\_OldInternetExplorerWarning.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\B2BB2CCustomer\ErpAccountCustomerRegistrationForm.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\B2BB2CCustomer\_CreateOrUpdateGMAddress.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\B2BB2CCustomer\_CreateOrUpdateGMPTAddress.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\B2BB2CCustomer\_ErpAccountCustomerRegistrationForm.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Notes.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="plugin.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Themes\FreshLand\Content\css\erpstyle.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Themes\FreshLand\Content\css\quickorderstyles.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Themes\FreshLand\Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Themes\FreshLand\Views\Checkout\Completed.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Themes\FreshLand\Views\Order\Details.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Themes\FreshLand\Views\Shared\Components\HeaderLinks\Default.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Themes\FreshLand\Views\Shared\Components\OrderSummary\Default.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Themes\FreshLand\Views\Shared\_Header.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Themes\FreshLand\Views\Shared\_Root.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Themes\FreshLand\Views\_ViewImports.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\B2BB2CCustomer\B2BRegister.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\B2BB2CCustomer\B2CRegister.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\B2BB2CCustomer\Login.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\B2BB2CCustomer\_B2BB2CRegister.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\B2BB2CCustomer\_CustomerAttributes.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\B2BB2CCustomer\_ExternalAuthentication.Errors.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\Checkout\Completed.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\Checkout\QuoteOrderCompleted.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\CustomerImpersonate\List.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\CustomerImpersonate\List.Multibuyer.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\ErpAccountPublic\ErpAccountInfo.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\ErpAccountPublic\ErpAccountInvoices.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\ErpAccountPublic\ErpAccountOrders.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\ErpAccountPublic\ErpAccountQuoteOrders.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\ErpCheckout\BillingAddress.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\ErpCheckout\LoadErpShipToAddress.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\ErpCheckout\OnePageCheckout.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\ErpCheckout\OpcBillingAddress.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\ErpCheckout\OpcShippingAddress.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\ErpCheckout\ShippingAddress.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\ErpCheckout\_B2BShippingAddress.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\ErpCheckout\_B2CShippingAddress.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\ErpCheckout\_CreateOrUpdateErpBillingAddresses.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\ErpCheckout\_CreateOrUpdateErpShiptoAddresses.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\ErpCheckout\_OpcCreateOrUpdateErpShiptoAddresses.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\Order\Details.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\Order\ErpB2bOrderDetails.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\QuickOrder\CreateQuickOrder.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\QuickOrder\QuickOrderTemplateDetails.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\QuickOrder\QuickOrderTemplateList.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\QuickOrder\_ProductAttributes.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\QuickOrder\_ProductDetailsPictures.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\QuickOrder\_ProductDetailsVideos.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\QuickOrder\_ProductManufacturers.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\QuickOrder\_ProductTemplate.Simple.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\Shared\Alert.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\Shared\Components\HeaderLinks\Default.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\Shared\Components\OrderSummaryContentDeals\Default.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\Shared\Components\OrderSummary\Default.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\Shared\Components\PublicHeader\Default.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\Shared\Components\SalesRepHeader\Default.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\Shared\Table.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\Shared\_DatatableScripts.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\Shared\_GridLocalization.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\Shared\_Header.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\Shared\_Root.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\Shared\_Table.Definition.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Views\_ViewImports.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ClearPluginAssemblies Include="$(MSBuildProjectDirectory)\..\..\Build\ClearPluginAssemblies.proj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Nopstation.Plugin.B2B.ERPIntegrationCore\NopStation.Plugin.B2B.ERPIntegrationCore.csproj">
+      <Private>False</Private>
+      <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
+    </ProjectReference>
+    <ProjectReference Include="..\NopStation.Plugin.Misc.Core\NopStation.Plugin.Misc.Core.csproj" />
+    <ClearPluginAssemblies Include="$(MSBuildProjectDirectory)\..\..\Build\ClearPluginAssemblies.proj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Update="Model\Checkout\ErpBillingAddressModel.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+  
+  <!-- This target execute after "Build" target -->
+  <Target Name="NopTarget" AfterTargets="Build">
+    <!-- Delete unnecessary libraries from plugins path -->
+    <MSBuild Projects="@(ClearPluginAssemblies)" Properties="PluginPath=$(MSBuildProjectDirectory)\$(OutDir)" Targets="NopClear" />
+  </Target>
+
+  
+</Project>

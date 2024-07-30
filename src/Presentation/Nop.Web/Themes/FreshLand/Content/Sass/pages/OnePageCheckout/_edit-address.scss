@@ -1,0 +1,24 @@
+.checkout-page {
+    .inputs {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .edit-address {
+        margin-left: -7.5px;
+        margin-right: -7.5px;
+
+        &::after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        .inputs {
+            width: 50%;
+            float: left;
+            clear: none;
+            padding: 0 7.5px;
+        }
+    }
+}

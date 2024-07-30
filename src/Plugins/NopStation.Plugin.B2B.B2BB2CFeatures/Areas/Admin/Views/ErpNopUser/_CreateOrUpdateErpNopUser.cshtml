@@ -1,0 +1,32 @@
+@model ErpNopUserModel
+
+<div asp-validation-summary="All"></div>
+<input asp-for="Id" type="hidden" />
+
+@{
+    const string hideInfoBlockAttributeName = "ErpNopUserPage.HideInfoBlock";
+    var customer = await workContext.GetCurrentCustomerAsync();
+    var hideInfoBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideInfoBlockAttributeName);
+    const string hideNopUserAccountsBlockAttributeName = "ErpNopUserPage.HideNopUserAccountsBlock";
+    var hideNopUserAccountsBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideNopUserAccountsBlockAttributeName);
+
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="form-horizontal">
+            <nop-cards id="customer-cards">
+                <nop-card asp-name="customer-info" asp-icon="fas fa-info" asp-title="@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Info")" asp-hide-block-attribute-name="@hideInfoBlockAttributeName" asp-hide="@hideInfoBlock" asp-advanced="false">
+                    @await Html.PartialAsync("_CreateOrUpdateErpNopUser.Info", Model)
+                </nop-card>
+
+                @if (Model.Id > 0)
+                {
+                    <nop-card asp-name="customer-accounts-info" asp-icon="fas fa-info" asp-title="@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Accounts")" asp-hide-block-attribute-name="@hideNopUserAccountsBlockAttributeName" asp-hide="@hideNopUserAccountsBlock" asp-advanced="false">
+                        @await Html.PartialAsync("_CreateOrUpdateErpNopUser.Accounts", Model.ErpNopUserSearchModel)
+                    </nop-card>
+                }
+            </nop-cards>
+        </div>
+    </div>
+</section>

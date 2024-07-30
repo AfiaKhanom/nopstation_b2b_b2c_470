@@ -1,0 +1,21 @@
+﻿.footer {
+    margin-top: 60px;
+}
+
+.footer-bg {
+    background: url(../images/footer-bg.png);
+    background-repeat: repeat-x;
+    padding-top: 50px;
+    margin-top: 15px;
+
+    .footer-bg-inner {
+        box-shadow: 0px -5px 10px rgba(0, 0, 0, 0.05);
+    }
+}
+
+.footer-upper {
+    @media(min-width: $sm) {
+        display: flex;
+        flex-wrap: wrap;
+    }
+}

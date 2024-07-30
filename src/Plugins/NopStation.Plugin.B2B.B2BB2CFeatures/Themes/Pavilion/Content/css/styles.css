@@ -1,0 +1,139 @@
+.register-confirm-buttons {
+  text-align: center;
+}
+
+  .register-confirm-buttons .button-1 {
+    margin: 0 10px;
+  }
+
+.html-custom-account .master-column-wrapper {
+  overflow: hidden
+}
+
+.html-custom-account .side-2 {
+  float: none;
+  width: 100%;
+  margin: 0
+}
+
+.html-custom-account .center-2 {
+  float: none;
+  width: 100%
+}
+
+.erp-title {
+  text-align: left;
+  margin: 30px 0 10px;
+  font-size: 16px;
+  color: #00a1b1;
+}
+
+.erp-table-wrapper {
+  margin: 0 0 30px;
+  border: 1px solid #e9e9e9;
+  background-color: #fff;
+  padding: 40px 0;
+}
+
+  .erp-table-wrapper td {
+    text-align: left;
+    width: 50%;
+    padding: 5px;
+  }
+
+    .erp-table-wrapper td.cart-total-right {
+      text-align: right;
+    }
+
+.erp-table-container {
+  width: 300px;
+  max-width: 80%;
+  margin: 0 auto;
+}
+
+.order-summary-content .modal-content {
+  max-width: min(90%, 450px);
+  top: 30%;
+}
+
+  .order-summary-content .modal-content .update-cart-button {
+    width: 100%;
+    margin-top: 10px;
+    background: #4ab2f1;
+    color: #fff;
+    font-size: 14px;
+  }
+
+  .order-summary-content .modal-content input {
+    width: 100%;
+  }
+
+  .order-summary-content .modal-content .col-md-8 {
+    padding-right: 10px;
+  }
+
+.subtotal .td-title,
+.quantity .td-title,
+.unit-price .td-title {
+  display: none;
+}
+
+@media(min-width: 1025px) {
+  .header-links-wrapper {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+  }
+
+  .header-links {
+    left: initial;
+    right: 0;
+    top: 100%;
+  }
+
+  .ddl-erp-account-options {
+    margin-right: 20px;
+    cursor: pointer;
+  }
+
+  .header-links-wrapper > .ddl-erp-account-options:hover + .header-links {
+    display: none;
+  }
+
+  .html-custom-account .master-wrapper-content {
+    padding: 70px 0 0
+  }
+
+  .erp-table-wrapper {
+    max-width: 500px;
+  }
+
+  .erp-table-container {
+    width: 400px;
+  }
+}
+
+@media(max-width: 1024px) {
+  .ddl-erp-account-options {
+    display: none;
+    position: fixed;
+    top: 53px;
+    left: 0;
+    z-index: 1070;
+    width: 100%;
+    box-shadow: 0 4px 4px rgba(0,0,0,.1);
+    background-color: #f9f9f9;
+    font-size: 13px;
+    padding: 20px;
+  }
+}
+
+@media(min-width: 1281px) {
+  .cart-footer .cart-collaterals {
+    width: 60%;
+  }
+
+  .html-checkout-page .cart-footer .deals {
+    margin-top: -60px;
+  }
+}

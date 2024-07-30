@@ -1,0 +1,21 @@
+@model ErpInvoiceModel
+
+<div asp-validation-summary="All"></div>
+<input asp-for="Id" type="hidden" />
+
+@{
+    const string hideInfoBlockAttributeName = "ErpInvoicePage.HideInfoBlock";
+    var customer = await workContext.GetCurrentCustomerAsync();
+    var hideInfoBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideInfoBlockAttributeName);
+
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="form-horizontal">
+            <nop-cards id="erpInvoice-cards">
+                <nop-card asp-name="erpInvoice-info" asp-icon="fas fa-info" asp-title="@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpInvoice.Info")" asp-hide-block-attribute-name="@hideInfoBlockAttributeName" asp-hide="@hideInfoBlock" asp-advanced="false">@await Html.PartialAsync("_Details.Info", Model)</nop-card>
+            </nop-cards>
+        </div>
+    </div>
+</section>

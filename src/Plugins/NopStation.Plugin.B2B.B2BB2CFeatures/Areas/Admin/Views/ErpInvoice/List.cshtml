@@ -1,0 +1,218 @@
+﻿@model ErpInvoiceSearchModel
+
+@{
+    Layout = "_AdminLayout";
+
+    //title
+    NopHtml.AddTitleParts(T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpInvoice.PageTitle.ErpInvoices").Text);
+    ViewBag.PageTitle = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpInvoice.PageTitle.ErpInvoices").Text;
+
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.B2BB2CFeatures.ErpInvoices");
+}
+
+@{
+    var customer = await workContext.GetCurrentCustomerAsync();
+
+    const string hideSearchBlockAttributeName = "ErpInvoicesPage.HideSearchBlock";
+    var hideSearchBlock = await genericAttributeService.GetAttributeAsync<bool>(await workContext.GetCurrentCustomerAsync(), hideSearchBlockAttributeName);
+
+    const string hideErpInvoicesBlockAttributeName = "ErpInvoicesPage.HideErpInvoicesBlock";
+    var hideErpInvoicesBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideErpInvoicesBlockAttributeName);
+}
+
+<div class="content-header clearfix">
+    <h1 class="float-left">
+        @T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpInvoice.PageHeader.ErpInvoices")
+    </h1>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="cards-group">
+            <div class="card card-default card-search form-horizontal">
+                <div class="card-body">
+                    <div class="row search-row @(!hideSearchBlock ? "opened" : "")" data-hideAttribute="@hideSearchBlockAttributeName">
+                        <div class="search-text">@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpInvoice.SearchErpInvoices")</div>
+                        <div class="icon-search"><i class="fas fa-search" aria-hidden="true"></i></div>
+                        <div class="icon-collapse"><i class="far fa-angle-@(!hideSearchBlock ? "up" : "down")" aria-hidden="true"></i></div>
+                    </div>
+                    <div class="search-body @(hideSearchBlock ? "closed" : "")">
+                        <div class="form-group row">
+                            <div class="col-md-5">
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="ErpAccountId" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="text" id="search-account-code" autocomplete="off" placeholder="search by Erp Account number" class="form-control" />
+                                        <span id="search-account-by-code"></span>
+                                        <button type="button" id="search-account-clear" class="btn bg-gray" style="display: none; margin-top: 5px;">@T("Admin.Common.Clear")</button>
+                                        <input asp-for="ErpAccountId" autocomplete="off" style="display: none;" />
+                                        <script>
+                                            $(document).ready(function () {
+                                                $('#search-account-code').autocomplete({
+                                                    delay: 500,
+                                                    minLength: 3,
+                                                    source: function (request, response) {
+                                                        $.ajax({
+                                                            url: '@(Url.Action("ErpAccountSearchAutoComplete", "ErpAccount"))',
+                                                            dataType: 'json',
+                                                            data: { term: request.term },
+                                                            success: function (data) {
+                                                                // Check if there are no results
+                                                                if (data.length === 0) {
+                                                                    response([{ label: 'No results found', value: '' }]);
+                                                                } else {
+                                                                    response(data);
+                                                                }
+                                                            }
+                                                        });
+                                                    },
+                                                    select: function (event, ui) {
+                                                        if (ui.item.value === '' || ui.item.label === 'No results found') {
+                                                            // No actual item selected, handle accordingly
+                                                            return false;
+                                                        }
+                                                        $('#@Html.IdFor(model => model.ErpAccountId)').val(ui.item.erpaccountid);
+                                                        $('#search-account-by-code').text(ui.item.label);
+
+                                                        $('#search-account-clear').show();
+                                                        $('#validationMessageErpAccountId').hide();
+                                                        return false;
+                                                    }
+                                                });
+
+                                                //remove button
+                                                $('#search-account-clear').click(function () {
+                                                    $('#@Html.IdFor(model => model.ErpAccountId)').val('0');
+                                                    $('#search-account-by-code').text('');
+                                                    $('#search-account-clear').hide();
+                                                    return false;
+                                                });
+                                            });
+
+                                        </script>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="ErpDocumentNumber" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="ErpDocumentNumber" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="DocumentTypeId" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-Select asp-for="DocumentTypeId" asp-items="Model.AvailableDocumentTypes" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="ErpOrderNumber" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="ErpOrderNumber" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="text-center col-md-12">
+                                <button type="button" id="search-erpInvoices" class="btn btn-primary btn-search">
+                                    <i class="fas fa-search"></i>
+                                    @T("Admin.Common.Search")
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <nop-card asp-name="ErpInvoices" asp-icon="fas fa-files" asp-title="@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpInvoice.Card.ErpInvoices")" asp-hide-block-attribute-name="@hideErpInvoicesBlockAttributeName" asp-hide="@hideErpInvoicesBlock" asp-advanced="true">
+                <div class="card-body">
+                    <div class="card card-default">
+                        <div class="card-body">
+                            @await Html.PartialAsync("Table", new DataTablesModel
+                            {
+                                Name = "ErpInvoices-grid",
+                                UrlRead = new DataUrl("ErpInvoiceList", "ErpInvoice", null),
+                                UrlDelete = new DataUrl("Delete", "ErpInvoice", null),
+                                SearchButtonId = "search-erpInvoices",
+                                Length = Model.PageSize,
+                                LengthMenu = Model.AvailablePageSizes,
+                                Filters = new List<FilterParameter>
+                                {
+                                    new FilterParameter(nameof(Model.ErpAccountId), typeof(string)),
+                                    new FilterParameter(nameof(Model.DocumentTypeId), typeof(string)),
+                                    new FilterParameter(nameof(Model.ErpDocumentNumber), typeof(string)),
+                                    new FilterParameter(nameof(Model.ErpOrderNumber), typeof(string)),
+                                },
+                                ColumnCollection = new List<ColumnProperty>
+                                {
+                                    new ColumnProperty(nameof(ErpInvoiceModel.ErpAccountName))
+                                    {
+                                        Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpInvoice.Field.ErpAccountName").Text,
+                                        Render = new RenderLink(new DataUrl("~/Admin/ErpAccount/ErpAccountEdit/", nameof(ErpInvoiceModel.ErpAccountId))),
+                                        Width = "150",
+                                    },
+                                    new ColumnProperty(nameof(ErpInvoiceModel.ErpOrderNumber))
+                                    {
+                                        Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpInvoice.Field.ErpOrderNumber").Text,
+                                        Render = new RenderLink(new DataUrl("~Admin/ErpOrder/Edit/", nameof(ErpInvoiceModel.ErpOrderId))),
+                                        Width = "150",
+                                    },
+                                    new ColumnProperty(nameof(ErpInvoiceModel.ErpDocumentNumber))
+                                    {
+                                        Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpInvoice.Field.ErpDocumentNumber").Text,
+                                        Width = "150",
+                                        Render = new RenderLink(new DataUrl("/Admin/ErpInvoice/DownloadInvoice/", nameof(ErpInvoiceModel.ErpDocumentNumber))),
+                                    },
+                                    new ColumnProperty(nameof(ErpInvoiceModel.DocumentDisplayName))
+                                    {
+                                        Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpInvoice.Field.DocumentType").Text,
+                                        Width = "150",
+                                    },
+                                    new ColumnProperty(nameof(ErpInvoiceModel.PostingDateUtc))
+                                    {
+                                        Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpInvoice.Field.PostingDateUtc").Text,
+                                        Width = "150",
+                                        Render = new RenderDate()
+                                    },
+                                    new ColumnProperty(nameof(ErpInvoiceModel.Id))
+                                    {
+                                        Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpInvoice.ListPage.Button.View").Text,
+                                        Width = "50",
+                                        ClassName = NopColumnClassDefaults.Button,
+                                        Render = new RenderButtonView(new DataUrl("Edit"))
+                                    },
+                                    new ColumnProperty(nameof(ErpInvoiceModel.ErpDocumentNumber))
+                                    {
+                                        Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.PoDDownload").Text,
+                                        Width = "100",
+                                        ClassName = NopColumnClassDefaults.Button,
+                                        Render = new RenderButtonCustom("download-pod", "Download")
+                                        {
+                                            Url = Url.Content("/Admin/ErpInvoice/DownloadInvoiceFromFtp/")
+                                        }
+                                    },
+                                }
+                            })
+                        </div>
+                    </div>
+                </div>
+            </nop-card>
+        </div>
+    </div>
+</section>
+
+<style>
+    .button-column {
+        text-align: center !important;
+    }
+</style>

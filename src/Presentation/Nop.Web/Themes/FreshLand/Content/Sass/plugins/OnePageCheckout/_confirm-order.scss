@@ -1,0 +1,47 @@
+﻿.order-summary-content {
+    padding: 0;
+
+    .order-details-area {
+        padding: 0;
+
+        .order-review {
+            text-align: left;
+
+            .order-review-data {
+                padding: 0;
+
+                .shipping-info,
+                .billing-info {
+                    margin-bottom: 10px;
+                }
+
+                .billing-info-wrap,
+                .shipping-info-wrap {
+                    margin-bottom: 20px;
+                }
+            }
+        }
+    }
+
+    @import "cart-table";
+    @import "cart-footer";
+}
+
+#error-message-list {
+    .error-message {
+        border-radius: 3px;
+        background: rgba(244, 15, 0, 0.15);
+        box-shadow: 0px 2px 4px 0px rgba(245, 42, 29, 0.10);
+        margin-bottom: 15px;
+        padding: 10px;
+        color: var(--red);
+        font-size: 15px;
+        width: 100%;
+        max-width: 460px;
+
+        @media(min-width: $sm) {
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+}

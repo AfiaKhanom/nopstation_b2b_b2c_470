@@ -109,8 +109,6 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
                             where or.CreatedOnUtc >= searchOrderDateFrom.Value
                             select q;
                 }
-
-
                 if (searchOrderDateTo != null && searchOrderDateTo.HasValue)
                 {
                     query = from or in _orderRepository.Table

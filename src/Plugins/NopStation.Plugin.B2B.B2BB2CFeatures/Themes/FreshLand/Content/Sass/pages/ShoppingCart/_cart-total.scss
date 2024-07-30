@@ -1,0 +1,26 @@
+.cart-total {
+    border: 1px solid var(--primary-grey_light);
+    width: 100%;
+    border-collapse: collapse;
+
+    tr {
+        &:not(:last-child) {
+            td {
+                border-bottom: 1px solid var(--primary-grey_light)
+            }
+        }
+
+        td {
+            padding: 2px 12px;
+            font-weight: 600;
+            font-size: 13px;
+            line-height: 32px;
+
+            &:last-child {
+                text-align: right;
+                font-weight: 500;
+            }
+        }
+    }
+
+}

@@ -1,0 +1,26 @@
+@model NopStation.Plugin.Payments.B2B.Account.Models.B2BAccountPaymentInfoModel
+@inherits Nop.Web.Framework.Mvc.Razor.NopRazorPage<TModel>
+
+
+<div class="info-block">
+    <h2>@T("Plugins.Payments.NopStation.B2B.Account.Title.CreditLimit") : @Model.CreditLimitStr</h2>
+    <h2>@T("Plugins.Payments.NopStation.B2B.Account.Title.CreditLimitAvailable") : @Model.CreditLimitAvailableStr</h2>
+    <h2>@T("Plugins.Payments.NopStation.B2B.Account.Title.CurrentBalance") : @Model.CurrentBalanceStr</h2>
+</div>
+<style>
+    .info-block {
+        border: 1px solid #ccc;
+        padding: 20px;
+        margin: 20px;
+        background-color: #f5f5f5;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+        color: #333;
+    }
+
+    p {
+        color: #666;
+    }
+</style>

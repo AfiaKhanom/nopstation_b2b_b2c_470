@@ -1,0 +1,226 @@
+﻿@model ApplicationFormModel
+
+@* @{
+    Layout = "_AdminLayout";
+    //page title
+    ViewBag.PageTitle = T("B2BB2CFeatures.Admin.ErpRegistrationApplication.ApplicationForm.PageTitle.AddNew").Text;
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.B2BB2CFeatures.ErpRegistrationApplication");
+} *@
+
+<div class="card-body">
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="FullRegisteredName" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="FullRegisteredName" asp-required="true" />
+            <span asp-validation-for="FullRegisteredName"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="RegistrationNumber" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="RegistrationNumber" asp-required="true" />
+            <span asp-validation-for="RegistrationNumber"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="VatNumber" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="VatNumber" asp-required="true" />
+            <span asp-validation-for="VatNumber"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="TelephoneNumber1" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="TelephoneNumber1" asp-required="true" />
+            <span asp-validation-for="TelephoneNumber1"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="TelephoneNumber2" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="TelephoneNumber2" asp-required="true" />
+            <span asp-validation-for="TelephoneNumber2"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="TelefaxNumber" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="TelefaxNumber" asp-required="true" />
+            <span asp-validation-for="TelefaxNumber"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="AccountsContactPersonNameSurname" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="AccountsContactPersonNameSurname" asp-required="true" />
+            <span asp-validation-for="AccountsContactPersonNameSurname"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="AccountsEmail" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="AccountsEmail" asp-required="true" />
+            <span asp-validation-for="AccountsEmail"></span>
+        </div>
+    </div>
+    
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="AccountsTelephoneNumber" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="AccountsTelephoneNumber" asp-required="true" />
+            <span asp-validation-for="AccountsTelephoneNumber"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="AccountsCellphoneNumber" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="AccountsCellphoneNumber" asp-required="true" />
+            <span asp-validation-for="AccountsCellphoneNumber"></span>
+        </div>
+    </div>
+    
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="BuyerContactPersonNameSurname" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="BuyerContactPersonNameSurname" asp-required="true" />
+            <span asp-validation-for="BuyerContactPersonNameSurname"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="BuyerEmail" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="BuyerEmail" asp-required="true" />
+            <span asp-validation-for="BuyerEmail"></span>
+        </div>
+    </div>
+    
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="NatureOfBusiness" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="NatureOfBusiness" asp-required="true" />
+            <span asp-validation-for="NatureOfBusiness"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+        </div>
+        <div class="col-md-9">
+            <h5 style="text-align:center;">Address</h5>
+        </div>
+    </div>
+    <nop-editor asp-for="RegisteredOfficeAddress" asp-template="Address" />
+
+    <div class="form-group row">
+        <div class="col-md-3">
+        </div>
+        <div class="col-md-9">
+            <h5>&nbsp;</h5>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="TypeOfBusiness" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="TypeOfBusiness" asp-required="true" />
+            <span asp-validation-for="TypeOfBusiness"></span>
+        </div>
+    </div>
+    
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="EstimatePurchasesPerMonthZAR" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="EstimatePurchasesPerMonthZAR"/>
+            <span asp-validation-for="EstimatePurchasesPerMonthZAR"></span>
+        </div>
+    </div>
+    
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="CreditLimitRequired" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="CreditLimitRequired" />
+            <span asp-validation-for="CreditLimitRequired"></span>
+        </div>
+    </div>
+
+    @if (Model.Id > 0)
+    {
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="CreatedOn" />
+            </div>
+            <div class="col-md-9 justify-content-center align-self-center">
+                @Model.CreatedOn
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="UpdatedOn" />
+            </div>
+            <div class="col-md-9 justify-content-center align-self-center">
+                @Html.DisplayFor(model => model.UpdatedOn)
+            </div>
+        </div>
+    }
+</div>
+<script>
+    $(document).ready(function () {
+        $('#EstimatePurchasesPerMonthZAR').on('input', function () {
+            // Format input to two decimal places
+            var value = $(this).val().replace(',', '');
+            var decimalIndex = value.indexOf('.');
+
+            if (decimalIndex !== -1) {
+                // Limit to two decimal places
+                var decimalPart = value.substring(decimalIndex + 1);
+                if (decimalPart.length > 2) {
+                    $(this).val(value.substring(0, decimalIndex + 3));
+                }
+            }
+        });
+    });
+</script>

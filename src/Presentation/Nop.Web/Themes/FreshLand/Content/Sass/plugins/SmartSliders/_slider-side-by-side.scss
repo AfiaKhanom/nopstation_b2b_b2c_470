@@ -1,0 +1,32 @@
+﻿.home-page {
+    .page-body {
+        .slider-ad-3,
+        .slider-ad-2 {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+
+            .slider-grid {
+                width: 100%;
+
+                .slider-container .loader {
+                    position: relative;
+                    min-height: 298px !important;
+                }
+
+                @media(min-width: $sm) {
+                    width: calc(50% - 7.5px);
+                    margin-bottom: 0px;
+                }
+            }
+        }
+
+        .slider-ad-3 {
+            .slider-grid {
+                @media(min-width: $sm) {
+                    width: calc(33.33% - 7.5px);
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,55 @@
+.social {
+    margin-bottom: 15px;
+
+    li {
+        display: inline-block;
+        vertical-align: middle;
+        margin: 0 3px;
+        margin-bottom: 4px;
+
+        a {
+            font-size: 0;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        a::before {
+            content: "";
+            display: block;
+            width: 30px;
+            height: 30px;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        &.facebook a::before {
+            background-image: url("/Themes/FreshLand/Content/images/facebook.svg");
+        }
+
+        &.youtube a::before {
+            background-image: url("/Themes/FreshLand/Content/images/youtube.svg");
+        }
+
+        &.instagram a::before {
+            background-image: url("/Themes/FreshLand/Content/images/instagram.svg");
+        }
+
+        &.twitter a::before {
+            background-image: url("/Themes/FreshLand/Content/images/twitter.svg");
+        }
+
+        &.rss a::before {
+            background-image: url("/Themes/FreshLand/Content/images/rss.svg");
+        }
+
+        &.linkedin a::before {
+            background-image: url("/Themes/FreshLand/Content/images/linkedin.svg");
+        }
+
+        &.pinterest a::before {
+            background-image: url("/Themes/FreshLand/Content/images/pinterest.svg");
+        }
+    }
+}

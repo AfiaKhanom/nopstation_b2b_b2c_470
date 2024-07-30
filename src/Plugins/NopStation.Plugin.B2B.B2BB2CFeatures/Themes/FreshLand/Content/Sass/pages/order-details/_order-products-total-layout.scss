@@ -1,0 +1,18 @@
+.order-summary-content {
+
+    @media (min-width: $md) {
+        padding: 15px;
+
+        .order-footer {
+            width: 300px;
+            float: left;
+            margin-left: 15px;
+        }
+    }
+
+    @media (min-width: $lg) {
+        .order-footer {
+            width: 365px;
+        }
+    }
+}

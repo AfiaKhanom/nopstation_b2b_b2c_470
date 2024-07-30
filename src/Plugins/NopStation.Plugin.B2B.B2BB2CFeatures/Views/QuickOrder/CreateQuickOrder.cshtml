@@ -1,0 +1,36 @@
+﻿@model QuickOrderTemplateModel
+
+@{
+    Layout = "_ColumnsOne";
+
+    //title
+    NopHtml.AddTitleParts(T("PageTitle.QuickOrderDetails").Text);
+    //page class
+    NopHtml.AppendPageCssClassParts("html-account-page");
+    NopHtml.AppendPageCssClassParts("html-customer-info-page");
+
+    await Html.PartialAsync("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/Shared/_DatatableScripts.cshtml");
+}
+
+<div class="page quick-order-page quick-order-create-page">
+    <form asp-controller="QuickOrder" asp-action="CreateQuickOrder" class="quick-order-create-form" method="post">
+        <div class="form-group">
+            <div class="col-md-3">
+                <nop-label asp-for="Name" />
+            </div>
+            <div class="col-md-9">
+                <nop-editor asp-for="Name" />
+            </div>
+        </div>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn bg-blue quick-order-save-button">
+                <i class="fa fa-floppy-o"></i>
+                @T("Admin.Common.Save")
+            </button>
+        </div>
+        <small>
+            <i class="fa fa-arrow-circle-left"></i>
+            <a asp-route="QuickOrder">@T("NopStation.B2BB2CFeatures.BackToList")</a>
+        </small>
+    </form>
+</div>

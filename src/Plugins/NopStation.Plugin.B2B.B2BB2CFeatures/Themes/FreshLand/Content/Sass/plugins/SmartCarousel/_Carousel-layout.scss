@@ -1,0 +1,61 @@
+﻿@import "../../mixins/_common-title.scss";
+@import "../../Components/_font-korolev.scss";
+
+.carousel-grid {
+    position: relative;
+    margin: 30px auto;
+
+    .carousel-grid-container {
+        position: relative;
+    }
+
+    .carousel-title {
+        @include common-title;
+    }
+
+    .swiper-button-next,
+    .swiper-button-prev {
+        position: absolute;
+        right: 0;
+        top: 25px;
+        left: auto;
+    }
+
+    .swiper-button-prev {
+        right: 30px;
+    }
+
+    .swiper-pagination-bottom {
+        position: absolute;
+        bottom: -25px;
+    }
+
+    @media (min-width: $sm) {
+        margin: 50px auto;
+    }
+
+    @media (min-width: $md) {
+        .swiper-button-prev {
+            right: 38px;
+        }
+    }
+
+    @media (max-width: $sm - 1) {
+        &.carousel-category {
+
+            .item-box {
+            }
+        }
+    }
+
+    @media (max-width: $md - 1) {
+        .swiper-button-next,
+        .swiper-button-prev {
+            right: 0;
+        }
+
+        .swiper-button-prev {
+            right: 30px;
+        }
+    }
+}

@@ -1,0 +1,22 @@
+@model ErpInvoiceModel
+
+@{
+    Layout = "_AdminLayout";
+    //page title
+    ViewBag.PageTitle = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoice.PageHeader.Edit").Text;
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.B2BB2CFeatures.ErpInvoices");
+}
+
+<form asp-area="Admin" asp-controller="ErpInvoice" asp-action="Edit" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpInvoice.Details")
+            <small>
+                <i class="fas fa-arrow-circle-left"></i>
+                <a asp-action="List">@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoice.BackToList")</a>
+            </small>
+        </h1>
+    </div>
+    @await Html.PartialAsync("_Details", Model)
+</form>

@@ -1,0 +1,129 @@
+﻿@using NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure;
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.ErpAccountPublic;
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Infrastructure;
+@using Nop.Services.Security;
+@model ErpAccountInfoModel
+@inject IPermissionService permissionService
+
+@{
+    Layout = "_ColumnsTwo";
+
+    //title
+    NopHtml.AddTitleParts(T("PageTitle.Account").Text);
+    //page class
+    NopHtml.AppendPageCssClassParts("html-account-page");
+    NopHtml.AppendPageCssClassParts("html-customer-info-page");
+    NopHtml.AppendPageCssClassParts("html-custom-account");
+
+    var accountNo = Model.AccountNumber;
+    var displayErpCreditInfo = await permissionService.AuthorizeAsync(ErpPermissionProvider.DisplayB2BAccountCreditInfo);
+}
+
+@section left
+    {
+    @await Component.InvokeAsync(typeof(CustomerNavigationViewComponent), new { selectedTabId = B2BB2CFeaturesDefaults.ErpCustomerNavigationEnum_ErpAccountInfo })
+}
+
+<div class="page account-page account-transaction-page">
+    <div class="page-title">
+        <h1>@T("Plugin.Misc.NopStation.B2BB2CFeatures.PageTitle.ErpAccount")</h1>
+    </div>
+    <div class="page-body">
+        <div class="fieldset">
+            <div class="form-fields">
+                <div class="inputs">
+                    <label asp-for="AccountNumber" asp-postfix=":"></label>
+                    <label id="AccountNumber">@Model.AccountNumber</label>
+                </div>
+                <div class="inputs">
+                    <label asp-for="AccountName" asp-postfix=":"></label>
+                    <label id="AccountName">@Model.AccountName</label>
+                </div>
+                @if (displayErpCreditInfo && !Model.HasErpQuoteAssistantRole && !Model.HasErpOrderAssistantRole)
+                {
+                    @if (Model.IsShowYearlySavings && !string.IsNullOrEmpty(Model.CurrentYearOnlineSavings))
+                    {
+                        <div class="inputs">
+                            <label asp-for="CurrentYearOnlineSavings" asp-postfix=":"></label>
+                            <label id="CurrentYearOnlineSavings">@Model.CurrentYearOnlineSavings</label>
+                        </div>
+                    }
+                    <div class="inputs">
+                        <label asp-for="CreditLimit" asp-postfix=":"></label>
+                        <label id="CreditLimit">@Model.CreditLimit</label>
+                    </div>
+                    <div class="inputs">
+                        <label asp-for="CurrentBalance" asp-postfix=":"></label>
+                        <label id="CurrentBalance">@Model.CurrentBalance</label>
+                    </div>
+                    @if (Model.IsShowAllTimeSavings && !string.IsNullOrEmpty(Model.AllTimeOnlineSavings))
+                    {
+                        <div class="inputs">
+                            <label asp-for="AllTimeOnlineSavings" asp-postfix=":"></label>
+                            <label id="AllTimeOnlineSavings">@Model.AllTimeOnlineSavings</label>
+                        </div>
+                    }
+                    <div class="inputs">
+                        <label asp-for="AvailableCredit" asp-postfix=":"></label>
+                        <label id="AvailableCredit">@Model.AvailableCredit</label>
+                    </div>
+                    <div class="inputs">
+                        <label asp-for="LastPaymentAmount" asp-postfix=":"></label>
+                        <label id="LastPaymentAmount">@Model.LastPaymentAmount</label>
+                    </div>
+                    <div class="inputs">
+                        <label asp-for="LastPaymentDate" asp-postfix=":"></label>
+                        <label id="LastPaymentDate">@Model.LastPaymentDate</label>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <script asp-location="Footer">
+
+        $(document).ready(function () {
+
+            $('.block-account-navigation .listbox .list>li>a').each(function () {
+                $(this).removeClass("active").addClass("inactive");
+            });
+
+            $('.b2baccount-info a').removeClass("inactive").addClass("active");
+
+            //console.log("On LoadB2BAccountInfoFromErp. \nTime is: " + new Date())
+
+            $.ajax({
+                cache: true,
+                type: "GET",
+                url: "@Url.RouteUrl("LoadErpAccountInfoFromErp")",
+                dataType: "json",
+                success: function (data, textStatus, jqXHR) {
+                    if (data) {
+                        console.log(data)
+                        console.log("Time is: " + new Date())
+                        if (data.CreditLimit) {
+                            $('#CreditLimit').html(data.CreditLimit);
+                        }
+                        if (data.CurrentBalance) {
+                            $('#CurrentBalance').html(data.CurrentBalance);
+                        }
+                        if (data.AvailableCredit) {
+                            $('#AvailableCredit').html(data.AvailableCredit);
+                        }
+                        if (data.LastPaymentAmount) {
+                            $('#LastPaymentAmount').html(data.LastPaymentAmount);
+                        }
+                        if (data.LastPaymentDate) {
+                            $('#LastPaymentDate').html(data.LastPaymentDate);
+                        }
+
+                        console.log("On LoadB2BAccountInfoFromErp. Ajax loding finished..... \nTime is: " + new Date())
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("Live account data sync failed");
+                }
+            });
+        });
+    </script>
+</div>

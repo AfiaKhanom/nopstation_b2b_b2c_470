@@ -1,0 +1,17 @@
+.carousel-grid {
+    .swiper-pagination-bottom {
+        .swiper-pagination-bullet {
+            width: 12px;
+            height: 12px;
+            transition: all linear 0.3s;
+            background: transparent;
+            border: 1px solid var(--primary-green);
+            opacity: 1;
+
+            &.swiper-pagination-bullet-active {
+                background: var(--primary-green);
+            }
+        }
+    }
+}
+

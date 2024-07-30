@@ -1,0 +1,21 @@
+.header-logo {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 15px;
+    font-size: 0;
+
+    a {
+        display: block;
+        max-width: 80px;
+    }
+
+    @media (min-width: $lg) {
+        padding-left: 0;
+        order: 1;
+
+        a {
+            max-width: 150px;
+        }
+    }
+}

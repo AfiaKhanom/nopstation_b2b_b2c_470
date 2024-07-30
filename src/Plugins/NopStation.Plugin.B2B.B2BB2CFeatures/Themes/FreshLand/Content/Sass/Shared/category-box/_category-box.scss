@@ -1,0 +1,66 @@
+@import "../../mixins/_before_image_center.scss";
+
+.category-item {
+    display: flex;
+    flex-direction: column-reverse;
+    border-radius: 3px;
+    margin-bottom: 15px;
+
+    .picture {
+        a {
+            position: relative;
+            display: block;
+            overflow: hidden;
+
+            &::before {
+                content: "";
+                display: block;
+                padding-top: 80%;
+            }
+
+            img {
+                @include before-image-center;
+                mix-blend-mode: multiply;
+            }
+        }
+    }
+
+    .title {
+        width: 100%;
+        background-color: var(--primary-green_light);
+        border-radius: 3px;
+        border: 1px solid var(--primary-green_light);
+        transition: all 0.3s;
+        box-shadow: 1px 1px 2px rgba(0,0,0,.1);
+
+        a {
+            display: block;
+            color: var(--primary-green_dark);
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            font-size: 12px;
+            line-height: 14px;
+            font-weight: 600;
+            text-align: center;
+            padding: 7px 10px 7px;
+            transition: all 0.3s;
+
+            @media(min-width: $md) {
+                font-size: 14px;
+                line-height: 17px;
+            }
+        }
+    }
+
+    &:hover {
+        .title {
+            background-color: var(--primary-green);
+            border: 1px solid var(--primary-green);
+
+            a {
+                color: var(--white);
+            }
+        }
+    }
+}

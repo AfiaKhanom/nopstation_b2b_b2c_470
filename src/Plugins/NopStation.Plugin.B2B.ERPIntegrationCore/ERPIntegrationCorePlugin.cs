@@ -497,7 +497,13 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore
                     SystemKeyword = "Erp_DeleteErpAccountForErpSalesRepMap",
                     Enabled = true,
                     Name = "Delete Erp Account for Erp Sales Rep"
-                }
+                },
+                new()
+                {
+                    SystemKeyword = "Erp_EditSyncTask",
+                    Enabled = true,
+                    Name = "Edit sync task"
+                },
             };
         }
     }

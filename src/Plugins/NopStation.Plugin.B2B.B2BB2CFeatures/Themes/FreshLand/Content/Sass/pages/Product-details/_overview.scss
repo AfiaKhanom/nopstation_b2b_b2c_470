@@ -1,0 +1,31 @@
+.overview {
+    .short-description {
+        line-height: 1.6;
+        font-size: 15px;
+    }
+
+    .product-overview-content {
+        > div {
+            margin-bottom: 20px;
+
+            &.additional-details {
+                > div {
+                    margin-bottom: 10px;
+                }
+            }
+
+            label, .label {
+                font-weight: 600;
+            }
+
+            .value, a {
+                color: var(--primary-green);
+                font-weight: 600;
+            }
+        }
+    }
+
+    > div {
+        margin-bottom: 20px;
+    }
+}

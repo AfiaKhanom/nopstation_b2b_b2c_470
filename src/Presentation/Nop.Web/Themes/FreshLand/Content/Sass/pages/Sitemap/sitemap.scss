@@ -1,0 +1,51 @@
+﻿.sitemap-page {
+    .description {
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 17px;
+        color: var(--black);
+        margin: 30px auto;
+    }
+
+    .entity {
+        margin: 30px auto;
+
+        .entity-title {
+
+            h2 {
+                font-weight: 700;
+                font-size: 18px;
+                line-height: 22px;
+                color: var(--primary-green);
+            }
+            margin-bottom: 10px;
+        }
+
+        .entity-body {
+            li {
+                display: inline-block;
+                background: var(--primary-green_light);
+                border: 1px solid var(--primary-green_light);
+                border-radius: 3px;
+                padding: 6px 15px;
+                margin-right: 6px;
+                margin-bottom: 15px;
+
+                &:nth-child(even) {
+                    background: var(--primary-green_light);
+                }
+
+                a {
+                    font-weight: 400;
+                    font-size: 14px;
+                    line-height: 17px;
+                    color: var(--primary-green_dark);
+                }
+
+                &:hover {
+                    opacity: .8;
+                }
+            }
+        }
+    }
+}

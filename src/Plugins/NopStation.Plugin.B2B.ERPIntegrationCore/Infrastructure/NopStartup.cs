@@ -49,6 +49,12 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Infrastructure
             services.AddScoped<IErpWarehouseSalesOrgMapService, ErpWarehouseSalesOrgMapService>();
             services.AddScoped<IErpActivityLogsService, ErpActivityLogsService>();
 
+            services.AddScoped<IErpAccountCustomerRegistrationFormService, ErpAccountCustomerRegistrationFormService>();
+            services.AddScoped<IErpAccountCustomerRegistrationBankingDetailsService, ErpAccountCustomerRegistrationBankingDetailsService>();
+            services.AddScoped<IErpAccountCustomerRegistrationPhysicalTradingAddressService, ErpAccountCustomerRegistrationPhysicalTradingAddressService>();
+            services.AddScoped<IErpAccountCustomerRegistrationTradeReferencesService, ErpAccountCustomerRegistrationTradeReferencesService>();
+            services.AddScoped<IErpAccountCustomerRegistrationPremisesService, ErpAccountCustomerRegistrationPremisesService>();
+
             services.AddScoped<IErpIntegrationPluginManager, ErpIntegrationPluginManager>();
 
             services.AddScoped<IConfigurationModelFactory, ConfigurationModelFactory>();

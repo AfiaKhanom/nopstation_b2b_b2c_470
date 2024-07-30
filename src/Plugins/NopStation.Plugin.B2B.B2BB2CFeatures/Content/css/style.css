@@ -1,0 +1,93 @@
+﻿div#reorder-search-card-group-select .k-widget {
+  max-width: 425px;
+}
+
+.text-underline {
+  text-decoration: underline !important;
+  text-underline-position: under !important;
+}
+
+.font-p8rem {
+  font-size: 0.8rem !important;
+}
+
+.master-column-wrapper .form-control,
+input[type="text"], input[type="password"], input[type="email"], input[type="tel"], textarea, select {
+  display: block;
+  width: calc(100% - 13px);
+  height: calc(2.25rem + 2px);
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: .25rem;
+  box-shadow: inset 0 0 0 transparent;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.field-validation-error {
+  width: calc(100% - 8px);
+}
+
+@media (min-width: 1200px) {
+
+  .field-validation-error {
+    width: calc(100% - 13px);
+  }
+}
+
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.card-img-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+  .card-img-wrap::before {
+    content: "";
+    display: block;
+    padding-top: 100%;
+  }
+
+  .card-img-wrap img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    max-width: 100%;
+    height: auto;
+  }
+
+.card-header {
+  min-height: 72px;
+}
+
+.card-body {
+  word-break: break-word;
+}
+
+.form-horizontal .form-group .label-wrapper {
+  float: left;
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+
+  .form-horizontal .form-group .label-wrapper .col-form-label {
+    text-align: right;
+    flex-grow: 1;
+    display: inline-block;
+    width: calc(100% - 100px);
+    max-width: 190px;
+  }
+
+
+

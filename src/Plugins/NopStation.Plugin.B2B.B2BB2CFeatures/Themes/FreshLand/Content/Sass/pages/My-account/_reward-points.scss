@@ -1,0 +1,26 @@
+.html-account-page {
+    .reward-points-page {
+        .reward-points-overview {
+            margin: 20px 0;
+            font-size: clamp(1rem,3vw,20px);
+            line-height: clamp(17px,3vw,25px);
+            text-align: center;
+        }
+
+        .title {
+            color: var(--black);
+            font-weight: 700;
+            font-size: 17px;
+            line-height: 19px;
+            text-align: center;
+        }
+
+        .points-balance {
+            min-width: 150px;
+        }
+
+        .message {
+            text-align: left;
+        }
+    }
+}

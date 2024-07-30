@@ -1,0 +1,112 @@
+@model ConfigurationModel
+@using Nop.Services;
+@using Nop.Core.Domain.Catalog;
+
+
+<script>
+
+    $(document).ready(function () {
+        $("#@Html.IdFor(model => model.UsePercentageOfAllocatedStock)").click(toggleUsePercentageOfAllocatedStock);
+
+        toggleUsePercentageOfAllocatedStock();
+    });
+
+
+    function toggleUsePercentageOfAllocatedStock() {
+        if ($('#@Html.IdFor(model => model.UsePercentageOfAllocatedStock)').is(':checked')) {
+            $('#pnlPercentageOfStockAllowed').showElement();
+        } else {
+            $('#pnlPercentageOfStockAllowed').hideElement();
+        }
+    }
+</script>
+
+
+<div class="card-body"> 
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="EnableLiveStockChecks" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="EnableLiveStockChecks" />
+            <span asp-validation-for="EnableLiveStockChecks"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="StockDisplayFormatId" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="StockDisplayFormatId" asp-items="Model.AvailableStockDisplayFormats" />
+            <span asp-validation-for="StockDisplayFormatId"></span>
+        </div>
+    </div>    
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="TrackInventoryMethodId" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="TrackInventoryMethodId" asp-items="@await (((ManageInventoryMethod)Model.TrackInventoryMethodId).ToSelectListAsync())" />
+            <span asp-validation-for="TrackInventoryMethodId"></span>
+        </div>
+    </div>        
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="ProductAvailabilityRangeId_DefaultValue" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="ProductAvailabilityRangeId_DefaultValue" asp-items="Model.AvailableProductAvailabilityRanges_DefaultValue" />
+            <span asp-validation-for="ProductAvailabilityRangeId_DefaultValue"></span>
+        </div>
+    </div>    
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="LowStockActivityId_DefaultValue" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="LowStockActivityId_DefaultValue" asp-items="@await (((LowStockActivity)Model.LowStockActivityId_DefaultValue).ToSelectListAsync())" />
+            <span asp-validation-for="LowStockActivityId_DefaultValue"></span>
+        </div>
+    </div>    
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="DisplayStockAvailability_DefaultValue" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="DisplayStockAvailability_DefaultValue" />
+            <span asp-validation-for="DisplayStockAvailability_DefaultValue"></span>
+        </div>
+    </div>    
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="DisplayStockQuantity_DefaultValue" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="DisplayStockQuantity_DefaultValue" />
+            <span asp-validation-for="DisplayStockQuantity_DefaultValue"></span>
+        </div>
+    </div>
+
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="UsePercentageOfAllocatedStock" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="UsePercentageOfAllocatedStock" />
+            <span asp-validation-for="UsePercentageOfAllocatedStock"></span>
+        </div>
+    </div>
+    <nop-nested-setting asp-for="UsePercentageOfAllocatedStock" disable-auto-generation="true">
+        <div class="form-group row" id="pnlPercentageOfStockAllowed">
+            <div class="col-md-3">
+                <nop-label asp-for="PercentageOfStockAllowed" />
+            </div>
+            <div class="col-md-9">
+                <nop-editor asp-for="PercentageOfStockAllowed" />
+                <span asp-validation-for="PercentageOfStockAllowed"></span>
+            </div>
+        </div>
+    </nop-nested-setting>
+</div>
+ 

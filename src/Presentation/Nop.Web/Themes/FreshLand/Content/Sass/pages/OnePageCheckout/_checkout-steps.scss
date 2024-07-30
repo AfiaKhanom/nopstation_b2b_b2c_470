@@ -1,0 +1,110 @@
+@import "../../mixins/buttons";
+
+.opc {
+    list-style-type: none;
+
+    .step-title {
+        margin: 0 0 1px;
+        overflow: hidden;
+        background-color: var(--primary-green_light);
+
+        .title,
+        .number {
+            float: left;
+            min-height: 30px;
+            padding: 6px 10px;
+            line-height: 26px;
+            font-size: 16px;
+            font-weight: normal;
+
+            @media (min-width: $md) {
+                min-height: 40px;
+            }
+        }
+
+        .number {
+            width: 30px;
+            border-right: 1px solid var(--white);
+            text-align: center;
+
+            @media (min-width: $md) {
+                width: 40px;
+            }
+        }
+    }
+
+    .step {
+        padding: 15px 10px;
+        border: 1px solid var(--primary-grey_light);
+
+        .selector label {
+            text-align: left;
+        }
+
+        .buttons {
+            text-align: left;
+        }
+
+        @media (min-width: $md) {
+            padding: 15px 40px;
+        }
+
+        select {
+            width: 100%;
+        }
+
+        .section {
+            margin-bottom: 15px;
+        }
+
+        .buttons {
+            margin-bottom: 10px;
+
+            button {
+                margin-right: 5px;
+            }
+
+            .back-link {
+                display: inline-block;
+                vertical-align: top;
+                margin-right: 5px;
+
+                a {
+                    width: 100%;
+                    @include buttons($border: 1px solid var(--primary-grey), $background: var(--primary-grey), $color: var(--white));
+                    position: relative;
+                    padding-left: 15px;
+                    padding-right: 15px;
+
+                    small {
+                        display: none;
+                    }
+                }
+
+                & ~ button {
+                    @include buttons($border: 1px solid var(--primary-green), $background: var(--primary-green), $color: var(--white));
+                    min-width: initial;
+                    width: auto;
+                    padding-left: 15px;
+                    padding-right: 15px;
+                }
+            }
+
+            #delete-billing-address-button,
+            #edit-billing-address-button {
+                @include buttons($border: 1px solid var(--primary-grey), $background: var(--primary-grey), $color: var(--white));
+            }
+        }
+    }
+
+    .allow {
+        .step-title {
+            background-color: var(--primary-green);
+
+            .title,
+            .number {
+                color: var(--white);
+            }
+        }
+    }
+}

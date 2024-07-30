@@ -1,0 +1,103 @@
+@model ConfigurationModel
+
+<div class="card-body">
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="PlaceB2BOrder" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="PlaceB2BOrder" />
+            <span asp-validation-for="PlaceB2BOrder"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="PlaceB2COrder" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="PlaceB2COrder" />
+            <span asp-validation-for="PlaceB2COrder"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="AllowBackOrderingForAll" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="AllowBackOrderingForAll" />
+            <span asp-validation-for="AllowBackOrderingForAll"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="EnableQuoteFunctionality" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="EnableQuoteFunctionality" />
+            <span asp-validation-for="EnableQuoteFunctionality"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="OverSpendWarningText" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="OverSpendWarningText" />
+            <span asp-validation-for="OverSpendWarningText"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="BackorderModeId_DefaultValue" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="BackorderModeId_DefaultValue" />
+            <span asp-validation-for="BackorderModeId_DefaultValue"></span>
+        </div>
+    </div>    
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="AllowBackInStockSubscriptions_DefaultValue" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="AllowBackInStockSubscriptions_DefaultValue" />
+            <span asp-validation-for="AllowBackInStockSubscriptions_DefaultValue"></span>
+        </div>
+    </div>    
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="AvailableForPreOrder_DefaultValue" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="AvailableForPreOrder_DefaultValue" />
+            <span asp-validation-for="AvailableForPreOrder_DefaultValue"></span>
+        </div>
+    </div>    
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="AllowOverspend" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="AllowOverspend" />
+            <span asp-validation-for="AllowOverspend"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="OrderMaximumQuantity" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="OrderMaximumQuantity" />
+            <span asp-validation-for="OrderMaximumQuantity"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="EnableAccountPayment" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="EnableAccountPayment" />
+            <span asp-validation-for="EnableAccountPayment"></span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,356 @@
+﻿@model ErpOrderAdditionalDataSearchModel
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure;
+@{
+    Layout = "_AdminLayout";
+    //title
+    NopHtml.AddTitleParts(T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.PageTitle").Text);
+    ViewBag.PageTitle = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.PageTitle").Text;
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.B2BB2CFeatures.ErpOrder");
+}
+@{
+    var customer = await workContext.GetCurrentCustomerAsync();
+    const string hideSearchBlockAttributeName = "ErpOrderListPage.HideSearchBlock";
+    var hideSearchBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideSearchBlockAttributeName);
+}
+<form asp-controller="ErpOrder" asp-action="List" method="post">
+    <div class="content-header clearfix">
+        <h1 class="Float-left">
+            @T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Header.ErpOrders")
+        </h1>
+        @*<div class="pull-right">
+            <button type="button" name="importexcel" class="btn bg-olive" data-toggle="modal" data-target="#importexcel-window">
+                <i class="fa fa-upload"></i>
+                @T("Admin.Common.Import")
+            </button>
+            <div class="btn-group">
+                <button type="button" class="btn btn-success">
+                    <i class="fa fa-download"></i>
+                    @T("Admin.Common.Export")
+                </button>
+                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <span class="caret"></span>
+                    <span class="sr-only">&nbsp;</span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li>
+                        <button type="submit" name="exportexcel-all">
+                            <i class="fa fa-file-excel-o"></i>
+                            @T("Admin.Common.ExportToExcel.All")
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" id="exportexcel-selected">
+                            <i class="fa fa-file-excel-o"></i>
+                            @T("Admin.Common.ExportToExcel.Selected")
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>*@
+    </div>
+    <div class="content">
+        <div class="container-fluid">
+            <div class="form-horizontal">
+                <div class="cards-group">
+                    <div class="card card-default card-search">
+                        <div class="card-body">
+                            <div class="row search-row @(!hideSearchBlock ? "opened" : "")" data-hideAttribute="@hideSearchBlockAttributeName">
+                                <div class="search-text">@T("Admin.Common.Search")</div>
+                                <div class="icon-search"><i class="fas fa-search" aria-hidden="true"></i></div>
+                                <div class="icon-collapse"><i class="fas fa-angle-down" aria-hidden="true"></i></div>
+                            </div>
+                            <div class="search-body @(hideSearchBlock ? "closed" : "")">
+                                <div class="form-group row">
+                                    <div class="col-md-5">
+                                        <div class="form-group row">
+                                            <div class="col-md-4">
+                                                <nop-label asp-for="SearchOrderNumber" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <nop-editor asp-for="SearchOrderNumber" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-md-4">
+                                                <nop-label asp-for="SearchErpOrderTypeId" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <nop-select asp-for="SearchErpOrderTypeId" asp-items="Model.AvailableErpOrderTypeOptions" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-md-4">
+                                                <nop-label asp-for="SearchErpOrderOriginTypeId" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <nop-select asp-for="SearchErpOrderOriginTypeId" asp-items="Model.AvailableErpOrderOriginTypeOptions" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="form-group row">
+                                            <div class="col-md-4">
+                                                <nop-label asp-for="SearchERPOrderNumber" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <nop-editor asp-for="SearchERPOrderNumber" />
+                                            </div>
+                                        </div>
+                                        @*<div class="form-group row">
+                                            <div class="col-md-4">
+                                                <nop-label asp-for="SearchOrderPlacedOn" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <nop-editor asp-for="SearchOrderPlacedOn" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-md-4">
+                                                <nop-label class="col-form-label" asp-for="SearchErpOrderPlaceByCustomerTypeId" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <nop-Select asp-for="SearchErpOrderPlaceByCustomerTypeId" asp-items="Model.AvailableCustomerTypes" />
+                                            </div>
+                                        </div>*@
+                                        <div class="form-group row">
+                                            <div class="col-md-4">
+                                                <nop-label asp-for="SearchIntegrationStatusTypeId" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <nop-select asp-for="SearchIntegrationStatusTypeId" asp-items="Model.AvailableIntegrationStatusTypeOptions" />
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <div class="col-md-4">
+                                                <nop-label asp-for="SearchErpAccountId" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <input type="text" id="search-account-code" autocomplete="off" placeholder="Search by Erp Account number" class="form-control" />
+                                                <span id="search-account-by-code"></span>
+                                                <button type="button" id="search-account-clear" class="btn bg-gray" style="display: none; margin-top: 5px;">@T("Admin.Common.Clear")</button>
+                                                <input asp-for="SearchErpAccountId" autocomplete="off" style="display: none;" />
+                                                <script>
+                                                    $(document).ready(function () {
+                                                        $('#search-account-code').autocomplete({
+                                                            delay: 500,
+                                                            minLength: 3,
+                                                            source: function (request, response) {
+                                                                $.ajax({
+                                                                    url: '@(Url.Action("ErpAccountSearchAutoComplete", "ErpAccount"))',
+                                                                    dataType: 'json',
+                                                                    data: { term: request.term },
+                                                                    success: function (data) {
+                                                                        // Check if there are no results
+                                                                        if (data.length === 0) {
+                                                                            response([{ label: 'No results found', value: '' }]);
+                                                                        } else {
+                                                                            response(data);
+                                                                        }
+                                                                    }
+                                                                });
+                                                            },
+                                                            select: function (event, ui) {
+                                                                if (ui.item.value === '' || ui.item.label === 'No results found') {
+                                                                    // No actual item selected, handle accordingly
+                                                                    return false;
+                                                                }
+                                                                $('#@Html.IdFor(model => model.SearchErpAccountId)').val(ui.item.erpaccountid);
+                                                                $('#search-account-by-code').text(ui.item.label);
+
+                                                                $('#search-account-clear').show();
+                                                                return false;
+                                                            }
+                                                        });
+
+                                                        //remove button
+                                                        $('#search-account-clear').click(function () {
+                                                            $('#@Html.IdFor(model => model.SearchErpAccountId)').val('0');
+                                                            $('#search-account-by-code').text('');
+                                                            $('#search-account-clear').hide();
+                                                            return false;
+                                                        });
+                                                    });
+                                                </script>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="text-center col-md-12">
+                                        <button type="button" id="search-erp-order" class="btn btn-primary btn-search">
+                                            <i class="fas fa-search"></i>
+                                            @T("Admin.Common.Search")
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-default">
+                        <div class="card-body">
+                            @{
+                                var gridModel = new DataTablesModel
+                                {
+                                    Name = "erporder-grid",
+                                    UrlRead = new DataUrl("ErpOrderList", "ErpOrder", null),
+                                    SearchButtonId = "search-erp-order",
+                                    Length = Model.PageSize,
+                                    LengthMenu = Model.AvailablePageSizes,
+                                    Filters = new List<FilterParameter>
+                                    {
+                                        new FilterParameter(nameof(Model.SearchOrderNumber)),
+                                        new FilterParameter(nameof(Model.SearchErpOrderPlaceByCustomerTypeId)),
+                                        new FilterParameter(nameof(Model.SearchErpAccountId)),
+                                        new FilterParameter(nameof(Model.SearchERPOrderNumber)),
+                                        new FilterParameter(nameof(Model.SearchErpOrderTypeId)),
+                                        new FilterParameter(nameof(Model.SearchErpOrderOriginTypeId)),
+                                        new FilterParameter(nameof(Model.SearchIntegrationStatusTypeId)),
+                                        new FilterParameter(nameof(Model.SearchOrderPlacedOn))
+                                    }
+                                };
+
+                                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpOrderAdditionalDataModel.ErpOrderNumber))
+                                {
+                                    Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.ERPOrderNumber").Text,
+                                    Width = "200"
+                                });
+
+                                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpOrderAdditionalDataModel.OrderNumber))
+                                {
+                                    Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.OrderNumber").Text,
+                                    Width = "200",
+                                    Render = new RenderLink(new DataUrl("~/Admin/Order/Edit", nameof(ErpOrderAdditionalDataModel.NopOrderId)))
+                                });
+                                
+                                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpOrderAdditionalDataModel.ErpOrderOriginType))
+                                {
+                                    Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.ErpOrderOriginType").Text,
+                                    Width = "200"
+                                });
+                                                    
+                                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpOrderAdditionalDataModel.ErpOrderType))
+                                {
+                                    Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.ErpOrderType").Text,
+                                    Width = "200"
+                                });
+
+                                var formatedRenderDate = new RenderDate();
+                                formatedRenderDate.Format = B2BB2CFeaturesDefaults.ErpDateFormatForDataTable;
+                                
+                                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpOrderAdditionalDataModel.QouteDate))
+                                {
+                                    Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpQouteOrder.Fields.OrderDate").Text,
+                                    Width = "200",
+                                    Render = formatedRenderDate
+                                });
+                                                    
+                                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpOrderAdditionalDataModel.IntegrationStatusType))
+                                {
+                                    Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.IntegrationStatusType").Text,
+                                    Width = "200"
+                                });
+                                                    
+                                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpOrderAdditionalDataModel.ErpAccountName))
+                                {
+                                    Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.ErpAccount").Text,
+                                    Width = "200",
+                                    Render = new RenderLink(new DataUrl("~/Admin/ErpAccount/ErpAccountEdit", nameof(ErpOrderAdditionalDataModel.ErpAccountId)))
+                                });
+
+                                var renderLink = new RenderLink(new DataUrl("~/Admin/ErpOrder/ReProcess", nameof(ErpOrderAdditionalDataModel.Id)));
+                                renderLink.Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Button.ReProcess").Text;
+                                
+                                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpOrderAdditionalDataModel.Id))
+                                {
+                                    Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Button.ReProcess").Text,
+                                    Width = "100",
+                                    ClassName = NopColumnClassDefaults.Button,
+                                    Render = renderLink
+                                });
+                                                    
+                                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpOrderAdditionalDataModel.Id))
+                                {
+                                    Title = T("Admin.Common.Edit").Text,
+                                    Width = "100",
+                                    ClassName = NopColumnClassDefaults.Button,
+                                    Render = new RenderButtonEdit(new DataUrl("Edit"))
+                                });
+                            }
+                            @await Html.PartialAsync("Table", gridModel)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@*export selected (Excel). We don't use GET approach because it's limited to 2K-4K chars and won't work for large number of entities*@
+<form asp-controller="ErpOrder" asp-action="ExportExcelSelected" method="post" id="export-excel-selected-form">
+    <input type="hidden" id="selectedIds" name="selectedIds" value="" />
+</form>
+
+<script>
+    $(document).ready(function () {
+        $('#exportexcel-selected').click(function (e) {
+            e.preventDefault();
+            var ids = selectedIds.join(",");
+            $('#export-excel-selected-form #selectedIds').val(ids);
+            $('#export-excel-selected-form').submit();
+            updateTable('#erporder-grid');
+            return false;
+        });
+    });
+</script>
+
+@*import ErpAccount form*@
+<div id="importexcel-window" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="importexcel-window-title">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="importexcel-window-title">@T("Admin.Common.ImportFromExcel")</h4>
+            </div>
+            <form asp-controller="ErpAccount" asp-action="ImportExcel" method="post" enctype="multipart/form-data">
+                <div class="form-horizontal">
+                    <div class="modal-body">
+                        <ul class="common-list">
+                            <li>
+                                <em>@T("Admin.Catalog.Products.List.ImportFromExcelTip")</em>
+                            </li>
+                            <li>
+                                <em>@T("Admin.Common.ImportFromExcel.ManyRecordsWarning")</em>
+                            </li>
+                        </ul>
+                        <div class="form-group row">
+                            <div class="col-md-2">
+                                <div class="label-wrapper">
+                                    <label class="control-label">
+                                        @T("Admin.Common.ExcelFile")
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <input type="file" id="importexcelfile" name="importexcelfile" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">
+                            @T("Admin.Common.ImportFromExcel")
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .button-column {
+        text-align: center !important;
+    }
+</style>

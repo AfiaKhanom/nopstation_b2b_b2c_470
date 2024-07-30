@@ -1,0 +1,46 @@
+.html-blog-page {
+    .master-column-wrapper {
+        flex-direction: row-reverse;
+    }
+}
+
+.blog-page {
+    .blog-posts {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+
+        .post {
+            margin: 15px 0 0;
+
+            @media(min-width: $lg) {
+                width: calc(50% - 7.5px);
+                padding-bottom: 60px;
+                position: relative;
+
+                .buttons {
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                }
+            }
+
+        }
+    }
+}
+
+.side-2 {
+    .block-blog-archive {
+        strong {
+            font-weight: 900;
+        }
+
+        .month {
+            a {
+                display: flex;
+                justify-content: space-between;
+            }
+        }
+    }
+}

@@ -1,0 +1,33 @@
+﻿@model ErpOrderAdditionalDataModel
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
+
+@{
+    Layout = "_AdminLayout";
+    //title
+    NopHtml.AddTitleParts(T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.PageTitle.EditErpOrderDetails").Text);
+    ViewBag.PageTitle = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.PageTitle.EditErpOrderDetails").Text;
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.B2BB2CFeatures.ErpOrder");
+}
+<form asp-controller="ErpOrder" asp-action="Edit" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.EditErpOrderDetails") - @Model.OrderNumber
+            <small>
+                <i class="fas fa-arrow-circle-left"></i>
+                <a asp-action="List">@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.BackToList")</a>
+            </small>
+        </h1>
+        @if (Model.IntegrationStatusTypeId != (int)IntegrationStatusType.Confirmed)
+        {
+            <div class="float-right">
+                <button type="submit" name="reprocess" class="btn btn-default">
+                    <i class="fas fa-gears"></i>
+                    @T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Button.ReProcess")
+                </button>
+            </div>
+        }
+    </div>
+    @await Html.PartialAsync("_CreateOrUpdate", Model)
+</form>

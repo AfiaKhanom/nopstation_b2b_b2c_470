@@ -1,0 +1,79 @@
+@import "../../mixins/buttons";
+
+.product-overview-pricing-cart {
+    border: 1px solid var(--primary-grey_light);
+    box-shadow: 0px 2px 4px rgba(153, 153, 153, 0.15);
+
+    .availability {
+        > div {
+            padding: 15px;
+            border-bottom: 1px solid var(--primary-grey_light);
+            text-align: center;
+
+            .in-stock {
+                color: #4CAF50;
+            }
+
+            .out-of-stock {
+                color: #F40F00;
+            }
+        }
+
+        .subscribe-button {
+            @include buttons( $font-size: 11px, $line-height: 13px, $padding: 5px 9px);
+        }
+    }
+
+    .prices {
+        text-align: center;
+        padding: 0 15px;
+        margin: 15px 0;
+        font-size: 24px;
+        line-height: 1.25;
+        font-weight: 600;
+
+        > div {
+            display: inline-block;
+            vertical-align: middle;
+            color: var(--primary-grey);
+            margin: 0 4px;
+        }
+
+        .old-product-price {
+            font-size: 75%;
+            font-weight: 400;
+            text-decoration: line-through;
+
+            span:first-child {
+                display: none;
+            }
+        }
+
+        .product-price {
+            color: var(--primary-green);
+
+            label {
+                display: none;
+            }
+        }
+    }
+
+
+    .delivery {
+        text-align: center;
+        padding: 15px;
+        border-top: 1px solid var(--primary-grey_light);
+        font-weight: 600;
+    }
+
+    .product-estimate-shipping {
+        text-align: center;
+        padding: 15px;
+    }
+}
+
+.tier-prices {
+    .title {
+        margin-bottom: 10px;
+    }
+}

@@ -1,0 +1,49 @@
+﻿@inherits Nop.Web.Framework.Mvc.Razor.NopRazorPage<TModel>
+
+@inject IGenericAttributeService genericAttributeService
+@inject INopHtmlHelper NopHtml
+@inject IWorkContext workContext
+@inject ISettingService settingService
+@inject IStoreContext storeContext
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Nop.Web.Framework
+
+@using System.Globalization;
+@using System.Net;
+@using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
+@using Microsoft.AspNetCore.Routing
+@using Microsoft.Extensions.Primitives
+@using Nop.Core
+@using Nop.Core.Domain.Common
+@using Nop.Core.Events
+@using Nop.Core.Infrastructure
+@using Nop.Services.Common
+@using static Nop.Services.Common.NopLinksDefaults
+@using Nop.Web.Components
+@using Nop.Web.Framework
+@using Nop.Web.Framework.Menu
+@using Nop.Web.Framework.Models
+@using Nop.Web.Framework.Events
+@using Nop.Web.Framework.Extensions
+@using Nop.Web.Framework.Infrastructure
+@using Nop.Web.Framework.Models.DataTables
+@using Nop.Web.Framework.Security.Captcha
+@using Nop.Web.Framework.Security.Honeypot
+@using Nop.Web.Framework.Themes
+@using Nop.Web.Framework.UI
+@using Nop.Web.Areas.Admin.Models.Common
+@using Nop.Web.Areas.Admin.Models.Catalog
+@using Nop.Web.Areas.Admin.Components
+@using Nop.Web.Areas.Admin.Models.Customers
+@using Nop.Services.Configuration
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Model
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models.ErpShipToAddress
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models.ErpNopUser
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models.ErpInvoice
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models.ErpSalesRep
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models.ErpActivityLogs
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure
+@using NopStation.Plugin.B2B.B2BB2CFeatures
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models.ErpRegistrationApplication

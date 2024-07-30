@@ -1,0 +1,280 @@
+﻿@model HeaderLinksModel
+
+@using NopStation.Plugin.B2B.B2BB2CFeatures
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Contexts
+
+@inject IB2BB2CWorkContext b2BB2CWorkContext
+@inject B2BB2CFeaturesSettings b2BB2CFeaturesSettings
+
+@{
+    var customer = await workContext.GetCurrentCustomerAsync();
+    var erpCustomer = await b2BB2CWorkContext.GetCurrentERPCustomerAsync();
+    NopHtml.AppendCssFileParts("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Content/css/erpstyle.css");
+
+    var storeScope = await storeContext.GetActiveStoreScopeConfigurationAsync();
+    var settings = await settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);
+
+    var returnUrl = Context.Request.Query.TryGetValue("returnUrl", out var url) && !StringValues.IsNullOrEmpty(url)
+                ? url.ToString()
+                : webHelper.GetRawUrl(Context.Request);
+    var customerMyAccountUrl = "#";
+}
+
+<div class="header-links">
+    <ul>
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderLinksBefore, additionalData = Model })
+        
+        <li class="user-dropdown dropdown">
+            @if (Model.IsAuthenticated)
+            {
+                @if (await customerService.IsInCustomerRoleAsync(customer, ERPIntegrationCoreDefaults.B2BSalesRepRoleSystemName) == false)
+                {
+                    customerMyAccountUrl = Url.RouteUrl("CustomerInfo");
+                }
+                <a href="@customerMyAccountUrl" class="ico-account">@T("Account.MyAccount")@*@Model.CustomerName*@</a>
+            }
+            else
+            {
+                <a href="@Url.RouteUrl("Login", new { returnUrl })" class="ico-login">@T("Account.Login")</a>
+            }
+            <ul class="login-dropdown-menu">
+                @if (Model.IsAuthenticated)
+                {
+                    customerMyAccountUrl = "#";
+                    @if (await customerService.IsInCustomerRoleAsync(customer, ERPIntegrationCoreDefaults.B2BSalesRepRoleSystemName) == false)
+                    {
+                        customerMyAccountUrl = Url.RouteUrl("CustomerInfo");
+                    }
+                    <li><a href="@customerMyAccountUrl" class="ico-account">@T("Account.MyAccount")@*@Model.CustomerName*@</a></li>
+                    <li><a href="@Url.RouteUrl("Logout")" class="ico-logout">@T("Account.Logout")</a></li>
+                }
+                else
+                {
+                    @if (Model.RegistrationType != UserRegistrationType.Disabled)
+                    {
+                        <li>
+                            @if (settings.IsB2BUserRegisterAllowed && settings.IsB2CUserRegisterAllowed)
+                            {
+                                <a href="#" onclick="registerButtonClick()" data-toggle="modal" data-target="#registrationTypeDialog" class="ico-register">@T("account.register.button")</a>
+                                <div id="registrationTypeDialog" class="registration-type-dialog" title='@T("NopStation.B2BB2CFeatures.Register.Notification.Title")' style="display: none;">
+                                    <div class="dialog-center-register">
+                                        <h2>@T("NopStation.B2BB2CFeatures.Register.Notification.Description")</h2>
+                                    </div>
+                                    <br />
+                                    <div class="register-confirm-buttons">
+                                        <button type="button" class="button-1" onclick="redirectToB2BRegister()"><span>@T("NopStation.B2BB2CFeatures.Register.Notification.Yes")</span></button>
+                                        <button type="button" class="button-1" onclick="redirectToB2CRegister()"><span>@T("NopStation.B2BB2CFeatures.Register.Notification.No")</span></button>
+                                    </div>
+                                    <script asp-location="Footer">
+                                        function redirectToB2BRegister() {
+                                            window.location.href = "@Url.RouteUrl("B2BRegister")";
+                                        }
+                                        function redirectToB2CRegister() {
+                                            window.location.href = "@Url.RouteUrl("B2CRegister")";
+                                        }
+                                    </script>
+                                </div>
+                                <script asp-location="Footer">
+                                    function registerButtonClick() {
+                                        $("#header-links-mobile").hide();
+                                        $("#registrationTypeDialog").dialog({
+                                            modal: true,
+                                            draggable: false,
+                                            closeOnEscape: true
+                                        });
+                                    }
+                                </script>
+                            }
+                            else if (settings.IsB2BUserRegisterAllowed)
+                            {
+                                <a href="@Url.RouteUrl("B2BRegister")" class="ico-register">@T("Account.Register")</a>
+                            }
+                            else if (settings.IsB2CUserRegisterAllowed)
+                            {
+                                <a href="@Url.RouteUrl("B2CRegister")" class="ico-register">@T("Account.Register")</a>
+                            }
+                            else
+                            {
+                                <a href="@Url.RouteUrl("Register", new { returnUrl })" class="ico-register">@T("Account.Register")</a>
+                            }
+                        </li>
+                    }
+                    <li><a href="@Url.RouteUrl("Login", new { returnUrl })" class="ico-login">@T("Account.Login")</a></li>
+                }
+            </ul>
+        </li>
+        @if (await customerService.IsInCustomerRoleAsync(customer, ERPIntegrationCoreDefaults.B2BSalesRepRoleSystemName) == false)
+        {
+            @if (Model.AllowPrivateMessages)
+            {
+                <li>
+                    <a href="@Url.RouteUrl("PrivateMessages", new { tab = "" })" class="ico-inbox">
+                        <span class="inbox-label">@T("PrivateMessages.Inbox")</span>
+                        <span class="inbox-unread">@Model.UnreadPrivateMessages</span>
+                    </a>
+                </li>
+            }
+            @if (Model.WishlistEnabled)
+            {
+                <li>
+                    <a href="@Url.RouteUrl("Wishlist")" class="ico-wishlist">
+                        <span class="wishlist-label">@T("Wishlist")</span>
+                        <span class="wishlist-qty">@T("Wishlist.HeaderQuantity", Model.WishlistItems)</span>
+                    </a>
+                </li>
+            }
+            @if (Model.ShoppingCartEnabled)
+            {
+                <li id="topcartlink">
+                    <a href="@Url.RouteUrl("ShoppingCart")" class="ico-cart">
+                        <span class="cart-label">@T("ShoppingCart")</span>
+                        <span class="cart-qty">@T("ShoppingCart.HeaderQuantity", Model.ShoppingCartItems) <span>@T("Nopstation.Theme.HeaderQuanity.Items.Text")</span></span>
+                    </a>
+                </li>
+            }
+            @if (Model.IsAuthenticated && b2BB2CFeaturesSettings.DisplayAddToQuickListFavouriteButton && erpCustomer.ErpAccount != null)
+            {
+                <li id="quickorder"><a style="font-size:15px;margin:5px" href="@Url.RouteUrl("QuickOrder")" class="ico-cart">@T("Plugin.Misc.NopStation.B2BB2CFeatures.QuickOrder.QuickOrder")</a></li>
+            }
+        }
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderLinksAfter, additionalData = Model })
+    </ul>
+    @if (Model.AllowPrivateMessages && !string.IsNullOrEmpty(Model.AlertMessage))
+    {
+        //new private message notification
+        <script asp-location="Footer">
+            $(document).ready(function () {
+                displayPopupNotification('@Html.Raw(JavaScriptEncoder.Default.Encode(Model.AlertMessage))', 'success', false);
+            });
+        </script>
+    }
+    @if (Model.ShoppingCartEnabled)
+    {
+        <script asp-location="Footer">
+            $(document).ready(function () {
+                $('.header').on('click', '#topcartlink a', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    $('#flyout-cart').addClass('active');
+                    $('html').addClass('flyout-cart-open');
+                });
+                $('.close-cart, .flyout-cart-toggle-button').on('click', function (e) {
+                    e.stopPropagation();
+                    $('#flyout-cart').removeClass('active');
+                    $('html').removeClass('flyout-cart-open');
+                });
+                $('html,body').on('click', '#flyout-cart .mini-shopping-cart', function (e) {
+                    e.stopPropagation();
+                });
+                $('html,body').on('click', function (e) {
+                    $('#flyout-cart').removeClass('active');
+                    $('html').removeClass('flyout-cart-open');
+                });
+              
+            });
+        </script>
+    }
+</div>
+
+
+<div id="mobile-bottom-navigation">
+    <ul>
+        <li class="mobile-user-dropdown dropdown">
+            @if (Model.IsAuthenticated)
+            {
+                <a href="@Url.RouteUrl("CustomerInfo")" class="ico-account">@T("Account.MyAccount")@*@Model.CustomerName*@</a>
+            }
+            else
+            {
+                <a href="@Url.RouteUrl("Login", new { returnUrl })" class="ico-login">@T("Account.Login")</a>
+            }
+            <ul class="mobile-login-dropdown-menu">
+                @if (Model.IsAuthenticated)
+                {
+                    <li><a href="@Url.RouteUrl("CustomerInfo")" class="ico-account">@T("Account.MyAccount")@*@Model.CustomerName*@</a></li>
+                    <li><a href="@Url.RouteUrl("Logout")" class="ico-logout">@T("Account.Logout")</a></li>
+                }
+                else
+                {
+
+                    @if (Model.RegistrationType != UserRegistrationType.Disabled)
+                    {
+                        <li><a href="@Url.RouteUrl("Register", new { returnUrl })" class="ico-register">@T("Account.Register")</a></li>
+                    }
+                    <li><a href="@Url.RouteUrl("Login", new { returnUrl })" class="ico-login">@T("Account.Login")</a></li>
+                }
+            </ul>
+        </li>
+
+        @if (Model.WishlistEnabled)
+        {
+            <li class="wishlist-item">
+                <a href="@Url.RouteUrl("Wishlist")" class="ico-wishlist">
+                    <span class="wishlist-label">@T("Wishlist")</span>
+                </a>
+            </li>
+        }
+
+        <li class="checkout-item">
+            <a href="#" class="checkout-link">
+                <span>@T("Checkout.Button")</span>
+            </a>
+        </li>
+        @if (Model.ShoppingCartEnabled)
+        {
+            <li class="cart-item" id="topcartlink-mobile">
+                <a href="@Url.RouteUrl("ShoppingCart")" class="ico-cart">
+                    <span class="cart-label">@T("ShoppingCart")</span>
+                </a>
+            </li>
+        }
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderLinksAfter, additionalData = Model })
+    </ul>
+</div>
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        var elementToReplace = document.getElementById('mobile-bottom-navigation');
+        document.body.appendChild(elementToReplace);
+    });
+</script>
+
+<script asp-location="Footer">
+    var mobileDropdownDialog = $("#mobile-bottom-navigation  .mobile-login-dropdown-menu").dialog({
+        autoOpen: false,
+        modal: true,
+        open: function (event, ui) {
+            $("body").css("overflow","hidden");
+            $('.ui-widget-overlay').on('click', function (e) {
+                e.stopPropagation();
+                mobileDropdownDialog.dialog('close');
+            });
+        },
+        close: function (event, ui) {
+            $("body").removeAttr("style");
+        },
+        classes: {
+            "ui-dialog": "mobile-account-dropdown"
+        },
+        show: {
+            effect: "fade",
+            duration: 300
+        },
+        hide: {
+            effect: "fade",
+            duration: 300
+        }
+    });
+    $(document).ready(function(){
+        $("#mobile-bottom-navigation .mobile-user-dropdown > a").on("click", function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            mobileDropdownDialog.dialog("open")
+        })
+        $("#topcartlink-mobile > a").on("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $('#flyout-cart').addClass('active');
+            $('html').addClass('flyout-cart-open');
+        })
+    })
+</script>

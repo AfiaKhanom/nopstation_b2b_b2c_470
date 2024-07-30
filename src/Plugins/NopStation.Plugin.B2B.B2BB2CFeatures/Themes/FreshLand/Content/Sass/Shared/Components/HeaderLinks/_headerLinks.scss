@@ -1,0 +1,47 @@
+.header-links {
+    > ul {
+        display: flex;
+
+        > li:not(#topcartlink) {
+            display: none;
+        }
+
+        @media (min-width: $md) {
+            > li:not(#topcartlink), > li {
+                display: inline-block;
+                margin-left: 5px;
+
+                > a {
+                    display: block;
+                    font-size: 0;
+                    padding: 0 10px;
+                    color: var(--primary-green);
+
+                    &.ico-wishlist {
+                        position: relative;
+
+                        &::before {
+                            content: "\e94b";
+                            font-family: "icomoon" !important;
+                            display: block;
+                            font-size: 20px;
+                            font-weight: 600;
+                        }
+
+                        &::after {
+                            content: "";
+                            width: 8px;
+                            height: 8px;
+                            background: var(--red);
+                            position: absolute;
+                            top: 0px;
+                            right: 6px;
+                            border-radius: 50px;
+                        }
+                    }
+                    
+                }
+            }
+        }
+    }
+}

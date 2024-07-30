@@ -1,0 +1,23 @@
+﻿@model AccountSwitchModel
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Componenets
+
+@await Component.InvokeAsync(typeof(SalesRepHeaderViewComponent))
+@if (Model.AvailableErpAccounts.Count > 1)
+{
+    <div class="ddl-erp-account-options">
+        <form id="B2BB2CErpAccount" asp-controller="B2BB2CCustomer" asp-action="SetErpAccount" method="post">
+            @Html.HiddenFor(x => x.CustomerId)
+            @Html.HiddenFor(x => x.RedirectUrl)
+            @Html.DropDownListFor(m => m.ErpAccountId, Model.AvailableErpAccounts, new { id = "erp-accounts-dropdown" })
+        </form>
+    </div>
+
+    <script asp-location="Footer">
+        $(document).ready(function () {
+            $('#erp-accounts-dropdown').on('change', function () {
+                $("#B2BB2CErpAccount").submit();
+            });
+        });
+
+    </script>
+}

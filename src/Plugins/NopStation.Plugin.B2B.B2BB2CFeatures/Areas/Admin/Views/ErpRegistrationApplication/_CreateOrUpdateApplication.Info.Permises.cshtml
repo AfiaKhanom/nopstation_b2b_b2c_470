@@ -1,0 +1,61 @@
+﻿@model ApplicationFormModel
+
+@* @{
+    Layout = "_AdminLayout";
+    //page title
+    ViewBag.PageTitle = T("B2BB2CFeatures.Admin.ErpRegistrationApplication.ApplicationForm.PageTitle.AddNew").Text;
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.B2BB2CFeatures.ErpRegistrationApplication");
+} *@
+
+<div class="card-body">
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="@Model.PremisesModel.OwnedOrLeased" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="@Model.PremisesModel.OwnedOrLeased" asp-required="true" />
+            <span asp-validation-for="@Model.PremisesModel.OwnedOrLeased"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="@Model.PremisesModel.NameOfLandlord" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="@Model.PremisesModel.NameOfLandlord" asp-required="true" />
+            <span asp-validation-for="@Model.PremisesModel.NameOfLandlord"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="@Model.PremisesModel.AddressOfLandlord" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="@Model.PremisesModel.AddressOfLandlord" asp-required="true" />
+            <span asp-validation-for="@Model.PremisesModel.AddressOfLandlord"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="@Model.PremisesModel.EmailOfLandlord" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="@Model.PremisesModel.EmailOfLandlord" asp-required="true" />
+            <span asp-validation-for="@Model.PremisesModel.EmailOfLandlord"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="@Model.PremisesModel.TelephoneNumberOfLandlord" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="@Model.PremisesModel.TelephoneNumberOfLandlord" asp-required="true" />
+            <span asp-validation-for="@Model.PremisesModel.TelephoneNumberOfLandlord"></span>
+        </div>
+    </div>
+</div>

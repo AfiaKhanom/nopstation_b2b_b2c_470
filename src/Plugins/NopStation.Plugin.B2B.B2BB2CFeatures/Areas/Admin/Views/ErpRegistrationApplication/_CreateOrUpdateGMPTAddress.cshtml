@@ -1,0 +1,462 @@
+@using Nop.Web.Components
+@using Nop.Web.Framework.TagHelpers.Shared
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model AddressModel
+@inject B2BB2CFeaturesSettings googleMapsIntegrationSettings
+
+@{
+    var prefix = "PTA";
+}
+
+<input class="address-id" asp-for="Id" type="hidden" />
+<div class="edit-address">
+    <div class="map-header">
+        <h2>@T("NopStation.Plugin.B2B.B2BB2CFeatures.HeaderForMapPhysicalTradingAddress")</h2>
+    </div>
+    <div class="map-card">
+        <input id="pac-input_@prefix" class="pac-input controls" type="text" placeholder="@T("NopStation.Plugin.B2B.B2BB2CFeatures.MapPhysicalTradingAddressSearchBoxPlaceholder")" />
+        <div id="map_@prefix" class="map"></div>
+        <div id="infowindow-content_@prefix" class="infowindow-content">
+            <span id="place-name-PTA"></span><br />
+            <span id="place-address-PTA"></span><br />
+            <span id="place-lng-PTA"></span>
+            <span id="place-lat-PTA"></span>
+        </div>
+    </div>
+
+    <script>
+        function initMap_@prefix () {
+
+            const countrySelectElementPTA = document.querySelector(`#` + `@prefix` + `_CountryId`);
+            const cityInputElementPTA = document.querySelector(`#` + `@prefix` + `_City`);
+            const address1InputElementPTA = document.querySelector(`#` + `@prefix` + `_Address1`);
+            const zipPostalCodeInputElementPTA = document.querySelector(`#` + `@prefix` + `_ZipPostalCode`);
+            const stateProvinceInputElementPTA = document.querySelector(`#` + `@prefix` + `_StateProvinceId`);
+
+            var centerPTA = new google.maps.LatLng(@googleMapsIntegrationSettings.Latitude, @googleMapsIntegrationSettings.Longitude);
+            const inputPTA = document.getElementById("pac-input_@prefix");
+
+            const markerArrayPTA = [];
+            const mapPTA = new google.maps.Map(document.getElementById("map_@prefix"), {
+                center: centerPTA,
+                zoom: 13,
+                mapTypeControl: true,
+                draggableCursor: 'default',
+                mapTypeControlOptions: {
+                    style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                    position: google.maps.ControlPosition.BOTTOM_LEFT
+                },
+                fullscreenControl: true,
+                fullscreenControlOptions: {
+                    position: google.maps.ControlPosition.BOTTOM_RIGHT
+                },
+            });
+
+            mapPTA.controls[google.maps.ControlPosition.TOP_LEFT].push(inputPTA);
+
+            let geoLocationOptionPTA = () => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const pos = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude,
+                            };
+                            mapPTA.setCenter(pos);
+                        },
+                        () => {
+                                            handleLocationError_@prefix (true, mapPTA.getCenter());
+                        }
+                    );
+                } else {
+                                    handleLocationError_@prefix (false, mapPTA.getCenter());
+                }
+            }
+
+            const optionsPTA = {
+                //componentRestrictions: { country: ["za"] }, // restrict suggestions within south africa only
+                fields: ["address_components", "formatted_address", "geometry", "name"],
+                strictBounds: false,
+            };
+            const autocompletePTA = new google.maps.places.Autocomplete(inputPTA, optionsPTA);
+            autocompletePTA.bindTo("bounds", mapPTA);
+
+            const geocoderPTA = new google.maps.Geocoder();
+
+            const infowindowPTA = new google.maps.InfoWindow();
+            const infowindowContentPTA = document.getElementById("infowindow-content_@prefix");
+
+            infowindowPTA.setContent(infowindowContentPTA);
+
+            var markerPTA = new google.maps.Marker({
+                mapPTA,
+                anchorPoint: new google.maps.Point(0, -29),
+            });
+
+            autocompletePTA.addListener("place_changed", () => {
+                              resetData_@prefix ();
+                              clearMarkers_@prefix ();
+
+                const placePTA = autocompletePTA.getPlace();
+
+                if (!placePTA.geometry || !placePTA.geometry.location) {
+                    return;
+                }
+
+                if (placePTA.geometry.viewport) {
+                    mapPTA.fitBounds(placePTA.geometry.viewport);
+                } else {
+                    mapPTA.setCenter(placePTA.geometry.location);
+                    mapPTA.setZoom(15);
+                }
+
+                        addMarker_@prefix (placePTA.geometry.location, mapPTA); //pin the selected place
+
+                infowindowPTA.close();
+                markerPTA.setVisible(false);
+
+                console.log(placePTA.address_components);
+                              setInfoWindowFields_@prefix (placePTA);
+                              setAddressFields_@prefix (placePTA.address_components);
+            });
+
+            google.maps.event.addListener(mapPTA, "click", (event) => {
+                event.stop();
+                        resetData_@prefix ();
+                        clearMarkers_@prefix ();
+                        addMarker_@prefix (event.latLng, mapPTA);
+
+                if (event.placeId) {
+                            getPlaceInformation_@prefix (event.placeId);
+                }
+                else {
+                    geocoderPTA
+                        .geocode({ location: event.latLng })
+                        .then((response) => {
+                            if (response.results[0]) {
+                                if (response.results[0].geometry.viewport) {
+                                    mapPTA.fitBounds(response.results[0].geometry.viewport);
+                                } else {
+                                    mapPTA.setCenter(response.results[0].geometry.location);
+                                    mapPTA.setZoom(17);
+                                }
+                                console.log(response.results[0].address_components);
+                                    setInfoWindowFields_@prefix (response.results[0]);
+                                    setAddressFields_@prefix (response.results[0].address_components);
+                            } else { }
+                        }).catch((e) => console.log("Geocoder failed due to: " + e));
+                }
+            });
+
+            function getPlaceInformation_@prefix (placeId) {
+                infowindowPTA.close();
+                markerPTA.setVisible(false);
+
+                const place_servicePTA = new google.maps.places.PlacesService(mapPTA);
+
+                place_servicePTA.getDetails({ placeId: placeId }, (placePTA, status) => {
+
+                    if (!placePTA.geometry || !placePTA.geometry.location) {
+                        return;
+                    }
+
+                    if (status == google.maps.places.PlacesServiceStatus.OK && placePTA && placePTA.geometry && placePTA.geometry.location) {
+                        if (placePTA.geometry.viewport) {
+                            mapPTA.fitBounds(placePTA.geometry.viewport);
+                        } else {
+                            mapPTA.setCenter(placePTA.geometry.location);
+                            mapPTA.setZoom(17);
+                        }
+
+                        console.log(placePTA.address_components);
+                                setInfoWindowFields_@prefix (placePTA);
+                                setAddressFields_@prefix (placePTA.address_components);
+                    }
+                });
+            }
+
+            function addMarker_@prefix (location, mapPTA) {
+                markerPTA = new google.maps.Marker({
+                    position: location,
+                    map: mapPTA,
+                });
+
+                markerArrayPTA.push(markerPTA);
+            }
+
+            function clearMarkers_@prefix () {
+                for (var i = 0; i < markerArrayPTA.length; i++) {
+                    markerArrayPTA[i].setMap(null);
+                }
+            }
+
+            function resetData_@prefix () {
+                if (countrySelectElementPTA) {
+                    countrySelectElementPTA.value = "";
+                }
+                if (zipPostalCodeInputElementPTA) {
+                    zipPostalCodeInputElementPTA.value = "";
+                }
+                if (address1InputElementPTA) {
+                    address1InputElementPTA.value = "";
+                }
+                if (stateProvinceInputElementPTA) {
+                    stateProvinceInputElementPTA.value = "";
+                }
+                if (cityInputElementPTA) {
+                    cityInputElementPTA.value = "";
+                }
+
+                infowindowContentPTA.children["place-name-PTA"].textContent = "";
+                infowindowContentPTA.children["place-address-PTA"].textContent = "";
+                infowindowContentPTA.children["place-lng-PTA"].textContent = "";
+                infowindowContentPTA.children["place-lat-PTA"].textContent = "";
+            }
+
+            function setInfoWindowFields_@prefix (placeInfo) {
+                markerPTA.setPosition(placeInfo.geometry.location);
+                markerPTA.setVisible(true);
+
+                var placeNamePTA = "";
+                if (placeInfo.name)
+                    placeNamePTA = placeInfo.name + ", ";
+
+                infowindowContentPTA.children["place-name-PTA"].textContent = placeNamePTA;
+                infowindowContentPTA.children["place-address-PTA"].textContent = placeInfo.formatted_address;
+                infowindowContentPTA.children["place-lng-PTA"].textContent = placeInfo.geometry.location.lng();
+                infowindowContentPTA.children["place-lat-PTA"].textContent = placeInfo.geometry.location.lat();
+
+                infowindowPTA.open(mapPTA, markerPTA);
+
+                inputPTA.value = placeNamePTA + placeInfo.formatted_address;
+            }
+
+            async function getCountry_@prefix (code) {
+                const rawResponse = await fetch(`/GetCountryTwoLetterIsoCode/${code}`, {
+                    method: 'Get',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                });
+
+                let content = await rawResponse.json();
+                return content.Id;
+            }
+
+            function setAddressFields_@prefix (address_components) {
+                var addressComponents = address_components;
+                let address1 = "";
+                for (const component of addressComponents) {
+                    const componentType = component.types;
+
+                    if (componentType.includes("street_number")) {
+                        let value = component.long_name;
+                        console.log(value);
+
+                        if (value) {
+                            address1 += value + " ";
+                        }
+                    }
+                    else if (componentType.includes("route")) {
+                        let value = component.long_name;
+
+                        if (value) {
+                            address1 += value + " ";
+                        }
+                    }
+                    else if (componentType.includes("postal_code") && zipPostalCodeInputElementPTA) {
+                        zipPostalCodeInputElementPTA.value = component.long_name;
+                    }
+                    else if (componentType.includes("locality") && cityInputElementPTA) {
+                        cityInputElementPTA.value = component.long_name;
+                    }
+                    else if (componentType.includes("sublocality")) {
+                        let value = component.long_name;
+
+                        if (value) {
+                            address1 += value + " ";
+                        }
+                    }
+                    else if (componentType.includes("sublocality_level_1")) {
+                        let value = component.long_name;
+
+                        if (value) {
+                            address1 += value + " ";
+                        }
+                    }
+                    else if (componentType.includes("sublocality_level_2")) {
+                        let value = component.long_name;
+
+                        if (value) {
+                            address1 += value + " ";
+                        }
+                    }
+                    else if (componentType.includes("administrative_area_level_1") && stateProvinceInputElementPTA) {
+                    }
+                    else if (componentType.includes("country") && countrySelectElementPTA) {
+                        (async () => {
+                            countrySelectElementPTA.value = await getCountry_@prefix (component.short_name);
+                            countrySelectElementPTA.dispatchEvent(new Event('change'));
+                        })();
+                    }
+                }
+
+                if (address1InputElementPTA) {
+                    address1InputElementPTA.value = address1;
+                }
+            }
+
+            function handleLocationError_@prefix (browserHasGeolocation, pos) {
+                browserHasGeolocation
+                    ? console.log("Error: The Geolocation service failed")
+                    : console.log("Error: The browser doesn't support geolocation");
+
+                mapPTA.setCenter(pos);
+            }
+        }
+
+        window.initMap_@prefix = initMap_@prefix;
+        window.onload = function () {
+                      initMap_@prefix ();
+        };
+
+        setTimeout(() => {
+                        initMap_@prefix ();
+        }, 100)
+
+    </script>
+
+    <div class="fieldset">
+        <div><strong>Address</strong></div>
+        <div class="form-fields">
+            @* <div class="inputs">
+                <label asp-for="FirstName" asp-postfix=":"></label>
+                <input asp-for="FirstName" id="PTA_FirstName" />
+                <nop-required />
+                <span asp-validation-for="FirstName"></span>
+            </div>
+            <div class="inputs">
+                <label asp-for="LastName" asp-postfix=":"></label>
+                <input asp-for="LastName" id="PTA_LastName" />
+                <nop-required />
+                <span asp-validation-for="LastName"></span>
+            </div> *@
+            <div class="inputs">
+                <label asp-for="Email" asp-postfix=":"></label>
+                <input asp-for="Email" id="PTA_Email" />
+                <nop-required />
+                <span asp-validation-for="Email"></span>
+            </div>
+            @* @if (Model.CompanyEnabled)
+            {
+                <div class="inputs">
+                    <label asp-for="Company" asp-postfix=":"></label>
+                    <input asp-for="Company" id="PTA_Company" />
+                    @if (Model.CompanyRequired)
+                    {
+                        <nop-required />
+                    }
+                    <span asp-validation-for="Company"></span>
+                </div>
+            } *@
+
+            <div class="inputs">
+                <label asp-for="PhoneNumber" asp-postfix=":"></label>
+                <input asp-for="PhoneNumber" id="PTA_PhoneNumber" />
+                @if (Model.PhoneRequired)
+            {
+                <nop-required />
+            }
+                <span asp-validation-for="PhoneNumber"></span>
+            </div>
+
+            @* @if (Model.FaxEnabled)
+            {
+                <div class="inputs">
+                    <label asp-for="FaxNumber" asp-postfix=":"></label>
+                    <input asp-for="FaxNumber" id="PTA_FaxNumber" />
+                    @if (Model.FaxRequired)
+                {
+                    <nop-required />
+                }
+                    <span asp-validation-for="FaxNumber"></span>
+                </div>
+            } *@
+
+            <div class="inputs">
+                <label asp-for="Address1" asp-postfix=":"></label>
+                <input asp-for="Address1" id="PTA_Address1" class="address-address1" />
+                @if (Model.StreetAddressRequired)
+                {
+                    <nop-required />
+                }
+                <span asp-validation-for="Address1"></span>
+            </div>
+
+            <div class="inputs">
+                <label asp-for="Address2" asp-postfix=":"></label>
+                <input asp-for="Address2" id="PTA_Address2" />
+                @if (Model.StreetAddress2Required)
+                {
+                    <nop-required />
+                }
+                <span asp-validation-for="Address2"></span>
+            </div>
+
+            <div class="inputs">
+                <label asp-for="CountryId" asp-postfix=":"></label>
+                <select asp-for="CountryId" asp-items="Model.AvailableCountries" id="PTA_CountryId"
+                        data-trigger="country-select"
+                        data-url="@(Url.RouteUrl("GetStatesByCountryId"))"
+                        class="address-country"
+                        data-stateprovince="#PTA_StateProvinceId"
+                        data-loading="#states-loading-progress-PTA"></select>
+                <nop-required />
+                <span asp-validation-for="CountryId"></span>
+            </div>
+
+            <div class="inputs">
+                <label asp-for="StateProvinceId" asp-postfix=":"></label>
+                <select asp-for="StateProvinceId" asp-items="Model.AvailableStates" id="PTA_StateProvinceId"
+                        class="address-state"
+                        data-trigger="state-select">
+                </select>
+                <span id="states-loading-progress-PTA" style="display: none;" class="please-wait">@T("Common.Wait")</span>
+                <span asp-validation-for="StateProvinceId"></span>
+            </div>
+
+            <div class="inputs">
+                <label asp-for="County" asp-postfix=":"></label>
+                <input asp-for="County" id="PTA_County" />
+                @if (Model.CountyRequired)
+                {
+                    <nop-required />
+                }
+                <span asp-validation-for="County"></span>
+            </div>
+
+            <div class="inputs">
+                <label asp-for="City" asp-postfix=":"></label>
+                <input asp-for="City" class="address-city" id="PTA_City" />
+                @if (Model.CityRequired)
+                {
+                    <nop-required />
+                }
+                <span asp-validation-for="City"></span>
+            </div>
+
+            <div class="inputs">
+                <label asp-for="ZipPostalCode" asp-postfix=":"></label>
+                <input asp-for="ZipPostalCode" id="PTA_ZipPostalCode" class="address-zip-postal-code" />
+                @if (Model.ZipPostalCodeRequired)
+                {
+                    <nop-required />
+                }
+                <span asp-validation-for="ZipPostalCode"></span>
+            </div>
+
+            @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.AddressBottom, additionalData = Model })
+        </div>
+    </div>
+</div>

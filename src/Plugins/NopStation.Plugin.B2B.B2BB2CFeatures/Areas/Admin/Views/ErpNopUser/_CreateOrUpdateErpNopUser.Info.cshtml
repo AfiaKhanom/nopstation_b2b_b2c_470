@@ -1,0 +1,238 @@
+﻿@model ErpNopUserModel
+
+<div class="card-body">
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="NopCustomerId" />
+        </div>
+        @if (Model?.Id > 0)
+        {
+            <div class="col-md-9 justify-content-center align-self-center">
+                <input type="hidden" id="NopCustomerId" name="NopCustomerId" value=@Model.NopCustomerId />
+                <a asp-controller="Customer" asp-action="Edit" asp-route-id="@Model.NopCustomerId">@Model.NopCustomer</a>
+                <a class="btn btn-primary" asp-action="Impersonate" asp-route-id="@Model.NopCustomerId">Impersonate</a>
+            </div>
+        }
+        else
+        {
+            <div class="col-md-9">
+                <nop-Select asp-for="NopCustomerId" asp-items="Model.AvailableNopCustomers" asp-required="true" />
+                <span asp-validation-for="NopCustomerId"></span>
+            </div>
+        }
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="ErpAccountId" />
+        </div>
+
+
+        @if (Model.ErpAccountId > 0)
+        {
+            <div class="col-md-9">
+                <input type="hidden" id="ErpAccountId" name="ErpAccountId" value="@Model.ErpAccountId" />
+                <a asp-controller="ErpAccount" asp-action="ErpAccountEdit" asp-route-id="@Model.ErpAccountId">@Model.ErpAccount</a>
+            </div>
+        }
+        else
+        {
+            <div class="col-md-9">
+                <div class="input-group input-group-required">
+                    <input type="text" id="search-account-code" autocomplete="on" placeholder="Search by Erp Account number" class="form-control" />
+                    <div class="input-group-btn"><span class="required">*</span></div>
+                </div>
+
+                <span id="search-account-by-code"></span>
+                <button type="button" id="search-account-clear" class="btn bg-gray" style="display: none; margin-top: 5px;">@T("Admin.Common.Clear")</button>
+                <input asp-for="ErpAccountId" autocomplete="off" style="display: none;" />
+
+                <script>
+                    $(document).ready(function () {
+                        $('#search-account-code').autocomplete({
+                            delay: 500,
+                            minLength: 3,
+                            source: function (request, response) {
+                                $.ajax({
+                                    url: '@(Url.Action("ErpAccountSearchAutoComplete", "ErpAccount"))',
+                                    dataType: 'json',
+                                    data: { term: request.term },
+                                    success: function (data) {
+                                        // Check if there are no results
+                                        if (data.length === 0) {
+                                            response([{ label: 'No results found', value: '' }]);
+                                        } else {
+                                            response(data);
+                                        }
+                                    }
+                                });
+                            },
+                            select: function (event, ui) {
+                                if (ui.item.value === '' || ui.item.label === 'No results found') {
+                                    // No actual item selected, handle accordingly
+                                    return false;
+                                }
+                                $('#@Html.IdFor(model => model.ErpAccountId)').val(ui.item.erpaccountid);
+                                $('#search-account-by-code').text(ui.item.label);
+
+                                $('#search-account-clear').show();
+
+                                updateErpShipToAddresses(ui.item.erpaccountid);
+
+                                return false;
+                            }
+                        });
+
+                        //remove button
+                        $('#search-account-clear').click(function () {
+                            $('#@Html.IdFor(model => model.ErpAccountId)').val('0');
+                            $('#search-account-by-code').text('');
+                            $('#search-account-clear').hide();
+                            return false;
+                        });
+                    });
+                </script>
+                <span asp-validation-for="ErpAccountId" id="validationMessageErpAccountId"></span>
+            </div>
+        }
+
+
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="ErpShipToAddressId" />
+        </div>
+        <div class="col-md-9">
+            <nop-Select asp-for="ErpShipToAddressId" asp-items="Model.AvailableAddresses" asp-required="true" />
+            <span asp-validation-for="ErpShipToAddressId"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="SelectedCustomerRoleIds" />
+        </div>
+
+        <div class="col-md-9">
+            <div class="input-group-append input-group-required">
+                <div class="input-group">
+                    <nop-select asp-for="SelectedCustomerRoleIds" asp-items="Model.AvailableCustomerRoles" asp-multiple="true" />
+                </div>
+                <div class="input-group-btn">
+                    <nop-required />
+                </div>
+            </div>
+            <span asp-validation-for="SelectedCustomerRoleIds"></span>
+            <script>
+                $(document).ready(function () {
+                    var customerRoleIdsInput = $('#@Html.IdFor(model => model.SelectedCustomerRoleIds)').data("kendoMultiSelect");
+                    customerRoleIdsInput.setOptions({
+                        customerRoleIdsInput: false,
+                        filter: "contains"
+                    });
+
+                @if (Model.AvailableCustomerRoles.Count == 0)
+                {
+                    <text>
+                        customerRoleIdsInput.setOptions({
+                            enable: false,
+                            placeholder: '@T("Admin.Customers.Customers.Fields.CustomerRoles.NoRoles")'
+                        });
+                        customerRoleIdsInput._placeholder();
+                        customerRoleIdsInput._enable();
+                    </text>
+                }});
+            </script>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="ErpUserTypeId" />
+        </div>
+        <div class="col-md-9">
+            <nop-Select asp-for="ErpUserTypeId" asp-items="Model.AvailableErpUserTypes" asp-required="true" />
+            <span asp-validation-for="ErpUserTypeId"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="IsActive" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="IsActive" />
+            <span asp-validation-for="IsActive"></span>
+        </div>
+    </div>
+
+    @if (Model.Id > 0)
+    {
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="CreatedOn" />
+            </div>
+            <div class="col-md-9 justify-content-center align-self-center">
+                @Model.CreatedOn
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="UpdatedOn" />
+            </div>
+            <div class="col-md-9 justify-content-center align-self-center">
+                @Html.DisplayFor(model => model.UpdatedOn)
+            </div>
+        </div>
+    }
+
+</div>
+
+<nop-alert asp-alert-id="statesAlert" asp-alert-message="@T("Admin.Common.Alert.States.Failed")" />
+
+
+<script>
+    // Function to update the ErpShipToAddressId dropdown
+    function updateErpShipToAddresses(accountId) {
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("ShipToAddressDropdownList", "ErpNopUser")', // Replace with the actual controller and action names if necessary
+            data: { erpAccountId: accountId },
+            success: function (data) {
+                // Clear existing options in the ErpShipToAddressId dropdown
+                $('#ErpShipToAddressId').empty();
+
+                // Add new options based on the response data
+                $.each(data, function (index, item) {
+                    var option = $('<option></option>').val(item.Value).text(item.Text);
+                    if (@Model.ErpShipToAddressId == item.Value) {
+                        option.prop('selected', true); // Mark this option as selected
+                    }
+                    $('#ErpShipToAddressId').append(option);
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+    }
+
+    // Event listener for the AccountId dropdown change
+    $('#ErpAccountId').on('change', function () {
+        // Get the selected AccountId
+        var selectedAccountId = $(this).val();
+        // Call the method to update the ErpShipToAddressId dropdown
+        updateErpShipToAddresses(selectedAccountId);
+    });
+
+    // Initialize the ErpShipToAddressId dropdown with the initial value of AccountId
+    $(document).ready(function () {
+        // Get the initial value of AccountId
+        var initialAccountId = $('#ErpAccountId').val();
+        // Call the method to update the ErpShipToAddressId dropdown
+        updateErpShipToAddresses(initialAccountId);
+    });
+</script>

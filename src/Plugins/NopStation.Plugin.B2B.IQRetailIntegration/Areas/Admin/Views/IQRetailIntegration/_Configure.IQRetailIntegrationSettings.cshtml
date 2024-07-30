@@ -1,0 +1,111 @@
+﻿@model ConfigurationModel
+<div class="card-body">
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="BaseUrl" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="BaseUrl" />
+            <span asp-validation-for="BaseUrl"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="UserName" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="UserName" />
+            <span asp-validation-for="UserName"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="Password" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="Password" />
+            <span asp-validation-for="Password"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="Location" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="Location" />
+            <span asp-validation-for="Location"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="CompanyId" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="CompanyId" />
+            <span asp-validation-for="CompanyId"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="TerminalNumber" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="TerminalNumber" />
+            <span asp-validation-for="TerminalNumber"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="B2cPriceCode" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="B2cPriceCode" />
+            <span asp-validation-for="B2cPriceCode"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="DefaultLimit" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="DefaultLimit" />
+            <span asp-validation-for="DefaultLimit"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="ErpCallTimeOut" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="ErpCallTimeOut" />
+            <span asp-validation-for="ErpCallTimeOut"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="HttpCallMaxRetries" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="HttpCallMaxRetries" />
+            <span asp-validation-for="HttpCallMaxRetries"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="HttpCallRestTimeInMinutes" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="HttpCallRestTimeInMinutes" />
+            <span asp-validation-for="HttpCallRestTimeInMinutes"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="DefaultCustomerId" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="DefaultCustomerId" asp-items="Model.AvailableCustomers" />
+            <span asp-validation-for="DefaultCustomerId"></span>
+        </div>
+    </div>
+</div>

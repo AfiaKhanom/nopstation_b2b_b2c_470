@@ -1,0 +1,380 @@
+﻿@model QuickOrderTemplateSearchModel
+
+@{
+    Layout = "_ColumnsOne";
+    //title
+    NopHtml.AddTitleParts(T("PageTitle.QuickOrder").Text);
+
+    //page class
+    NopHtml.AppendPageCssClassParts("html-account-page");
+    NopHtml.AppendPageCssClassParts("html-customer-info-page");
+    NopHtml.AppendPageCssClassParts("html-b2b-b2c-feature");
+    NopHtml.AddCssFileParts("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Content/css/quickorderstyles.css");
+    NopHtml.AppendScriptParts(ResourceLocation.Footer, "~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Content/scripts/quickorder.js");
+    await Html.PartialAsync("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/Shared/_DatatableScripts.cshtml");
+    var themeName = await themeContext.GetWorkingThemeNameAsync();
+    var gridName = "quick-order-list-grid";
+}
+<style>
+    body a {
+        font: normal 14px Arial,Helvetica,sans-serif;
+        font-size: 14px;
+        color: #777;
+    }
+
+    .header-overlap .header-menu {
+        z-index: 5 !important;
+    }
+
+    .header-overlap .header {
+        z-index: 10 !important;
+    }
+</style>
+
+<div class="page quick-order-page quick-order-list-page">
+    <div class="page-title">
+        <h1>@T("Plugins.Misc.NopStation.B2BB2CFeatures.QuickOrderList")</h1>
+    </div>
+    <div class="card card-default">
+        <div class="card-body">
+            <div class="row" style="display: flex;flex-direction: row-reverse;margin:auto">
+                <button id="quickListFavouriteButton" name="quickListFavouriteButton" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.AddToQuickListFavourite.Button")" class="btn btn-primary p-2">@T("Plugin.Misc.NopStation.B2BB2CFeatures.AddToQuickListFavourite.Button")</button>
+
+                <button class="btn btn-primary btn-quick-order-action margin-r-10 p-2" id="importFromExcelButton">
+                    @T("Admin.Common.ImportFromExcel")
+                </button>
+            </div>
+            <div class="card card-default card-search p-4">
+                <div class="row">
+
+                    <div class="col-md-4" style="margin:auto">
+                        <div class="form-group SearchName">
+                            <div class="label-inline">
+                                <nop-label asp-for="SearchName" />
+                            </div>
+                            <div class="input-inline">
+                                <nop-editor asp-for="SearchName" />
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-4" style="margin:auto">
+                        <div class="form-group SearchCreatedOn">
+                            <div class="label-inline">
+                                <nop-label asp-for="SearchCreatedOn" />
+                            </div>
+                            <div class="input-inline">
+                                <input asp-for="SearchCreatedOn" type="text" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4" style="margin:auto">
+                        <div class=" form-group text-center">
+                            <button type="button" id="search-quick-order" class="btn btn-primary btn-search btn-quick-order-action">
+                                <i class="fa fa-search"></i>
+                                @T("Admin.Common.Search")
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="card-body">
+            @{
+                var gridModel = new DataTablesModel
+                {
+                    Name = gridName,
+                    UrlRead = new DataUrl("LoadQuickOrderTemplateList", "QuickOrder", new RouteValueDictionary
+                    {
+                        [nameof(Model.SearchCreatedOn)] = Model.SearchCreatedOn,
+                        [nameof(Model.SearchName)] = Model.SearchName
+                    }),
+                    UrlDelete = new DataUrl("QuickOrderDelete", "QuickOrder", null),
+                    Length = Model.PageSize,
+                    LengthMenu = Model.AvailablePageSizes,
+                    SearchButtonId = "search-quick-order",
+                    Filters = new List<FilterParameter>
+                    {
+                        new FilterParameter(nameof(Model.SearchName)),
+                        new FilterParameter(nameof(Model.SearchCreatedOn))
+                    }
+                };
+                    
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.Name))
+                {
+                    Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.Name").Text,
+                    Width = "200"
+                });
+                    
+                var formatedRenderDate = new RenderDate();                    
+                formatedRenderDate.Format = "DD/MM/YYYY";                    
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.CreatedOn))
+                {
+                    Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.CreatedOn").Text,
+                    Width = "200",
+                    Render = formatedRenderDate
+                });
+                    
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.LastOrderDate))
+                {
+                    Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.LastOrderDate").Text,
+                    Width = "200",
+                    Render = formatedRenderDate
+                });
+                    
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.TotalOrderItems))
+                {
+                    Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.TotalOrderItems").Text,
+                    Width = "200"
+                });
+                    
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.TotalValueText))
+                {
+                    Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.TotalValue").Text,
+                    Width = "90"
+                });
+                    
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.Id))
+                {
+                    Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.OrderNow").Text,
+                    Width = "200",
+                    Render = new RenderCustom("renderColumnViewOrderNow"),
+                    ClassName = NopColumnClassDefaults.Button
+                });
+                    
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.Id))
+                {
+                    Title = T("Admin.Common.Edit").Text,
+                    Width = "100",
+                    ClassName = NopColumnClassDefaults.Button,
+                    Render = new RenderButtonEdit(new DataUrl("/FavouritesDetails/")) // should be matched with route provider
+                });
+                    
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.Id))
+                {
+                    Title = T("Admin.Common.Delete").Text,
+                    Width = "100",
+                    ClassName = NopColumnClassDefaults.Button,
+                    Render = new RenderButtonRemove(T("Admin.Common.Delete").Text)
+                });
+            }
+            @await Html.PartialAsync("Table", gridModel)
+        </div>
+    </div>
+
+</div>
+
+<div id="quickOrderListConfirmAcceptDialog" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" onclick="closeQuickOrderListConfirmAcceptPopup()" class="close">&#10005;</button>
+            <h4 class="modal-title"> @T("NopStation.B2BB2CFeatures.ConfirmAcceptDialog.AddToOrRemoveFromCart") </h4>
+        </div>
+
+        <form asp-controller="QuickOrder" asp-action="QuickOrderAddToCart" class="quick-order-confirm-accept-form" method="post" enctype="multipart/form-data">
+
+            <div style="text-align:center">
+                <button id="quickOrderPopupClearCartButton" type="button" value="@T("NopStation.B2BB2CFeatures.ConfirmAcceptDialog.TermsAndCondition.ClearCart")"
+                        class="btn bg-green quick-order-popup-clear-cart-button p-2" onclick="placeOrder(this);">
+                    @T("NopStation.B2BB2CFeatures.ConfirmAcceptDialog.TermsAndCondition.ClearCart")
+                </button>
+                <button type="button" value="@T("NopStation.B2BB2CFeatures.ConfirmAcceptDialog.TermsAndCondition.KeepItemsInCart")"
+                        class="btn bg-green quick-order-popup-add-to-cart-button p-2" onclick="placeOrder(this);">
+                    @T("NopStation.B2BB2CFeatures.ConfirmAcceptDialog.TermsAndCondition.KeepItemsInCart")
+                </button>
+                @*      </div>
+                <div class="">*@
+                <button type="button" name="cancel" onclick="closeQuickOrderListConfirmAcceptPopup()" value="@T("NopStation.B2BB2CFeatures.ConfirmAcceptDialog.TermsAndCondition.Cancel")"
+                        class="btn bg-red p-2">
+                    @T("NopStation.B2BB2CFeatures.ConfirmAcceptDialog.TermsAndCondition.Cancel")
+                </button>
+            </div>
+
+            <input id="templateId" name="templateId" style="display:none;" />
+
+
+            <script asp-location="Footer">
+
+
+                function placeOrder(popUpData) {
+                    var templateId = $('#templateId').val();
+                    QuickOrderJs.disableAddToCartButton(templateId);
+                    QuickOrderJs.disablePopUpAddToCartButton();
+                    displayAjaxLoading(true);
+
+                    if ($(popUpData).attr('id') == 'quickOrderPopupClearCartButton') {
+                        console.log("clear cart");
+                        QuickOrderJs.clearCart(true);
+                    }
+
+                    var reorderActionUrl = '/QuickOrder/QuickOrderAddToCart?templateId=' + templateId;
+                    setLocation(reorderActionUrl);
+                }
+
+                function closeQuickOrderListConfirmAcceptPopup() {
+                    $("#quickOrderListConfirmAcceptDialog").css("display", "none");
+                    $("#templateId").val("")
+                }
+            </script>
+        </form>
+    </div>
+</div>
+
+<div id="quickListFavouriteDialog" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" id="closeQuickListFavouriteDialog" class="close">&#10005;</button>
+            <h4 class="modal-title">@T("Plugin.Misc.NopStation.B2BB2CFeatures.AddToQuickListFavourite.Title") </h4>
+        </div>
+
+        <div class="modal-body">
+            <form asp-controller="QuickOrder" asp-action="CreateQuickOrder" class="quick-order-create-form" method="post">
+
+                <div class="row form-group">
+
+                    <div class="col-md-2">
+                        <div class="label-wrapper">
+                            <label for="Name">@T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.Name")</label>
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <input style="font-size:initial" class="form-control" type="text" required id="Name" name="Name" placeholder="@T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.Name.PlaceHolderHint")">
+                        <span class="field-validation-valid" data-valmsg-for="Name" data-valmsg-replace="true"></span>
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <input type="submit" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.AddToQuickListFavourite.Save")" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="importModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" id="closeImportModel" class="close">&#10005;</button>
+            <h4 class="modal-title">Import Favourites </h4>
+        </div>
+
+        <div class="modal-body">
+            <form asp-controller="QuickOrder" asp-action="CreateWithImportExcel" method="post" enctype="multipart/form-data">
+                <div class="row form-group">
+                    <div class="col-md-2">
+                        <div class="label-wrapper">
+                            <label class="control-label">
+                                @T("NopStation.B2BB2CFeatures.QuickOrder.Import.Popup.NameField")
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <input type="text" id="templateName" name="templateName" class="form-control" />
+                    </div>
+                </div>
+                <div class="row form-horizontal">
+                    <div class="col-md-2">
+                        <label class="control-label">
+                            @T("Admin.Common.ExcelFile")
+                        </label>
+                    </div>
+                    <div class="col-md-10">
+                        <input type="file" id="importexcelfile" name="importexcelfile" class="form-control" />
+                    </div>
+                </div>
+                <div class="row form-horizontal" style="display: flex;flex-direction: row-reverse;padding:10px;">
+
+                    <button type="submit" class="btn btn-primary float-right" onclick="displayAjaxLoading(true)">
+                        @T("Admin.Common.ImportFromExcel")
+                    </button>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<script asp-location="Footer">
+    $("#SearchCreatedOn").datepicker({
+        dateFormat: 'dd/mm/yy'
+    });
+
+    $("#CreateQuickOrder").click(function () {
+        $('#CreateModal').modal("show");
+    });
+
+    $(document).ready(function () {
+        setTimeout(function () {
+            // ajax load the total price
+            $('#@gridName').DataTable().ajax
+                .url("/QuickOrder/LoadQuickOrderTemplateList?LoadTotalPrice=true").load();
+        }, 900);
+    });
+
+    $('#closeImportModel').click(function () {
+        $('#importModal').css('display', 'none');
+    });
+
+    function placeQuickOrderFromList(templateId) {
+        $.ajax({
+            cache: false,
+            type: "GET",
+            dataType: "json",
+            url: "/IsItemsInCart/",
+            success: function (response) {
+                if (!response.success) {
+                    displayAjaxLoading(true)
+                    QuickOrderJs.disableQuickOrderListAddToCartButton(templateId);
+                    var reorderActionUrl = "/QuickOrder/QuickOrderAddToCart?templateId=" + templateId;
+                    setLocation(reorderActionUrl);
+                }
+                else {
+                    $("#templateId").val(templateId);
+                    console.log("template id inside render " + $("#templateId").val());
+                    $("#quickOrderListConfirmAcceptDialog").css("display", "block");
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log("Error. Please Reload");
+            }
+        });
+    }
+
+    $("#quickListFavouriteButton").click(function (event) {
+        event.preventDefault();
+        $("#quickListFavouriteDialog").css("display", "block");
+    });
+
+    $("#closeQuickListFavouriteDialog").click(function (event) {
+        $("#quickListFavouriteDialog").css("display", "none");
+    });
+    $("#importFromExcelButton").click(function (event) {
+        event.preventDefault();
+        $("#importModal").css("display", "block");
+    });
+
+    function renderColumnViewOrderNow(data, type, row, meta) {
+        //return '<a class="btn quick-order-cart-button" onclick="renderQuickOrderLink(' + data + ' )" >Order Now</a>';
+        return '<button id="quickOrderListOrderButton' + data + '" class="btn btn-default btn- quick-order-cart-button" onclick="placeQuickOrderFromList(' + data + ')">@T("NopStation.B2BB2CFeatures.OrderNow")</button>';
+    }
+
+    $(document).ready(function () {
+        $('.header').on('mouseenter', '#topcartlink', function () {
+            $('body').addClass('header-overlap');
+        });
+        $('.header').on('mouseleave', '#topcartlink', function () {
+            $('body').removeClass('header-overlap');
+        });
+        $('.header').on('mouseenter', '#flyout-cart', function () {
+            $('body').addClass('header-overlap');
+        });
+        $('.header').on('mouseleave', '#flyout-cart', function () {
+            $('body').removeClass('header-overlap');
+        });
+    });
+</script>

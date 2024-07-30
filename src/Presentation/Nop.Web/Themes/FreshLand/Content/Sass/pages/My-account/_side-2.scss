@@ -1,0 +1,112 @@
+.html-account-page {
+    .side-2 {
+        .side-2-container {
+            .block {
+                padding: 0;
+
+                .listbox {
+                    padding: 10px;
+
+                    @media(min-width: $md) {
+                        padding: 15px;
+                    }
+                }
+            }
+        }
+
+
+        .title {
+            padding: 10px;
+            margin-bottom: 0;
+            border-bottom: 1px solid var(--primary-grey_light);
+            text-transform: uppercase;
+            color: var(--primary-green);
+
+            strong {
+                font-weight: 700;
+            }
+
+            @media(min-width: $md) {
+                padding: 15px;
+            }
+        }
+
+        ul {
+            li {
+                font-weight: 600;
+                font-size: 14px;
+                line-height: 35px;
+
+                &.active {
+                    a {
+                        color: var(--primary-green);
+                    }
+                }
+
+                a {
+                    position: relative;
+                    color: var(--black);
+                    padding-left: 30px;
+                    transition: all .3s;
+
+                    &:hover {
+                        color: var(--primary-green);
+                    }
+                }
+
+                a::before {
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    font-family: "icomoon";
+                    color: var(--primary-green);
+                    top: 50%;
+                    transform: translateY(-50%);
+                }
+
+                &.customer-info a::before {
+                    content: "\e94a";
+                }
+
+                &.customer-addresses a::before {
+                    content: "\e92d";
+                }
+
+                &.customer-orders a::before {
+                    content: "\e941";
+                    font-size: 13px;
+                }
+
+                &.cybersource-tokens a::before {
+                    content: "\e904";
+                    font-size: 12px;
+                }
+
+                &.return-requests a::before {
+                    content: "\e938";
+                }
+
+                &.downloadable-products a::before {
+                    content: "\e90b";
+                }
+
+                &.back-in-stock-subscriptions a::before {
+                    content: "\e943";
+                }
+
+                &.reward-points a::before {
+                    content: "\e92b";
+                }
+
+                &.change-password a::before {
+                    content: "\e936";
+                    font-size: 12px;
+                }
+
+                &.customer-reviews a::before {
+                    content: "\e942";
+                }
+            }
+        }
+    }
+}

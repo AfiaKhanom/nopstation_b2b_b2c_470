@@ -1,0 +1,33 @@
+@model ErpSalesOrgModel
+
+<div asp-validation-summary="All"></div>
+<input asp-for="Id" type="hidden" />
+
+@{
+    const string hideInfoBlockAttributeName = "ErpSalesOrgPage.HideInfoBlock";
+    const string hideAddressInfoBlockAttributeName = "ErpSalesOrgPage.HideAddressInfoBlock";
+    const string hideErpWarehouseInfoBlockAttributeName = "ErpSalesOrgPage.HideErpWarehouseInfoBlock";
+    const string hideAddErpWarehouseInfoBlockAttributeName = "ErpSalesOrgPage.HideAddErpWarehouseInfoBlock";
+    var customer = await workContext.GetCurrentCustomerAsync();
+    var hideInfoBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideInfoBlockAttributeName);
+    var hideAddressInfoBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideAddressInfoBlockAttributeName);
+    var hideErpWarehouseInfoBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideErpWarehouseInfoBlockAttributeName);
+    var hideAddErpWarehouseInfoBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideAddErpWarehouseInfoBlockAttributeName);
+    var b2BFeatureSettings = settingService.LoadSetting<B2BB2CFeaturesSettings>((await storeContext.GetCurrentStoreAsync()).Id);
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="form-horizontal">
+            <nop-cards id="customer-cards">
+                <nop-card asp-name="customer-info" asp-icon="fas fa-info" asp-title="@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Info")" asp-hide-block-attribute-name="@hideInfoBlockAttributeName" asp-hide="@hideInfoBlock" asp-advanced="false">@await Html.PartialAsync("_CreateOrUpdateErpSalesOrg.Info", Model)</nop-card>
+                <nop-card asp-name="customer-address-info" asp-icon="fas fa-info" asp-title="@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.AddressInfo")" asp-hide-block-attribute-name="@hideAddressInfoBlockAttributeName" asp-hide="@hideAddressInfoBlock" asp-advanced="false">@await Html.PartialAsync("_CreateOrUpdateErpSalesOrg.Info.Address", Model)</nop-card>
+                @if (b2BFeatureSettings.EnableWarehouse)
+                {
+                    <nop-card asp-name="customer-warehouse-info" asp-icon="fas fa-warehouse" asp-title="@T("Plugin.Misc.NopStation.B2BB2CFeatures.B2BSalesOrgWarehouse.ErpWarehouseInfo")" asp-hide-block-attribute-name="@hideErpWarehouseInfoBlockAttributeName" asp-hide="@hideErpWarehouseInfoBlock" asp-advanced="false">@await Html.PartialAsync("_CreateOrUpdateErpSalesOrg.Info.ErpWarehouses", Model)</nop-card>
+                    <nop-card asp-name="customer-warehouse-add" asp-icon="fas fa-plus" asp-title="@T("Plugin.Misc.NopStation.B2BB2CFeatures.B2BSalesOrgWarehouse.ErpWarehouseAdd")" asp-hide-block-attribute-name="@hideAddErpWarehouseInfoBlockAttributeName" asp-hide="@hideAddErpWarehouseInfoBlock" asp-advanced="false">@await Html.PartialAsync("_CreateOrUpdateErpSalesOrg.Info.AddErpWarehouses", Model)</nop-card>
+                }
+            </nop-cards>
+        </div>
+    </div>
+</section>

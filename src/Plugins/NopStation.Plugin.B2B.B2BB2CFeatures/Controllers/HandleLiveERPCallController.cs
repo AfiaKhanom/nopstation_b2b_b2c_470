@@ -1,0 +1,164 @@
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Nop.Core;
+using Nop.Core.Domain.Orders;
+using Nop.Services.Catalog;
+using Nop.Services.Common;
+using Nop.Services.Helpers;
+using Nop.Services.Localization;
+using Nop.Services.Orders;
+using Nop.Web.Controllers;
+using Nop.Web.Framework.Mvc;
+using NopStation.Plugin.B2B.B2BB2CFeatures;
+using NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure;
+using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
+using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
+
+namespace Nop.Plugin.Payments.B2BCustomerAccount.Controllers
+{
+    public class HandleLiveERPCallController : BasePublicController
+    {
+        private readonly IGenericAttributeService _genericAttributeService;
+        private readonly IStoreContext _storeContext;
+        private readonly IWorkContext _workContext;
+        private readonly IShoppingCartService _shoppingCartService;
+        private readonly IProductService _productService;
+        private readonly B2BB2CFeaturesSettings _b2BB2CFeaturesSettings;
+        private readonly IDateTimeHelper _dateTimeHelper;
+        private readonly IErpAccountService _erpAccountService;
+        private readonly ILocalizationService _localizationService;
+
+        public HandleLiveERPCallController(IGenericAttributeService genericAttributeService,
+            IStoreContext storeContext,
+            IWorkContext workContext,
+            IShoppingCartService shoppingCartService,
+            IProductService productService,
+            B2BB2CFeaturesSettings b2BCustomerAccountSettings,
+            IDateTimeHelper dateTimeHelper,
+            IErpAccountService erpAccountService,
+            ILocalizationService localizationService)
+        {
+            _genericAttributeService = genericAttributeService;
+            _storeContext = storeContext;
+            _workContext = workContext;
+            _shoppingCartService = shoppingCartService;
+            _productService = productService;
+            _b2BB2CFeaturesSettings = b2BCustomerAccountSettings;
+            _dateTimeHelper = dateTimeHelper;
+            _erpAccountService = erpAccountService;
+            _localizationService = localizationService;
+        }
+
+        protected async Task<string> UpdateCartItemProductLivePrice(ErpAccount b2BAccount)
+        {
+            if (b2BAccount == null)
+                return string.Empty;
+
+            var currStore = await _storeContext.GetCurrentStoreAsync();
+            var cart = await _shoppingCartService.GetShoppingCartAsync(await _workContext.GetCurrentCustomerAsync(), ShoppingCartType.ShoppingCart, currStore.Id);
+
+            if (!cart.Any())
+                return string.Empty;
+
+            var productIds = cart.Select(x => x.ProductId).ToList();
+            var products = await _productService.GetProductsByIdsAsync(productIds.ToArray());
+
+            return string.Empty;
+        }
+
+        public async Task<IActionResult> CurrentCartItemsLiveStockCheck()
+        {
+            var currCustomer = await _workContext.GetCurrentCustomerAsync();
+            var currStore = await _storeContext.GetCurrentStoreAsync();
+            var b2BAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(currCustomer.Id);
+
+            if (b2BAccount == null)
+            {
+                return new NullJsonResult();
+            }
+
+            if (_b2BB2CFeaturesSettings.EnableLiveStockChecks)
+            {
+                var cart = await _shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.ShoppingCart, currStore.Id);
+
+                if (!cart.Any())
+                    return new NullJsonResult();
+
+                if (cart.Count > 100) //ToDo - demo purpose
+                    return Json(new
+                    {
+                        success = false,
+                        message = $"Sync not possible because cart has over X items."
+                        //message = $"Sync not possible because cart has over { _b2BB2CFeaturesSettings.DisableLiveStockCheckProductGreaterThanAmount } items."
+                    });
+
+                var productIds = cart.Select(x => x.ProductId).ToList();
+                var products = await _productService.GetProductsByIdsAsync(productIds.ToArray());
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Product list live stock sync successful."
+                });
+            }
+
+            //nothing to return for now
+            return new NullJsonResult();
+        }
+        public async Task<IActionResult> CurrentCartItemsLivePriceCheck()
+        {
+            var currCustomer = await _workContext.GetCurrentCustomerAsync();
+            var currStore = await _storeContext.GetCurrentStoreAsync();
+            var b2BAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(currCustomer.Id);
+
+            if (b2BAccount == null)
+            {
+                return new NullJsonResult();
+            }
+
+            if (!_b2BB2CFeaturesSettings.EnableLivePriceChecks)
+            {
+                //As LivePriceChecks is disabled
+                return new NullJsonResult();
+            }
+            else
+            {
+                var updatedPriceProductSkus = string.Empty;
+
+                if (!b2BAccount.LastPriceRefresh.HasValue)
+                {
+                    updatedPriceProductSkus = await UpdateCartItemProductLivePrice(b2BAccount);
+                }
+                else
+                {
+                    var priceUpdateOnLocalTime = _dateTimeHelper.ConvertToUtcTime(b2BAccount.LastPriceRefresh.Value, DateTimeKind.Utc);
+
+                    if (priceUpdateOnLocalTime < DateTime.UtcNow)
+                    {
+                        updatedPriceProductSkus = await UpdateCartItemProductLivePrice(b2BAccount);
+                    }
+
+                }
+
+                await _genericAttributeService.SaveAttributeAsync<bool>(currCustomer, B2BB2CFeaturesDefaults.CartItemsLivePriceSyncProcessing, false, currStore.Id);
+
+                if (!string.IsNullOrEmpty(updatedPriceProductSkus))
+                {
+                    var msg = string.Format(await _localizationService.GetResourceAsync("Plugins.Payment.B2BCustomerAccount.LivePriceSync.CartItemPriceUpdated"), updatedPriceProductSkus);
+
+                    return Json(new
+                    {
+                        success = true,
+                        data = updatedPriceProductSkus,
+                        message = msg
+                    });
+                }
+            }
+
+            //nothing to return for now
+            return new NullJsonResult();
+        }
+    }
+}

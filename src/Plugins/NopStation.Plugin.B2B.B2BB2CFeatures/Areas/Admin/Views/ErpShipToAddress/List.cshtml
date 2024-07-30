@@ -1,0 +1,273 @@
+﻿@model ErpShipToAddressSearchModel
+
+@{
+    //page title
+    ViewBag.PageTitle = T("B2BB2CFeatures.Admin.ErpShipToAddresses").Text;
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.B2BB2CFeatures.ErpShipToAddress");
+}
+
+@{
+    const string hideSearchBlockAttributeName = "ErpShipToAddresssPage.HideSearchBlock";
+    var hideSearchBlock = await genericAttributeService.GetAttributeAsync<bool>(await workContext.GetCurrentCustomerAsync(), hideSearchBlockAttributeName);
+
+    var storeScope = await storeContext.GetActiveStoreScopeConfigurationAsync();
+    var b2BB2CFeaturesSettings = await settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);
+}
+
+<div class="content-header clearfix">
+    <h1 class="float-left">
+        @T("Admin.ErpShipToAddresss")
+    </h1>
+    <div class="float-right">
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus-square"></i>
+            @T("Admin.Common.AddNew")
+        </a>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="form-horizontal">
+            <div class="cards-group">
+                <div class="card card-default card-search">
+                    <div class="card-body">
+                        <div class="row search-row @(!hideSearchBlock ? "opened" : "")" data-hideAttribute="@hideSearchBlockAttributeName">
+                            <div class="search-text">@T("Admin.Common.Search")</div>
+                            <div class="icon-search"><i class="fas fa-search" aria-hidden="true"></i></div>
+                            <div class="icon-collapse"><i class="far fa-angle-@(!hideSearchBlock ? "up" : "down")" aria-hidden="true"></i></div>
+                        </div>
+
+                        <div class="search-body @(hideSearchBlock ? "closed" : "")">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <nop-label asp-for="SearchShipToCode" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <nop-editor asp-for="SearchShipToCode" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <nop-label asp-for="SearchEmailAddresses" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <nop-editor asp-for="SearchEmailAddresses" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <nop-label asp-for="SearchRepFullName" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <nop-editor asp-for="SearchRepFullName" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <nop-label asp-for="SearchErpAccountId" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <input type="text" id="search-account-code" autocomplete="off" placeholder="Search by Erp Account number" class="form-control" />
+                                            <span id="search-account-by-code"></span>
+                                            <button type="button" id="search-account-clear" class="btn bg-gray" style="display: none; margin-top: 5px;">@T("Admin.Common.Clear")</button>
+                                            <input asp-for="SearchErpAccountId" autocomplete="off" style="display: none;" />
+                                            <script>
+                                                $(document).ready(function () {
+                                                    $('#search-account-code').autocomplete({
+                                                        delay: 500,
+                                                        minLength: 3,
+                                                        source: function (request, response) {
+                                                            $.ajax({
+                                                                url: '@(Url.Action("ErpAccountSearchAutoComplete", "ErpAccount"))',
+                                                                dataType: 'json',
+                                                                data: { term: request.term },
+                                                                success: function (data) {
+                                                                    // Check if there are no results
+                                                                    if (data.length === 0) {
+                                                                        response([{ label: 'No results found', value: '' }]);
+                                                                    } else {
+                                                                        response(data);
+                                                                    }
+                                                                }
+                                                            });
+                                                        },
+                                                        select: function (event, ui) {
+                                                            if (ui.item.value === '' || ui.item.label === 'No results found') {
+                                                                // No actual item selected, handle accordingly
+                                                                return false;
+                                                            }
+                                                            $('#@Html.IdFor(model => model.SearchErpAccountId)').val(ui.item.erpaccountid);
+                                                            $('#search-account-by-code').text(ui.item.label);
+
+                                                            $('#search-account-clear').show();
+                                                            $('#validationMessageErpAccountId').hide();
+                                                            return false;
+                                                        }
+                                                    });
+
+                                                    //remove button
+                                                    $('#search-account-clear').click(function () {
+                                                        $('#@Html.IdFor(model => model.SearchErpAccountId)').val('0');
+                                                        $('#search-account-by-code').text('');
+                                                        $('#search-account-clear').hide();
+                                                        return false;
+                                                    });
+                                                });
+
+                                            </script>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <nop-label asp-for="SearchShipToName" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <nop-editor asp-for="SearchShipToName" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <nop-label asp-for="SearchRepNumber" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <nop-editor asp-for="SearchRepNumber" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <nop-label asp-for="ShowInActive" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <nop-select asp-for="ShowInActive" asp-items="Model.ShowInActiveOption" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="text-center col-12">
+                                    <button type="button" id="search-erpShipToAddresss" class="btn btn-primary btn-search">
+                                        <i class="fas fa-search"></i>
+                                        @T("Admin.Common.Search")
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-default">
+                    <div class="card-body">
+                        @await Html.PartialAsync("Table", new DataTablesModel
+                        {
+                            Name = "erpShipToAddresss-grid",
+                            UrlRead = new DataUrl("List", "ErpShipToAddress", null),
+                            SearchButtonId = "search-erpShipToAddresss",
+                            Length = Model.PageSize,
+                            LengthMenu = Model.AvailablePageSizes,
+                            Filters = new List<FilterParameter>
+                            {
+                                new FilterParameter(nameof(Model.SearchShipToCode)),
+                                new FilterParameter(nameof(Model.SearchShipToName)),
+                                new FilterParameter(nameof(Model.SearchEmailAddresses)),
+                                new FilterParameter(nameof(Model.SearchErpAccountId)),
+                                new FilterParameter(nameof(Model.SearchRepNumber)),
+                                new FilterParameter(nameof(Model.SearchRepFullName)),
+                                new FilterParameter(nameof(Model.SearchRepPhoneNumber)),
+                                new FilterParameter(nameof(Model.SearchRepEmail)),
+                                new FilterParameter(nameof(Model.ShowInActive), typeof(string)),
+                            },
+                            ColumnCollection = new List<ColumnProperty>
+                            {
+                                new ColumnProperty(nameof(ErpShipToAddressModel.ErpAccountSalesOrgName))
+                                {
+                                    Title = T("B2BB2CFeatures.ErpShipToAddress.Fields.ErpAccountSalesOrg").Text,
+                                    Width = "100",
+                                    Render =  new RenderCustom("RenderSalesOrgAccount"),
+                                    Visible = b2BB2CFeaturesSettings.UseMultiSalesOrg ? true : false,
+                                },
+                                new ColumnProperty(nameof(ErpShipToAddressModel.ErpAccount))
+                                {
+                                    Title = T("B2BB2CFeatures.ErpShipToAddress.Fields.ErpAccount").Text,
+                                    Width = "100",
+                                    Render =  new RenderCustom("RenderErpAccount")
+                                },
+                                new ColumnProperty(nameof(ErpShipToAddressModel.ShipToCode))
+                                {
+                                    Title = T("B2BB2CFeatures.ErpShipToAddress.Fields.ShipToCode").Text,
+                                    Width = "200"
+                                },
+                                new ColumnProperty(nameof(ErpShipToAddressModel.ShipToName))
+                                {
+                                    Title = T("B2BB2CFeatures.ErpShipToAddress.Fields.ShipToName").Text,
+                                    Width = "100"
+                                },
+                                new ColumnProperty(nameof(ErpShipToAddressModel.EmailAddresses))
+                                {
+                                    Title = T("B2BB2CFeatures.ErpShipToAddress.Fields.EmailAddresses").Text,
+                                    Width = "100"
+                                },
+                                new ColumnProperty(nameof(ErpShipToAddressModel.RepNumber))
+                                {
+                                    Title = T("B2BB2CFeatures.ErpShipToAddress.Fields.RepNumber").Text,
+                                    Width = "100"
+                                },
+                                new ColumnProperty(nameof(ErpShipToAddressModel.RepFullName))
+                                {
+                                    Title = T("B2BB2CFeatures.ErpShipToAddress.Fields.RepFullName").Text,
+                                    Width = "200"
+                                },
+                                new ColumnProperty(nameof(ErpShipToAddressModel.IsActive))
+                                {
+                                    Title = T("Admin.ErpShipToAddresss.Fields.Active").Text,
+                                    Width = "100",
+                                    ClassName =  NopColumnClassDefaults.CenterAll,
+                                    Render = new RenderBoolean()
+                                },
+                                new ColumnProperty(nameof(ErpShipToAddressModel.Id))
+                                {
+                                    Title = T("Admin.Common.Edit").Text,
+                                    Width = "50",
+                                    ClassName =  NopColumnClassDefaults.Button,
+                                    Render = new RenderButtonEdit(new DataUrl("Edit"))
+                                }
+                            }
+                        })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .button-column {
+        text-align: center !important;
+    }
+</style>
+
+<script asp-location="Footer">
+
+    function RenderErpAccount(data, type, row, meta) {
+        if (row.ErpAccountId <= 0)
+            return data;
+
+        if (row.IsDeletedErpAccount)
+          return '<a href="#">' + data + '</a>';
+        
+        return '<a href="/Admin/ErpAccount/ErpAccountEdit/' + row.ErpAccountId + '">' + data + '</a>';
+    }
+
+    function RenderSalesOrgAccount(data, type, row, meta) {
+        if (row.ErpAccountSalesOrgId <= 0)
+            return data;
+
+        return '<a href="/Admin/ErpSalesOrg/ErpSalesOrgEdit/' + row.ErpAccountSalesOrgId + '">' + data + '</a>';
+    }
+
+</script>

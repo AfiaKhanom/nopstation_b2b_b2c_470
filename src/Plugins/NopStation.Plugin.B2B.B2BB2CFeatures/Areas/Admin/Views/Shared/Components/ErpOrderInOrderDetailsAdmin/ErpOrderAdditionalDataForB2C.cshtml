@@ -1,0 +1,208 @@
+﻿@model ErpOrderAdditionalDataModel
+
+@using Nop.Core.Domain.Tax;
+@using Nop.Core.Domain.Catalog;
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Enums
+
+@{
+    var customer = await workContext.GetCurrentCustomerAsync();
+
+    const string hideErpOrderAdditionalDataBlockAttributeName = "OrderPage.HideErpOrderAdditionalDataProductsBlock";
+    var hideErpOrderAdditionalDataProductsBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideErpOrderAdditionalDataBlockAttributeName);
+}
+
+<nop-card asp-name="erp-order-details" asp-icon="fas fa-th-list" asp-title="@T("Plugin.Misc.NopStation.B2BB2CFeatures.Admin.ErpOrderItemInOrderDetails.Block.B2CAndERPorderDetails")" asp-hide-block-attribute-name="@hideErpOrderAdditionalDataBlockAttributeName" asp-hide="@hideErpOrderAdditionalDataProductsBlock" asp-advanced="true">
+    <div class="card-body">
+        @if (Model.Id > 0)
+        {
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="OrderNumber" />
+                </div>
+                <div class="col-md-9">
+                    <input type="hidden" asp-for="NopOrderId" />
+                    <a asp-controller="Order" asp-action="Edit" asp-route-id="@Model.NopOrderId">@Model.OrderNumber</a>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="ErpOrderNumber" />
+                </div>
+                <div class="col-md-9">
+                    <input type="hidden" asp-for="ErpOrderNumber" />
+                    <div class="form-text-row">@Model.ErpOrderNumber</div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="ErpOrderOriginType" />
+                </div>
+                <div class="col-md-9">
+                    <input type="hidden" asp-for="ErpOrderOriginTypeId" />
+                    <div class="form-text-row">@Model.ErpOrderOriginType</div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="ErpOrderType" />
+                </div>
+                <div class="col-md-9">
+                    <input type="hidden" asp-for="ErpOrderTypeId" />
+                    <div class="form-text-row">@Model.ErpOrderType</div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="OrderPlacedByNopCustomerEmail" />
+                </div>
+                <div class="col-md-9">
+                    <input type="hidden" asp-for="OrderPlacedByNopCustomerId" />
+                    <a asp-controller="Customer" asp-action="Edit" asp-route-id="@Model.OrderPlacedByNopCustomerId">@Model.OrderPlacedByNopCustomerEmail</a>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="ErpAccountName" />
+                </div>
+                <div class="col-md-9">
+                    <input type="hidden" asp-for="ErpAccountId" />
+                    <a asp-controller="ErpAccount" asp-action="Edit" asp-route-id="@Model.ErpAccountId">@Model.ErpAccountName</a>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="ErpAccountSalesOrganisationName" />
+                </div>
+                <div class="col-md-9">
+                    <input type="hidden" asp-for="ErpAccountSalesOrganisationId" />
+                    <a asp-controller="ErpSalesOrg" asp-action="Edit" asp-route-id="@Model.ErpAccountSalesOrganisationId">@Model.ErpAccountSalesOrganisationName</a>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="ErpShipToName" />
+                </div>
+                <div class="col-md-9">
+                    <input type="hidden" asp-for="ErpShipToAddressId" />
+                    <a asp-controller="ErpShipToAddress" asp-action="Edit" asp-route-id="@Model.ErpShipToAddressId">@Model.ErpShipToName</a>
+                </div>
+            </div>
+            @if (Model.ErpOrderType == ErpOrderType.B2BQuote.ToString() || Model.ErpOrderType == ErpOrderType.B2CQuote.ToString())
+            {
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="QuoteExpiryDate" />
+                    </div>
+                    <div class="col-md-9">
+                        <input type="hidden" asp-for="QuoteExpiryDate" />
+                        <div class="form-text-row">@Model.QuoteExpiryDate</div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="QuoteSalesOrderNumber" />
+                    </div>
+                    <div class="col-md-9">
+                        <input type="hidden" asp-for="QuoteSalesOrderId" />
+                        <a asp-controller="Order" asp-action="Edit" asp-route-id="@Model.QuoteSalesOrderId">@Model.QuoteSalesOrderNumber</a>
+                    </div>
+                </div>
+            }
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="ERPOrderStatus" />
+                </div>
+                <div class="col-md-9">
+                    <input type="hidden" asp-for="ERPOrderStatus" />
+                    <div class="form-text-row">@Model.ERPOrderStatus</div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="ExpectedDeliveryDate" />
+                </div>
+                <div class="col-md-9">
+                    <input type="hidden" asp-for="ExpectedDeliveryDate" />
+                    <div class="form-text-row">@Model.ExpectedDeliveryDate</div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="IntegrationStatusType" />
+                </div>
+                <div class="col-md-9">
+                    <input type="hidden" asp-for="IntegrationStatusTypeId" />
+                    <div class="form-text-row">@Model.IntegrationStatusType</div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="IntegrationRetries" />
+                </div>
+                <div class="col-md-9">
+                    <input type="hidden" asp-for="IntegrationRetries" />
+                    <div class="form-text-row">@Model.IntegrationRetries</div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="IntegrationError" />
+                </div>
+                <div class="col-md-9">
+                    <input type="hidden" asp-for="IntegrationError" />
+                    <div class="form-text-row">@Model.IntegrationError</div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="IntegrationErrorDateTime" />
+                </div>
+                <div class="col-md-9">
+                    <div class="form-text-row">@Model.IntegrationErrorDateTime</div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="CustomerReference" />
+                </div>
+                <div class="col-md-9">
+                    <div class="form-text-row">@Model.CustomerReference</div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="SpecialInstructions" />
+                </div>
+                <div class="col-md-9">
+                    <input type="hidden" asp-for="SpecialInstructions" />
+                    <div class="form-text-row">@Model.SpecialInstructions</div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="LastERPUpdate" />
+                </div>
+                <div class="col-md-9">
+                    <div class="form-text-row">@Model.LastERPUpdate</div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="ChangedOn" />
+                </div>
+                <div class="col-md-9">
+                    <div class="form-text-row">@Model.ChangedOn</div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="ChangedByCustomerEmail" />
+                </div>
+                <div class="col-md-9">
+                    <input type="hidden" asp-for="ChangedById" />
+                    <a asp-controller="Customer" asp-action="Edit" asp-route-id="@Model.ChangedById">@Model.ChangedByCustomerEmail</a>
+                </div>
+            </div>
+        }
+    </div>
+</nop-card>

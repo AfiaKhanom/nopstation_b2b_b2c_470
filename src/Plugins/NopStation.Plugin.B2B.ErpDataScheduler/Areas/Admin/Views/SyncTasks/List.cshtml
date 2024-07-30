@@ -1,0 +1,120 @@
+﻿@model SyncTaskSearchModel
+
+@{
+    Layout = "_AdminLayout";
+    //page title
+    ViewBag.PageTitle = T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.SyncTaskList").Text;
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.ErpDataScheduler.SyncTaskList");
+}
+
+<script>
+    $(document).ready(function () {
+        $("#sync-tasks-grid").on("click", ".run-now", function (e) {
+            showThrobber('@Html.Raw(JavaScriptEncoder.Default.Encode(T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.RunNow.Progress").Text))');
+        });
+    });
+</script>
+
+<div class="content-header clearfix">
+    <h1 class="float-left">
+        @T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.SyncTaskList")
+    </h1>
+    <div class="float-right">
+    </div>
+</div>
+<section class="content">
+    <div class="container-fluid">
+    <div class="form-horizontal">
+        <div class="cards-group">
+            <div class="card card-default">
+                <div class="card-body">                    
+                    <p>
+                        <strong>@T("Admin.System.ScheduleTasks.RestartApplication")</strong>
+                    </p>
+
+                    @await Html.PartialAsync("Table", new DataTablesModel
+                    {
+                        Name = "sync-tasks-grid",
+                        UrlRead = new DataUrl("List", "SyncTasks", null),
+                        UrlUpdate = new DataUrl("TaskUpdate", "SyncTasks", null),
+                        Length = Model.PageSize,
+                        LengthMenu = Model.AvailablePageSizes,
+                        ColumnCollection = new List<ColumnProperty>
+                        {
+                            new ColumnProperty(nameof(SyncTaskModel.Name))
+                            {
+                                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.Name").Text,
+                                Width = "300"
+                            },
+                            new ColumnProperty(nameof(SyncTaskModel.Enabled))
+                            {
+                                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.Enabled").Text,
+                                Width = "100",
+                                ClassName = NopColumnClassDefaults.CenterAll,
+                                Render = new RenderBoolean(),
+                                Editable = true,
+                                EditType = EditType.Checkbox
+                            },
+                            new ColumnProperty(nameof(SyncTaskModel.StopOnError))
+                            {
+                                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.StopOnError").Text,
+                                Width = "100",
+                                ClassName = NopColumnClassDefaults.CenterAll,
+                                Render = new RenderBoolean(),
+                                Editable = true,
+                                EditType = EditType.Checkbox
+                            },
+                            new ColumnProperty(nameof(SyncTaskModel.LastStartUtc))
+                            {
+                                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.LastStart").Text,
+                                Width = "200"
+                            },
+                            new ColumnProperty(nameof(SyncTaskModel.LastEndUtc))
+                            {
+                                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.LastEnd").Text,
+                                Width = "200"
+                            },
+                            new ColumnProperty(nameof(SyncTaskModel.LastSuccessUtc))
+                            {
+                                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.LastSuccess").Text,
+                                Width = "200"
+                            },
+                            new ColumnProperty(nameof(SyncTaskModel.Id))
+                            {
+                                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.RunNow").Text,
+                                Width = "100",
+                                ClassName =  NopColumnClassDefaults.Button,
+                                Render = new RenderCustom("renderColumnRunNow")
+                            },
+                            new ColumnProperty(nameof(SyncTaskModel.Id))
+                            {
+                                Title = T("Admin.Common.Edit").Text,
+                                Width = "200",
+                                ClassName =  NopColumnClassDefaults.Button,
+                                Render = new RenderButtonsInlineEdit()
+                            },
+                            new ColumnProperty(nameof(SyncTaskModel.Id))
+                            {
+                                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.SlotsAndLogs").Text,
+                                Width = "200",
+                                ClassName =  NopColumnClassDefaults.Button,
+                                Render = new RenderCustom("renderColumnEditSlots")
+                            }
+                        }
+                    })
+
+                    <script>
+                        function renderColumnRunNow(data, type, row, meta) {
+                            return '<a href="@Url.Content("~/Admin/SyncTasks/RunNow/")' + row.Id +'" class="btn btn-success">@T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.RunNow")</a>';
+                        }
+                        function renderColumnEditSlots(data, type, row, meta) {
+                            return '<a href="@Url.Content("~/Admin/SyncTasks/Edit/")' + row.Id +'" class="btn btn-primary">@T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.SlotsAndLogs")</a>';
+                        }
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</section>

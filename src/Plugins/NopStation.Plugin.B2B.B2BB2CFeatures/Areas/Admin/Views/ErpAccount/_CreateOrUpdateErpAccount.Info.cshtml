@@ -1,0 +1,238 @@
+﻿@model ErpAccountModel
+@{
+    var storeScope = await storeContext.GetActiveStoreScopeConfigurationAsync();
+    var b2BB2CFeaturesSettings = await settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);
+}
+
+<div class="card-body">
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="AccountNumber" />
+        </div>
+        <div class="col-md-9">
+            @if(Model.Id == 0)
+            {
+                <nop-editor asp-for="AccountNumber" asp-required="true" />
+            }
+            else
+            {
+                <input readonly="readonly" asp-for="AccountNumber" class="form-control" type="text" id="AccountNumber" name="AccountNumber" value=@Model.AccountNumber />
+            }
+            <span asp-validation-for="AccountNumber"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="AccountName" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="AccountName" asp-required="true" />
+            <span asp-validation-for="AccountName"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="ErpSalesOrgId" />
+        </div>
+
+        <div class="col-md-9">
+            @if (b2BB2CFeaturesSettings.UseMultiSalesOrg)
+            {
+                <nop-select asp-for="ErpSalesOrgId" asp-items="Model.AvailableErpSalesOrgs" asp-required="true" />
+                <span asp-validation-for="ErpSalesOrgId"></span>
+            }
+            else
+            {
+                <nop-select disabled="disabled" asp-for="ErpSalesOrgId" asp-items="Model.AvailableErpSalesOrgs" asp-required="true" />
+                <input type="hidden" asp-for="ErpSalesOrgId" value="@b2BB2CFeaturesSettings.DefaultB2COrganizationId" />
+            }
+        </div>
+        
+    </div>
+
+
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="VatNumber" />
+        </div>
+        <div class="col-md-9">
+            <input readonly="readonly" asp-for="VatNumber" class="form-control" type="text" id="VatNumber" name="VatNumber" value="Normal" />
+            <span asp-validation-for="VatNumber"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="CreditLimit" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="CreditLimit" />
+            <span asp-validation-for="CreditLimit"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+
+        <div class="col-md-3">
+            <nop-label asp-for="CreditLimitAvailable" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="CreditLimitAvailable" />
+            <span asp-validation-for="CreditLimitAvailable"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="CurrentBalance" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="CurrentBalance" />
+            <span asp-validation-for="CurrentBalance"></span>
+        </div>
+    </div> 
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="AllowOverspend" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="AllowOverspend" />
+            <span asp-validation-for="AllowOverspend"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="IsActive" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="IsActive" />
+            <span asp-validation-for="IsActive"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="PreFilterFacets" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="PreFilterFacets" />
+            <span asp-validation-for="PreFilterFacets"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="B2BPriceGroupCodeId" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="B2BPriceGroupCodeId" asp-items="Model.AvailableB2BPriceGroupCodes" />
+            <span asp-validation-for="B2BPriceGroupCodeId"></span>
+        </div>
+    </div>
+    
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="AllowAccountsBackOrdering" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="AllowAccountsBackOrdering" />
+            <span asp-validation-for="AllowAccountsBackOrdering"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="OverrideBackOrderingConfigSetting" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="OverrideBackOrderingConfigSetting" />
+            <span asp-validation-for="OverrideBackOrderingConfigSetting"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="AllowAccountsAddressEditOnCheckout" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="AllowAccountsAddressEditOnCheckout" />
+            <span asp-validation-for="AllowAccountsAddressEditOnCheckout"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="OverrideAddressEditOnCheckoutConfigSetting" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="OverrideAddressEditOnCheckoutConfigSetting" />
+            <span asp-validation-for="OverrideAddressEditOnCheckoutConfigSetting"></span>
+        </div>
+    </div>
+
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="OverrideStockDisplayFormatConfigSetting" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="OverrideStockDisplayFormatConfigSetting" />
+            <span asp-validation-for="OverrideStockDisplayFormatConfigSetting"></span>
+        </div>
+    </div>
+     
+
+    @if (Model.Id > 0)
+    {
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="CreatedOn" />
+            </div>
+            <div class="col-md-9 justify-content-center align-self-center">
+                @Model.CreatedOn
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="UpdatedOn" />
+            </div>
+            <div class="col-md-9 justify-content-center align-self-center">
+                @Html.DisplayFor(model => model.UpdatedOn)
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="LastErpAccountSyncDate" />
+            </div>
+            <div class="col-md-9 justify-content-center align-self-center">
+                @Model.LastErpAccountSyncDate
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#CreditLimit,#CreditLimitAvailable,#CurrentBalance,#PercentageOfStockAllowed').on('input', function () {
+            // Format input to two decimal places
+            var value = $(this).val().replace(',', '');
+            var decimalIndex = value.indexOf('.');
+
+            if (decimalIndex !== -1) {
+                // Limit to two decimal places
+                var decimalPart = value.substring(decimalIndex + 1);
+                if (decimalPart.length > 2) {
+                    $(this).val(value.substring(0, decimalIndex + 3));
+                }
+            }
+        });
+    });
+</script>

@@ -1,0 +1,91 @@
+.category-page {
+    .sub-category-grid {
+        .title {
+            font-size: clamp(1rem,3vw,20px);
+            line-height: clamp(17px,3vw,28px);
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .swiper-nav {
+            position: absolute;
+            top: 0;
+            right: 0;
+
+            div:before {
+                display: flex;
+                height: 30px;
+                width: 30px;
+                border-radius: 100px;
+                font-size: 13px;
+                background: var(--primary-green);
+                justify-content: center;
+                align-items: center;
+                color: var(--white);
+            }
+
+            &:hover {
+                cursor: pointer;
+            }
+
+            .swiper-button-next::after, .swiper-button-prev::after {
+                display: none;
+            }
+
+            .icon-right-arrow-2, .icon-left-arrow-2 {
+                position: absolute;
+                top: 0;
+            }
+
+            .icon-right-arrow-2 {
+                right: 0;
+
+                &:hover {
+
+                    &:before {
+                        background: var(--primary-green_dark);
+                    }
+                }
+            }
+
+            .icon-left-arrow-2 {
+                right: 38px;
+
+                &:before {
+                    color: var(--primary-green);
+                    background: var(--white);
+                    border: 1px solid var(--primary-green);
+                }
+
+                &:hover {
+
+                    &:before {
+                        border: 1px solid var(--primary-green_dark);
+                        background: var(--primary-green_dark);
+                        color: var(--white);
+                    }
+                }
+            }
+        }
+
+        .swiper-wrapper {
+            flex-wrap: nowrap;
+
+            .item-box {
+                width: 50%;
+
+                @media(min-width:$xs) {
+                    width: 33.3333%;
+                }
+
+                @media(min-width:$md) {
+                    width: 25%;
+                }
+
+                @media(min-width:$lg) {
+                    width: 20%;
+                }
+            }
+        }
+    }
+}

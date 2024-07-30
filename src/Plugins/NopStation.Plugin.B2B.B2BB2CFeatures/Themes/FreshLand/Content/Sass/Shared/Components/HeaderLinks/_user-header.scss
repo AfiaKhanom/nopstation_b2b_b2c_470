@@ -1,0 +1,56 @@
+.user-dropdown {
+    position: relative;
+    order: 2;
+
+    > a {
+        font-size: 0;
+
+        &::before {
+            content: "\e94a";
+            font-family: "icomoon" !important;
+            display: block;
+            font-size: 20px;
+            font-weight: 600;
+        }
+    }
+
+    .login-dropdown-menu {
+        position: absolute;
+        right: -15px;
+        top: 100%;
+        background: #fff;
+        min-width: 150px;
+        border: 1px solid var(--primary-grey_light);
+        box-shadow: $shadow-style-1;
+        z-index: $top;
+        display: none;
+
+        @media (min-width: $lg) {
+            animation: slide-up 0.5s forwards;
+        }
+
+        li {
+            &:first-child {
+                border-bottom: 1px solid var(--primary-grey_light);
+            }
+
+            a {
+                display: block;
+                padding: 15px 10px;
+                font-weight: 600;
+            }
+
+            &:hover {
+                a {
+                    color: var(--primary-green);
+                }
+            }
+        }
+    }
+
+    &:hover {
+        .login-dropdown-menu {
+            display: block;
+        }
+    }
+}

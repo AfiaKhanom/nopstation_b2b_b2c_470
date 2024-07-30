@@ -1,0 +1,161 @@
+﻿@model SalesRepUserSearchModel
+
+@{
+    //page title
+    ViewBag.PageTitle = T("B2BB2CFeatures.Admin.SalesRepUsers").Text;
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.B2BB2CFeatures.SalesRepUsers");
+}
+
+@{
+    const string hideSearchBlockAttributeName = "SalesRepUserssPage.HideSearchBlock";
+    var hideSearchBlock = await genericAttributeService.GetAttributeAsync<bool>(await workContext.GetCurrentCustomerAsync(), hideSearchBlockAttributeName);
+}
+
+<div class="content-header clearfix">
+    <h1 class="float-left">
+        @T("B2BB2CFeatures.Admin.SalesRepUsers")
+    </h1>
+    <div class="float-right">
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus-square"></i>
+            @T("Admin.Common.AddNew")
+        </a>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="form-horizontal">
+            <div class="cards-group">
+                <div class="card card-default card-search">
+                    <div class="card-body">
+                        <div class="row search-row @(!hideSearchBlock ? "opened" : "")" data-hideAttribute="@hideSearchBlockAttributeName">
+                            <div class="search-text">@T("Admin.Common.Search")</div>
+                            <div class="icon-search"><i class="fas fa-search" aria-hidden="true"></i></div>
+                            <div class="icon-collapse"><i class="far fa-angle-@(!hideSearchBlock ? "up" : "down")" aria-hidden="true"></i></div>
+                        </div>
+
+                        <div class="search-body @(hideSearchBlock ? "closed" : "")">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <nop-label asp-for="SearchERPAccountNumber" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <nop-editor asp-for="SearchERPAccountNumber" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <nop-label asp-for="SearchERPAccountName" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <nop-editor asp-for="SearchERPAccountName" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <nop-label asp-for="SearchCustomerEmail" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <nop-editor asp-for="SearchCustomerEmail" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <nop-label asp-for="SearchCustomerFullName" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <nop-editor asp-for="SearchCustomerFullName" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="text-center col-12">
+                                    <button type="button" id="search-salesRepUsers" class="btn btn-primary btn-search">
+                                        <i class="fas fa-search"></i>
+                                        @T("Admin.Common.Search")
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-default">
+                    <div class="card-body">
+                        @await Html.PartialAsync("Table", new DataTablesModel
+                        {
+                            Name = "salesRepUsers-grid",
+                            UrlRead = new DataUrl("SalesRepUsersList", "SalesRepUsers", null),
+                            SearchButtonId = "search-salesRepUsers",
+                            Length = Model.PageSize,
+                            LengthMenu = Model.AvailablePageSizes,
+                            Filters = new List<FilterParameter>
+                            {
+                                new FilterParameter(nameof(Model.SearchERPAccountNumber)),
+                                new FilterParameter(nameof(Model.SearchERPAccountName)),
+                                new FilterParameter(nameof(Model.SearchCustomerEmail)),
+                                new FilterParameter(nameof(Model.SearchCustomerFullName))
+                            },
+                            ColumnCollection = new List<ColumnProperty>
+                            {
+                                new ColumnProperty(nameof(SalesRepUserModel.CustomerFullName))
+                                {
+                                    Title = T("B2BB2CFeatures.SalesRepUsers.Fields.ShipToCode").Text,
+                                    Width = "300"
+                                },
+                                new ColumnProperty(nameof(SalesRepUserModel.CustomerEmail))
+                                {
+                                    Title = T("B2BB2CFeatures.SalesRepUsers.Fields.ShipToName").Text,
+                                    Width = "300"
+                                },
+                                new ColumnProperty(nameof(SalesRepUserModel.ErpAccountNumber))
+                                {
+                                    Title = T("B2BB2CFeatures.SalesRepUsers.Fields.EmailAddresses").Text,
+                                    Width = "300"
+                                },
+                                new ColumnProperty(nameof(SalesRepUserModel.ErpAccountName))
+                                {
+                                    Title = T("B2BB2CFeatures.SalesRepUsers.Fields.RepNumber").Text,
+                                    Width = "300"
+                                },
+                                new ColumnProperty(nameof(SalesRepUserModel.IsActive))
+                                {
+                                    Title = T("B2BB2CFeatures.SalesRepUsers.Fields.Active").Text,
+                                    Width = "50",
+                                    ClassName =  NopColumnClassDefaults.CenterAll,
+                                    Render = new RenderBoolean()
+                                },
+                                new ColumnProperty("Select")
+                                {
+                                    Title = T("Admin.Common.Select").Text,
+                                    Width = "50",
+                                    ClassName =  NopColumnClassDefaults.Button,
+                                    Render = new RenderCustom("renderImpersonate")
+                                }
+                            }
+                        })
+
+                        <script>
+                            function renderImpersonate(data, type, row, meta) {
+                                return '<a class="btn btn-default" href="/Admin/SalesRepUsers/Impersonate/' + row.Id + '">@T("Admin.Common.Select").Text</a>';
+                            }
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

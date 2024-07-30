@@ -1,0 +1,198 @@
+﻿using Nop.Core;
+using Nop.Core.Domain.Catalog;
+using Nop.Services.Catalog;
+using Nop.Services.Configuration;
+using Nop.Services.Shipping;
+using NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncLogServices;
+using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
+using NopStation.Plugin.B2B.ERPIntegrationCore.Model;
+using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
+
+namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
+{
+    public class ErpStockSyncService : IErpStockSyncService
+    {
+        #region Fields
+
+        private readonly IStoreContext _storeContext;
+        private readonly ISettingService _settingService;
+        private readonly IProductService _productService;
+        private readonly IShippingService _shippingService;
+        private readonly ISyncLogService _erpSyncLogService;
+        private readonly IErpProductService _erpProductService;
+        private readonly IErpDataClearCacheService _erpDataClearCacheService;
+        private readonly IErpIntegrationPluginManager _erpIntegrationPluginService;
+
+        #endregion
+
+        #region Ctor
+
+        public ErpStockSyncService(
+            IStoreContext storeContext,
+            ISettingService settingService,
+            IProductService productService,
+            IShippingService shippingService,
+            ISyncLogService erpSyncLogService,
+            IErpProductService erpProductService,
+            IErpDataClearCacheService erpDataClearCacheService,
+            IErpIntegrationPluginManager erpIntegrationPluginService)
+        {
+            _storeContext = storeContext;
+            _settingService = settingService;
+            _productService = productService;
+            _shippingService = shippingService;
+            _erpSyncLogService = erpSyncLogService;
+            _erpProductService = erpProductService;
+            _erpDataClearCacheService = erpDataClearCacheService;
+            _erpIntegrationPluginService = erpIntegrationPluginService;
+        }
+
+        #endregion
+
+        #region Method
+
+        public async virtual Task<bool> IsErpStockSyncSuccessfulAsync()
+        {
+            var erpIntegrationPlugin = await _erpIntegrationPluginService.LoadActiveERPIntegrationPlugin();
+
+            if (erpIntegrationPlugin is null)
+            {
+                await _erpSyncLogService.SyncLogSaveOnFileAsync(
+                    ErpDataSchedulerDefaults.ErpStockSyncTaskName,
+                    ErpSyncLavel.Stock,
+                    "No integration method found.");
+
+                return false;
+            }
+
+            var storeScope = await _storeContext.GetActiveStoreScopeConfigurationAsync();
+            var erpDataSchedulerSettings = await _settingService.LoadSettingAsync<ErpDataSchedulerSettings>(storeScope);
+
+            var start = "0";
+            var isError = false;
+            var dateFrom = erpDataSchedulerSettings.SyncFromDate.HasValue ? erpDataSchedulerSettings.SyncFromDate.Value : DateTime.MinValue;
+            var lastErpProductStockSynced = new Product();
+            var totalSyncedSoFar = 0;
+            var syncStartTime = DateTime.UtcNow.AddMinutes(-10);
+
+            try
+            {
+                await _erpSyncLogService.SyncLogSaveOnFileAsync(
+                    ErpDataSchedulerDefaults.ErpStockSyncTaskName,
+                    ErpSyncLavel.Stock,
+                    "Erp Stock Sync started.");
+
+                while (true)
+                {
+                    var erpGetRequestModel = new ErpGetRequestModel
+                    {
+                        Start = start,
+                        DateFrom = dateFrom
+                    };
+
+                    var response = await erpIntegrationPlugin.GetStocksFromErpAsync(erpGetRequestModel);
+
+                    if (response.ErpResponseModel.IsError || response.Data is null)
+                    {
+                        isError = true;
+
+                        await _erpSyncLogService.SyncLogSaveOnFileAsync(
+                            ErpDataSchedulerDefaults.ErpStockSyncTaskName,
+                            ErpSyncLavel.Stock,
+                            response.ErpResponseModel?.ErrorShortMessage ?? string.Empty,
+                            response.ErpResponseModel?.ErrorFullMessage ?? string.Empty);
+
+                        break;
+                    }
+
+                    start = response.ErpResponseModel.Next;
+
+                    foreach (var erpProduct in response.Data)
+                    {
+                        var oldErpProduct = await _productService.GetProductBySkuAsync(erpProduct.MasterCode) ?? new Product();
+
+                        if (oldErpProduct.Id == 0)
+                        {
+                            continue;
+                        }
+
+                        oldErpProduct.StockQuantity = Convert.ToInt16(erpProduct.InStockforLocNo);
+                        oldErpProduct.OrderMinimumQuantity = 1;
+                        oldErpProduct.UpdatedOnUtc = DateTime.UtcNow;
+
+                        if (oldErpProduct.StockQuantity == 0)
+                        {
+                            oldErpProduct.Published = false;
+                        }
+
+                        lastErpProductStockSynced = oldErpProduct;
+                        totalSyncedSoFar++;
+
+                        await _productService.UpdateProductAsync(oldErpProduct);
+
+                        #region Cache clear for this erp stock
+
+                        await _erpDataClearCacheService.ClearCacheOfEntity(oldErpProduct, oldErpProduct.Id);
+
+                        #endregion
+                    }
+
+                    if (lastErpProductStockSynced.Id != 0)
+                    {
+                        await _erpSyncLogService.SyncLogSaveOnFileAsync(
+                            ErpDataSchedulerDefaults.ErpStockSyncTaskName,
+                            ErpSyncLavel.Stock,
+                            (lastErpProductStockSynced is not null ? $"The last synced Stock of Erp Product : {lastErpProductStockSynced.Sku} in this batch." : string.Empty) + $"Total product stock synced so far: {totalSyncedSoFar}");
+                    }
+                }
+
+                if (!isError)
+                {
+                    await _erpProductService.UnpublishAllOldProduct(syncStartTime);
+
+                    await _erpSyncLogService.SyncLogSaveOnFileAsync(
+                        ErpDataSchedulerDefaults.ErpStockSyncTaskName,
+                        ErpSyncLavel.Stock,
+                        $"Erp Stock sync successful. The products having stock quantity of 0 (zero) are unpublished.");
+                }
+                else
+                {
+                    await _erpSyncLogService.SyncLogSaveOnFileAsync(
+                        ErpDataSchedulerDefaults.ErpStockSyncTaskName,
+                        ErpSyncLavel.Stock,
+                        $"Erp Stock sync is partially or not successful.");
+                }
+
+                await _erpSyncLogService.SyncLogSaveOnFileAsync(
+                    ErpDataSchedulerDefaults.ErpStockSyncTaskName,
+                    ErpSyncLavel.Stock,
+                    (lastErpProductStockSynced is not null ? $"The last synced Erp Product Stock: {lastErpProductStockSynced.Sku}. " : string.Empty) + $"Total synced in this session: {totalSyncedSoFar}");
+
+
+                await _erpSyncLogService.SyncLogSaveOnFileAsync(
+                    ErpDataSchedulerDefaults.ErpStockSyncTaskName,
+                    ErpSyncLavel.Stock,
+                    "Erp Stock Sync ended.");
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await _erpSyncLogService.SyncLogSaveOnFileAsync(
+                    ErpDataSchedulerDefaults.ErpStockSyncTaskName,
+                    ErpSyncLavel.Stock,
+                    ex.Message,
+                    ex.StackTrace);
+
+                await _erpSyncLogService.SyncLogSaveOnFileAsync(
+                    ErpDataSchedulerDefaults.ErpStockSyncTaskName,
+                    ErpSyncLavel.Stock,
+                    "Erp Stock Sync ended.");
+
+                return false;
+            }
+        }
+
+        #endregion
+    }
+}

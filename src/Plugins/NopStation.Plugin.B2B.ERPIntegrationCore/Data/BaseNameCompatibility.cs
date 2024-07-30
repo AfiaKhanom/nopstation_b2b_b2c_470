@@ -29,7 +29,12 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Data
             { typeof(QuickOrderTemplate), "Erp_Quick_Order_Template" },
             { typeof(QuickOrderItem), "Erp_Quick_Order_Item" },
             { typeof(ErpActivityLogs), "Erp_Activity_Logs" },
-            { typeof(ErpShiptoAddressErpAccountMap), "Erp_ShiptoAddress_Erp_Account_Map" }
+            { typeof(ErpShiptoAddressErpAccountMap), "Erp_ShiptoAddress_Erp_Account_Map" },
+            { typeof(ErpAccountCustomerRegistrationForm), "Erp_Account_CustomerRegistrationForm" },
+            { typeof(ErpAccountCustomerRegistrationBankingDetails), "Erp_Account_CustomerRegistration_BankingDetails" },
+            { typeof(ErpAccountCustomerRegistrationPhysicalTradingAddress), "Erp_Account_CustomerRegistration_PhysicalTradingAddress" },
+            { typeof(ErpAccountCustomerRegistrationPremises), "Erp_Account_CustomerRegistration_Premises" },
+            { typeof(ErpAccountCustomerRegistrationTradeReferences), "Erp_Account_CustomerRegistration_TradeReferences" },
         };
 
         public Dictionary<(Type, string), string> ColumnName => new()

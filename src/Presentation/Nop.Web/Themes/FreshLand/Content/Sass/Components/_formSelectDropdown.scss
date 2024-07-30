@@ -1,0 +1,21 @@
+select {
+    background: var(--white) url(../images/select-arrow.png) no-repeat center right 10px;
+    border: 1px solid var(--primary-grey_light);
+    box-shadow: inset 2px 3px 5px rgba(0, 0, 0, 0.08);
+    color: var(--primary-grey_dark);
+    border-radius: 2px;
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 13px;
+    display: inline-block;
+    padding: 6px;
+    padding-right: 20px;
+    appearance: none; /* Remove default arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    @media (min-width: $md) {
+        font-size: 14px;
+        line-height: 16px;
+    }
+}

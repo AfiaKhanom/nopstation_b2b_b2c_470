@@ -1,0 +1,236 @@
+﻿@model ErpGroupPriceCodeSearchModel
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models
+
+@{
+    Layout = "_AdminLayout";
+
+    //title
+    NopHtml.AddTitleParts(T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPriceCode.PageTitle.ErpGroupPriceCode").Text);
+    ViewBag.PageTitle = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPriceCode.PageTitle.ErpGroupPriceCode").Text;
+
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.B2BB2CFeatures.ErpGroupPriceCode");
+}
+
+@{
+    var customer = await workContext.GetCurrentCustomerAsync();
+
+    const string hideSearchBlockAttributeName = "ErpGroupPriceCodeListPage.HideSearchBlock";
+    var hideSearchBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideSearchBlockAttributeName);
+
+    const string hideErpGroupPriceCodeBlockAttributeName = "ErpGroupPriceCodePage.hideErpGroupPriceCodeBlock";
+    var hideErpGroupPriceCodeBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideErpGroupPriceCodeBlockAttributeName);
+}
+
+<form asp-area="Admin" asp-controller="ErpGroupPriceCode" asp-action="List" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPriceCodes")
+        </h1>
+        <div class="float-right">
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fas fa-plus-square"></i>
+                @T("Admin.Common.AddNew")
+            </a>
+            @*<button type="button" name="importexcel" class="btn bg-olive" data-toggle="modal" data-target="#importexcel-window">
+                <i class="fa fa-upload"></i>
+                @T("Admin.Common.Import")
+            </button>
+            <div class="btn-group">
+                <button type="button" class="btn btn-success">
+                    <i class="fa fa-download"></i>
+                    @T("Admin.Common.Export")
+                </button>
+                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <span class="caret"></span>
+                    <span class="sr-only">&nbsp;</span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li>
+                        <button type="submit" name="exportexcel-all">
+                            <i class="fa fa-file-excel-o"></i>
+                            @T("Admin.Common.ExportToExcel.All")
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" id="exportexcel-selected">
+                            <i class="fa fa-file-excel-o"></i>
+                            @T("Admin.Common.ExportToExcel.Selected")
+                        </button>
+                    </li>
+                </ul>
+            </div>*@
+        </div>
+    </div>
+
+    <Section class="content">
+        <div class="container-fluid">
+            <div class="form-horizontal">
+                <div class="cards-group">
+                    <div class="card card-default card-search form-horizontal">
+                        <div class="card-body">
+                            <div class="row search-row @(!hideSearchBlock ? "opened" : "")" data-hideAttribute="@hideSearchBlockAttributeName">
+                                <div class="search-text">@T("Admin.Common.Search")</div>
+                                <div class="icon-search"><i class="fas fa-search" aria-hidden="true"></i></div>
+                                <div class="icon-collapse"><i class="far fa-angle-@(!hideSearchBlock ? "up" : "down")" aria-hidden="true"></i></div>
+                            </div>
+                            <div class="search-body @(hideSearchBlock ? "closed" : "")">
+                                <div class="form-group row">
+                                    <div class="col-md-5">
+                                        <div class="form-group row">
+                                            <div class="col-md-4">
+                                                <nop-label asp-for="SearchGroupPriceCode" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <nop-editor asp-for="SearchGroupPriceCode" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group row">
+                                            <div class="col-md-4">
+                                                <nop-label asp-for="ShowInActive" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <nop-select asp-for="ShowInActive" asp-items="Model.ShowInActiveOption" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="text-center col-md-12">
+                                        <button type="button" id="search-erpgrouppricecode" class="btn btn-primary btn-search">
+                                            <i class="fas fa-search"></i>
+                                            @T("Admin.Common.Search")
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <nop-card asp-name="ErpGroupPriceCode" asp-icon="fas fa-building" asp-title="@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPriceCodes.CardHeader.ErpGroupPriceCodes")" asp-hide-block-attribute-name="@hideErpGroupPriceCodeBlockAttributeName" asp-hide="@hideErpGroupPriceCodeBlock" asp-advanced="true">
+                        <div class="card-body">
+                            <div class="card card-default">
+                                <div class="card-body">
+                                    @await Html.PartialAsync("Table", new DataTablesModel
+                                    {
+                                        Name = "erpgrouppricecode-grid",
+                                        UrlRead = new DataUrl("ErpGroupPriceCodeList", "ErpGroupPriceCode", null),
+                                        SearchButtonId = "search-erpgrouppricecode",
+                                        UrlUpdate = new DataUrl("Edit", "ErpGroupPriceCode", null),
+                                        UrlDelete = new DataUrl("Delete", "ErpGroupPriceCode", null),
+                                        Length = Model.PageSize,
+                                        LengthMenu = Model.AvailablePageSizes,
+                                        Filters = new List<FilterParameter>
+                                        {
+                                            new FilterParameter(nameof(Model.SearchGroupPriceCode)),
+                                            new FilterParameter(nameof(Model.ShowInActive), typeof(string)),
+                                        },
+                                        ColumnCollection = new List<ColumnProperty>
+                                        {
+                                            new ColumnProperty(nameof(ErpGroupPriceCodeModel.GroupPriceCode))
+                                            {
+                                                Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPriceCode.Fields.PriceGroupCodeName").Text,
+                                                Width = "200",
+                                                ClassName = NopColumnClassDefaults.CenterAll,
+                                            },
+                                            new ColumnProperty(nameof(ErpGroupPriceCodeModel.LastPriceUpdatedOnUTC))
+                                            {
+                                                Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPriceCode.Fields.LastPriceUpdatedOnUTC").Text,
+                                                Width = "200",
+                                                ClassName = NopColumnClassDefaults.CenterAll,
+                                                Render = new RenderDate()
+                                            },
+                                            new ColumnProperty(nameof(ErpGroupPriceCodeModel.IsActive))
+                                            {
+                                                Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPriceCode.Fields.IsActive").Text,
+                                                Width = "200",
+                                                ClassName = NopColumnClassDefaults.CenterAll,
+                                                Render = new RenderBoolean(),
+                                            },
+                                            new ColumnProperty(nameof(ErpGroupPriceCodeModel.Id))
+                                            {
+                                                Title = T("Admin.Common.Edit").Text,
+                                                Width = "100",
+                                                ClassName = NopColumnClassDefaults.Button,
+                                                Render = new RenderButtonEdit(new DataUrl("Edit"))
+                                            }
+                                        }
+                                    })
+                                </div>
+                            </div>
+                        </div>
+                    </nop-card>
+                </div>
+            </div>
+        </div>
+    </Section>
+</form>
+
+@*export selected (Excel). We don't use GET approach because it's limited to 2K-4K chars and won't work for large number of entities*@
+<form asp-controller="erpgrouppricecode" asp-action="ExportExcelSelected" method="post" id="export-excel-selected-form">
+    <input type="hidden" id="selectedIds" name="selectedIds" value="" />
+</form>
+
+<script>
+    $(document).ready(function () {
+        $('#exportexcel-selected').click(function (e) {
+            e.preventDefault();
+            var ids = selectedIds.join(",");
+            $('#export-excel-selected-form #selectedIds').val(ids);
+            $('#export-excel-selected-form').submit();
+            updateTable('#erpgrouppricecode-grid');
+            return false;
+        });
+    });
+</script>
+
+@*import price group form*@
+<div id="importexcel-window" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="importexcel-window-title">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="importexcel-window-title">@T("Admin.Common.ImportFromExcel")</h4>
+            </div>
+            <form asp-controller="erpgrouppricecode" asp-action="ImportExcel" method="post" enctype="multipart/form-data">
+                <div class="form-horizontal">
+                    <div class="modal-body">
+                        <ul class="common-list">
+                            <li>
+                                <em>@T("Admin.Catalog.Products.List.ImportFromExcelTip")</em>
+                            </li>
+                            <li>
+                                <em>@T("Admin.Common.ImportFromExcel.ManyRecordsWarning")</em>
+                            </li>
+                        </ul>
+                        <div class="form-group">
+                            <div class="col-md-2">
+                                <div class="label-wrapper">
+                                    <label class="control-label">
+                                        @T("Admin.Common.ExcelFile")
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <input type="file" id="importexcelfile" name="importexcelfile" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">
+                            @T("Admin.Common.ImportFromExcel")
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .button-column {
+        text-align: center !important;
+    }
+</style>

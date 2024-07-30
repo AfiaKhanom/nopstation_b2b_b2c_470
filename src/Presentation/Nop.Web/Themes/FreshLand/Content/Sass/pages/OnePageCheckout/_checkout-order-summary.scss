@@ -1,0 +1,44 @@
+.checkout-page {
+    .cart {
+        td {
+            font-size: 10px;
+            font-weight: 500;
+            line-height: 1.6;
+            vertical-align: top;
+
+            &.product-picture {
+                width: 60px;
+            }
+
+            &.product {
+                width: 50%;
+            }
+
+            &.subtotal {
+                max-width: 110px;
+            }
+
+            label, span {
+                display: inline-block;
+                font-size: inherit;
+                line-height: 1.6;
+                margin: 0 !important;
+            }
+
+            @media (min-width: $md) {
+                font-size: 14px;
+                font-weight: 500;
+                line-height: 1.6;
+
+                &.subtotal {
+                    width: 140px;
+                    text-align: left;
+                }
+
+                &.product {
+                    width: auto;
+                }
+            }
+        }
+    }
+}

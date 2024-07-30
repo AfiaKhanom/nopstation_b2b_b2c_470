@@ -1,0 +1,302 @@
+﻿@using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models;
+@model NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models.ErpNopUserSearchModel
+
+@{
+    Layout = "_AdminLayout";
+
+    //title
+    NopHtml.AddTitleParts(T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.PageTitle.ErpNopUsers").Text);
+    ViewBag.PageTitle = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.PageTitle.ErpNopUsers").Text;
+
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.B2BB2CFeatures.ErpNopUsers");
+}
+
+@{
+    var customer = await workContext.GetCurrentCustomerAsync();
+
+    const string hideSearchBlockAttributeName = "ErpNopUsersPage.HideSearchBlock";
+    var hideSearchBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideSearchBlockAttributeName);
+
+    const string hideErpNopUsersBlockAttributeName = "ErpErpNopUsersPage.hideErpErpNopUsersBlock";
+    var hideErpNopUsersBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideErpNopUsersBlockAttributeName);
+
+    var storeScope = await storeContext.GetActiveStoreScopeConfigurationAsync();
+    var b2BB2CFeaturesSettings = await settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);
+}
+
+<div class="content-header clearfix">
+    <h1 class="float-left">
+        @T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.PageHeader.ErpNopUsers")
+    </h1>
+    <div class="float-right">
+        <a asp-action="CreateErpNopUser" class="btn btn-primary">
+            <i class="fas fa-plus-square"></i>
+            @T("Admin.Common.AddNew")
+        </a>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="cards-group">
+            <div class="card card-default card-search form-horizontal">
+                <div class="card-body">
+                    <div class="row search-row @(!hideSearchBlock ? "opened" : "")" data-hideAttribute="@hideSearchBlockAttributeName">
+                        <div class="search-text">@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.SearchNopUsers")</div>
+                        <div class="icon-search"><i class="fas fa-search" aria-hidden="true"></i></div>
+                        <div class="icon-collapse"><i class="far fa-angle-@(!hideSearchBlock ? "up" : "down")" aria-hidden="true"></i></div>
+                    </div>
+                    <div class="search-body @(hideSearchBlock ? "closed" : "")">
+                        <div class="form-group row">
+                            <div class="col-md-5">
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="Name" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="Name" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="Email" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="Email" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="ShowInActive" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-select asp-for="ShowInActive" asp-items="Model.ShowInActiveOption" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="AccountId" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="text" id="search-account-code" autocomplete="off" placeholder="Search by Erp Account number" class="form-control" />
+                                        <span id="search-account-by-code"></span>
+                                        <button type="button" id="search-account-clear" class="btn bg-gray" style="display: none; margin-top: 5px;">@T("Admin.Common.Clear")</button>
+                                        <input asp-for="AccountId" autocomplete="off" style="display: none;" />
+                                        <script>
+                                            $(document).ready(function () {
+                                                $('#search-account-code').autocomplete({
+                                                    delay: 500,
+                                                    minLength: 3,
+                                                    source: function (request, response) {
+                                                        $.ajax({
+                                                            url: '@(Url.Action("ErpAccountSearchAutoComplete", "ErpAccount"))',
+                                                            dataType: 'json',
+                                                            data: { term: request.term },
+                                                            success: function (data) {
+                                                                // Check if there are no results
+                                                                if (data.length === 0) {
+                                                                    response([{ label: 'No results found', value: '' }]);
+                                                                } else {
+                                                                    response(data);
+                                                                }
+                                                            }
+                                                        });
+                                                    },
+                                                    select: function (event, ui) {
+                                                        if (ui.item.value === '' || ui.item.label === 'No results found') {
+                                                            // No actual item selected, handle accordingly
+                                                            return false;
+                                                        }
+                                                        $('#@Html.IdFor(model => model.AccountId)').val(ui.item.erpaccountid);
+                                                        $('#search-account-by-code').text(ui.item.label);
+
+                                                        $('#search-account-clear').show();
+                                                        $('#validationMessageErpAccountId').hide();
+                                                        accountChanged(ui.item.erpaccountid);
+                                                        return false;
+                                                    }
+                                                });
+
+                                                //remove button
+                                                $('#search-account-clear').click(function () {
+                                                    $('#@Html.IdFor(model => model.AccountId)').val('0');
+                                                    $('#search-account-by-code').text('');
+                                                    $('#search-account-clear').hide();
+                                                    accountChanged('0');
+                                                    return false;
+                                                });
+                                            });
+
+                                        </script>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="ErpShipToAddressId" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-select asp-for="ErpShipToAddressId" asp-items="Model.AvailableErpShipToAddresses" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="ErpUserTypeId" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-select asp-for="ErpUserTypeId" asp-items="Model.AvailableErpUserTypes" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="text-center col-md-12">
+                                <button type="button" id="search-erpNopUser" class="btn btn-primary btn-search">
+                                    <i class="fas fa-search"></i>
+                                    @T("Admin.Common.Search")
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <nop-card asp-name="ErpNopUser" asp-icon="fas fa-building" asp-title="@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.CardHeader.ErpNopUser")" asp-hide-block-attribute-name="@hideErpNopUsersBlockAttributeName" asp-hide="@hideErpNopUsersBlock" asp-advanced="true">
+                <div class="card-body">
+                    <div class="card card-default">
+                        <div class="card-body">
+                            @await Html.PartialAsync("Table", new DataTablesModel
+                            {
+                                Name = "ErpNopUser-grid",
+                                UrlRead = new DataUrl("ErpNopUserList", "ErpNopUser", null),
+                                UrlUpdate = new DataUrl("ErpNopUserEdit", "ErpNopUser", null),
+                                UrlDelete = new DataUrl("Delete", "ErpNopUser", null),
+                                SearchButtonId = "search-erpNopUser",
+                                Length = Model.PageSize,
+                                LengthMenu = Model.AvailablePageSizes,
+                                Filters = new List<FilterParameter>
+                                {
+                                    new FilterParameter(nameof(Model.Name), typeof(string)),
+                                    new FilterParameter(nameof(Model.AccountId), typeof(string)),
+                                    new FilterParameter(nameof(Model.ErpShipToAddressId), typeof(string)),
+                                    new FilterParameter(nameof(Model.Email), typeof(string)),
+                                    new FilterParameter(nameof(Model.ShowInActive), typeof(string)),
+                                    new FilterParameter(nameof(Model.SalesOrgId), typeof(string)),
+                                    new FilterParameter(nameof(Model.ErpUserTypeId), typeof(string)),
+                                },
+                                ColumnCollection = new List<ColumnProperty>
+                                {
+                                    new ColumnProperty(nameof(ErpNopUserModel.NopCustomer))
+                                    {
+                                        Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.NopCustomer").Text,
+                                        Render = new RenderLink(new DataUrl("~/Admin/Customer/Edit", nameof(ErpNopUserModel.NopCustomerId))),
+                                        Width = "200"
+                                    },
+                                    new ColumnProperty(nameof(ErpNopUserModel.ErpAccount))
+                                    {
+                                        Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.ErpAccount").Text,
+                                        Render = new RenderLink(new DataUrl("~/Admin/ErpAccount/ErpAccountEdit/", nameof(ErpNopUserModel.ErpAccountId))),
+                                        Width = "100"
+                                    },
+                                    new ColumnProperty(nameof(ErpNopUserModel.ErpSalesOrg))
+                                    {
+                                        Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.SalesOrg").Text,
+                                        Render = new RenderLink(new DataUrl("~/Admin/ErpSalesOrg/ErpSalesOrgEdit/", nameof(ErpNopUserModel.ErpSalesOrgId))),
+                                        Width = "150",
+                                        Visible = b2BB2CFeaturesSettings.UseMultiSalesOrg ? true : false,
+                                    },
+                                    new ColumnProperty(nameof(ErpNopUserModel.ErpShipToAddressId))
+                                    {
+                                        Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.ErpShipToAddress").Text,
+                                        Width = "150",
+                                        Render = new RenderCustom("ErpShipToAddress"),
+                                    },
+                                    new ColumnProperty(nameof(ErpNopUserModel.SelectedCustomerRoles))
+                                    {
+                                        Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.Roles").Text,
+                                        Width = "150",
+                                    },
+                                    new ColumnProperty(nameof(ErpNopUserModel.IsActive))
+                                    {
+                                        Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.IsActive").Text,
+                                        Width = "70",
+                                        ClassName = NopColumnClassDefaults.CenterAll,
+                                        Render = new RenderBoolean(),
+                                    },
+                                    new ColumnProperty(nameof(ErpNopUserModel.CreatedOn))
+                                    {
+                                        Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Field.CreatedOn").Text,
+                                        Width = "150",
+                                        Render = new RenderDate()
+                                    },
+                                    new ColumnProperty(nameof(ErpNopUserModel.Id))
+                                    {
+                                        Title = T("Admin.Common.Edit").Text,
+                                        Width = "80",
+                                        ClassName =  NopColumnClassDefaults.Button,
+                                        Render = new RenderButtonEdit(new DataUrl("~/Admin/ErpNopUser/ErpNopUserEdit/"))
+                                    },
+                                    new ColumnProperty(nameof(ErpNopUserModel.Id))
+                                    {
+                                        Title = T("Admin.Common.Delete").Text,
+                                        Width = "80",
+                                        ClassName =  NopColumnClassDefaults.Button,
+                                        Render = new RenderButtonRemove(T("Admin.Common.Delete").Text),
+                                        Visible = false
+                                    }
+                                }
+                            })
+                        </div>
+                    </div>
+                </div>
+            </nop-card>
+        </div>
+    </div>
+</section>
+
+<script>
+    function ErpShipToAddress(data, type, row, meta) {
+        return '<a href="/Admin/ErpShipToAddress/Edit/' + row.ErpShipToAddressId + '">' + row.ErpShipToAddress.AddressHtml + '</a>';
+    }
+
+    // Function to update the ErpShipToAddressId dropdown
+    function updateErpShipToAddresses(accountId) {
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("ShipToAddressDropdownList", "ErpNopUser")', // Replace with the actual controller and action names if necessary
+            data: { erpAccountId: accountId },
+            success: function (data) {
+                // Clear existing options in the ErpShipToAddressId dropdown
+                $('#ErpShipToAddressId').empty();
+                // Add new options based on the response data
+                $.each(data, function (index, item) {
+                    $('#ErpShipToAddressId').append($('<option></option>').val(item.Value).text(item.Text))
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+    }
+
+    // Event listener for the AccountId dropdown change
+    function accountChanged(accountId) {
+        // Call the method to update the ErpShipToAddressId dropdown
+        updateErpShipToAddresses(accountId);
+    }
+
+    // Initialize the ErpShipToAddressId dropdown with the initial value of AccountId
+    $(document).ready(function () {
+        // Get the initial value of AccountId
+        var initialAccountId = $('#AccountId').val();
+        // Call the method to update the ErpShipToAddressId dropdown
+        updateErpShipToAddresses(initialAccountId);
+    });
+</script>
+
+<style>
+    .button-column {
+        text-align: center !important;
+    }
+</style>

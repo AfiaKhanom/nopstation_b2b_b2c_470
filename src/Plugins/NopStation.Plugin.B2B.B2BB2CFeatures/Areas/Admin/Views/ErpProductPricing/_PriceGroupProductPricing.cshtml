@@ -1,0 +1,183 @@
+﻿@model ErpPriceGroupProductPricingSearchModel
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models
+
+@{
+    var customer = await workContext.GetCurrentCustomerAsync();
+    const string hideSearchBlockAttributeName = "ErpPriceGroupProductPricingList.HideSearchBlock";
+    var hideSearchBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideSearchBlockAttributeName);
+    const string hidePriceGroupProductPricingBlockAttributeName = "ErpPriceGroupProductPricingList.HideListBlock";
+    var hidePriceGroupProductPricingBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hidePriceGroupProductPricingBlockAttributeName);
+}
+
+<nop-card asp-name="productpricing-pricegroup" asp-icon="fas fa-list" asp-title="@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPrice.List")"
+          asp-hide-block-attribute-name="@hidePriceGroupProductPricingBlockAttributeName"
+          asp-hide="@hidePriceGroupProductPricingBlock">
+    <div class="card card-default card-search">
+        <div class="card-body">
+            <div class="row search-row @(!hideSearchBlock ? "opened" : "")" data-hideAttribute="@hideSearchBlockAttributeName">
+                <div class="search-text">@T("Admin.Common.Search")</div>
+                <div class="icon-search"><i class="fas fa-search" aria-hidden="true"></i></div>
+                <div class="icon-collapse"><i class="fas fa-angle-down" aria-hidden="true"></i></div>
+            </div>
+            <div class="search-body @(hideSearchBlock ? "closed" : "")">
+                <div class="form-group row">
+                    <div class="col-md-5">
+                        <div class="form-group row">
+                            <div class="col-md-4">
+                                <nop-label asp-for="SearchErpPriceGroupCode" />
+                            </div>
+                            <div class="col-md-8">
+                                <nop-editor asp-for="SearchErpPriceGroupCode" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="text-center col-md-12">
+                        <button type="button" id="search-price-group-product-pricing" class="btn btn-primary btn-search">
+                            <i class="fas fa-search"></i>
+                            @T("Admin.Common.Search")
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="card card-default">
+            <div class="card-body">
+                @{
+                    var groupProductPricingGridModel = new DataTablesModel
+                    {
+                        Name = "price-group-product-pricing-grid",
+                        UrlRead = new DataUrl("PriceGroupProductPricingList", "ErpProductPricing", new RouteValueDictionary { [nameof(ErpPriceGroupProductPricingSearchModel.ProductId)] = Model.ProductId }),
+                        UrlUpdate = new DataUrl("EditPriceGroupProductPricing", "ErpProductPricing", null),
+                        UrlDelete = new DataUrl("DeletePriceGroupProductPricing", "ErpProductPricing", null),
+                        SearchButtonId = "search-price-group-product-pricing",
+                        Length = Model.PageSize,
+                        LengthMenu = Model.AvailablePageSizes,
+                        Filters = new List<FilterParameter>
+                        {
+                        new FilterParameter(nameof(Model.SearchErpPriceGroupCode))
+                        }
+                    };
+
+                    groupProductPricingGridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpPriceGroupProductPricingModel.ErpGroupPriceCodeId))
+                    {
+                        Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPrice.Fields.ErpPriceGroupCode").Text,
+                        Width = "200",
+                        Visible = false
+                    });
+
+                    groupProductPricingGridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpPriceGroupProductPricingModel.ErpGroupPriceCode))
+                    {
+                        Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPrice.Fields.ErpPriceGroupCode").Text,
+                        Width = "200",
+                        ClassName = NopColumnClassDefaults.CenterAll,
+                    });
+
+                    groupProductPricingGridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpPriceGroupProductPricingModel.Price))
+                    {
+                        Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPrice.Fields.Price").Text,
+                        Width = "200",
+                        Editable = true,
+                        EditType = EditType.Number,
+                        ClassName = NopColumnClassDefaults.CenterAll,
+                    });
+
+                    groupProductPricingGridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpPriceGroupProductPricingModel.Id))
+                    {
+                        Title = T("Admin.Common.Edit").Text,
+                        Width = "100",
+                        ClassName = NopColumnClassDefaults.Button,
+                        Render = new RenderButtonsInlineEdit()
+                    });
+
+                    groupProductPricingGridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpPriceGroupProductPricingModel.Id))
+                    {
+                        Title = T("Admin.Common.Delete").Text,
+                        Width = "100",
+                        ClassName = NopColumnClassDefaults.Button,
+                        Render = new RenderButtonRemove(T("Admin.Common.Delete").Text)
+                    });
+                }
+                @await Html.PartialAsync("Table", groupProductPricingGridModel)
+            </div>
+
+            <div class="card-footer">
+                <div class="card-body">
+                    <div class="card card-default">
+                        <div class="card-body">
+                            @if (Model.AddErpPriceGroupProductPricing.AvailableErpPriceGroupCodes.Count > 0)
+                            {
+                                <div class="form-group row">
+                                    <div class="col-md-3">
+                                        <nop-label asp-for="@Model.AddErpPriceGroupProductPricing.ErpGroupPriceCodeId" />
+                                    </div>
+                                    <div class="col-md-9">
+                                        <nop-select asp-for="@Model.AddErpPriceGroupProductPricing.ErpGroupPriceCodeId" asp-items="@Model.AddErpPriceGroupProductPricing.AvailableErpPriceGroupCodes" />
+                                        <span asp-validation-for="@Model.AddErpPriceGroupProductPricing.ErpGroupPriceCodeId"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-3">
+                                        <nop-label asp-for="@Model.AddErpPriceGroupProductPricing.Price" />
+                                    </div>
+                                    <div class="col-md-9">
+                                        <nop-editor asp-for="@Model.AddErpPriceGroupProductPricing.Price" />
+                                        <span asp-validation-for="@Model.AddErpPriceGroupProductPricing.Price"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-3"></div>
+                                    <div class="col-md-9">
+                                        <button type="button" id="addPriceGroupProductPricing" class="btn btn-primary">@T("Admin.Common.AddNewRecord")</button>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                @T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpGroupPriceCode.NoActiveGroupPriceCodeAvailable")
+                            }
+                        </div>
+                        <script>
+                            $(document).ready(function () {
+                                $('#addPriceGroupProductPricing').click(function () {
+                                    $('#addPriceGroupProductPricing').attr('disabled', true);
+                                    var postData = {
+                                        ErpGroupPriceCodeId: $("#@Html.IdFor(model => model.AddErpPriceGroupProductPricing.ErpGroupPriceCodeId)").val(),
+                                        Price: $("#@Html.IdFor(model => model.AddErpPriceGroupProductPricing.Price)").val()
+                                    };
+                                    addAntiForgeryToken(postData);
+
+                                    $.ajax({
+                                        cache: false,
+                                        type: "POST",
+                                        url: "@Html.Raw(Url.Action("CreatePriceGroupProductPricing", "ErpProductPricing", new { productId = Model.ProductId }))",
+                                        data: postData,
+                                        success: function (data, textStatus, jqXHR) {
+                                            if (data.Result) {
+                                                //reload grid
+                                                updateTable('#price-group-product-pricing-grid');
+
+                                                //clear input value
+                                                @*$("#@Html.IdFor(model => model.AddB2BPriceGroupProductPricing.B2BPriceGroupCodeId)").val('');*@
+                                                $("#@Html.IdFor(model => model.AddErpPriceGroupProductPricing.Price)").val('0');
+                                            } else {
+                                                //display errors if returned
+                                                display_nop_error(data);
+                                            }
+                                        },
+                                        complete: function (jqXHR, textStatus) {
+                                            $('#addPriceGroupProductPricing').attr('disabled', false);
+                                        }
+                                    });
+                                });
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nop-card>

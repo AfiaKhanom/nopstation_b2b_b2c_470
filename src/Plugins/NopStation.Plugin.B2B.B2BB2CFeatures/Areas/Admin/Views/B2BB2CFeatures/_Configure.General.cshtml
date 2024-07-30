@@ -1,0 +1,200 @@
+@model ConfigurationModel
+
+<div class="card-body">
+    <div class="form-group row" style="display:none">
+        <div class="col-md-3">
+            <nop-label asp-for="IsActive" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="IsActive" />
+            <span asp-validation-for="IsActive"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="IsB2BUserRegisterAllowed" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="IsB2BUserRegisterAllowed" />
+            <span asp-validation-for="IsB2BUserRegisterAllowed"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="IsB2CUserRegisterAllowed" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="IsB2CUserRegisterAllowed" />
+            <span asp-validation-for="IsB2CUserRegisterAllowed"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="IsErpAccountCustomerRegisterAllowed" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="IsErpAccountCustomerRegisterAllowed" />
+            <span asp-validation-for="IsErpAccountCustomerRegisterAllowed"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="UseDefaultAccountForB2CUser" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="UseDefaultAccountForB2CUser" />
+            <span asp-validation-for="UseDefaultAccountForB2CUser"></span>
+        </div>
+        <script>
+            $(document).ready(function () {
+                $('#UseDefaultAccountForB2CUser').change(function () {
+                    if ($(this).is(":checked")) {
+                        $('#erp-account-id-section').show();
+                    }
+                    else {
+                        $('#erp-account-id-section').hide();
+                    }
+                })
+
+                if ($('#UseDefaultAccountForB2CUser').is(":checked")) {
+                    $('#erp-account-id-section').show();
+                }
+                else {
+                    $('#erp-account-id-section').hide()
+                }
+            })
+        </script>
+    </div>
+
+    <div class="form-group row" id="erp-account-id-section">
+        <div class="col-md-3">
+            <nop-label asp-for="DefaultB2CErpAccountId" />
+        </div>
+        <div class="col-md-9">
+            <input type="text" id="search-account-code" autocomplete="off" placeholder="Search by Erp Account number" class="form-control" />
+            <span id="search-account-by-code"></span>
+            <button type="button" id="search-account-clear" class="btn bg-gray" style="display: none; margin-top: 5px;">@T("Admin.Common.Clear")</button>
+            <input asp-for="DefaultB2CErpAccountId" autocomplete="off" style="display: none;" />
+
+            @if (Model.DefaultB2CErpAccountId > 0)
+            {
+                <script>
+                    $(document).ready(function () {
+                        console.log('Got into info fetch');
+                        $.ajax({
+                            type: 'GET',
+                            url: '@Url.Action("GetDefaultB2CErpAccountInfo", "ErpAccount")',
+                            data: { erpAccountId: @Model.DefaultB2CErpAccountId },
+                            dataType: 'json',
+                            success: function (data) {
+                                console.log('Success');
+                                $('#search-account-by-code').text(data);
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Error fetching data:', error);
+                            }
+                        });
+                    });
+                </script>
+            }
+            <script>
+                $(document).ready(function () {
+                    $('#search-account-code').autocomplete({
+                        delay: 500,
+                        minLength: 3,
+                        source: function (request, response) {
+                            $.ajax({
+                                url: '@(Url.Action("ErpAccountSearchAutoComplete", "ErpAccount"))',
+                                dataType: 'json',
+                                data: { term: request.term },
+                                success: function (data) {
+                                    // Check if there are no results
+                                    if (data.length === 0) {
+                                        response([{ label: 'No results found', value: '' }]);
+                                    } else {
+                                        response(data);
+                                    }
+                                }
+                            });
+                        },
+                        select: function (event, ui) {
+                            if (ui.item.value === '' || ui.item.label === 'No results found') {
+                                // No actual item selected, handle accordingly
+                                return false;
+                            }
+                            $('#@Html.IdFor(model => model.DefaultB2CErpAccountId)').val(ui.item.erpaccountid);
+                            $('#search-account-by-code').text(ui.item.label);
+
+                            $('#search-account-clear').show();
+                            $('#validationMessageErpAccountId').hide();
+                            return false;
+                        }
+                    });
+
+                    //remove button
+                    $('#search-account-clear').click(function () {
+                        $('#@Html.IdFor(model => model.DefaultB2CErpAccountId)').val('0');
+                        $('#search-account-by-code').text('');
+                        $('#search-account-clear').hide();
+                        return false;
+                    });
+                });
+            </script>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="LastDateTimeOfTCUpdate" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="LastDateTimeOfTCUpdate" />
+            <span asp-validation-for="LastDateTimeOfTCUpdate"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="DisplayAddToQuickListFavouriteButton" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="DisplayAddToQuickListFavouriteButton" />
+            <span asp-validation-for="DisplayAddToQuickListFavouriteButton"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="EnableWarehouse" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="EnableWarehouse" />
+            <span asp-validation-for="EnableWarehouse"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="UseMultiSalesOrg" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="UseMultiSalesOrg" />
+            <span asp-validation-for="UseMultiSalesOrg"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="DefaultB2COrganizationId" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="DefaultB2COrganizationId" asp-items="Model.AvailableSalesOrganizations" />
+            <span asp-validation-for="DefaultB2COrganizationId"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="DefaultCountryId" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="DefaultCountryId" asp-items="Model.AvailableCountries" />
+            <span asp-validation-for="DefaultCountryId"></span>
+        </div>
+    </div>
+</div>

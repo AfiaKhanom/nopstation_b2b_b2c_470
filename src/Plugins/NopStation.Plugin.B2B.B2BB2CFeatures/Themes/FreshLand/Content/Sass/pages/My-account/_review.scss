@@ -1,0 +1,48 @@
+.html-account-page {
+    .product-review-item {
+        margin-top: 15px;
+        margin-bottom: 15px;
+        color: var(--primary-green_dark);
+        border: 1px solid var(--primary-grey_light);
+        border-radius: 3px;
+
+        .review-item-head {
+            background-color: var(--primary-green_light);
+            border: 1px solid var(--primary-green_light);
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .review-title {
+                font-size: 18px;
+            }
+
+            .rating {
+                margin-bottom: 0px;
+            }
+        }
+
+        .review-content {
+            padding: 10px;
+
+            .review-text {
+                font-size: 15px;
+                line-height: 19px;
+                color: var(--black);
+                margin: 15px 0px;
+            }
+
+            .review-info {
+                label {
+                    display: inline;
+                }
+
+                .separator {
+                    display: inline-block;
+                    margin: 0px 15px;
+                }
+            }
+        }
+    }
+}

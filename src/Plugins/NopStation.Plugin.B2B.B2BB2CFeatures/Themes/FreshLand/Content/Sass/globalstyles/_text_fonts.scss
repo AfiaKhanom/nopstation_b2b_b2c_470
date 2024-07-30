@@ -1,0 +1,30 @@
+@import "../mixins/text_fonts";
+
+/*theme fonts added*/
+@font-face {
+    @include font-face_genarate();
+}
+@font-face {
+    @include font-face_genarate( $font-style: italic,$font-path-last: "lato-italic-webfont.woff");
+}
+@font-face {
+    @include font-face_genarate( $font-weight: 900,$font-path-last: "lato-black-webfont.woff");
+}
+@font-face {
+    @include font-face_genarate( $font-style: italic,$font-weight: 900,$font-path-last: "lato-blackitalic-webfont.woff");
+}
+@font-face {
+    @include font-face_genarate( $font-weight: 600,$font-path-last: "lato-bold-webfont.woff");
+}
+@font-face {
+    @include font-face_genarate( $font-style: italic,$font-weight: 600,$font-path-last: "lato-bolditalic-webfont.woff");
+}
+@font-face {
+    @include font-face_genarate( $font-weight: 300,$font-path-last: "lato-light-webfont.woff");
+}
+@font-face {
+    @include font-face_genarate( $font-style: italic,$font-weight: 300,$font-path-last: "lato-lightitalic-webfont.woff");
+}
+@font-face {
+    @include font-face_genarate( $font-family-name: korolev, $font-style: normal,$font-weight: 600,$font-path-last: "korolev_bold-webfont.woff");
+}

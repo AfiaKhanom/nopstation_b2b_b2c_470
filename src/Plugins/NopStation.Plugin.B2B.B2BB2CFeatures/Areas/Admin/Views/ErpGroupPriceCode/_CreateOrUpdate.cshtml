@@ -1,0 +1,44 @@
+@model ErpGroupPriceCodeModel
+
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models
+
+<div asp-validation-summary="All"></div>
+<input asp-for="Id" type="hidden" />
+
+@{
+    const string hideInfoBlockAttributeName = "ErpGroupPriceCodeCreateOrUpdatePage.HideInfoBlock";
+    var customer = await workContext.GetCurrentCustomerAsync();
+    var hideInfoBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideInfoBlockAttributeName);
+
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="form-horizontal">
+            <nop-cards id="grouppricecode-cards">
+                <nop-card asp-name="grouppricecode-info" asp-icon="fas fa-info" asp-title="@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPriceCode.Info")" asp-hide-block-attribute-name="@hideInfoBlockAttributeName" asp-hide="@hideInfoBlock" asp-advanced="false">
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="GroupPriceCode" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="GroupPriceCode" asp-required="true" />
+                                <span asp-validation-for="GroupPriceCode"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="IsActive" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="IsActive" asp-required="false" />
+                                <span asp-validation-for="IsActive"></span>
+                            </div>
+                        </div>
+                    </div>
+                </nop-card>
+            </nop-cards>
+        </div>
+    </div>
+</section>

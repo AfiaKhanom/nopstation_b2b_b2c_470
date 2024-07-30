@@ -1,0 +1,204 @@
+﻿@model SyncTaskModel
+
+@{
+    //page title
+    ViewBag.PageTitle = T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.Configure").Text;
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.ErpDataScheduler.SyncTaskList");
+}
+
+<div class="card-body">
+    <div class="scheduler-container">
+        <div class="row">
+            <div class="col-md-3">
+                <ul class="nav flex-column nav-tabs" id="schedulerTabs" role="tablist">
+                    @foreach (var dayOfWeek in Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>())
+                    {
+                        var checkDayOfWeekStatus = Model.DayOfWeekSlots.Any(slot => slot.DayOfWeek == (int)dayOfWeek && slot.TimeSlots.Any(timeSlot => timeSlot.IsSelected));
+                        var tabId = "tab-" + dayOfWeek;
+
+                        <li class="nav-item days">
+                            <a class="nav-link @((dayOfWeek == DayOfWeek.Sunday) ? "active" : "")" id="@tabId" data-toggle="tab" href="#day-@(dayOfWeek)" role="tab">
+                                <label>
+                                    <input type="checkbox" class="weekday-checkbox" id="checkbox-@((int)dayOfWeek)" data-day="@((int)dayOfWeek)" @(checkDayOfWeekStatus ? "checked" : "") />
+                                    @dayOfWeek
+                                </label>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="col-md-9">
+                <p>Times are expressed in UTC (Coordinated Universal Time)</p>
+                <div class="tab-content" id="schedulerTabContent">
+                    @foreach (var dayOfWeek in Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>())
+                    {
+                        var tabId = "day-" + dayOfWeek;
+
+                        <div class="tab-pane fade @(dayOfWeek == DayOfWeek.Sunday ? "show active" : "")" id="@tabId" role="tabpanel">
+                            <div class="row">
+                                @foreach (var slot in Enumerable.Range(0, 48))
+                                {
+                                    var dateTimeOfSlot = DateTime.UtcNow.Date.AddHours((slot * 30) / 60).AddMinutes((slot * 30) % 60).AddSeconds(0);
+
+                                    var theTimeSlot = dateTimeOfSlot.TimeOfDay.ToString(@"hh\:mm");
+
+                                    var checkTimeSlotStatus = Model.DayOfWeekSlots.Exists(slot => slot.DayOfWeek == (int)dayOfWeek
+                                    && slot.TimeSlots.Any(timeSlot => timeSlot.IsSelected && timeSlot.TimeSlot == theTimeSlot));
+
+                                    <div class="col-md-2">
+                                        <div class="time-slot">
+                                            <label>
+                                                <input type="checkbox" class="time-slot-checkbox" data-slot="@theTimeSlot" data-day="@((int)dayOfWeek)" @(checkTimeSlotStatus ? "checked" : "") />
+                                                @theTimeSlot
+                                            </label>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom CSS for the "active" tab */
+    .days .nav-link.active {
+        background-color: lightskyblue;
+        color: black;
+    }
+</style>
+
+<script>
+    // Handle checkbox behavior
+    $('.time-slot-checkbox').change(function () {
+        var dayOfWeek = $(this).data('day');
+        var weekdayCheckbox = $('#checkbox-' + dayOfWeek);
+        var checkedTimeSlots = $('.time-slot-checkbox[data-day="' + dayOfWeek + '"]:checked');
+
+        if (checkedTimeSlots.length > 0) {
+            // If any time slot is checked, check the weekday checkbox
+            weekdayCheckbox.prop('checked', true);
+            console.log('Checked the day');
+        } else {
+            // If no time slots are checked, uncheck the weekday checkbox
+            weekdayCheckbox.prop('checked', false);
+            console.log('Unchecked the day');
+        }
+
+
+        // Log for debugging purpose
+        var dataToSubmit = [];
+        var str = '';
+
+        // Loop through weekdays
+        $('.weekday-checkbox').each(function () {
+            var dayOfWeek = $(this).data('day');
+            var DayOfWeekData = {
+                DayOfWeek: dayOfWeek,
+                IsSelected: 'true',
+                TimeSlots: []
+            };
+
+            // Loop through time slots for the current day
+            $('.time-slot-checkbox[data-day="' + dayOfWeek + '"]:checked').each(function () {
+                var timeSlot = $(this).data('slot');
+                DayOfWeekData.TimeSlots.push({
+                    TimeSlot: timeSlot,
+                    IsSelected: 'true'
+                });
+            });
+
+            // Only add if there are selected time slots for this day
+            if (DayOfWeekData.TimeSlots.length > 0) {
+                DayOfWeekData.IsSelected = 'true';
+                dataToSubmit.push(DayOfWeekData);
+            }
+        });
+
+        // Loop through weekdays
+        for (var i = 0; i < dataToSubmit.length; i++) {
+            var DayOfWeekData = dataToSubmit[i];
+
+            if (DayOfWeekData.TimeSlots.length > 0) {
+                // Concatenate data to the string
+                if (str.length > 0) {
+                    str += ';'; // Add a separator if not the first entry
+                }
+                str += DayOfWeekData.DayOfWeek + '=';
+
+                for (var j = 0; j < DayOfWeekData.TimeSlots.length; j++) {
+                    str += DayOfWeekData.TimeSlots[j].TimeSlot;
+
+                    if (j < DayOfWeekData.TimeSlots.length - 1) {
+                        str += ','; // Add a comma separator if not the last time slot
+                    }
+                }
+            }
+        }
+        str += ';';
+        console.log('Current Data: ' + str + '\n');
+    });
+
+
+
+    $('#save, #save-continue').on('click', function () {
+
+        var dataToSubmit = [];
+
+        // Loop through weekdays
+        $('.weekday-checkbox').each(function () {
+            var dayOfWeek = $(this).data('day');
+            var DayOfWeekData = {
+                DayOfWeek: dayOfWeek + '',
+                IsSelected: 'true',
+                TimeSlots: []
+            };
+
+            // Loop through time slots for the current day
+            $('.time-slot-checkbox[data-day="' + dayOfWeek + '"]:checked').each(function () {
+                var timeSlot = $(this).data('slot');
+                DayOfWeekData.TimeSlots.push({
+                    TimeSlot: timeSlot,
+                    IsSelected: 'true'
+                });
+            });
+
+            // Only add if there are selected time slots for this day
+            if (DayOfWeekData.TimeSlots.length > 0) {
+                DayOfWeekData.IsSelected = 'true';
+                dataToSubmit.push(DayOfWeekData);
+            }
+        });
+
+        var ContinueEditing = ($(this).attr('id') === 'save-continue');
+
+        // Prepare the data for submission
+        var selectedData = { DayOfWeekData: dataToSubmit, ContinueEditing: ContinueEditing };
+        addAntiForgeryToken(selectedData);
+
+        $.ajax({
+            type: 'POST',
+            url: '@Html.Raw(Url.Action("Edit", "SyncTasks"))',
+            data: selectedData,
+            success: function (data) {
+                // Handle success response
+                console.log('Data saved successfully.');
+                alert('You need to restart the application after every save!');
+
+                if (!ContinueEditing) {
+                    window.location.href = '@Html.Raw(Url.Action("List", "SyncTasks"))';
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert('Error saving data: ' + textStatus);
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+            }
+        });
+    });
+</script>

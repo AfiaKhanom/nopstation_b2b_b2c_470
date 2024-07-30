@@ -1,0 +1,55 @@
+
+
+.qv-modal {
+    .product-name {
+        background: var(--primary-green);
+        color: var(--white);
+        padding: 7px 15px;
+
+        h2 {
+            font-size: 17px;
+            font-weight: 500;
+        }
+    }
+
+    .product-essential {
+        padding: 10px;
+
+
+        .gallery {
+            width: 100%;
+
+            @media (min-width: $md) {
+                width: 50%;
+            }
+        }
+
+        .overview {
+            display: block;
+            width: 100%;
+            padding: 0 10px 20px;
+
+            @media (min-width: $md) {
+                width: 50%;
+            }
+
+            .product-overview-content {
+                width: 100%;
+            }
+
+            .product-overview-pricing-cart {
+                width: 100%;
+
+                .add-to-cart {
+                    .add-to-cart-button {
+                        width: calc(100% - 95px);
+                    }
+                }
+
+                .qty-input {
+                    width: 85px;
+                }
+            }
+        }
+    }
+}

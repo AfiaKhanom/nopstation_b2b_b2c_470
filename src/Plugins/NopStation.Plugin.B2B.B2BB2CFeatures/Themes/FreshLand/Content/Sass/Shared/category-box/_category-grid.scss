@@ -1,0 +1,31 @@
+@import "../../mixins/_layout_width_responsive";
+@import "../../mixins/_item_grid";
+@import "../../mixins/_item_box";
+
+.category-grid {
+    @include layout_width_responsive;
+    margin: 0 auto 20px;
+
+    @media(min-width: $sm) {
+        margin: 0 auto 50px;
+    }
+
+    .item-grid {
+        @include item-grid;
+
+        .item-box {
+            @include item-box($grid-column: 6, $width: 33.33%);
+
+            &:nth-child(even) .category-item .title {
+                background: var(--primary-green_light);
+            }
+
+            &:hover {
+                &:nth-child(even) .category-item .title {
+                    background: var(--primary-green);
+                }
+            } 
+        }
+    }
+
+}

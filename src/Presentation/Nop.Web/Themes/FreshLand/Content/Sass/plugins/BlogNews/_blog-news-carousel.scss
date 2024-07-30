@@ -1,0 +1,118 @@
+﻿.news-list-homepage {
+    margin: 0 auto 30px;
+}
+.blog-news-area {
+    .news-list-homepage {
+        margin: 0 auto 30px;
+
+        @media(min-width:$md) {
+            margin: 0 auto 50px;
+        }
+    }
+
+    .swiper {
+        padding-bottom: 1px;
+
+        @media(min-width:$md) {
+            margin: 0;
+        }
+
+        @media(min-width:$sm) {
+            overflow: unset;
+        }
+
+        .title {
+            margin-bottom: 26px;
+
+            @media(min-width:$sm) {
+                margin-bottom: 15px;
+            }
+        }
+
+        .swiper-nav {
+            position: absolute;
+            top: 0;
+            right: 0;
+
+            @media(min-width:$sm) {
+                display: none;
+            }
+
+            div:before {
+                display: flex;
+                height: 22px;
+                width: 22px;
+                border-radius: 100px;
+                font-size: 9px;
+                background: var(--primary-green);
+                justify-content: center;
+                align-items: center;
+                color: var(--white);
+
+                @media(min-width: $sm) {
+                    height: 26px;
+                    width: 26px;
+                    font-size: 10px;
+                }
+            }
+
+            &:hover {
+                cursor: pointer;
+            }
+
+            .swiper-button-next::after, .swiper-button-prev::after {
+                display: none;
+            }
+
+            .icon-right-arrow-2, .icon-left-arrow-2 {
+                position: absolute;
+                top: 0;
+            }
+
+            .icon-right-arrow-2 {
+                right: 0;
+
+                &:hover {
+
+                    &:before {
+                        background: var(--primary-green_dark);
+                    }
+                }
+            }
+
+            .icon-left-arrow-2 {
+                right: 30px;
+
+                &:hover {
+
+                    &:before {
+                        background: var(--primary-green_dark);
+                    }
+                }
+            }
+        }
+
+        .swiper-wrapper {
+            flex-wrap: nowrap;
+            gap: 0;
+
+            @media(min-width:$sm) {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+            }
+
+            .swiper-slide {
+                width: 100%;
+
+                @media(min-width:$sm) {
+                    width: calc(50% - 7.5px);
+                }
+
+                @media(min-width:$lg) {
+                    width: calc(33.33% - 10px);
+                }
+            }
+        }
+    }
+}

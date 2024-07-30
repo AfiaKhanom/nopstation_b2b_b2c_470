@@ -1,0 +1,24 @@
+﻿@model ErpSpecialPriceModel
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models
+@{
+    Layout = "_AdminPopupLayout";
+
+    //page title
+    ViewBag.Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSpecialPrice.PageTitle.Edit").Text;
+}
+<form asp-controller="ErpProductPricing" asp-action="SpecialPriceEditPopup"
+      asp-route-btnId="@Context.Request.Query["btnId"]"
+      asp-route-formId="@Context.Request.Query["formId"]">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSpecialPrice.EditSpecialPrice")
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="fas fa-floppy-o"></i>
+                @T("Admin.Common.Save")
+            </button>
+        </div>
+    </div>
+    @await Html.PartialAsync("_CreateOrUpdateSpecialPrice", Model)
+</form>

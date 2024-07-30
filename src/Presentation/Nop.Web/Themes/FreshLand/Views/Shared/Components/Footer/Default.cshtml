@@ -1,0 +1,263 @@
+﻿@model FooterModel
+
+@using Nop.Core
+@using Nop.Core.Domain.Tax
+@using Nop.Core.Domain.Topics
+@using Nop.Services.Cms;
+@using Nop.Services.Configuration;
+@using Nop.Services.Localization
+@using Nop.Services.Media;
+
+@inject IWorkContext workContext
+@inject ILocalizationService localizationService
+@inject IPictureService pictureService
+@inject IStoreContext storeContext
+@inject IWidgetPluginManager widgetPluginManager
+@inject ISettingService settingService
+
+@{
+    var language = await workContext.GetWorkingLanguageAsync();
+    var store = await storeContext.GetCurrentStoreAsync();
+    var storeName = await localizationService.GetLocalizedAsync(store, s => s.Name);
+
+    var columns = 1;
+    var hideDesignedByNopStation = false;
+    var showSupportedCards = false;
+    var supportedCardsImageUrl = "";
+    var showLogo = false;
+    var logoImageUrl = "";
+    var contactUsText = "";
+
+    if (await widgetPluginManager.IsPluginActiveAsync("NopStation.Plugin.Theme.FreshLand"))
+    {
+        if (await settingService.GetSettingByKeyAsync<bool>("FreshLandSettings.HideDesignedByNopStationAtFooter", storeId: store.Id, loadSharedValueIfNotFound: true))
+        {
+            hideDesignedByNopStation = true;
+            columns++;
+        }
+        if (await settingService.GetSettingByKeyAsync<bool>("FreshLandSettings.ShowSupportedCardsAtFooter", storeId: store.Id, loadSharedValueIfNotFound: true))
+        {
+            showSupportedCards = true;
+            columns++;
+
+            var pictureId = await settingService.GetSettingByKeyAsync<int>("FreshLandSettings.FooterSupportedCardsPictureId", storeId: store.Id, loadSharedValueIfNotFound: true);
+            supportedCardsImageUrl = await pictureService.GetPictureUrlAsync(pictureId);
+        }
+        if (await settingService.GetSettingByKeyAsync<bool>("FreshLandSettings.ShowLogoAtFooter", storeId: store.Id, loadSharedValueIfNotFound: true))
+        {
+            showLogo = true;
+            var pictureId = await settingService.GetSettingByKeyAsync<int>("FreshLandSettings.FooterLogoPictureId", storeId: store.Id, loadSharedValueIfNotFound: true);
+            logoImageUrl = await pictureService.GetPictureUrlAsync(pictureId);
+        }
+
+        var contactUsTextSetting = await settingService.GetSettingAsync("FreshLandSettings.FooterContactUsText", storeId: store.Id, loadSharedValueIfNotFound: true);
+        if (contactUsTextSetting != null)
+            contactUsText = await localizationService.GetLocalizedAsync(contactUsTextSetting, x => x.Value, language.Id);
+    }
+
+    if (!Model.HidePoweredByNopCommerce)
+        columns++;
+}
+@await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = "footer_before", additionalData = Model })
+
+<div class="footer">
+    @await Component.InvokeAsync(typeof(NewsletterBoxViewComponent))
+    <div class="footer-bg">
+        <div class="footer-bg-inner">
+            <div class="footer-upper">
+                <div class="footer-block follow-us">
+                <div class="address-info">
+                     <div class="title">
+                            <strong>@T("ContactUs")</strong>
+                     </div>
+                     <div class="contact-us-details">
+                            @Html.Raw(contactUsText)
+                     </div>
+                </div>
+                    <div class="social">
+                        <div class="title">
+                            <strong>@T("Footer.FollowUs")</strong>
+                        </div>
+                        @await Component.InvokeAsync(typeof(SocialButtonsViewComponent))
+                    </div>
+                </div>
+                <div class="footer-block information">
+                    <div class="title plus">
+                        <strong>@T("Footer.Information")</strong>
+                    </div>
+                    <ul class="list">
+                        @if (Model.SitemapEnabled && Model.DisplaySitemapFooterItem)
+                        {
+                            <li><a href="@Url.RouteUrl("Sitemap")">@T("Sitemap")</a></li>
+                        }
+                        @foreach (var topic in Model.Topics.Where(x => x.IncludeInFooterColumn1).ToList())
+                        {
+                            <li><a href="@(Url.RouteUrl<Topic>(new { SeName = topic.SeName }))">@topic.Name</a></li>
+                        }
+                        @if (Model.DisplayContactUsFooterItem)
+                        {
+                            <li><a href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a></li>
+                        }
+                    </ul>
+                </div>
+                <div class="footer-block customer-service">
+                    <div class="title plus">
+                        <strong>@T("Footer.CustomerService")</strong>
+                    </div>
+                    <ul class="list">
+                        @if (Model.SearchEnabled && Model.DisplayProductSearchFooterItem)
+                        {
+                            <li><a href="@Url.RouteUrl("ProductSearch")">@T("Search")</a> </li>
+                        }
+                        @if (Model.NewsEnabled && Model.DisplayNewsFooterItem)
+                        {
+                            <li><a href="@Url.RouteUrl("NewsArchive")">@T("News")</a></li>
+                        }
+                        @if (Model.BlogEnabled && Model.DisplayBlogFooterItem)
+                        {
+                            <li><a href="@Url.RouteUrl("Blog")">@T("Blog")</a></li>
+                        }
+                        @if (Model.ForumEnabled && Model.DisplayForumsFooterItem)
+                        {
+                            <li><a href="@Url.RouteUrl("Boards")">@T("Forum.Forums")</a></li>
+                        }
+                        @if (Model.RecentlyViewedProductsEnabled && Model.DisplayRecentlyViewedProductsFooterItem)
+                        {
+                            <li><a href="@Url.RouteUrl("RecentlyViewedProducts")">@T("Products.RecentlyViewedProducts")</a></li>
+                        }
+                        @if (Model.CompareProductsEnabled && Model.DisplayCompareProductsFooterItem)
+                        {
+                            <li><a href="@Url.RouteUrl("CompareProducts")">@T("Products.Compare.List")</a></li>
+                        }
+                        @if (Model.NewProductsEnabled && Model.DisplayNewProductsFooterItem)
+                        {
+                            <li><a href="@Url.RouteUrl("NewProducts")">@T("Products.NewProducts")</a></li>
+                        }
+                        @foreach (var topic in Model.Topics.Where(x => x.IncludeInFooterColumn2).ToList())
+                        {
+                            <li><a href="@(Url.RouteUrl<Topic>(new { SeName = topic.SeName }))">@topic.Name</a></li>
+                        }
+                        @if (Model.AllowCustomersToCheckGiftCardBalance)
+                        {
+                            <li><a href="@Url.RouteUrl("CheckGiftCardBalance")">@T("CheckGiftCardBalance")</a></li>
+                        }
+                    </ul>
+                </div>
+                <div class="footer-block my-account">
+                    <div class="title plus">
+                        <strong>@T("Footer.MyAccount")</strong>
+                    </div>
+                    <ul class="list">
+                        @if (Model.DisplayCustomerInfoFooterItem)
+                        {
+                            <li><a href="@Url.RouteUrl("CustomerInfo")">@T("Account.MyAccount")</a></li>
+                        }
+                        @if (Model.DisplayCustomerOrdersFooterItem)
+                        {
+                            <li><a href="@Url.RouteUrl("CustomerOrders")">@T("Account.CustomerOrders")</a></li>
+                        }
+                        @if (Model.DisplayCustomerAddressesFooterItem)
+                        {
+                            <li><a href="@Url.RouteUrl("CustomerAddresses")">@T("Account.CustomerAddresses")</a></li>
+                        }
+                        @if (Model.ShoppingCartEnabled && Model.DisplayShoppingCartFooterItem)
+                        {
+                            <li><a href="@Url.RouteUrl("ShoppingCart")">@T("ShoppingCart")</a></li>
+                        }
+                        @if (Model.WishlistEnabled && Model.DisplayWishlistFooterItem)
+                        {
+                            <li><a href="@Url.RouteUrl("Wishlist")">@T("Wishlist")</a></li>
+                        }
+                        @if (Model.AllowCustomersToApplyForVendorAccount && Model.DisplayApplyVendorAccountFooterItem)
+                        {
+                            <li><a href="@Url.RouteUrl("ApplyVendorAccount")">@T("Vendors.ApplyAccount")</a></li>
+                        }
+                        @foreach (var topic in Model.Topics.Where(x => x.IncludeInFooterColumn3).ToList())
+                        {
+                            <li><a href="@(Url.RouteUrl<Topic>(new { SeName = topic.SeName }))">@topic.Name</a></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-logo-bg">
+        <div class="footer-logo-container">
+            @if (showLogo)
+            {
+                <img src="@logoImageUrl" alt="@T("NopStation.Theme.FreshLand.FooterLogo.AlterText", storeName)" title="@T("NopStation.Theme.FreshLand.FooterLogo.Title", storeName)" class="footer-logo" />
+            }
+            @if (showSupportedCards == true)
+            {
+                <div class="footer-cards">
+                    <div class="footer-info">
+                        <img src="@supportedCardsImageUrl" alt="@T("NopStation.Theme.FreshLand.FooterSupportedCards.AlterText", storeName)" title="@T("NopStation.Theme.FreshLand.FooterSupportedCards.Title", storeName)" />
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="footer-lower-bg">
+        <div class="footer-lower">
+            <div class="footer-info">
+                <span class="footer-disclaimer">@T("Content.CopyrightNotice", DateTime.Now.Year, Model.StoreName)</span>
+                @if (Model.DisplayTaxShippingInfoFooter)
+                {
+                    var inclTax = await workContext.GetTaxDisplayTypeAsync() == TaxDisplayType.IncludingTax;
+                    <span class="footer-tax-shipping">
+                        @T(inclTax ? "Footer.TaxShipping.InclTax" : "Footer.TaxShipping.ExclTax", Url.RouteTopicUrl("shippinginfo"))
+                    </span>
+                }
+            </div>
+            @if (!Model.HidePoweredByNopCommerce)
+            {
+                <div class="footer-powered-by">
+                    @*Would you like to remove the "Powered by nopCommerce" link in the bottom of the footer?
+                        Please find more info at https://www.nopcommerce.com/nopcommerce-copyright-removal-key*@
+                    Powered by <a href="@(OfficialSite.Main)" target="_blank" @(Model.IsHomePage ? string.Empty : "rel=nofollow")>nopCommerce</a>
+                </div>
+            }
+            @if (!hideDesignedByNopStation)
+            {
+                <div class="footer-info">
+                    <div class="footer-powered-by">
+                        Designed By  <img alt="Designed by nopStation" title="Designed by nopStation" src="/Themes/FreshLand/Content/images/designed_by_nopStation.png" width="89" height="17" />
+                    </div>
+                </div>
+            }
+            @await Component.InvokeAsync(typeof(StoreThemeSelectorViewComponent))
+        </div>
+    </div>
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.Footer, additionalData = Model })
+</div>
+<script asp-location="Footer">
+    $(document).ready(function () {
+        $('.footer-block .title').on('click', function () {
+            var e = window, a = 'inner';
+            if (!('innerWidth' in window)) {
+                a = 'client';
+                e = document.documentElement || document.body;
+            }
+            var result = { width: e[a + 'Width'], height: e[a + 'Height'] };
+            if (result.width < 769) {
+                $(this).siblings('.list').slideToggle('slow');
+            }
+            $(this).toggleClass("plus minus");
+        });
+    });
+</script>
+<script asp-location="Footer">
+    $(document).ready(function () {
+        $('.block .title').on('click', function () {
+            var e = window, a = 'inner';
+            if (!('innerWidth' in window)) {
+                a = 'client';
+                e = document.documentElement || document.body;
+            }
+            var result = { width: e[a + 'Width'], height: e[a + 'Height'] };
+            if (result.width < 1001) {
+                $(this).siblings('.listbox').slideToggle('slow');
+            }
+        });
+    });
+</script>

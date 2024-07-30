@@ -1,0 +1,61 @@
+﻿@model ApplicationFormModel
+
+@* @{
+    Layout = "_AdminLayout";
+    //page title
+    ViewBag.PageTitle = T("B2BB2CFeatures.Admin.ErpRegistrationApplication.ApplicationForm.PageTitle.AddNew").Text;
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.B2BB2CFeatures.ErpRegistrationApplication");
+} *@
+
+<div class="card-body">
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="@Model.BankingDetailsModel.NameOfBanker" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="@Model.BankingDetailsModel.NameOfBanker" asp-required="true" />
+            <span asp-validation-for="@Model.BankingDetailsModel.NameOfBanker"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="@Model.BankingDetailsModel.AccountName" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="@Model.BankingDetailsModel.AccountName" asp-required="true" />
+            <span asp-validation-for="@Model.BankingDetailsModel.AccountName"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="@Model.BankingDetailsModel.AccountNumber" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="@Model.BankingDetailsModel.AccountNumber" asp-required="true" />
+            <span asp-validation-for="@Model.BankingDetailsModel.AccountNumber"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="@Model.BankingDetailsModel.BranchCode" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="@Model.BankingDetailsModel.BranchCode" asp-required="true" />
+            <span asp-validation-for="@Model.BankingDetailsModel.BranchCode"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="@Model.BankingDetailsModel.Branch" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="@Model.BankingDetailsModel.Branch" asp-required="true" />
+            <span asp-validation-for="@Model.BankingDetailsModel.Branch"></span>
+        </div>
+    </div>
+</div>

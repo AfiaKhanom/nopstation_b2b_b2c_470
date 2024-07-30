@@ -1,0 +1,40 @@
+@model ErpGroupPriceCodeModel
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models
+
+@{
+    Layout = "_AdminLayout";
+    //title
+    NopHtml.AddTitleParts(T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPriceCode.PageTitle.ErpGroupPriceCode.Edit").Text);
+    ViewBag.PageTitle = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPriceCode.PageTitle.ErpGroupPriceCode.Edit").Text;
+
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.B2BB2CFeatures.ErpGroupPriceCode");
+}
+
+<form asp-controller="ErpGroupPriceCode" asp-action="Edit" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPriceCode.PageTitle.ErpGroupPriceCode.EditErpGroupPriceCode") - @Model.GroupPriceCode
+            <small>
+                <i class="fas fa-arrow-circle-left"></i>
+                <a asp-action="List">@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPriceCode.ErpGroupPriceCode.BackToList")</a>
+            </small>
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.Save")
+            </button>
+            <button type="submit" name="save-continue" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.SaveContinue")
+            </button>
+            <span id="erpgroupprice-delete" class="btn bg-red">
+                <i class="fa fa-trash-o"></i>
+                @T("Admin.Common.Delete")
+            </span>
+        </div>
+    </div>
+    @await Html.PartialAsync("_CreateOrUpdate", Model)
+</form>
+<nop-delete-confirmation asp-model-id="@Model.Id" asp-button-id="erpgroupprice-delete" />

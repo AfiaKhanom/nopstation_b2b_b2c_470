@@ -1,0 +1,36 @@
+@import "../variables/breakpoint";
+// $xl: 1600px;
+// $lg: 1200px;
+// $md: 992px;
+// $sm: 768px;
+// $xs: 556px;
+
+
+@mixin item-box($grid-column: 5, $width: 50%, $padding: 0 7.5px) {
+    display: block;
+    width: $width;
+    padding: 5px;
+
+    @media(min-width: $xs) {
+        @if($width < 50%) {
+            width: $width;
+        }
+
+        else {
+            width: 50%;
+        }
+    }
+
+    @media(min-width: $sm) {
+        width: 33.33%;
+        padding: $padding;
+    }
+
+    @media(min-width: $md) {
+        width: 25%;
+    }
+
+    @media(min-width: $lg) {
+        width: 100%/$grid-column;
+    }
+}

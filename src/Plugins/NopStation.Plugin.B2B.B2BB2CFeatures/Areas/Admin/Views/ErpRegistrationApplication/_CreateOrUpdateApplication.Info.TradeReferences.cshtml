@@ -1,0 +1,61 @@
+﻿@model ApplicationFormModel
+
+@* @{
+    Layout = "_AdminLayout";
+    //page title
+    ViewBag.PageTitle = T("B2BB2CFeatures.Admin.ErpRegistrationApplication.ApplicationForm.PageTitle.AddNew").Text;
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.B2BB2CFeatures.ErpRegistrationApplication");
+} *@
+
+<div class="card-body">
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="@Model.TradeReferencesModel.Name" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="@Model.TradeReferencesModel.Name" asp-required="true" />
+            <span asp-validation-for="@Model.TradeReferencesModel.Name"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="@Model.TradeReferencesModel.Telephone" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="@Model.TradeReferencesModel.Telephone" asp-required="true" />
+            <span asp-validation-for="@Model.TradeReferencesModel.Telephone"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="@Model.TradeReferencesModel.Amount" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="@Model.TradeReferencesModel.Amount" asp-required="true" />
+            <span asp-validation-for="@Model.TradeReferencesModel.Amount"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="@Model.TradeReferencesModel.Terms" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="@Model.TradeReferencesModel.Terms" asp-required="true" />
+            <span asp-validation-for="@Model.TradeReferencesModel.Terms"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="@Model.TradeReferencesModel.HowLong" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="@Model.TradeReferencesModel.HowLong" asp-required="true" />
+            <span asp-validation-for="@Model.TradeReferencesModel.HowLong"></span>
+        </div>
+    </div>
+</div>

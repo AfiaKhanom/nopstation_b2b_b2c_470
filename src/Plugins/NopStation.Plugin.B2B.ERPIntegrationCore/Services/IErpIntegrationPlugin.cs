@@ -5,7 +5,8 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
 {
     public interface IErpIntegrationPlugin : IPlugin,
         IErpIntegrationAccountService, IErpIntegrationProductService,
-        IErpIntegrationOrderService, IErpIntegrationSalesOrgService
+        IErpIntegrationOrderService, IErpIntegrationSalesOrgService,
+        IErpIntegrationSettingsService
     {
     }
 }

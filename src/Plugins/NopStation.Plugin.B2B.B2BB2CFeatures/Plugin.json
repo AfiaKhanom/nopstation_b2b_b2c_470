@@ -1,0 +1,12 @@
+{
+  "Group": "Nop-Station",
+  "FriendlyName": "NopStation B2BB2CFeatures",
+  "SystemName": "NopStation.Plugin.B2B.B2BB2CFeatures",
+  "Version": "4.70.1.0",
+  "SupportedVersions": [ "4.70" ],
+  "Author": "nopstation team",
+  "DisplayOrder": 1,
+  "FileName": "NopStation.Plugin.B2B.B2BB2CFeatures.dll",
+  "Description": "This plugin allows to all b2b and b2c function.",
+  "DependsOnSystemNames": [  "NopStation.Plugin.B2B.ERPIntegrationCore" ]
+}

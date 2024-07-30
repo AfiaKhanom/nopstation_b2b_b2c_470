@@ -1,0 +1,127 @@
+﻿@using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
+@model ErpSalesRepModel
+
+@{
+    var showTour = ViewBag.ShowTour ?? false;
+
+    const string hideInfoBlockAttributeName = "SalesRepPage.HideInfoBlock";
+    const string hideCustomerBlockAttributeName = "SalesRepPage.HideCustomerBlock";
+    var customer = await workContext.GetCurrentCustomerAsync();
+    var hideInfoBlock = showTour ? false : await genericAttributeService.GetAttributeAsync<bool>(customer, hideInfoBlockAttributeName);
+    var hideCustomerBlock = showTour ? false : await genericAttributeService.GetAttributeAsync<bool>(customer, hideCustomerBlockAttributeName);
+    var salesRepOfTypeBySalesOrganisation = (int)SalesRepType.BySalesOrganisation;
+}
+
+<div asp-validation-summary="All"></div>
+<input asp-for="Id" type="hidden" value="@Model.Id" />
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="form-horizontal">
+            <nop-cards id="customer-cards">
+                <nop-card asp-name="customer-orders" asp-icon="fas fa-cart-plus" asp-title="@T("B2BB2CFeatures.ErpSalesRep.Info")" asp-hide-block-attribute-name="@hideInfoBlockAttributeName" asp-hide="@hideInfoBlock" asp-advanced="false">
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="NopCustomerId" />
+                            </div>
+                            @if (Model?.NopCustomerId > 0)
+                            {
+                                <div class="col-md-9">
+                                    <input type="hidden" id="NopCustomerId" name="NopCustomerId" value="@Model.NopCustomerId" />
+                                    <a asp-controller="Customer" asp-action="Edit" asp-route-id="@Model.NopCustomerId" target=”_blank”>@Model.NopCustomer</a>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-md-9">
+                                    <nop-select asp-for="NopCustomerId" asp-items="Model.AvailableCustomers" asp-required="true" />
+                                    <span asp-validation-for="NopCustomerId"></span>
+                                </div>
+                            }
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="SalesRepTypeId" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-select asp-for="SalesRepTypeId" asp-items="Model.AvailableSalesRepType" asp-required="true" />
+                                <span asp-validation-for="SalesRepTypeId"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row" id="SalesOrgIdsArea" style="display:none;">
+                            <div class="col-md-3">
+                                <nop-label asp-for="SalesOrgIds" />
+                            </div>
+                            <div class="col-md-9">
+                                <div class="input-group-append input-group-required">
+                                    <div class="input-group">
+                                        <nop-select asp-for="SalesOrgIds" asp-items="Model.AvailableSalesOrgs" asp-multiple="true" />
+                                    </div>
+                                    <div class="input-group-btn">
+                                        <nop-required />
+                                    </div>
+                                </div>
+                                <span asp-validation-for="SalesOrgIds"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="IsActive" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="IsActive" />
+                                <span asp-validation-for="IsActive"></span>
+                            </div>
+                        </div>
+
+                        @if (Model.Id > 0)
+                        {
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="CreatedOnUtc" />
+                                </div>
+                                <div class="col-md-9 justify-content-center align-self-center">
+                                    @Model.CreatedOnUtc
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="UpdatedOnUtc" />
+                                </div>
+                                <div class="col-md-9 justify-content-center align-self-center">
+                                    @Html.DisplayFor(model => model.UpdatedOnUtc)
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </nop-card>
+
+                @if(Model.Id > 0 && Model.SalesRepTypeId == 30)
+                {
+                    <nop-card asp-name="buyers" asp-icon="fas fa-users" asp-title="@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Card.ErpAccounts")" asp-hide-block-attribute-name="@hideCustomerBlockAttributeName" asp-hide="@hideCustomerBlock" asp-advanced="false">
+                        @await Html.PartialAsync("_CreateOrUpdate.Customer", Model)
+                    </nop-card>
+                }
+            </nop-cards>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function () {
+        checkIfSalesRepTypeChanged();
+        $("#SalesRepTypeId").change(function (e) {
+            checkIfSalesRepTypeChanged();
+        });
+    });
+    function checkIfSalesRepTypeChanged() {
+        if ($("#SalesRepTypeId").val() == @salesRepOfTypeBySalesOrganisation) {
+            $("#SalesOrgIdsArea").show();
+        }
+        else {
+            $("#SalesOrgIdsArea").hide();
+        }
+    }
+</script>

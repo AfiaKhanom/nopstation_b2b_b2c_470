@@ -1,0 +1,19 @@
+.product-reviews-overview {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+
+    .rating {
+        margin-bottom: 0;
+    }
+
+    .product-no-reviews,
+    .product-review-links {
+        margin-left: 15px;
+
+        a {
+            color: var(--primary-green);
+        }
+    }
+}

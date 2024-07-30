@@ -1,0 +1,23 @@
+﻿@model ErpShipToAddressModel
+
+@{
+    const string hideInfoBlockAttributeName = "ErpShipToAddressPage.HideInfoBlock";
+    const string hideAddressInfoBlockAttributeName = "ErpShipToAddressPage.HideAddressInfoBlock";
+    var customer = await workContext.GetCurrentCustomerAsync();
+    var hideInfoBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideInfoBlockAttributeName);
+    var hideAddressInfoBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideAddressInfoBlockAttributeName);
+}
+
+<div asp-validation-summary="All"></div>
+<input asp-for="Id" type="hidden" />
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="form-horizontal">
+            <nop-cards id="erpShipToAddress-cards">
+                <nop-card asp-name="erpShipToAddress-info" asp-icon="fas fa-info" asp-title="@T("Admin.ErpShipToAddresss.Info")" asp-hide-block-attribute-name="@hideInfoBlockAttributeName" asp-hide="@hideInfoBlock" asp-advanced="false">@await Html.PartialAsync("_CreateOrUpdate.Info", Model)</nop-card>
+                <nop-card asp-name="erpShipToAddress-address-info" asp-icon="fas fa-info" asp-title="@T("Admin.ErpShipToAddresss.AddressInfo")" asp-hide-block-attribute-name="@hideAddressInfoBlockAttributeName" asp-hide="@hideAddressInfoBlock" asp-advanced="false">@await Html.PartialAsync("_CreateOrUpdate.Info.Address", Model)</nop-card>
+            </nop-cards>
+        </div>
+    </div>
+</section>

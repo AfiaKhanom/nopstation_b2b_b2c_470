@@ -1,0 +1,19 @@
+.advance-cart-flyout-shopping-cart {
+    .mini-shopping-cart .items {
+        height: calc(100% - 126px);
+    }
+
+    .buttons {
+        display: flex;
+
+        button {
+            width: 50%;
+            margin: 0;
+            border-radius: 0;
+
+            &.checkout-button {
+                background: var(--primary-green_dark);
+            }
+        }
+    }
+}

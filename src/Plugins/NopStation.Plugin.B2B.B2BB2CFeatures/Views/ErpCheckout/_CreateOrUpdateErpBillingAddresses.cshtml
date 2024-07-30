@@ -1,0 +1,108 @@
+﻿@model ErpBillingAddressModel
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.Checkout;
+
+<div asp-validation-summary="ModelOnly"></div>
+<input asp-for="Id" type="hidden" />
+<input asp-for="ErpAccountId" type="hidden" />
+<input asp-for="AllowEdit" type="hidden" />
+
+<style>
+    .inputs input[readonly] {
+        background-color: #f9f9f9;
+    }
+</style>
+
+<div class="edit-address">
+    <div class="inputs">
+        <label asp-for="FirstName" asp-postfix=":"></label>
+        <input asp-for="FirstName" readonly />
+        <span asp-validation-for="FirstName"></span>
+    </div>
+    <div class="inputs">
+        <label asp-for="LastName" asp-postfix=":"></label>
+        <input asp-for="LastName" readonly />
+        <span asp-validation-for="LastName"></span>
+    </div>
+    <div class="inputs">
+        <label asp-for="Email" asp-postfix=":"></label>
+        <input asp-for="Email" readonly />
+        <span asp-validation-for="Email"></span>
+    </div>
+    <div class="inputs">
+        <label asp-for="Company" asp-postfix=":"></label>
+        <input asp-for="Company" readonly="@(!Model.AllowEdit)" />
+        <nop-required />
+        <span asp-validation-for="Company"></span>
+    </div>
+    @if (Model.AllowEdit)
+    {
+        <div class="inputs">
+            <label asp-for="CountryId" asp-postfix=":"></label>
+            <select asp-for="CountryId" asp-items="Model.AvailableCountries"
+                    data-trigger="country-select"
+                    data-url="@(Url.RouteUrl("GetStatesByCountryId"))"
+                    data-stateprovince="#@Html.IdFor(model => model.StateProvinceId)"
+                    data-loading="#states-loading-progress"></select>
+            <nop-required />
+            <span asp-validation-for="CountryId"></span>
+        </div>
+        <div class="inputs">
+            <label asp-for="StateProvinceId" asp-postfix=":"></label>
+            <select asp-for="StateProvinceId" asp-items="Model.AvailableStates"></select>
+            <span id="states-loading-progress" style="display: none;" class="please-wait">@T("Common.Wait...")</span>
+            <nop-required />
+            <span asp-validation-for="StateProvinceId"></span>
+        </div>
+    }
+    else
+    {
+        <input asp-for="CountryId" type="hidden" />
+        <div class="inputs">
+            <label asp-for="CountryName" asp-postfix=":"></label>
+            <input asp-for="CountryName" readonly />
+            <span asp-validation-for="CountryName"></span>
+        </div>
+        <input asp-for="StateProvinceId" type="hidden" />
+        <div class="inputs">
+            <label asp-for="StateProvinceName" asp-postfix=":"></label>
+            <input asp-for="StateProvinceName" readonly />
+            <span asp-validation-for="StateProvinceName"></span>
+        </div>
+    }
+    <div class="inputs">
+        <label asp-for="City" asp-postfix=":"></label>
+        <input asp-for="City" readonly="@(!Model.AllowEdit)" />
+        <nop-required />
+        <span asp-validation-for="City"></span>
+    </div>
+    <div class="inputs">
+        <label asp-for="Address1" asp-postfix=":"></label>
+        <input asp-for="Address1" readonly="@(!Model.AllowEdit)" />
+        <nop-required />
+        <span asp-validation-for="Address1"></span>
+    </div>
+    <div class="inputs">
+        <label asp-for="Address2" asp-postfix=":"></label>
+        <input asp-for="Address2" readonly="@(!Model.AllowEdit)" />
+        <nop-required />
+        <span asp-validation-for="Address2"></span>
+    </div>
+    <div class="inputs">
+        <label asp-for="Suburb" asp-postfix=":"></label>
+        <input asp-for="Suburb" readonly="@(!Model.AllowEdit)" />
+        <nop-required />
+        <span asp-validation-for="Suburb"></span>
+    </div>
+    <div class="inputs">
+        <label asp-for="ZipPostalCode" asp-postfix=":"></label>
+        <input asp-for="ZipPostalCode" readonly="@(!Model.AllowEdit)" />
+        <nop-required />
+        <span asp-validation-for="ZipPostalCode"></span>
+    </div>
+    <div class="inputs">
+        <label asp-for="PhoneNumber" asp-postfix=":"></label>
+        <input asp-for="PhoneNumber" readonly="@(!Model.AllowEdit)" />
+        <nop-required />
+        <span asp-validation-for="PhoneNumber"></span>
+    </div>
+</div>

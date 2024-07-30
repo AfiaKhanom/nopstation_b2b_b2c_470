@@ -1,0 +1,261 @@
+@model ErpAccountCustomerRegistrationFormModel
+@inject B2BB2CFeaturesSettings b2BB2CFeaturesSettings
+
+<link rel="stylesheet" href="~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Content/css/googlemapstyle.css" />
+
+<div asp-validation-summary="ModelOnly" class="message-error"></div>
+
+<div class="fieldset">
+    <div class="title">
+        <strong>@T("B2BB2C.Account.Details")</strong>
+    </div>
+    <div class="form-fields">
+        <div class="inputs">
+            <label asp-for="FullRegisteredName" asp-postfix=":"></label>
+            <input asp-for="FullRegisteredName" />
+            <nop-required />
+            <span asp-validation-for="FullRegisteredName"></span>
+        </div>
+
+        <div class="inputs">
+            <label asp-for="RegistrationNumber" asp-postfix=":"></label>
+            <input asp-for="RegistrationNumber" />
+            <nop-required />
+            <span asp-validation-for="RegistrationNumber"></span>
+        </div>
+
+        <div class="inputs">
+            <label asp-for="VatNumber" asp-postfix=":"></label>
+            <input asp-for="VatNumber" />
+            <nop-required />
+            <span asp-validation-for="VatNumber"></span>
+        </div>
+
+        <div class="inputs">
+            <label asp-for="TelephoneNumber1" asp-postfix=":"></label>
+            <input asp-for="TelephoneNumber1" />
+            <nop-required />
+            <span asp-validation-for="TelephoneNumber1"></span>
+        </div>
+
+        <div class="inputs">
+            <label asp-for="TelephoneNumber2" asp-postfix=":"></label>
+            <input asp-for="TelephoneNumber2" />
+            <span asp-validation-for="TelephoneNumber2"></span>
+        </div>
+
+        <div class="inputs">
+            <label asp-for="TelefaxNumber" asp-postfix=":"></label>
+            <input asp-for="TelefaxNumber" />
+            <span asp-validation-for="TelefaxNumber"></span>
+        </div>
+
+        <div class="inputs">
+            <label asp-for="AccountsContactPersonNameSurname" asp-postfix=":"></label>
+            <input asp-for="AccountsContactPersonNameSurname" />
+            <nop-required />
+            <span asp-validation-for="AccountsContactPersonNameSurname"></span>
+        </div>
+
+        <div class="inputs">
+            <label asp-for="AccountsEmail" asp-postfix=":"></label>
+            <input asp-for="AccountsEmail" />
+            <nop-required />
+            <span asp-validation-for="AccountsEmail"></span>
+        </div>
+
+        <div class="inputs">
+            <label asp-for="AccountsTelephoneNumber" asp-postfix=":"></label>
+            <input asp-for="AccountsTelephoneNumber" />
+            <span asp-validation-for="AccountsTelephoneNumber"></span>
+        </div>
+
+        <div class="inputs">
+            <label asp-for="AccountsCellphoneNumber" asp-postfix=":"></label>
+            <input asp-for="AccountsCellphoneNumber" />
+            <span asp-validation-for="AccountsCellphoneNumber"></span>
+        </div>
+
+        <div class="inputs">
+            <label asp-for="BuyerContactPersonNameSurname" asp-postfix=":"></label>
+            <input asp-for="BuyerContactPersonNameSurname" />
+            <nop-required />
+            <span asp-validation-for="BuyerContactPersonNameSurname"></span>
+        </div>
+
+        <div class="inputs">
+            <label asp-for="BuyerEmail" asp-postfix=":"></label>
+            <input asp-for="BuyerEmail" />
+            <nop-required />
+            <span asp-validation-for="BuyerEmail"></span>
+        </div>
+
+        <div class="inputs">
+            <label asp-for="NatureOfBusiness" asp-postfix=":"></label>
+            <input asp-for="NatureOfBusiness" />
+            <span asp-validation-for="NatureOfBusiness"></span>
+        </div>
+
+        @await Html.PartialAsync("_CreateOrUpdateGMAddress", Model)
+
+        <div class="inputs">
+            <label asp-for="TypeOfBusiness" asp-postfix=":"></label>
+            <input asp-for="TypeOfBusiness" />
+            <nop-required />
+            <span asp-validation-for="TypeOfBusiness"></span>
+        </div>
+
+        <div class="inputs">
+            <label asp-for="EstimatePurchasesPerMonthZAR" asp-postfix=":"></label>
+            <input asp-for="EstimatePurchasesPerMonthZAR" />
+            <nop-required />
+            <span asp-validation-for="EstimatePurchasesPerMonthZAR"></span>
+        </div>
+
+        <div class="inputs">
+            <label asp-for="CreditLimitRequired" asp-postfix=":"></label>
+            <nop-editor asp-for="CreditLimitRequired" />
+        </div>
+    </div>
+</div>
+
+<div class="fieldset">
+    <div class="title">
+        <strong> @T("NopStation.Plugin.B2B.B2BB2CFeatures.RegistrationApplicationForm.FieldSetTitle.PhysicalTradingAddress")</strong>
+    </div>
+    <div class="form-fields">
+        <div class="inputs">
+            <label asp-for="@Model.PhysicalTradingAddressModel.FullName" asp-postfix=":"></label>
+            <input asp-for="@Model.PhysicalTradingAddressModel.FullName" />
+            <nop-required />
+            <span asp-validation-for="@Model.PhysicalTradingAddressModel.FullName"></span>
+        </div>
+        <div class="inputs">
+            <label asp-for="@Model.PhysicalTradingAddressModel.Surname" asp-postfix=":"></label>
+            <input asp-for="@Model.PhysicalTradingAddressModel.Surname" />
+            <nop-required />
+            <span asp-validation-for="@Model.PhysicalTradingAddressModel.Surname"></span>
+        </div>
+
+        @await Html.PartialAsync("_CreateOrUpdateGMPTAddress", Model)
+    </div>
+</div>
+
+<div class="fieldset">
+    <div class="title">
+        <strong>@T("NopStation.Plugin.B2B.B2BB2CFeatures.RegistrationApplicationForm.FieldSetTitle.BankingDetails")</strong>
+    </div>
+    <div class="form-fields">
+        <div class="inputs">
+            <label asp-for="@Model.BankingDetailsModel.NameOfBanker" asp-postfix=":"></label>
+            <input asp-for="@Model.BankingDetailsModel.NameOfBanker" />
+            <nop-required />
+            <span asp-validation-for="@Model.BankingDetailsModel.NameOfBanker"></span>
+        </div>
+        <div class="inputs">
+            <label asp-for="@Model.BankingDetailsModel.AccountName" asp-postfix=":"></label>
+            <input asp-for="@Model.BankingDetailsModel.AccountName" />
+            <nop-required />
+            <span asp-validation-for="@Model.BankingDetailsModel.AccountName"></span>
+        </div>
+        <div class="inputs">
+            <label asp-for="@Model.BankingDetailsModel.AccountNumber" asp-postfix=":"></label>
+            <input asp-for="@Model.BankingDetailsModel.AccountNumber" />
+            <nop-required />
+            <span asp-validation-for="@Model.BankingDetailsModel.AccountNumber"></span>
+        </div>
+        <div class="inputs">
+            <label asp-for="@Model.BankingDetailsModel.BranchCode" asp-postfix=":"></label>
+            <input asp-for="@Model.BankingDetailsModel.BranchCode" />
+            <nop-required />
+            <span asp-validation-for="@Model.BankingDetailsModel.BranchCode"></span>
+        </div>
+        <div class="inputs">
+            <label asp-for="@Model.BankingDetailsModel.Branch" asp-postfix=":"></label>
+            <input asp-for="@Model.BankingDetailsModel.Branch" />
+            <nop-required />
+            <span asp-validation-for="@Model.BankingDetailsModel.Branch"></span>
+        </div>
+    </div>
+</div>
+
+<div class="fieldset">
+    <div class="title">
+        <strong> @T("NopStation.Plugin.B2B.B2BB2CFeatures.RegistrationApplicationForm.FieldSetTitle.TradeReferences")</strong>
+    </div>
+    <div class="form-fields">
+        <div class="inputs">
+            <label asp-for="@Model.TradeReferencesModel.Name" asp-postfix=":"></label>
+            <input asp-for="@Model.TradeReferencesModel.Name" />
+            <nop-required />
+            <span asp-validation-for="@Model.TradeReferencesModel.Name"></span>
+        </div>
+        <div class="inputs">
+            <label asp-for="@Model.TradeReferencesModel.Telephone" asp-postfix=":"></label>
+            <input asp-for="@Model.TradeReferencesModel.Telephone" />
+            <nop-required />
+            <span asp-validation-for="@Model.TradeReferencesModel.Telephone"></span>
+        </div>
+        <div class="inputs">
+            <label asp-for="@Model.TradeReferencesModel.Amount" asp-postfix=":"></label>
+            <input asp-for="@Model.TradeReferencesModel.Amount" />
+            <nop-required />
+            <span asp-validation-for="@Model.TradeReferencesModel.Amount"></span>
+        </div>
+        <div class="inputs">
+            <label asp-for="@Model.TradeReferencesModel.Terms" asp-postfix=":"></label>
+            <input asp-for="@Model.TradeReferencesModel.Terms" />
+            <nop-required />
+            <span asp-validation-for="@Model.TradeReferencesModel.Terms"></span>
+        </div>
+        <div class="inputs">
+            <label asp-for="@Model.TradeReferencesModel.HowLong" asp-postfix=":"></label>
+            <input asp-for="@Model.TradeReferencesModel.HowLong" />
+            <nop-required />
+            <span asp-validation-for="@Model.TradeReferencesModel.HowLong"></span>
+        </div>
+    </div>
+</div>
+
+<div class="fieldset">
+    <div class="title">
+        <strong>@T("NopStation.Plugin.B2B.B2BB2CFeatures.RegistrationApplicationForm.FieldSetTitle.Premises")</strong>
+    </div>
+    <div class="form-fields">
+        <div class="inputs">
+            <label asp-for="@Model.PremisesModel.OwnedOrLeased" asp-postfix=":"></label>
+            <input asp-for="@Model.PremisesModel.OwnedOrLeased" />
+            <nop-required />
+            <span asp-validation-for="@Model.PremisesModel.OwnedOrLeased"></span>
+        </div>
+        <div class="inputs">
+            <label asp-for="@Model.PremisesModel.NameOfLandlord" asp-postfix=":"></label>
+            <input asp-for="@Model.PremisesModel.NameOfLandlord" />
+            <nop-required />
+            <span asp-validation-for="@Model.PremisesModel.NameOfLandlord"></span>
+        </div>
+        <div class="inputs">
+            <label asp-for="@Model.PremisesModel.AddressOfLandlord" asp-postfix=":"></label>
+            <input asp-for="@Model.PremisesModel.AddressOfLandlord" />
+            <nop-required />
+            <span asp-validation-for="@Model.PremisesModel.AddressOfLandlord"></span>
+        </div>
+        <div class="inputs">
+            <label asp-for="@Model.PremisesModel.EmailOfLandlord" asp-postfix=":"></label>
+            <input asp-for="@Model.PremisesModel.EmailOfLandlord" />
+            <nop-required />
+            <span asp-validation-for="@Model.PremisesModel.EmailOfLandlord"></span>
+        </div>
+        <div class="inputs">
+            <label asp-for="@Model.PremisesModel.TelephoneNumberOfLandlord" asp-postfix=":"></label>
+            <input asp-for="@Model.PremisesModel.TelephoneNumberOfLandlord" />
+            <nop-required />
+            <span asp-validation-for="@Model.PremisesModel.TelephoneNumberOfLandlord"></span>
+        </div>
+    </div>
+</div>
+
+<div class="buttons">
+    <button type="submit" name="register-button" id="register-button" class="button-1 register-next-step-button">@* @T("Account.Register.Button") *@ Apply to Register</button>
+</div>
+<script src="https://maps.googleapis.com/maps/api/js?key=@b2BB2CFeaturesSettings.GoogleMapsApiKey&libraries=places&v=weekly" defer></script>

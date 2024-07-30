@@ -1,0 +1,197 @@
+﻿@model CategoryModel
+
+@using Nop.Core.Domain.Seo
+@using Nop.Core.Domain.Common
+@using Nop.Core.Domain.Catalog
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Contexts
+
+@inject SeoSettings seoSettings
+@inject CommonSettings commonSettings
+@inject IB2BB2CWorkContext b2BB2CWorkContext
+
+@{
+    Layout = "_ColumnsTwo";
+
+    //title
+    NopHtml.AddTitleParts(!string.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+    //meta
+    NopHtml.AddMetaDescriptionParts(Model.MetaDescription);
+    NopHtml.AddMetaKeywordParts(Model.MetaKeywords);
+    //page class
+    NopHtml.AppendPageCssClassParts("html-category-page");
+
+    if (seoSettings.CanonicalUrlsEnabled)
+    {
+        var categoryUrl = Url.RouteUrl<Category>(new { SeName = Model.SeName }, webHelper.GetCurrentRequestProtocol()).ToLowerInvariant();
+        NopHtml.AddCanonicalUrlParts(categoryUrl, seoSettings.QueryStringInCanonicalUrlsEnabled);
+    }
+
+    var erpCustomer = await b2BB2CWorkContext.GetCurrentERPCustomerAsync();
+
+    var breadcrumbDelimiter = commonSettings.BreadcrumbDelimiter;
+}
+<style>
+    .custom-excel-button {
+        display: inline-flex;
+        padding: 4px 8px;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.42857143;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        cursor: pointer;
+        border: 1px solid #11b110;
+        border-radius: 4px;
+        text-decoration: none;
+        color: #fff;
+        background-color: #4caf50;
+    }
+</style>
+@*category breadcrumb*@
+@section Breadcrumb
+{
+    @if (Model.DisplayCategoryBreadcrumb)
+    {
+        <div class="breadcrumb">
+            <div class="container">
+                <div class="page-title">
+                    <h1>@Model.Name</h1>
+                </div>
+                <ul itemscope itemtype="http://schema.org/BreadcrumbList">
+                    <li>
+                        <a href="@Url.RouteUrl("Homepage")" title="@T("Categories.Breadcrumb.Top")">@T("Categories.Breadcrumb.Top")</a>
+                        <span class="delimiter">@breadcrumbDelimiter</span>
+                    </li>
+                    @{
+                        int position = 1;
+                    }
+                    @foreach (var cat in Model.CategoryBreadcrumb)
+                    {
+                        var isLastCategory = cat.Id == Model.Id;
+                        <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                            @if (isLastCategory)
+                            {
+                                <strong class="current-item" itemprop="name">@cat.Name</strong>
+                                <span itemprop="item" itemscope itemtype="http://schema.org/Thing"
+                                      id="@(Url.RouteUrl<Category>(new { SeName = cat.SeName }))">
+                                </span>
+                            }
+                            else
+                            {
+                                <a href="@(Url.RouteUrl<Category>(new { SeName = cat.SeName }))" title="@cat.Name" itemprop="item">
+                                    <span itemprop="name">@cat.Name</span>
+                                </a>
+                                <span class="delimiter">@breadcrumbDelimiter</span>
+                            }
+                            <meta itemprop="position" content="@position" />
+                        </li>
+                        position++;
+                    }
+                    @if (erpCustomer.ErpAccount != null)
+                    {
+                        <li class="" style="float:right;">
+                            <a style="color:white;margin-left:5px" onmouseover="this.style.color='#000'; this.style.backgroundColor='#4caf50;'"
+                               onmouseout="this.style.color='#fff'; this.style.backgroundColor='#4caf50;'" href="@Url.Action("ExportProductsByCategory", "Export",new { categoryId= Model.Id })" class="custom-excel-button">@T("B2BB2CFeatures.ExportCategoryProducts.AllCategoryProduct.Button")</a>
+                            <a style="color:white;margin-left:5px" onmouseover="this.style.color='#000'; this.style.backgroundColor='#4caf50;'"
+                               onmouseout="this.style.color='#fff'; this.style.backgroundColor='#4caf50;';" href="@Url.Action("ExportProductsByCategoryId", "Export" , new { categoryId= Model.Id })" class="custom-excel-button">@T("B2BB2CFeatures.ExportCategoryProducts.SelectCategoryProduct.Button")</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CategoryDetailsAfterBreadcrumb, additionalData = Model })
+    }
+}
+
+@section CatalogFilters {
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CategoryDetailsBeforeFilters, additionalData = Model })
+    @await Html.PartialAsync("_CatalogFilters", Model.CatalogProductsModel)
+}
+
+<div class="page category-page">
+    <div class="page-body">
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CategoryDetailsTop, additionalData = Model })
+        @*description*@
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <div class="category-description">
+                @Html.Raw(Model.Description)
+            </div>
+        }
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CategoryDetailsBeforeSubcategories, additionalData = Model })
+        @*subcategories*@
+        @if (Model.SubCategories.Count > 0)
+        {
+            var guid = Guid.NewGuid().ToString().Replace('-', '_');
+
+            <div class="category-grid sub-category-grid swiper" id="sub-category-@(guid)" dir="@Html.GetUIDirection(!await Html.ShouldUseRtlThemeAsync())">
+                <div class="title" id="sub-category-title-@(guid)">
+                    @* <strong>@Model.Name</strong> *@
+                    <div class="swiper-nav">
+                        <div class=" icon-right-arrow-2"></div>
+                        <div class=" icon-left-arrow-2"></div>
+                    </div>
+                </div>
+                <div class="item-grid swiper-wrapper">
+                    @foreach (var item in Model.SubCategories)
+                    {
+                        <div class="item-box swiper-slide">
+                            <div class="sub-category-item">
+                                <h2 class="title">
+                                    <a href="@(Url.RouteUrl<Category>(new { SeName = item.SeName }))" title="@item.PictureModel.Title">
+                                        @item.Name
+                                    </a>
+                                </h2>
+                                <div class="picture">
+                                    <a href="@(Url.RouteUrl<Category>(new { SeName = item.SeName }))" title="@item.PictureModel.Title">
+                                        <img alt="@item.PictureModel.AlternateText" src="@item.PictureModel.ImageUrl" title="@item.PictureModel.Title" />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <script asp-location="Footer">
+                $(document).ready(function () {
+                    var carousel@(guid) = new Swiper("#sub-category-@(guid)", {
+                        slidesPerView: "auto",
+                        lazy: false,
+                        navigation: {
+                            nextEl: "#sub-category-title-@(guid) .icon-right-arrow-2",
+                            prevEl: "#sub-category-title-@(guid) .icon-left-arrow-2",
+                        },
+                    });
+                });
+            </script>
+        }
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CategoryDetailsBeforeFeaturedProducts, additionalData = Model })
+        @*featured products*@
+        @if (Model.FeaturedProducts.Count > 0)
+        {
+            <div class="product-grid featured-product-grid">
+                <div class="title">
+                    <strong>@T("Products.FeaturedProducts")</strong>
+                </div>
+                <div class="item-grid">
+                    @foreach (var item in Model.FeaturedProducts)
+                    {
+                        <div class="item-box">
+                            @await Html.PartialAsync("_ProductBox", item)
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CategoryDetailsAfterFeaturedProducts, additionalData = Model })
+        @await Html.PartialAsync("_CatalogSelectors", Model.CatalogProductsModel)
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CategoryDetailsBeforeProductList, additionalData = Model })
+        @{
+            var catalogProductsViewData = new ViewDataDictionary(ViewData);
+            catalogProductsViewData["fetchUrl"] = Html.Raw(Url.Action("GetCategoryProducts", "Catalog", new { categoryId = Model.Id }));
+        }
+        @await Html.PartialAsync("_CatalogProducts", Model.CatalogProductsModel, catalogProductsViewData)
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CategoryDetailsBottom, additionalData = Model })
+    </div>
+</div>
