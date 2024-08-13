@@ -20,5 +20,6 @@
         public string ErrorFullMessage { get; set; } = "";
         public string MessageId { get; set; }
         public string Next { get; set; }
+        public string StatusCode { get; set; }
     }
 }
