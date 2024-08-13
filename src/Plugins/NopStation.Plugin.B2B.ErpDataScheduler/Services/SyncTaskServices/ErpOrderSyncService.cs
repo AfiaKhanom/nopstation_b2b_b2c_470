@@ -122,100 +122,73 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
             try
             {
                 #region Data collection
-
-                var salesOrgCode = await erpIntegrationPlugin.GetSalesOrgCodeFromIQIntegrationSettings();
-                if (salesOrgCode == null)
-                {
-                    await _erpSyncLogService.SyncLogSaveOnFileAsync(
-                        ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
-                        ErpSyncLavel.Order,
-                        $"No Sales org was configured in the erp integration settings. Unable to run {ErpDataSchedulerDefaults.ErpOrderSyncTaskName}.");
-
-                    return false;
-                }
-
-                var salesOrg = (await _erpSalesOrgService.GetAllErpSalesOrgAsync(code: salesOrgCode)).FirstOrDefault();
-                if (salesOrg == null)
-                {
-                    await _erpSyncLogService.SyncLogSaveOnFileAsync(
-                        ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
-                        ErpSyncLavel.Order,
-                        $"No Sales org found with Sales org code: {salesOrgCode}. Unable to run {ErpDataSchedulerDefaults.ErpOrderSyncTaskName}.");
-
-                    return false;
-                }
-
                 var storeScope = await _storeContext.GetActiveStoreScopeConfigurationAsync();
                 var erpDataSchedulerSettings = await _settingService.LoadSettingAsync<ErpDataSchedulerSettings>(storeScope);
                 var b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);
 
                 var allStateProvinces = (await _stateProvinceService.GetStateProvincesAsync()).ToList();
+                var listOfSalesOrgs = new List<ErpSalesOrg>();
+                var salesOrgCode = await erpIntegrationPlugin.GetSalesOrgCodeFromIQIntegrationSettings();
 
-                var oldErpAccounts = (List<ErpAccount>)await _erpAccountService.GetAllErpAccountsAsync(salesOrgId: salesOrg.Id);
-                if (!oldErpAccounts.Any())
+                if (!string.IsNullOrWhiteSpace(salesOrgCode))
                 {
-                    await _erpSyncLogService.SyncLogSaveOnFileAsync(
+                    var salesOrg = (await _erpSalesOrgService.GetAllErpSalesOrgAsync(code: salesOrgCode)).FirstOrDefault();
+
+                    if (salesOrg == null)
+                    {
+                        await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
                         ErpSyncLavel.Order,
-                        $"No Erp Accounts found with the Sales org : {salesOrg.Name}");
+                        $"No Sales org found with Sales org code: {salesOrgCode}. Unable to run {ErpDataSchedulerDefaults.ErpOrderSyncTaskName}.");
 
-                    return false;
+                        return false;
+                    }
+                    else
+                    {
+                        listOfSalesOrgs.Add(salesOrg);
+                    }
+                }
+                else
+                {
+                    var salesOrgs = await _erpSalesOrgService.GetAllErpSalesOrgsAsync();
+
+                    if (salesOrgs.Any())
+                    {
+                        listOfSalesOrgs.AddRange(salesOrgs);
+                    }
                 }
 
-                var lastErpOrderSynced = new ErpOrderAdditionalData();
-                var lastErpOrderSyncedOfErpAccount = "";
-                var totalSyncedSoFar = 0;
-                var isError = false;
-                var lastErrorMessage = "";
-
                 #endregion
-
+                    
                 await _erpSyncLogService.SyncLogSaveOnFileAsync(
-                    ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
-                    ErpSyncLavel.Order,
-                    "Erp Order Sync started.");
+                        ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
+                        ErpSyncLavel.Order,
+                        "Erp Order Sync started.");
 
-                foreach (var erpAccount in oldErpAccounts)
+                foreach (var salesOrg in listOfSalesOrgs)
                 {
-                    var start = "0";
-                    var dateFrom = erpDataSchedulerSettings.SyncFromDate.HasValue ? erpDataSchedulerSettings.SyncFromDate.Value : DateTime.MinValue;
-
-                    while (true)
+                    var oldErpAccounts = (List<ErpAccount>)await _erpAccountService.GetAllErpAccountsAsync(salesOrgId: salesOrg.Id);
+                    if (oldErpAccounts.Count == 0)
                     {
-                        var erpGetRequestModel = new ErpGetRequestModel
-                        {
-                            Start = start,
-                            AccountNumber = erpAccount.AccountNumber,
-                            Location = salesOrg.Code,
-                            DateFrom = erpAccount.LastTimeOrderSyncOnUtc.HasValue ? erpAccount.LastTimeOrderSyncOnUtc : dateFrom
-                        };
+                        await _erpSyncLogService.SyncLogSaveOnFileAsync(
+                            ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
+                            ErpSyncLavel.Order,
+                            $"No Erp Accounts found with the Sales org : {salesOrg.Name}");
 
-                        var response = await erpIntegrationPlugin.GetOrderByAccountFromErpAsync(erpGetRequestModel);
-
-                        if (response.ErpResponseModel.IsError || response.Data is null)
-                        {
-                            isError = true;
-                            lastErrorMessage = $"The last error: {response.ErpResponseModel.ErrorShortMessage}";
-                            break;
-                        }
-
-                        start = response.ErpResponseModel.Next;
-
-                        var erpOrders = response.Data;
-
-                        (lastErpOrderSynced, lastErpOrderSyncedOfErpAccount, totalSyncedSoFar) = await MapOrderData(
-                            erpOrders,
-                            erpAccount,
-                            lastErpOrderSynced,
-                            lastErpOrderSyncedOfErpAccount,
-                            totalSyncedSoFar,
-                            allStateProvinces,
-                            b2BB2CFeaturesSettings.DefaultCountryId);
-
+                        return false;
                     }
-                    if (erpDataSchedulerSettings.NeedQuoteOrderCall)
+
+                    var lastErpOrderSynced = new ErpOrderAdditionalData();
+                    var lastErpOrderSyncedOfErpAccount = "";
+                    var totalSyncedSoFar = 0;
+                    var isError = false;
+                    var lastErrorMessage = "";
+
+                    foreach (var erpAccount in oldErpAccounts)
                     {
-                        start = "0";
+                        var start = "0";
+                        var dateFrom = erpDataSchedulerSettings.SyncFromDate.HasValue ? erpDataSchedulerSettings.SyncFromDate.Value : DateTime.MinValue;
+
                         while (true)
                         {
                             var erpGetRequestModel = new ErpGetRequestModel
@@ -226,7 +199,7 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
                                 DateFrom = erpAccount.LastTimeOrderSyncOnUtc.HasValue ? erpAccount.LastTimeOrderSyncOnUtc : dateFrom
                             };
 
-                            var response = await erpIntegrationPlugin.GetQuoteByAccountFromErpAsync(erpGetRequestModel);
+                            var response = await erpIntegrationPlugin.GetOrderByAccountFromErpAsync(erpGetRequestModel);
 
                             if (response.ErpResponseModel.IsError || response.Data is null)
                             {
@@ -247,32 +220,68 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
                                 totalSyncedSoFar,
                                 allStateProvinces,
                                 b2BB2CFeaturesSettings.DefaultCountryId);
+
+                        }
+                        if (erpDataSchedulerSettings.NeedQuoteOrderCall)
+                        {
+                            start = "0";
+                            while (true)
+                            {
+                                var erpGetRequestModel = new ErpGetRequestModel
+                                {
+                                    Start = start,
+                                    AccountNumber = erpAccount.AccountNumber,
+                                    Location = salesOrg.Code,
+                                    DateFrom = erpAccount.LastTimeOrderSyncOnUtc.HasValue ? erpAccount.LastTimeOrderSyncOnUtc : dateFrom
+                                };
+
+                                var response = await erpIntegrationPlugin.GetQuoteByAccountFromErpAsync(erpGetRequestModel);
+
+                                if (response.ErpResponseModel.IsError || response.Data is null)
+                                {
+                                    isError = true;
+                                    lastErrorMessage = $"The last error: {response.ErpResponseModel.ErrorShortMessage}";
+                                    break;
+                                }
+
+                                start = response.ErpResponseModel.Next;
+
+                                var erpOrders = response.Data;
+
+                                (lastErpOrderSynced, lastErpOrderSyncedOfErpAccount, totalSyncedSoFar) = await MapOrderData(
+                                    erpOrders,
+                                    erpAccount,
+                                    lastErpOrderSynced,
+                                    lastErpOrderSyncedOfErpAccount,
+                                    totalSyncedSoFar,
+                                    allStateProvinces,
+                                    b2BB2CFeaturesSettings.DefaultCountryId);
+                            }
                         }
                     }
-                }
 
-                if (!isError)
-                {
+                    if (!isError)
+                    {
+                        await _erpSyncLogService.SyncLogSaveOnFileAsync(
+                            ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
+                            ErpSyncLavel.Order,
+                            $"Erp Order sync successful for Sales Org: {salesOrg.Name}");
+                    }
+                    else
+                    {
+                        await _erpSyncLogService.SyncLogSaveOnFileAsync(
+                            ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
+                            ErpSyncLavel.Order,
+                            $"Erp Order sync is partially or not successful for Sales Org: {salesOrg.Name}",
+                            lastErrorMessage);
+                    }
+
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
                         ErpSyncLavel.Order,
-                        $"Erp Order sync successful for Sales Org: {salesOrg.Name}");
+                        (lastErpOrderSynced is not null ? $"The last synced Erp Order: {lastErpOrderSynced.ErpOrderNumber}, of Erp Account: {lastErpOrderSyncedOfErpAccount} for Sales Org: {salesOrg.Name}. " : string.Empty) + $"Total synced in this session: {totalSyncedSoFar}");
+
                 }
-                else
-                {
-                    await _erpSyncLogService.SyncLogSaveOnFileAsync(
-                        ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
-                        ErpSyncLavel.Order,
-                        $"Erp Order sync is partially or not successful for Sales Org: {salesOrg.Name}",
-                        lastErrorMessage);
-                }
-
-                await _erpSyncLogService.SyncLogSaveOnFileAsync(
-                    ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
-                    ErpSyncLavel.Order,
-                    (lastErpOrderSynced is not null ? $"The last synced Erp Order: {lastErpOrderSynced.ErpOrderNumber}, of Erp Account: {lastErpOrderSyncedOfErpAccount} for Sales Org: {salesOrg.Name}. " : string.Empty) + $"Total synced in this session: {totalSyncedSoFar}");
-
-
 
                 await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpOrderSyncTaskName,

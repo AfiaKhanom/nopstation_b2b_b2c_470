@@ -82,6 +82,7 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
 
                 var allCountries = (await _countryService.GetAllCountriesAsync()).ToList();
                 var allStateProvinces = (await _stateProvinceService.GetStateProvincesAsync()).ToList();
+                var listOfSalesOrgs = new List<ErpSalesOrg>();
 
                 var storeScope = await _storeContext.GetActiveStoreScopeConfigurationAsync();
                 var b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);
@@ -89,32 +90,33 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
                 var syncStartTime = DateTime.UtcNow.AddMinutes(-10);
 
                 var salesOrgCode = await erpIntegrationPlugin.GetSalesOrgCodeFromIQIntegrationSettings();
-                if (salesOrgCode == null)
+                if (!string.IsNullOrWhiteSpace(salesOrgCode))
                 {
-                    await _erpSyncLogService.SyncLogSaveOnFileAsync(
-                        ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
-                        ErpSyncLavel.Account,
-                        $"No Sales org was configured in the erp integration settings. Unable to run {ErpDataSchedulerDefaults.ErpAccountSyncTaskName}.");
+                    var salesOrg = (await _erpSalesOrgService.GetAllErpSalesOrgAsync(code: salesOrgCode)).FirstOrDefault();
 
-                    return false;
+                    if (salesOrg == null)
+                    {
+                        await _erpSyncLogService.SyncLogSaveOnFileAsync(
+                            ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
+                            ErpSyncLavel.Account,
+                            $"No Sales org found with Sales org code: {salesOrgCode}. Unable to run {ErpDataSchedulerDefaults.ErpAccountSyncTaskName}.");
+
+                        return false;
+                    }
+                    else
+                    {
+                        listOfSalesOrgs.Add(salesOrg);
+                    }
                 }
-
-                var salesOrg = (await _erpSalesOrgService.GetAllErpSalesOrgAsync(code: salesOrgCode)).FirstOrDefault();
-                if (salesOrg == null)
+                else
                 {
-                    await _erpSyncLogService.SyncLogSaveOnFileAsync(
-                        ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
-                        ErpSyncLavel.Account,
-                        $"No Sales org found with Sales org code: {salesOrgCode}. Unable to run {ErpDataSchedulerDefaults.ErpAccountSyncTaskName}.");
+                    var salesOrgs = await _erpSalesOrgService.GetAllErpSalesOrgsAsync();
 
-                    return false;
+                    if (salesOrgs.Any())
+                    {
+                        listOfSalesOrgs.AddRange(salesOrgs);
+                    }
                 }
-
-                var oldErpAccounts = (List<ErpAccount>)await _erpAccountService.GetAllErpAccountsAsync(salesOrgId: salesOrg.Id);
-                var isError = false;
-                var start = "0";
-                var lastErpAccountSynced = new ErpAccount();
-                var totalSyncedSoFar = 0;
 
                 #endregion
 
@@ -123,222 +125,231 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
                     ErpSyncLavel.Account,
                     "Erp Account Sync started.");
 
-                while (true)
+                foreach (var salesOrg in listOfSalesOrgs)
                 {
-                    var erpGetRequestModel = new ErpGetRequestModel
+                    var oldErpAccounts = (List<ErpAccount>)await _erpAccountService.GetAllErpAccountsAsync(salesOrgId: salesOrg.Id);
+                    var isError = false;
+                    var start = "0";
+                    var lastErpAccountSynced = new ErpAccount();
+                    var totalSyncedSoFar = 0;
+
+                    while (true)
                     {
-                        Start = start,
-                        Location = salesOrg.Code
-                    };
+                        var erpGetRequestModel = new ErpGetRequestModel
+                        {
+                            Start = start,
+                            Location = salesOrg.Code
+                        };
 
-                    var response = await erpIntegrationPlugin.GetAccountsFromErpAsync(erpGetRequestModel);
+                        var response = await erpIntegrationPlugin.GetAccountsFromErpAsync(erpGetRequestModel);
 
-                    if (response.ErpResponseModel.IsError || response.Data is null)
+                        if (response.ErpResponseModel.IsError || response.Data is null)
+                        {
+                            isError = true;
+
+                            await _erpSyncLogService.SyncLogSaveOnFileAsync(
+                                ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
+                                ErpSyncLavel.Account,
+                                response.ErpResponseModel.ErrorShortMessage,
+                                response.ErpResponseModel.ErrorFullMessage);
+                            break;
+                        }
+
+                        start = response.ErpResponseModel.Next;
+
+                        foreach (var erpAccount in response.Data)
+                        {
+                            var oldErpAccount = oldErpAccounts.Find(x => x.AccountNumber == erpAccount.AccNo) ?? new ErpAccount();
+
+                            var address = await _addressService.GetAddressByIdAsync(oldErpAccount.BillingAddressId ?? 0) ?? new Address();
+                            var countryId = allCountries.Find(country => country.Name.Contains(erpAccount.Province))?.Id ?? b2BB2CFeaturesSettings.DefaultCountryId;
+
+                            if (address.Id <= 0)
+                            {
+                                address.Email = erpAccount.EMail;
+                                address.Company = erpAccount.Name;
+                                address.CountryId = countryId;
+                                address.City = erpAccount.Address3 ?? string.Empty;
+                                address.County = erpAccount.Address3 ?? string.Empty;
+                                address.Address1 = erpAccount.Address1 ?? string.Empty;
+                                address.Address2 = erpAccount.Address2 ?? string.Empty;
+                                address.ZipPostalCode = erpAccount.PostalCode ?? string.Empty;
+                                address.StateProvinceId = allStateProvinces.Find(state => state.CountryId == countryId)?.Id ?? 0;
+                                address.PhoneNumber = erpAccount.TelNo;
+                                address.FaxNumber = string.Empty;
+
+                                address.CreatedOnUtc = DateTime.UtcNow;
+                                await _addressService.InsertAddressAsync(address);
+                            }
+                            else
+                            {
+                                address.Email = erpAccount.EMail;
+                                address.Company = erpAccount.Name;
+                                address.CountryId = countryId;
+                                address.City = erpAccount.Address3 ?? string.Empty;
+                                address.County = erpAccount.Address3 ?? string.Empty;
+                                address.Address1 = erpAccount.Address1 ?? string.Empty;
+                                address.Address2 = erpAccount.Address2 ?? string.Empty;
+                                address.ZipPostalCode = erpAccount.PostalCode ?? string.Empty;
+                                address.StateProvinceId = allStateProvinces.Find(state => state.CountryId == countryId)?.Id ?? 0;
+                                address.PhoneNumber = erpAccount.TelNo;
+                                address.FaxNumber = string.Empty;
+
+                                await _addressService.UpdateAddressAsync(address);
+                            }
+
+                            if (oldErpAccount.Id <= 0)
+                            {
+                                oldErpAccount.ErpSalesOrg = salesOrg;
+                                oldErpAccount.ErpSalesOrgId = salesOrg.Id;
+
+                                oldErpAccount.AccountNumber = erpAccount.AccNo;
+                                oldErpAccount.AccountName = erpAccount.Name ?? string.Empty;
+                                oldErpAccount.IsActive = true;
+                                oldErpAccount.VatNumber = erpAccount.VatNumber ?? string.Empty;
+                                oldErpAccount.PreFilterFacets = erpAccount.PrefilterFacets;
+                                oldErpAccount.PaymentTypeCode = string.Empty;
+                                oldErpAccount.BillingAddressId = address.Id;
+                                oldErpAccount.BillingSuburb = address.Address1;
+
+                                oldErpAccount.AllowOverspend = erpAccount.AllowOverspend ?? b2BB2CFeaturesSettings.AllowOverspend;
+                                oldErpAccount.AllowAccountsAddressEditOnCheckout = b2BB2CFeaturesSettings.AllowAddressEditOnCheckoutForAll;
+                                oldErpAccount.B2BPriceGroupCodeId = _erpGroupPriceCodeService.GetErpGroupPriceCodeByCodedAsync(erpAccount.PriceGroupCode).Id;
+
+                                oldErpAccount.CreditLimitAvailable = erpAccount.CreditLimitAvailable ?? 0;
+                                oldErpAccount.CreditLimit = erpAccount.CreditLimit;
+                                if (erpAccount.CreditLimitUsed != null)
+                                {
+                                    oldErpAccount.CurrentBalance = erpAccount.CreditLimitUsed.Value;
+                                }
+                                else if (erpAccount.Balance != null)
+                                {
+                                    oldErpAccount.CurrentBalance = erpAccount.Balance.Value;
+                                }
+
+                                var hideStockValues = erpAccount.Attributes?.Exists(kvp =>
+                                        "HideStockValues".Equals(kvp.Key, StringComparison.InvariantCultureIgnoreCase)
+                                        && bool.TryParse(kvp.Value, out var value)
+                                        && value) ?? false;
+
+                                if (hideStockValues)
+                                {
+                                    oldErpAccount.OverrideStockDisplayFormatConfigSetting = true;
+                                    oldErpAccount.StockDisplayFormatTypeId = (int)StockDisplayFormat.ShowInOrOutOfStockIndicators;
+                                }
+                                else
+                                {
+                                    oldErpAccount.OverrideStockDisplayFormatConfigSetting = true;
+                                    oldErpAccount.StockDisplayFormatTypeId = (int)StockDisplayFormat.ShowStockQuantities;
+                                }
+
+                                oldErpAccount.ErpAccountStatusTypeId = (int)ErpAccountStatusType.Normal;
+                                oldErpAccount.PercentageOfStockAllowed = erpAccount.PercentageOfStockAllowedForCustomer ?? 100;
+                                if (oldErpAccount.PercentageOfStockAllowed <= 0)
+                                {
+                                    oldErpAccount.PercentageOfStockAllowed = 100;
+                                }
+
+                                oldErpAccount.IsDeleted = false;
+
+                                oldErpAccount.CreatedById = 1;
+                                oldErpAccount.CreatedOnUtc = DateTime.UtcNow;
+                                oldErpAccount.UpdatedById = 1;
+                                oldErpAccount.UpdatedOnUtc = DateTime.UtcNow;
+                                oldErpAccount.LastPriceRefresh = DateTime.UtcNow;
+                                oldErpAccount.LastErpAccountSyncDate = DateTime.UtcNow;
+
+                                await _erpAccountService.InsertErpAccountAsync(oldErpAccount);
+                            }
+                            else
+                            {
+                                oldErpAccount.AccountName = erpAccount.Name ?? string.Empty;
+                                oldErpAccount.VatNumber = erpAccount.VatNumber ?? string.Empty;
+                                oldErpAccount.PreFilterFacets = erpAccount.PrefilterFacets;
+                                oldErpAccount.PaymentTypeCode = string.Empty;
+                                oldErpAccount.BillingAddressId = address.Id;
+                                oldErpAccount.BillingSuburb = address.Address1;
+
+                                oldErpAccount.AllowOverspend = erpAccount.AllowOverspend ?? b2BB2CFeaturesSettings.AllowOverspend;
+                                oldErpAccount.AllowAccountsAddressEditOnCheckout = b2BB2CFeaturesSettings.AllowAddressEditOnCheckoutForAll;
+                                oldErpAccount.B2BPriceGroupCodeId = _erpGroupPriceCodeService.GetErpGroupPriceCodeByCodedAsync(erpAccount.PriceGroupCode).Id;
+
+                                oldErpAccount.CreditLimitAvailable = erpAccount.CreditLimitAvailable ?? 0;
+                                oldErpAccount.CreditLimit = erpAccount.CreditLimit;
+                                if (erpAccount.CreditLimitUsed != null)
+                                {
+                                    oldErpAccount.CurrentBalance = erpAccount.CreditLimitUsed.Value;
+                                }
+                                else if (erpAccount.Balance != null)
+                                {
+                                    oldErpAccount.CurrentBalance = erpAccount.Balance.Value;
+                                }
+
+                                var hideStockValues = erpAccount.Attributes?.Any(kvp =>
+                                        "HideStockValues".Equals(kvp.Key, StringComparison.InvariantCultureIgnoreCase)
+                                        && bool.TryParse(kvp.Value, out var value)
+                                        && value) ?? false;
+
+                                if (hideStockValues)
+                                {
+                                    oldErpAccount.OverrideStockDisplayFormatConfigSetting = true;
+                                    oldErpAccount.StockDisplayFormatTypeId = (int)StockDisplayFormat.ShowInOrOutOfStockIndicators;
+                                }
+                                else
+                                {
+                                    oldErpAccount.OverrideStockDisplayFormatConfigSetting = true;
+                                    oldErpAccount.StockDisplayFormatTypeId = (int)StockDisplayFormat.ShowStockQuantities;
+                                }
+
+                                oldErpAccount.ErpAccountStatusTypeId = (int)ErpAccountStatusType.Normal;
+                                oldErpAccount.PercentageOfStockAllowed = erpAccount.PercentageOfStockAllowedForCustomer ?? 100;
+                                if (oldErpAccount.PercentageOfStockAllowed <= 0)
+                                {
+                                    oldErpAccount.PercentageOfStockAllowed = 100;
+                                }
+
+                                oldErpAccount.UpdatedById = 1;
+                                oldErpAccount.UpdatedOnUtc = DateTime.UtcNow;
+                                oldErpAccount.LastPriceRefresh = DateTime.UtcNow;
+                                oldErpAccount.LastErpAccountSyncDate = DateTime.UtcNow;
+
+                                await _erpAccountService.UpdateErpAccountAsync(oldErpAccount);
+                            }
+
+                            lastErpAccountSynced = oldErpAccount;
+                            totalSyncedSoFar++;
+
+                            #region Cache clear for this erp account
+
+                            await _erpDataClearCacheService.ClearCacheOfEntity(oldErpAccount, oldErpAccount.Id);
+
+                            #endregion
+                        }
+                    }
+
+                    if (!isError)
                     {
-                        isError = true;
-
+                        await _erpAccountService.InActiveAllOldAccount(syncStartTime);
                         await _erpSyncLogService.SyncLogSaveOnFileAsync(
-                            ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
-                            ErpSyncLavel.Account,
-                            response.ErpResponseModel.ErrorShortMessage,
-                            response.ErpResponseModel.ErrorFullMessage);
-                        break;
+                                ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
+                                ErpSyncLavel.Account,
+                                $"Erp Accounts sync is successful for Sales Org: {salesOrg.Name}. The accounts which were updated before {syncStartTime} are deactivated.");
                     }
-
-                    start = response.ErpResponseModel.Next;
-
-                    foreach (var erpAccount in response.Data)
+                    else
                     {
-                        var oldErpAccount = oldErpAccounts.Find(x => x.AccountNumber == erpAccount.AccNo) ?? new ErpAccount();
-
-                        var address = await _addressService.GetAddressByIdAsync(oldErpAccount.BillingAddressId ?? 0) ?? new Address();
-                        var countryId = allCountries.Find(country => country.Name.Contains(erpAccount.Province))?.Id ?? b2BB2CFeaturesSettings.DefaultCountryId;
-
-                        if (address.Id <= 0)
-                        {
-                            address.Email = erpAccount.EMail;
-                            address.Company = erpAccount.Name;
-                            address.CountryId = countryId;
-                            address.City = erpAccount.Address3 ?? string.Empty;
-                            address.County = erpAccount.Address3 ?? string.Empty;
-                            address.Address1 = erpAccount.Address1 ?? string.Empty;
-                            address.Address2 = erpAccount.Address2 ?? string.Empty;
-                            address.ZipPostalCode = erpAccount.PostalCode ?? string.Empty;
-                            address.StateProvinceId = allStateProvinces.Find(state => state.CountryId == countryId)?.Id ?? 0;
-                            address.PhoneNumber = erpAccount.TelNo;
-                            address.FaxNumber = string.Empty;
-
-                            address.CreatedOnUtc = DateTime.UtcNow;
-                            await _addressService.InsertAddressAsync(address);
-                        }
-                        else
-                        {
-                            address.Email = erpAccount.EMail;
-                            address.Company = erpAccount.Name;
-                            address.CountryId = countryId;
-                            address.City = erpAccount.Address3 ?? string.Empty;
-                            address.County = erpAccount.Address3 ?? string.Empty;
-                            address.Address1 = erpAccount.Address1 ?? string.Empty;
-                            address.Address2 = erpAccount.Address2 ?? string.Empty;
-                            address.ZipPostalCode = erpAccount.PostalCode ?? string.Empty;
-                            address.StateProvinceId = allStateProvinces.Find(state => state.CountryId == countryId)?.Id ?? 0;
-                            address.PhoneNumber = erpAccount.TelNo;
-                            address.FaxNumber = string.Empty;
-
-                            await _addressService.UpdateAddressAsync(address);
-                        }
-
-                        if (oldErpAccount.Id <= 0)
-                        {
-                            oldErpAccount.ErpSalesOrg = salesOrg;
-                            oldErpAccount.ErpSalesOrgId = salesOrg.Id;
-
-                            oldErpAccount.AccountNumber = erpAccount.AccNo;
-                            oldErpAccount.AccountName = erpAccount.Name ?? string.Empty;
-                            oldErpAccount.IsActive = true;
-                            oldErpAccount.VatNumber = erpAccount.VatNumber ?? string.Empty;
-                            oldErpAccount.PreFilterFacets = erpAccount.PrefilterFacets;
-                            oldErpAccount.PaymentTypeCode = string.Empty;
-                            oldErpAccount.BillingAddressId = address.Id;
-                            oldErpAccount.BillingSuburb = address.Address1;
-
-                            oldErpAccount.AllowOverspend = erpAccount.AllowOverspend ?? b2BB2CFeaturesSettings.AllowOverspend;
-                            oldErpAccount.AllowAccountsAddressEditOnCheckout = b2BB2CFeaturesSettings.AllowAddressEditOnCheckoutForAll;
-                            oldErpAccount.B2BPriceGroupCodeId = _erpGroupPriceCodeService.GetErpGroupPriceCodeByCodedAsync(erpAccount.PriceGroupCode).Id;
-
-                            oldErpAccount.CreditLimitAvailable = erpAccount.CreditLimitAvailable ?? 0;
-                            oldErpAccount.CreditLimit = erpAccount.CreditLimit;
-                            if (erpAccount.CreditLimitUsed != null)
-                            {
-                                oldErpAccount.CurrentBalance = erpAccount.CreditLimitUsed.Value;
-                            }
-                            else if (erpAccount.Balance != null)
-                            {
-                                oldErpAccount.CurrentBalance = erpAccount.Balance.Value;
-                            }
-
-                            var hideStockValues = erpAccount.Attributes?.Exists(kvp =>
-                                    "HideStockValues".Equals(kvp.Key, StringComparison.InvariantCultureIgnoreCase)
-                                    && bool.TryParse(kvp.Value, out var value)
-                                    && value) ?? false;
-
-                            if (hideStockValues)
-                            {
-                                oldErpAccount.OverrideStockDisplayFormatConfigSetting = true;
-                                oldErpAccount.StockDisplayFormatTypeId = (int)StockDisplayFormat.ShowInOrOutOfStockIndicators;
-                            }
-                            else
-                            {
-                                oldErpAccount.OverrideStockDisplayFormatConfigSetting = true;
-                                oldErpAccount.StockDisplayFormatTypeId = (int)StockDisplayFormat.ShowStockQuantities;
-                            }
-
-                            oldErpAccount.ErpAccountStatusTypeId = (int)ErpAccountStatusType.Normal;
-                            oldErpAccount.PercentageOfStockAllowed = erpAccount.PercentageOfStockAllowedForCustomer ?? 100;
-                            if (oldErpAccount.PercentageOfStockAllowed <= 0)
-                            {
-                                oldErpAccount.PercentageOfStockAllowed = 100;
-                            }
-
-                            oldErpAccount.IsDeleted = false;
-
-                            oldErpAccount.CreatedById = 1;
-                            oldErpAccount.CreatedOnUtc = DateTime.UtcNow;
-                            oldErpAccount.UpdatedById = 1;
-                            oldErpAccount.UpdatedOnUtc = DateTime.UtcNow;
-                            oldErpAccount.LastPriceRefresh = DateTime.UtcNow;
-                            oldErpAccount.LastErpAccountSyncDate = DateTime.UtcNow;
-
-                            await _erpAccountService.InsertErpAccountAsync(oldErpAccount);
-                        }
-                        else
-                        {
-                            oldErpAccount.AccountName = erpAccount.Name ?? string.Empty;
-                            oldErpAccount.VatNumber = erpAccount.VatNumber ?? string.Empty;
-                            oldErpAccount.PreFilterFacets = erpAccount.PrefilterFacets;
-                            oldErpAccount.PaymentTypeCode = string.Empty;
-                            oldErpAccount.BillingAddressId = address.Id;
-                            oldErpAccount.BillingSuburb = address.Address1;
-
-                            oldErpAccount.AllowOverspend = erpAccount.AllowOverspend ?? b2BB2CFeaturesSettings.AllowOverspend;
-                            oldErpAccount.AllowAccountsAddressEditOnCheckout = b2BB2CFeaturesSettings.AllowAddressEditOnCheckoutForAll;
-                            oldErpAccount.B2BPriceGroupCodeId = _erpGroupPriceCodeService.GetErpGroupPriceCodeByCodedAsync(erpAccount.PriceGroupCode).Id;
-
-                            oldErpAccount.CreditLimitAvailable = erpAccount.CreditLimitAvailable ?? 0;
-                            oldErpAccount.CreditLimit = erpAccount.CreditLimit;
-                            if (erpAccount.CreditLimitUsed != null)
-                            {
-                                oldErpAccount.CurrentBalance = erpAccount.CreditLimitUsed.Value;
-                            }
-                            else if (erpAccount.Balance != null)
-                            {
-                                oldErpAccount.CurrentBalance = erpAccount.Balance.Value;
-                            }
-
-                            var hideStockValues = erpAccount.Attributes?.Any(kvp =>
-                                    "HideStockValues".Equals(kvp.Key, StringComparison.InvariantCultureIgnoreCase)
-                                    && bool.TryParse(kvp.Value, out var value)
-                                    && value) ?? false;
-
-                            if (hideStockValues)
-                            {
-                                oldErpAccount.OverrideStockDisplayFormatConfigSetting = true;
-                                oldErpAccount.StockDisplayFormatTypeId = (int)StockDisplayFormat.ShowInOrOutOfStockIndicators;
-                            }
-                            else
-                            {
-                                oldErpAccount.OverrideStockDisplayFormatConfigSetting = true;
-                                oldErpAccount.StockDisplayFormatTypeId = (int)StockDisplayFormat.ShowStockQuantities;
-                            }
-
-                            oldErpAccount.ErpAccountStatusTypeId = (int)ErpAccountStatusType.Normal;
-                            oldErpAccount.PercentageOfStockAllowed = erpAccount.PercentageOfStockAllowedForCustomer ?? 100;
-                            if (oldErpAccount.PercentageOfStockAllowed <= 0)
-                            {
-                                oldErpAccount.PercentageOfStockAllowed = 100;
-                            }
-
-                            oldErpAccount.UpdatedById = 1;
-                            oldErpAccount.UpdatedOnUtc = DateTime.UtcNow;
-                            oldErpAccount.LastPriceRefresh = DateTime.UtcNow;
-                            oldErpAccount.LastErpAccountSyncDate = DateTime.UtcNow;
-
-                            await _erpAccountService.UpdateErpAccountAsync(oldErpAccount);
-                        }
-
-                        lastErpAccountSynced = oldErpAccount;
-                        totalSyncedSoFar++;
-
-                        #region Cache clear for this erp account
-
-                        await _erpDataClearCacheService.ClearCacheOfEntity(oldErpAccount, oldErpAccount.Id);
-
-                        #endregion
+                        await _erpSyncLogService.SyncLogSaveOnFileAsync(
+                                ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
+                                ErpSyncLavel.Account,
+                                $"Erp Accounts sync is partially or not successful for Sales Org: {salesOrg.Name}");
                     }
-                }
 
-                if (!isError)
-                {
-                    await _erpAccountService.InActiveAllOldAccount(syncStartTime);
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
-                            ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
-                            ErpSyncLavel.Account,
-                            $"Erp Accounts sync is successful for Sales Org: {salesOrg.Name}. The accounts which were updated before {syncStartTime} are deactivated.");
+                        ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
+                        ErpSyncLavel.Account,
+                        (lastErpAccountSynced is not null ?
+                        $"The last synced Erp Account: {lastErpAccountSynced.AccountNumber}, for Sales Org: {salesOrg.Name}. " : string.Empty) +
+                        $"Total synced in this session: {totalSyncedSoFar}");
                 }
-                else
-                {
-                    await _erpSyncLogService.SyncLogSaveOnFileAsync(
-                            ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
-                            ErpSyncLavel.Account,
-                            $"Erp Accounts sync is partially or not successful for Sales Org: {salesOrg.Name}");
-                }
-
-                await _erpSyncLogService.SyncLogSaveOnFileAsync(
-                    ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
-                    ErpSyncLavel.Account,
-                    (lastErpAccountSynced is not null ?
-                    $"The last synced Erp Account: {lastErpAccountSynced.AccountNumber}, for Sales Org: {salesOrg.Name}. " : string.Empty) +
-                    $"Total synced in this session: {totalSyncedSoFar}");
 
                 await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
