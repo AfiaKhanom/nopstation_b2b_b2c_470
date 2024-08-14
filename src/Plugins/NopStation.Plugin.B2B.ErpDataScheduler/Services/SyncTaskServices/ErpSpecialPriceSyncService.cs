@@ -74,7 +74,7 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
                 var storeScope = await _storeContext.GetActiveStoreScopeConfigurationAsync();
                 var erpDataSchedulerSettings = await _settingService.LoadSettingAsync<ErpDataSchedulerSettings>(storeScope);
                 var listOfSalesOrgs = new List<ErpSalesOrg>();
-                var salesOrgCode = await erpIntegrationPlugin.GetSalesOrgCodeFromIQIntegrationSettings();
+                var salesOrgCode = await erpIntegrationPlugin.GetSalesOrgCodeFromIntegrationSettings();
 
                 if (!string.IsNullOrWhiteSpace(salesOrgCode))
                 {

@@ -1,5 +1,4 @@
-﻿using LinqToDB.Common;
-using Nop.Core;
+﻿using Nop.Core;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Common;
 using Nop.Core.Domain.Customers;
@@ -128,7 +127,7 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
 
                 var allStateProvinces = (await _stateProvinceService.GetStateProvincesAsync()).ToList();
                 var listOfSalesOrgs = new List<ErpSalesOrg>();
-                var salesOrgCode = await erpIntegrationPlugin.GetSalesOrgCodeFromIQIntegrationSettings();
+                var salesOrgCode = await erpIntegrationPlugin.GetSalesOrgCodeFromIntegrationSettings();
 
                 if (!string.IsNullOrWhiteSpace(salesOrgCode))
                 {
@@ -159,7 +158,7 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
                 }
 
                 #endregion
-                    
+
                 await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
                         ErpSyncLavel.Order,

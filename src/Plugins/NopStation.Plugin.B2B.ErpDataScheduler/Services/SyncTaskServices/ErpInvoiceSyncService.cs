@@ -69,7 +69,7 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
                 var listOfSalesOrgs = new List<ErpSalesOrg>();
                 var storeScope = await _storeContext.GetActiveStoreScopeConfigurationAsync();
                 var erpDataSchedulerSettings = await _settingService.LoadSettingAsync<ErpDataSchedulerSettings>(storeScope);
-                var salesOrgCode = await erpIntegrationPlugin.GetSalesOrgCodeFromIQIntegrationSettings();
+                var salesOrgCode = await erpIntegrationPlugin.GetSalesOrgCodeFromIntegrationSettings();
 
                 if (!string.IsNullOrWhiteSpace(salesOrgCode))
                 {
@@ -258,6 +258,6 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
             }
         }
 
-#endregion
+        #endregion
     }
 }

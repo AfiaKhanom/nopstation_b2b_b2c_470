@@ -312,7 +312,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration
 
         #region IQRetailIntegration Settings Methods
 
-        public async Task<string> GetSalesOrgCodeFromIQIntegrationSettings()
+        public async Task<string> GetSalesOrgCodeFromIntegrationSettings()
         {
             var settings = await _settingService.LoadSettingAsync<IQRetailIntegrationSettings>(await _storeContext.GetActiveStoreScopeConfigurationAsync());
             return settings.CompanyId;
