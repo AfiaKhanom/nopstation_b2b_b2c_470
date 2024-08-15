@@ -7,10 +7,7 @@
 }
 @{ 
     await Html.RenderPartialAsync("_JavaScriptDisabledWarning"); 
-}
-@{ 
-    await Html.RenderPartialAsync("_OldInternetExplorerWarning"); 
-}
+} 
 
 @{
     var hasSalesRepRole = await customerService.IsInCustomerRoleAsync(await workContext.GetCurrentCustomerAsync(), ERPIntegrationCoreDefaults.B2BSalesRepRoleSystemName);
