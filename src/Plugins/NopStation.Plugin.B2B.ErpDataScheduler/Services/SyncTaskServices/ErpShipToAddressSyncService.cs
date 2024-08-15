@@ -152,10 +152,15 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
 
                             var response = await erpIntegrationPlugin.GetShipToAddressByAccountNumberFromErpAsync(erpGetRequestModel);
 
-                            if (response.ErpResponseModel.IsError || response.Data is null)
+                            if (response.ErpResponseModel.IsError)
                             {
                                 isError = true;
                                 lastErrorMessage = $"The last error: {response.ErpResponseModel.ErrorShortMessage}";
+                                break;
+                            }
+                            else if (response.Data is null)
+                            {
+                                isError = false;
                                 break;
                             }
 
