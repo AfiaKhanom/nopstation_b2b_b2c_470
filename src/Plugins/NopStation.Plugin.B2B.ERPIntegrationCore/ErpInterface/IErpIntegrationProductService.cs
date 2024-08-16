@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Nop.Core.Domain.Catalog;
+using Nop.Services.Catalog;
+using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Model;
 
 namespace NopStation.Plugin.B2B.ERPIntegrationCore.ErpInterface
@@ -9,6 +12,8 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.ErpInterface
         Task<ErpResponseData<ErpProductDataModel>> GetProductByItemNoFromErpAsync(ErpGetRequestModel erpRequest);
 
         Task<ErpResponseData<IList<ErpProductDataModel>>> GetProductsFromErpAsync(ErpGetRequestModel erpRequest);
+
+        Task ProductListLiveStockSync(ErpAccount erpAccount, IList<Product> products, IProductService productService);
 
         Task<ErpResponseData<ErpProductDataModel>> GetStockByItemNoFromErpAsync(ErpGetRequestModel erpRequest);
 

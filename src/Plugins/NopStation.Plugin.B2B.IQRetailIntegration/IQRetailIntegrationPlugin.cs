@@ -1,9 +1,12 @@
 ﻿using Nop.Core;
+using Nop.Core.Domain.Catalog;
+using Nop.Services.Catalog;
 using Nop.Services.Common;
 using Nop.Services.Configuration;
 using Nop.Services.Localization;
 using Nop.Services.Plugins;
 using Nop.Web.Framework.Menu;
+using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Model;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
 using NopStation.Plugin.B2B.IQRetailIntegration.ErpInterfaceImplementation;
@@ -233,6 +236,11 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration
         public async Task<ErpResponseData<IList<ErpProductDataModel>>> GetProductsFromErpAsync(ErpGetRequestModel erpRequest)
         {
             return await _erpIntegrationProductService.GetProductsFromErpAsync(erpRequest);
+        }
+
+        public Task ProductListLiveStockSync(ErpAccount erpAccount, IList<Product> products, IProductService productService)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<ErpResponseData<ErpProductDataModel>> GetStockByItemNoFromErpAsync(ErpGetRequestModel erpRequest)
