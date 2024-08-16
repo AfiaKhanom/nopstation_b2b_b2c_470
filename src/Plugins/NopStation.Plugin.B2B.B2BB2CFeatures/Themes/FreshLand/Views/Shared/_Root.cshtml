@@ -48,7 +48,7 @@
     {
         @RenderSection("Breadcrumb")
     }
-    <div class="master-wrapper-content">
+    <div class="master-wrapper-content" id="main" role="main">
         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ContentBefore })
 
         <div class="master-column-wrapper">

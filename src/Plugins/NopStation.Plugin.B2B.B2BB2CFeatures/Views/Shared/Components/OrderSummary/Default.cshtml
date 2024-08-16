@@ -13,6 +13,7 @@
 @using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
 @using Nop.Services.Security;
 @using NopStation.Plugin.B2B.ERPIntegrationCore.Infrastructure;
+@using Nop.Core.Domain.Media
 
 @inject IWebHelper webHelper
 @inject IWorkContext workContext
@@ -27,6 +28,7 @@
 @inject IViewComponentSelector viewComponentSelector
 @inject IWebHelper webHelper
 @inject OrderSettings orderSettings
+@inject MediaSettings mediaSettings
 
 @{
     var currCustomer = await workContext.GetCurrentCustomerAsync();
@@ -195,7 +197,7 @@
                                             }
                                             else
                                             {
-                                                <img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
+                                                <img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" width="@mediaSettings.DefaultImageQuality" />
                                             }
                                         </a>
                                     </td>
@@ -277,7 +279,32 @@
                                         }
                                         else
                                         {
-                                            <input name="itemquantity@(item.Id)" id="itemquantity@(item.Id)" data-id="@item.Id" type="text" value="@(item.Quantity)" class="qty-input b2bProductQty b2bProductQty_@item.ProductId" data-productid="@item.ProductId" />
+                                            <div class="product-quantity">
+                                                <div class="quantity up" id="quantity-up-@(item.Id)"></div>
+                                                <input name="itemquantity@(item.Id)" id="itemquantity@(item.Id)" data-id="@item.Id" type="text" value="@(item.Quantity)" class="qty-input b2bProductQty b2bProductQty_@item.ProductId" data-productid="@item.ProductId" onchange="$('#updatecart').trigger('click');" />
+                                                <div class="quantity down" id="quantity-down-@(item.Id)"></div>
+                                            </div>
+                                            <script asp-location="Footer">
+                                                $(function () {
+                                                    $('#quantity-up-@(item.Id)').on('click',
+                                                        function (e) {
+                                                            var input = $(document).find('#itemquantity@(item.Id)');
+                                                            var oldValue = parseInt(input.val());
+                                                            var newVal = oldValue + 1;
+                                                            input.val(newVal.toString());
+                                                            input.trigger("change");
+                                                        });
+
+                                                    $('#quantity-down-@(item.Id)').on('click',
+                                                        function (e) {
+                                                            var input = $(document).find('#itemquantity@(item.Id)');
+                                                            var oldValue = parseInt(input.val());
+                                                            var newVal = oldValue - 1;
+                                                            input.val(newVal.toString());
+                                                            input.trigger("change");
+                                                        });
+                                                });
+                                            </script>
                                         }
                                     }
                                     else
