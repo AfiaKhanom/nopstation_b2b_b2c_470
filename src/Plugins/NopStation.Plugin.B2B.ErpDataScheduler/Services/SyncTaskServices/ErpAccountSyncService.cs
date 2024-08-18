@@ -143,7 +143,7 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
 
                         var response = await erpIntegrationPlugin.GetAccountsFromErpAsync(erpGetRequestModel);
 
-                        if (response.ErpResponseModel.IsError || response.Data is null)
+                        if (response.ErpResponseModel.IsError)
                         {
                             isError = true;
 
@@ -152,6 +152,11 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
                                 ErpSyncLavel.Account,
                                 response.ErpResponseModel.ErrorShortMessage,
                                 response.ErpResponseModel.ErrorFullMessage);
+                            break;
+                        }
+                        else if (response.Data is null)
+                        {
+                            isError = false;
                             break;
                         }
 

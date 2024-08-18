@@ -133,7 +133,7 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
 
                         var response = await erpIntegrationPlugin.GetStocksFromErpAsync(erpGetRequestModel);
 
-                        if (response.ErpResponseModel.IsError || response.Data is null)
+                        if (response.ErpResponseModel.IsError)
                         {
                             isError = true;
 
@@ -143,6 +143,11 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
                                 response.ErpResponseModel?.ErrorShortMessage ?? string.Empty,
                                 response.ErpResponseModel?.ErrorFullMessage ?? string.Empty);
 
+                            break;
+                        }
+                        else if (response.Data is null)
+                        {
+                            isError = false;
                             break;
                         }
 

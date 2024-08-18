@@ -104,7 +104,7 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
                             dateFrom = DateTime.MinValue.Date;
                         }
 
-                        if (response.ErpResponseModel.IsError || response.Data is null || dateFrom.Date < DateTime.Today.Date)
+                        if (response.ErpResponseModel.IsError)
                         {
                             isError = true;
                             
@@ -114,6 +114,11 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
                                 response.ErpResponseModel.ErrorShortMessage, 
                                 response.ErpResponseModel.ErrorFullMessage);
 
+                            break;
+                        }
+                        else if (response.Data is null || dateFrom.Date < DateTime.Today.Date)
+                        {
+                            isError = false;
                             break;
                         }
 
