@@ -238,7 +238,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration
             return await _erpIntegrationProductService.GetProductsFromErpAsync(erpRequest);
         }
 
-        public Task ProductListLiveStockSync(ErpAccount erpAccount, IList<Product> products, IProductService productService)
+        public Task ProductListLiveStockDataAsync(ErpAccount erpAccount, IList<Product> products, IProductService productService)
         {
             throw new NotImplementedException();
         }

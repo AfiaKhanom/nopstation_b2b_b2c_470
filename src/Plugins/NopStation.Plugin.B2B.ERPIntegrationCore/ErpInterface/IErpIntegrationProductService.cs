@@ -13,7 +13,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.ErpInterface
 
         Task<ErpResponseData<IList<ErpProductDataModel>>> GetProductsFromErpAsync(ErpGetRequestModel erpRequest);
 
-        Task ProductListLiveStockSync(ErpAccount erpAccount, IList<Product> products, IProductService productService);
+        Task ProductListLiveStockDataAsync(ErpAccount erpAccount, IList<Product> products, IProductService productService);
 
         Task<ErpResponseData<ErpProductDataModel>> GetStockByItemNoFromErpAsync(ErpGetRequestModel erpRequest);
 

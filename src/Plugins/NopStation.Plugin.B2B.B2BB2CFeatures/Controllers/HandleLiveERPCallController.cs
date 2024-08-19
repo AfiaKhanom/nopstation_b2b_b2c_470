@@ -98,15 +98,6 @@ public class HandleLiveERPCallController : BasePublicController
         if (!cart.Any())
             return new NullJsonResult();
 
-        /*if (cart.Count > _b2BB2CFeaturesSettings.DisableLiveStockCheckProductGreaterThanAmount)
-        {
-            return Json(new
-            {
-                success = false,
-                message = $"Sync not possible because cart has over {_b2BB2CFeaturesSettings.DisableLiveStockCheckProductGreaterThanAmount} items."
-            });
-        }*/
-
         var productIds = cart.Select(x => x.ProductId).ToList();
         var products = await _productService.GetProductsByIdsAsync(productIds.ToArray());
 
@@ -121,7 +112,7 @@ public class HandleLiveERPCallController : BasePublicController
             });
         }
 
-        await erpIntegrationPlugin.ProductListLiveStockSync(b2BAccount, products, _productService);
+        await erpIntegrationPlugin.ProductListLiveStockDataAsync(b2BAccount, products, _productService);
 
         return Json(new
         {
