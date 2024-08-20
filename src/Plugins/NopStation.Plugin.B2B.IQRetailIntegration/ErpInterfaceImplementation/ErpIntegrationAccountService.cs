@@ -48,10 +48,10 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.ErpInterfaceImplementation
 
             try
             {
-                if (erpCreateAccountModel.ErpAccountNumber.Length > IQRetailIntegrationDefaults.AccountNoLengthLimit)
+                if (erpCreateAccountModel.AccountNumber.Length > IQRetailIntegrationDefaults.AccountNoLengthLimit)
                 {
                     erpResponseModel.IsError = true;
-                    erpResponseModel.ErrorShortMessage = $"The Account Number {erpCreateAccountModel.ErpAccountNumber}, exceeds the account number maximum length limit {IQRetailIntegrationDefaults.AccountNoLengthLimit}.";
+                    erpResponseModel.ErrorShortMessage = $"The Account Number {erpCreateAccountModel.AccountNumber}, exceeds the account number maximum length limit {IQRetailIntegrationDefaults.AccountNoLengthLimit}.";
                     return erpResponseModel;
                 }
 
@@ -83,7 +83,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.ErpInterfaceImplementation
                 }
                 else
                 {
-                    erpResponseModel.AccountNumber = erpCreateAccountModel.ErpAccountNumber;
+                    erpResponseModel.AccountNumber = erpCreateAccountModel.AccountNumber;
                 }
             }
             catch (Exception ex)

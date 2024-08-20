@@ -65,7 +65,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.ErpInterfaceImplementation
                     "Where webItem = true and code like '%@StockCode%'",
                     new
                     {
-                        StockCode = erpRequest.ItemNo
+                        StockCode = erpRequest.ProductSku
                     });
 
                 var serialized = new IQApiRequestGeneratorModel(_retailIntegrationSettings).CreateApiRequest(
@@ -96,7 +96,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.ErpInterfaceImplementation
                 if (rootData is not null && rootData.IQApiErrors[0].ErrorCode != 0)
                 {
                     erpResponseData.ErpResponseModel.IsError = true;
-                    erpResponseData.ErpResponseModel.ErrorShortMessage = $"Product record in Erp for Product ({erpRequest.ItemNo}): {rootData.IQApiErrors[0].ErrorDescription}";
+                    erpResponseData.ErpResponseModel.ErrorShortMessage = $"Product record in Erp for Product ({erpRequest.ProductSku}): {rootData.IQApiErrors[0].ErrorDescription}";
                     erpResponseData.ErpResponseModel.ErrorFullMessage = responseContent;
                     return erpResponseData;
                 }
@@ -380,7 +380,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.ErpInterfaceImplementation
                     "Where webItem = true and code like '%@StockCode%'",
                     new
                     {
-                        StockCode = erpRequest.ItemNo
+                        StockCode = erpRequest.ProductSku
                     });
 
                 var serialized = new IQApiRequestGeneratorModel(_retailIntegrationSettings).CreateApiRequest(
@@ -411,7 +411,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.ErpInterfaceImplementation
                 if (rootData is not null && rootData.IQApiErrors[0].ErrorCode != 0)
                 {
                     erpResponseData.ErpResponseModel.IsError = true;
-                    erpResponseData.ErpResponseModel.ErrorShortMessage = $"Special Price record in Erp for Product ({erpRequest.ItemNo}): {rootData.IQApiErrors[0].ErrorDescription}";
+                    erpResponseData.ErpResponseModel.ErrorShortMessage = $"Special Price record in Erp for Product ({erpRequest.ProductSku}): {rootData.IQApiErrors[0].ErrorDescription}";
                     erpResponseData.ErpResponseModel.ErrorFullMessage = responseContent;
                     return erpResponseData;
                 }
@@ -544,7 +544,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.ErpInterfaceImplementation
                     "Where webItem = true and code like '%@StockCode%'",
                     new
                     {
-                        StockCode = erpRequest.ItemNo
+                        StockCode = erpRequest.ProductSku
                     });
 
                 var serialized = new IQApiRequestGeneratorModel(_retailIntegrationSettings).CreateApiRequest(
@@ -575,7 +575,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.ErpInterfaceImplementation
                 if (rootData != null && rootData.IQApiErrors[0].ErrorCode != 0)
                 {
                     erpResponseData.ErpResponseModel.IsError = true;
-                    erpResponseData.ErpResponseModel.ErrorShortMessage = $"Product record in Erp for Product ({erpRequest.ItemNo}): {rootData.IQApiErrors[0].ErrorDescription}";
+                    erpResponseData.ErpResponseModel.ErrorShortMessage = $"Product record in Erp for Product ({erpRequest.ProductSku}): {rootData.IQApiErrors[0].ErrorDescription}";
                     erpResponseData.ErpResponseModel.ErrorFullMessage = responseContent;
                     return erpResponseData;
                 }

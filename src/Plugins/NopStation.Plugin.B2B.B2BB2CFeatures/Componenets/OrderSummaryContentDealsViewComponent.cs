@@ -3,72 +3,67 @@ using Microsoft.AspNetCore.Mvc;
 using Nop.Core;
 using Nop.Services.Catalog;
 using Nop.Services.Configuration;
-using Nop.Services.Customers;
-using Nop.Services.Localization;
 using Nop.Web.Framework.Components;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Contexts;
-using NopStation.Plugin.B2B.B2BB2CFeatures.Services.Customers;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Model;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
 
-namespace NopStation.Plugin.B2B.B2BB2CFeatures.Componenets
+namespace NopStation.Plugin.B2B.B2BB2CFeatures.Componenets;
+
+public class OrderSummaryContentDealsViewComponent : NopViewComponent
 {
-    public class OrderSummaryContentDealsViewComponent : NopViewComponent
+    private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
+    private readonly IStoreContext _storeContext;
+    private readonly ISettingService _settingService;
+    private readonly IErpAccountService _erpAccountService;
+    private readonly IPriceFormatter _priceFormatter;
+
+    public OrderSummaryContentDealsViewComponent(IB2BB2CWorkContext b2BB2CWorkContext,
+        IStoreContext storeContext,
+        ISettingService settingService,
+        IErpAccountService erpAccountService,
+        IPriceFormatter priceFormatter)
     {
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
-        private readonly IStoreContext _storeContext;
-        private readonly ISettingService _settingService;
-        private readonly IErpAccountService _erpAccountService;
-        private readonly IPriceFormatter _priceFormatter;
+        _b2BB2CWorkContext = b2BB2CWorkContext;
+        _storeContext = storeContext;
+        _settingService = settingService;
+        _erpAccountService = erpAccountService;
+        _priceFormatter = priceFormatter;
+    }
 
-        public OrderSummaryContentDealsViewComponent(IB2BB2CWorkContext b2BB2CWorkContext,
-            IStoreContext storeContext,
-            ISettingService settingService,
-            IErpAccountService erpAccountService,
-            IPriceFormatter priceFormatter)
+    public async Task<IViewComponentResult> InvokeAsync(string widgetZone, object additionalData)
+    {
+        var erpCustomer = await _b2BB2CWorkContext.GetCurrentERPCustomerAsync();
+        if (erpCustomer == null)
+            return Content("");
+
+        var erpAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(erpCustomer.Customer.Id);
+
+        if (erpAccount == null)
+            return Content("");
+
+        var storeScope = await _storeContext.GetActiveStoreScopeConfigurationAsync();
+        var settings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);
+        var accountPaymentEnabled = settings.EnableAccountPayment;
+
+        if (!accountPaymentEnabled)
+            return Content("");
+
+        var erpAccountModel = new ErpAccountDataModel()
         {
-            _b2BB2CWorkContext = b2BB2CWorkContext;
-            _storeContext = storeContext;
-            _settingService = settingService;
-            _erpAccountService = erpAccountService;
-            _priceFormatter = priceFormatter;
-        }
+            AccountNumber = erpAccount.AccountNumber,
+            AccountName = erpAccount.AccountName,
+            PaymentTypeCode = erpAccount.PaymentTypeCode,
+            IsActive = erpAccount.IsActive,
+            CreditLimitUsed = erpAccount.CreditLimit - erpAccount.CreditLimitAvailable,
+            CreditLimitAvailable = erpAccount.CreditLimitAvailable,
+            CurrentBalance = erpAccount.CurrentBalance
+        };
 
-        public async Task<IViewComponentResult> InvokeAsync(string widgetZone, object additionalData)
-        {
-            var erpCustomer = await _b2BB2CWorkContext.GetCurrentERPCustomerAsync();
-            if (erpCustomer == null)
-                return Content("");
+        erpAccountModel.CurrentBalanceStr = await _priceFormatter.FormatPriceAsync(erpAccount.CurrentBalance);
+        erpAccountModel.CreditLimitAvailableStr = await _priceFormatter.FormatPriceAsync(erpAccount.CreditLimitAvailable);
+        erpAccountModel.CreditLimitUsedStr = await _priceFormatter.FormatPriceAsync(erpAccount.CreditLimit - erpAccount.CreditLimitAvailable);
 
-            var erpAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(erpCustomer.Customer.Id);
-
-            if (erpAccount == null)
-                return Content("");
-
-            var storeScope = await _storeContext.GetActiveStoreScopeConfigurationAsync();
-            var settings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);
-            var accountPaymentEnabled = settings.EnableAccountPayment;
-
-            if (!accountPaymentEnabled)
-                return Content("");
-
-            var erpAccountModel = new ErpAccountDataModel()
-            {
-                AccNo = erpAccount.AccountNumber,
-                Name = erpAccount.AccountName,
-                PaymentTypeCode = erpAccount.PaymentTypeCode,
-                IsActive = erpAccount.IsActive,
-                CreditLimitUsed = erpAccount.CreditLimit - erpAccount.CreditLimitAvailable,
-                CreditLimitAvailable = erpAccount.CreditLimitAvailable,
-                Balance = erpAccount.CurrentBalance
-
-            };
-            erpAccountModel.BalanceStr = await _priceFormatter.FormatPriceAsync(erpAccount.CurrentBalance);
-            erpAccountModel.CreditLimitAvailableStr = await _priceFormatter.FormatPriceAsync(erpAccount.CreditLimitAvailable);
-            erpAccountModel.CreditLimitUsedStr = await _priceFormatter.FormatPriceAsync(erpAccount.CreditLimit - erpAccount.CreditLimitAvailable);
-
-            return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/Shared/Components/OrderSummaryContentDeals/Default.cshtml", erpAccountModel);
-
-        }
+        return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/Shared/Components/OrderSummaryContentDeals/Default.cshtml", erpAccountModel);
     }
 }
