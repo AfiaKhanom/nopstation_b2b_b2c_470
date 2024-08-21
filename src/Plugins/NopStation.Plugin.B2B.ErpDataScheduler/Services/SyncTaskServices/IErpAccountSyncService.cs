@@ -1,7 +1,6 @@
-﻿namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
+﻿namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices;
+
+public interface IErpAccountSyncService
 {
-    public interface IErpAccountSyncService
-    {
-        Task<bool> IsErpAccountSyncSuccessfulAsync();
-    }
+    Task<bool> IsErpAccountSyncSuccessfulAsync();
 }

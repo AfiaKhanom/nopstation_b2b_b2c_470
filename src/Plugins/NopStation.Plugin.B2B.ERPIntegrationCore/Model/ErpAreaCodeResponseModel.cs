@@ -1,8 +1,6 @@
-﻿
-namespace NopStation.Plugin.B2B.ERPIntegrationCore.Model
+﻿namespace NopStation.Plugin.B2B.ERPIntegrationCore.Model;
+
+public class ErpAreaCodeResponseModel
 {
-    public class ErpAreaCodeResponseModel
-    {
-        public string AREA { get; set; }
-    }
+    public string Area { get; set; }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using DocumentFormat.OpenXml.EMMA;
 using Nop.Core;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Directory;
@@ -42,1285 +41,1281 @@ using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Model;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
 
-namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Overriden
+namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Overriden;
+
+public class OverriddenOrderProcessingService : OrderProcessingService, IOverriddenOrderProcessingService
 {
-    public class OverriddenOrderProcessingService : OrderProcessingService, IOverriddenOrderProcessingService
+    #region Fields
+
+    private readonly CurrencySettings _currencySettings;
+    private readonly IAddressService _addressService;
+    private readonly IAffiliateService _affiliateService;
+    private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter;
+    private readonly ICountryService _countryService;
+    private readonly ICurrencyService _currencyService;
+    private readonly ICustomerActivityService _customerActivityService;
+    private readonly ICustomerService _customerService;
+    private readonly ICustomNumberFormatter _customNumberFormatter;
+    private readonly IDiscountService _discountService;
+    private readonly IEncryptionService _encryptionService;
+    private readonly IEventPublisher _eventPublisher;
+    private readonly IGenericAttributeService _genericAttributeService;
+    private readonly IGiftCardService _giftCardService;
+    private readonly ILanguageService _languageService;
+    private readonly ILocalizationService _localizationService;
+    private readonly ILogger _logger;
+    private readonly INotificationService _notificationService;
+    private readonly IOrderService _orderService;
+    private readonly IOrderTotalCalculationService _orderTotalCalculationService;
+    private readonly IPaymentPluginManager _paymentPluginManager;
+    private readonly IPaymentService _paymentService;
+    private readonly IPdfService _pdfService;
+    private readonly IPriceCalculationService _priceCalculationService;
+    private readonly IPriceFormatter _priceFormatter;
+    private readonly IProductAttributeFormatter _productAttributeFormatter;
+    private readonly IProductAttributeParser _productAttributeParser;
+    private readonly IProductService _productService;
+    private readonly IRewardPointService _rewardPointService;
+    private readonly IShipmentService _shipmentService;
+    private readonly IShippingPluginManager _shippingPluginManager;
+    private readonly IShippingService _shippingService;
+    private readonly IShoppingCartService _shoppingCartService;
+    private readonly IStateProvinceService _stateProvinceService;
+    private readonly IStoreContext _storeContext;
+    private readonly ITaxService _taxService;
+    private readonly IVendorService _vendorService;
+    private readonly IWebHelper _webHelper;
+    private readonly IWorkContext _workContext;
+    private readonly IWorkflowMessageService _workflowMessageService;
+    private readonly LocalizationSettings _localizationSettings;
+    private readonly OrderSettings _orderSettings;
+    private readonly PaymentSettings _paymentSettings;
+    private readonly RewardPointsSettings _rewardPointsSettings;
+    private readonly ShippingSettings _shippingSettings;
+    private readonly ISettingService _settingService;
+    private readonly TaxSettings _taxSettings;
+    private readonly IAttributeParser<CheckoutAttribute, CheckoutAttributeValue> _checkoutAttributeParser;
+    private readonly IReturnRequestService _returnRequestService;
+    private readonly IStoreService _storeService;
+    private readonly IErpCustomerFunctionalityService _erpCustomerFunctionalityService;
+    private readonly IErpSalesOrgService _erpSalesOrgService;
+    private readonly IErpOrderAdditionalDataService _erpOrderAdditionalDataService;
+    private readonly IErpShipToAddressService _erpShipToAddressService;
+    private readonly IErpOrderItemAdditionalDataService _erpOrderItemAdditionalDataService;
+    private readonly IErpAccountService _erpAccountService;
+    private readonly IErpNopUserService _erpNopUserService;
+    private readonly IErpLogsService _erpLogsService;
+    private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
+    private readonly IErpSpecificationAttributeService _erpSpecificationAttributeService;
+    private readonly IErpWorkflowMessageService _erpWorkflowMessageService;
+    private readonly IErpActivityLogsService _erpActivityLogsService;
+    private readonly IErpIntegrationPluginManager _erpIntegrationPluginManager;
+    private readonly IStoreMappingService _storeMappingService;
+    private const string DELIVERY_METHOD_COLLECT = "COLLECT";
+    private const string DELIVERY_METHOD_DELIVERY = "DELIVERY";
+
+    #endregion
+
+    #region Ctor
+
+    public OverriddenOrderProcessingService(
+        CurrencySettings currencySettings,
+        IAddressService addressService,
+        IAffiliateService affiliateService,
+        ICheckoutAttributeFormatter checkoutAttributeFormatter,
+        ICountryService countryService,
+        ICurrencyService currencyService,
+        ICustomerActivityService customerActivityService,
+        ICustomerService customerService,
+        ICustomNumberFormatter customNumberFormatter,
+        IDiscountService discountService,
+        IEncryptionService encryptionService,
+        IEventPublisher eventPublisher,
+        IGenericAttributeService genericAttributeService,
+        IGiftCardService giftCardService,
+        ILanguageService languageService,
+        ILocalizationService localizationService,
+        ILogger logger,
+        INotificationService notificationService,
+        IOrderService orderService,
+        IOrderTotalCalculationService orderTotalCalculationService,
+        IPaymentPluginManager paymentPluginManager,
+        IPaymentService paymentService,
+        IPdfService pdfService,
+        IPriceCalculationService priceCalculationService,
+        IPriceFormatter priceFormatter,
+        IProductAttributeFormatter productAttributeFormatter,
+        IProductAttributeParser productAttributeParser,
+        IProductService productService,
+        IRewardPointService rewardPointService,
+        IShipmentService shipmentService,
+        IShippingPluginManager shippingPluginManager,
+        IShippingService shippingService,
+        IShoppingCartService shoppingCartService,
+        IStateProvinceService stateProvinceService,
+        IStoreContext storeContext,
+        ITaxService taxService,
+        IVendorService vendorService,
+        IWebHelper webHelper,
+        IWorkContext workContext,
+        IWorkflowMessageService workflowMessageService,
+        LocalizationSettings localizationSettings,
+        OrderSettings orderSettings,
+        PaymentSettings paymentSettings,
+        RewardPointsSettings rewardPointsSettings,
+        ShippingSettings shippingSettings,
+        TaxSettings taxSettings,
+        IAttributeParser<CheckoutAttribute, CheckoutAttributeValue> checkoutAttributeParser,
+        ISettingService settingService,
+        IReturnRequestService returnRequestService,
+        IStoreService storeService,
+        IErpCustomerFunctionalityService erpCustomerFunctionalityService,
+        IErpSalesOrgService erpSalesOrgService,
+        IErpOrderAdditionalDataService erpOrderAdditionalDataService,
+        IErpShipToAddressService erpShipToAddressService,
+        IErpOrderItemAdditionalDataService erpOrderItemAdditionalDataService,
+        IErpAccountService erpAccountService,
+        IErpNopUserService erpNopUserService,
+        IErpLogsService erpLogsService,
+        IB2BB2CWorkContext b2BB2CWorkContext,
+        IErpIntegrationPluginManager erpIntegrationPluginManager,
+        IErpSpecificationAttributeService erpSpecificationAttributeService,
+        IErpWorkflowMessageService erpWorkflowMessageService,
+        IErpActivityLogsService erpActivityLogsService,
+        IStoreMappingService storeMappingService) :
+
+        base(currencySettings,
+        addressService,
+        affiliateService,
+        checkoutAttributeFormatter,
+        countryService,
+        currencyService,
+        customerActivityService,
+        customerService,
+        customNumberFormatter,
+        discountService,
+        encryptionService,
+        eventPublisher,
+        genericAttributeService,
+        giftCardService,
+        languageService,
+        localizationService,
+        logger,
+        orderService,
+        orderTotalCalculationService,
+        paymentPluginManager,
+        paymentService,
+        pdfService,
+        priceCalculationService,
+        priceFormatter,
+        productAttributeFormatter,
+        productAttributeParser,
+        productService,
+        returnRequestService,
+        rewardPointService,
+        shipmentService,
+        shippingService,
+        shoppingCartService,
+        stateProvinceService,
+        storeMappingService,
+        storeService,
+        taxService,
+        vendorService,
+        webHelper,
+        workContext,
+        workflowMessageService,
+        localizationSettings,
+        orderSettings,
+        paymentSettings,
+        rewardPointsSettings,
+        shippingSettings,
+        taxSettings
+        )
     {
-        #region Fields
+        _currencySettings = currencySettings;
+        _addressService = addressService;
+        _affiliateService = affiliateService;
+        _checkoutAttributeFormatter = checkoutAttributeFormatter;
+        _countryService = countryService;
+        _currencyService = currencyService;
+        _customerActivityService = customerActivityService;
+        _customerService = customerService;
+        _customNumberFormatter = customNumberFormatter;
+        _discountService = discountService;
+        _encryptionService = encryptionService;
+        _eventPublisher = eventPublisher;
+        _genericAttributeService = genericAttributeService;
+        _giftCardService = giftCardService;
+        _languageService = languageService;
+        _localizationService = localizationService;
+        _logger = logger;
+        _notificationService = notificationService;
+        _orderService = orderService;
+        _orderTotalCalculationService = orderTotalCalculationService;
+        _paymentPluginManager = paymentPluginManager;
+        _paymentService = paymentService;
+        _pdfService = pdfService;
+        _priceCalculationService = priceCalculationService;
+        _priceFormatter = priceFormatter;
+        _productAttributeFormatter = productAttributeFormatter;
+        _productAttributeParser = productAttributeParser;
+        _productService = productService;
+        _rewardPointService = rewardPointService;
+        _shipmentService = shipmentService;
+        _shippingPluginManager = shippingPluginManager;
+        _shippingService = shippingService;
+        _shoppingCartService = shoppingCartService;
+        _stateProvinceService = stateProvinceService;
+        _storeContext = storeContext;
+        _taxService = taxService;
+        _vendorService = vendorService;
+        _webHelper = webHelper;
+        _workContext = workContext;
+        _workflowMessageService = workflowMessageService;
+        _localizationSettings = localizationSettings;
+        _orderSettings = orderSettings;
+        _paymentSettings = paymentSettings;
+        _rewardPointsSettings = rewardPointsSettings;
+        _shippingSettings = shippingSettings;
+        _taxSettings = taxSettings;
+        _checkoutAttributeParser = checkoutAttributeParser;
+        _settingService = settingService;
+        _returnRequestService = returnRequestService;
+        _storeService = storeService;
+        _erpCustomerFunctionalityService = erpCustomerFunctionalityService;
+        _erpSalesOrgService = erpSalesOrgService;
+        _erpOrderAdditionalDataService = erpOrderAdditionalDataService;
+        _erpShipToAddressService = erpShipToAddressService;
+        _erpOrderItemAdditionalDataService = erpOrderItemAdditionalDataService;
+        _erpAccountService = erpAccountService;
+        _erpNopUserService = erpNopUserService;
+        _erpLogsService = erpLogsService;
+        _b2BB2CWorkContext = b2BB2CWorkContext;
+        _erpIntegrationPluginManager = erpIntegrationPluginManager;
+        _erpSpecificationAttributeService = erpSpecificationAttributeService;
+        _erpWorkflowMessageService = erpWorkflowMessageService;
+        _erpActivityLogsService = erpActivityLogsService;
+        _storeMappingService = storeMappingService;
+    }
 
-        private readonly CurrencySettings _currencySettings;
-        private readonly IAddressService _addressService;
-        private readonly IAffiliateService _affiliateService;
-        private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter;
-        private readonly ICountryService _countryService;
-        private readonly ICurrencyService _currencyService;
-        private readonly ICustomerActivityService _customerActivityService;
-        private readonly ICustomerService _customerService;
-        private readonly ICustomNumberFormatter _customNumberFormatter;
-        private readonly IDiscountService _discountService;
-        private readonly IEncryptionService _encryptionService;
-        private readonly IEventPublisher _eventPublisher;
-        private readonly IGenericAttributeService _genericAttributeService;
-        private readonly IGiftCardService _giftCardService;
-        private readonly ILanguageService _languageService;
-        private readonly ILocalizationService _localizationService;
-        private readonly ILogger _logger;
-        private readonly INotificationService _notificationService;
-        private readonly IOrderService _orderService;
-        private readonly IOrderTotalCalculationService _orderTotalCalculationService;
-        private readonly IPaymentPluginManager _paymentPluginManager;
-        private readonly IPaymentService _paymentService;
-        private readonly IPdfService _pdfService;
-        private readonly IPriceCalculationService _priceCalculationService;
-        private readonly IPriceFormatter _priceFormatter;
-        private readonly IProductAttributeFormatter _productAttributeFormatter;
-        private readonly IProductAttributeParser _productAttributeParser;
-        private readonly IProductService _productService;
-        private readonly IRewardPointService _rewardPointService;
-        private readonly IShipmentService _shipmentService;
-        private readonly IShippingPluginManager _shippingPluginManager;
-        private readonly IShippingService _shippingService;
-        private readonly IShoppingCartService _shoppingCartService;
-        private readonly IStateProvinceService _stateProvinceService;
-        private readonly IStoreContext _storeContext;
-        private readonly ITaxService _taxService;
-        private readonly IVendorService _vendorService;
-        private readonly IWebHelper _webHelper;
-        private readonly IWorkContext _workContext;
-        private readonly IWorkflowMessageService _workflowMessageService;
-        private readonly LocalizationSettings _localizationSettings;
-        private readonly OrderSettings _orderSettings;
-        private readonly PaymentSettings _paymentSettings;
-        private readonly RewardPointsSettings _rewardPointsSettings;
-        private readonly ShippingSettings _shippingSettings;
-        private readonly ISettingService _settingService;
-        private readonly TaxSettings _taxSettings;
-        private readonly IAttributeParser<CheckoutAttribute, CheckoutAttributeValue> _checkoutAttributeParser;
-        private readonly IReturnRequestService _returnRequestService;
-        private readonly IStoreService _storeService;
-        private readonly IErpCustomerFunctionalityService _erpCustomerFunctionalityService;
-        private readonly IErpSalesOrgService _erpSalesOrgService;
-        private readonly IErpOrderAdditionalDataService _erpOrderAdditionalDataService;
-        private readonly IErpShipToAddressService _erpShipToAddressService;
-        private readonly IErpOrderItemAdditionalDataService _erpOrderItemAdditionalDataService;
-        private readonly IErpAccountService _erpAccountService;
-        private readonly IErpNopUserService _erpNopUserService;
-        private readonly IErpLogsService _erpLogsService;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
-        private readonly IErpSpecificationAttributeService _erpSpecificationAttributeService;
-        private readonly IErpWorkflowMessageService _erpWorkflowMessageService;
-        private readonly IErpActivityLogsService _erpActivityLogsService;
-        private readonly IErpIntegrationPluginManager _erpIntegrationPluginManager;
-        private readonly IStoreMappingService _storeMappingService;
+    #endregion
 
-        #endregion
+    #region Methods
 
-        #region Ctor
+    #region Common
 
-        public OverriddenOrderProcessingService(
-            CurrencySettings currencySettings,
-            IAddressService addressService,
-            IAffiliateService affiliateService,
-            ICheckoutAttributeFormatter checkoutAttributeFormatter,
-            ICountryService countryService,
-            ICurrencyService currencyService,
-            ICustomerActivityService customerActivityService,
-            ICustomerService customerService,
-            ICustomNumberFormatter customNumberFormatter,
-            IDiscountService discountService,
-            IEncryptionService encryptionService,
-            IEventPublisher eventPublisher,
-            IGenericAttributeService genericAttributeService,
-            IGiftCardService giftCardService,
-            ILanguageService languageService,
-            ILocalizationService localizationService,
-            ILogger logger,
-            INotificationService notificationService,
-            IOrderService orderService,
-            IOrderTotalCalculationService orderTotalCalculationService,
-            IPaymentPluginManager paymentPluginManager,
-            IPaymentService paymentService,
-            IPdfService pdfService,
-            IPriceCalculationService priceCalculationService,
-            IPriceFormatter priceFormatter,
-            IProductAttributeFormatter productAttributeFormatter,
-            IProductAttributeParser productAttributeParser,
-            IProductService productService,
-            IRewardPointService rewardPointService,
-            IShipmentService shipmentService,
-            IShippingPluginManager shippingPluginManager,
-            IShippingService shippingService,
-            IShoppingCartService shoppingCartService,
-            IStateProvinceService stateProvinceService,
-            IStoreContext storeContext,
-            ITaxService taxService,
-            IVendorService vendorService,
-            IWebHelper webHelper,
-            IWorkContext workContext,
-            IWorkflowMessageService workflowMessageService,
-            LocalizationSettings localizationSettings,
-            OrderSettings orderSettings,
-            PaymentSettings paymentSettings,
-            RewardPointsSettings rewardPointsSettings,
-            ShippingSettings shippingSettings,
-            TaxSettings taxSettings,
-            IAttributeParser<CheckoutAttribute, CheckoutAttributeValue> checkoutAttributeParser,
-            ISettingService settingService,
-            IReturnRequestService returnRequestService,
-            IStoreService storeService,
-            IErpCustomerFunctionalityService erpCustomerFunctionalityService,
-            IErpSalesOrgService erpSalesOrgService,
-            IErpOrderAdditionalDataService erpOrderAdditionalDataService,
-            IErpShipToAddressService erpShipToAddressService,
-            IErpOrderItemAdditionalDataService erpOrderItemAdditionalDataService,
-            IErpAccountService erpAccountService,
-            IErpNopUserService erpNopUserService,
-            IErpLogsService erpLogsService,
-            IB2BB2CWorkContext b2BB2CWorkContext,
-            IErpIntegrationPluginManager erpIntegrationPluginManager,
-            IErpSpecificationAttributeService erpSpecificationAttributeService,
-            IErpWorkflowMessageService erpWorkflowMessageService,
-            IErpActivityLogsService erpActivityLogsService,
-            IStoreMappingService storeMappingService) :
+    public override async Task<PlaceOrderResult> PlaceOrderAsync(ProcessPaymentRequest processPaymentRequest)
+    {
+        if (processPaymentRequest == null)
+            throw new ArgumentNullException(nameof(processPaymentRequest));
 
-            base(currencySettings,
-            addressService,
-            affiliateService,
-            checkoutAttributeFormatter,
-            countryService,
-            currencyService,
-            customerActivityService,
-            customerService,
-            customNumberFormatter,
-            discountService,
-            encryptionService,
-            eventPublisher,
-            genericAttributeService,
-            giftCardService,
-            languageService,
-            localizationService,
-            logger,
-            orderService,
-            orderTotalCalculationService,
-            paymentPluginManager,
-            paymentService,
-            pdfService,
-            priceCalculationService,
-            priceFormatter,
-            productAttributeFormatter,
-            productAttributeParser,
-            productService,
-            returnRequestService,
-            rewardPointService,
-            shipmentService,
-            shippingService,
-            shoppingCartService,
-            stateProvinceService,
-            storeMappingService,
-            storeService,
-            taxService,
-            vendorService,
-            webHelper,
-            workContext,
-            workflowMessageService,
-            localizationSettings,
-            orderSettings,
-            paymentSettings,
-            rewardPointsSettings,
-            shippingSettings,
-            taxSettings
-            )
+        var result = new PlaceOrderResult();
+        try
         {
-            _currencySettings = currencySettings;
-            _addressService = addressService;
-            _affiliateService = affiliateService;
-            _checkoutAttributeFormatter = checkoutAttributeFormatter;
-            _countryService = countryService;
-            _currencyService = currencyService;
-            _customerActivityService = customerActivityService;
-            _customerService = customerService;
-            _customNumberFormatter = customNumberFormatter;
-            _discountService = discountService;
-            _encryptionService = encryptionService;
-            _eventPublisher = eventPublisher;
-            _genericAttributeService = genericAttributeService;
-            _giftCardService = giftCardService;
-            _languageService = languageService;
-            _localizationService = localizationService;
-            _logger = logger;
-            _notificationService = notificationService;
-            _orderService = orderService;
-            _orderTotalCalculationService = orderTotalCalculationService;
-            _paymentPluginManager = paymentPluginManager;
-            _paymentService = paymentService;
-            _pdfService = pdfService;
-            _priceCalculationService = priceCalculationService;
-            _priceFormatter = priceFormatter;
-            _productAttributeFormatter = productAttributeFormatter;
-            _productAttributeParser = productAttributeParser;
-            _productService = productService;
-            _rewardPointService = rewardPointService;
-            _shipmentService = shipmentService;
-            _shippingPluginManager = shippingPluginManager;
-            _shippingService = shippingService;
-            _shoppingCartService = shoppingCartService;
-            _stateProvinceService = stateProvinceService;
-            _storeContext = storeContext;
-            _taxService = taxService;
-            _vendorService = vendorService;
-            _webHelper = webHelper;
-            _workContext = workContext;
-            _workflowMessageService = workflowMessageService;
-            _localizationSettings = localizationSettings;
-            _orderSettings = orderSettings;
-            _paymentSettings = paymentSettings;
-            _rewardPointsSettings = rewardPointsSettings;
-            _shippingSettings = shippingSettings;
-            _taxSettings = taxSettings;
-            _checkoutAttributeParser = checkoutAttributeParser;
-            _settingService = settingService;
-            _returnRequestService = returnRequestService;
-            _storeService = storeService;
-            _erpCustomerFunctionalityService = erpCustomerFunctionalityService;
-            _erpSalesOrgService = erpSalesOrgService;
-            _erpOrderAdditionalDataService = erpOrderAdditionalDataService;
-            _erpShipToAddressService = erpShipToAddressService;
-            _erpOrderItemAdditionalDataService = erpOrderItemAdditionalDataService;
-            _erpAccountService = erpAccountService;
-            _erpNopUserService = erpNopUserService;
-            _erpLogsService = erpLogsService;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
-            _erpIntegrationPluginManager = erpIntegrationPluginManager;
-            _erpSpecificationAttributeService = erpSpecificationAttributeService;
-            _erpWorkflowMessageService = erpWorkflowMessageService;
-            _erpActivityLogsService = erpActivityLogsService;
-            _storeMappingService = storeMappingService;
+            if (processPaymentRequest.OrderGuid == Guid.Empty)
+                throw new Exception("Order GUID is not generated");
+
+            var details = await PreparePlaceOrderDetailsAsync(processPaymentRequest);
+
+            var processPaymentResult = await GetProcessPaymentResultAsync(processPaymentRequest, details);
+
+            if (processPaymentResult == null)
+                throw new NopException("processPaymentResult is not available");
+
+            if (processPaymentResult.Success)
+            {
+                var order = await SaveOrderDetailsAsync(processPaymentRequest, processPaymentResult, details);
+                result.PlacedOrder = order;
+
+                var user = await _erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(await _customerService.GetCustomerByIdAsync(order.CustomerId));
+
+                await MoveShoppingCartItemsToOrderItemsAsync(details, order);
+
+                await SaveDiscountUsageHistoryAsync(details, order);
+
+                await SaveGiftCardUsageHistoryAsync(details, order);
+
+                if (details.IsRecurringShoppingCart)
+                {
+                    await CreateFirstRecurringPaymentAsync(processPaymentRequest, order);
+                }
+
+                await SendNotificationsAndSaveNotesAsync(order);
+
+                await _customerService.ResetCheckoutDataAsync(details.Customer, processPaymentRequest.StoreId, clearCouponCodes: true, clearCheckoutAttributes: true);
+                await _customerActivityService.InsertActivityAsync("PublicStore.PlaceOrder",
+                    string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.PlaceOrder"), order.Id), order);
+
+                await CheckOrderStatusAsync(order);
+
+                await _eventPublisher.PublishAsync(new OrderPlacedEvent(order));
+
+                if (order.PaymentStatus == PaymentStatus.Paid)
+                    await ProcessOrderPaidAsync(order);
+            }
+            else
+                foreach (var paymentError in processPaymentResult.Errors)
+                    result.AddError(string.Format(await _localizationService.GetResourceAsync("Checkout.PaymentError"), paymentError));
+
+        }
+        catch (Exception exc)
+        {
+            _logger.Error(exc.Message, exc);
+            result.AddError(exc.Message);
         }
 
-        #endregion
-
-        #region Methods
-
-        #region Common
-
-        public override async Task<PlaceOrderResult> PlaceOrderAsync(ProcessPaymentRequest processPaymentRequest)
+        if (result.Success)
         {
-            if (processPaymentRequest == null)
-                throw new ArgumentNullException(nameof(processPaymentRequest));
-
-            var result = new PlaceOrderResult();
-            try
-            {
-                if (processPaymentRequest.OrderGuid == Guid.Empty)
-                    throw new Exception("Order GUID is not generated");
-
-                var details = await PreparePlaceOrderDetailsAsync(processPaymentRequest);
-
-                var processPaymentResult = await GetProcessPaymentResultAsync(processPaymentRequest, details);
-
-                if (processPaymentResult == null)
-                    throw new NopException("processPaymentResult is not available");
-
-                if (processPaymentResult.Success)
-                {
-                    var order = await SaveOrderDetailsAsync(processPaymentRequest, processPaymentResult, details);
-                    result.PlacedOrder = order;
-
-                    var user = await _erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(await _customerService.GetCustomerByIdAsync(order.CustomerId));
-
-                    await MoveShoppingCartItemsToOrderItemsAsync(details, order);
-
-                    await SaveDiscountUsageHistoryAsync(details, order);
-
-                    await SaveGiftCardUsageHistoryAsync(details, order);
-
-                    if (details.IsRecurringShoppingCart)
-                    {
-                        await CreateFirstRecurringPaymentAsync(processPaymentRequest, order);
-                    }
-
-                    await SendNotificationsAndSaveNotesAsync(order);
-
-                    await _customerService.ResetCheckoutDataAsync(details.Customer, processPaymentRequest.StoreId, clearCouponCodes: true, clearCheckoutAttributes: true);
-                    await _customerActivityService.InsertActivityAsync("PublicStore.PlaceOrder",
-                        string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.PlaceOrder"), order.Id), order);
-
-                    await CheckOrderStatusAsync(order);
-
-                    await _eventPublisher.PublishAsync(new OrderPlacedEvent(order));
-
-                    if (order.PaymentStatus == PaymentStatus.Paid)
-                        await ProcessOrderPaidAsync(order);
-                }
-                else
-                    foreach (var paymentError in processPaymentResult.Errors)
-                        result.AddError(string.Format(await _localizationService.GetResourceAsync("Checkout.PaymentError"), paymentError));
-
-            }
-            catch (Exception exc)
-            {
-                _logger.Error(exc.Message, exc);
-                result.AddError(exc.Message);
-            }
-
-            if (result.Success)
-            {
-                return result;
-            }
-
-            var logError = result.Errors.Aggregate("Error while placing order. ",
-                (current, next) => $"{current}Error {result.Errors.IndexOf(next) + 1}: {next}. ");
-            var customer = await _customerService.GetCustomerByIdAsync(processPaymentRequest.CustomerId);
-            _logger.Error(logError, customer: customer);
-
             return result;
         }
 
-        public async Task<PlaceOrderResult> PlaceQuoteOrderAsync(ProcessPaymentRequest processPaymentRequest)
+        var logError = result.Errors.Aggregate("Error while placing order. ",
+            (current, next) => $"{current}Error {result.Errors.IndexOf(next) + 1}: {next}. ");
+        var customer = await _customerService.GetCustomerByIdAsync(processPaymentRequest.CustomerId);
+        _logger.Error(logError, customer: customer);
+
+        return result;
+    }
+
+    public async Task<PlaceOrderResult> PlaceQuoteOrderAsync(ProcessPaymentRequest processPaymentRequest)
+    {
+        if (processPaymentRequest == null)
+            throw new ArgumentNullException(nameof(processPaymentRequest));
+
+        (var b2BAccount, var b2BUser, var b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
+
+        if (b2BAccount == null)
         {
-            if (processPaymentRequest == null)
-                throw new ArgumentNullException(nameof(processPaymentRequest));
+            throw new ArgumentNullException(nameof(b2BAccount));
+        }
 
-            (var b2BAccount, var b2BUser, var b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
-
-            if (b2BAccount == null)
-            {
-                throw new ArgumentNullException(nameof(b2BAccount));
-            }
-
-            if (b2BUser != null)
-            {
-                if (!await _erpCustomerFunctionalityService.IsConsideredAsB2BOrderByB2BUserInformation(b2BUser))
-                    return await base.PlaceOrderAsync(processPaymentRequest);
-            }
-            else if (b2CUser != null)
-            {
-                if (!await _erpCustomerFunctionalityService.IsConsideredAsB2COrderByB2CUser(b2CUser))
-                    return await base.PlaceOrderAsync(processPaymentRequest);
-            }
-            else
+        if (b2BUser != null)
+        {
+            if (!await _erpCustomerFunctionalityService.IsConsideredAsB2BOrderByB2BUserInformation(b2BUser))
                 return await base.PlaceOrderAsync(processPaymentRequest);
-
-            var result = new PlaceOrderResult();
-            try
-            {
-                if (processPaymentRequest.OrderGuid == Guid.Empty)
-                    throw new Exception("Order GUID is not generated");
-
-                var details = await PreparePlaceOrderDetailsAsync(processPaymentRequest);
-
-                var processPaymentResult = new ProcessPaymentResult();
-                if (processPaymentResult.Success)
-                {
-                    var order = await SaveOrderDetailsAsync(processPaymentRequest, processPaymentResult, details);
-                    result.PlacedOrder = order;
-
-                    await MoveShoppingCartItemsToOrderItemsAsync(details, order);
-
-                    await SaveDiscountUsageHistoryAsync(details, order);
-
-                    await SaveGiftCardUsageHistoryAsync(details, order);
-
-                    if (details.IsRecurringShoppingCart)
-                        await CreateFirstRecurringPaymentAsync(processPaymentRequest, order);
-
-                    await SendNotificationsAndSaveNotesAsync(order);
-
-                    await _customerService.ResetCheckoutDataAsync(details.Customer, processPaymentRequest.StoreId, clearCouponCodes: true, clearCheckoutAttributes: true);
-                    await _customerActivityService.InsertActivityAsync("PublicStore.PlaceOrder",
-                        string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.PlaceOrder"), order.Id), order);
-
-                    order.OrderStatus = OrderStatus.Complete;
-                    await _orderService.UpdateOrderAsync(order);
-
-                    if (order.PaymentStatus == PaymentStatus.Paid)
-                        await ProcessOrderPaidAsync(order);
-                }
-                else
-                    foreach (var paymentError in processPaymentResult.Errors)
-                        result.AddError(string.Format(await _localizationService.GetResourceAsync("Checkout.PaymentError"), paymentError));
-            }
-            catch (Exception exc)
-            {
-                _logger.Error(exc.Message, exc);
-                result.AddError(exc.Message);
-            }
-
-            if (result.Success)
-            {
-                return result;
-            }
-
-            var logError = result.Errors.Aggregate("Error while placing order. ",
-                (current, next) => $"{current}Error {result.Errors.IndexOf(next) + 1}: {next}. ");
-            var customer = await _customerService.GetCustomerByIdAsync(processPaymentRequest.CustomerId);
-            _logger.Error(logError, customer: customer);
-
-            return result;
         }
-
-        private async Task PlaceOrderOrQuoteOnERPAsync(ErpPlaceOrderDataModel erpPlaceOrderDataModel, ErpOrderAdditionalData erpOrderAdditionalData)
+        else if (b2CUser != null)
         {
-            var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin();
-
-            if (erpIntegrationPlugin == null)
-            {
-                await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLavel.Account, "Integration method not found.");
-                return;
-            }
-
-            if (erpPlaceOrderDataModel.OrderType == ERPIntegrationCoreDefaults.ErpB2BOrderFromQuoteType || erpPlaceOrderDataModel.OrderType == ERPIntegrationCoreDefaults.ErpB2COrderFromQuoteType ||
-                erpPlaceOrderDataModel.OrderType == ERPIntegrationCoreDefaults.ErpB2BOrderType || erpPlaceOrderDataModel.OrderType == ERPIntegrationCoreDefaults.ErpB2COrderType)
-            {
-                erpPlaceOrderDataModel.OrderType = ERPIntegrationCoreDefaults.ErpB2BOrderType;
-            }
-            else if (erpPlaceOrderDataModel.OrderType == ERPIntegrationCoreDefaults.ErpB2BQuoteType || erpPlaceOrderDataModel.OrderType == ERPIntegrationCoreDefaults.ErpB2CQuoteType)
-            {
-                erpPlaceOrderDataModel.OrderType = ERPIntegrationCoreDefaults.ErpB2BQuoteType;
-            }
-
-            var response = await erpIntegrationPlugin.CreateOrderOnErpAsync(erpPlaceOrderDataModel);
-
-            var message = "";
-
-            if (erpOrderAdditionalData.Id == 0)
-            {
-                erpOrderAdditionalData.ChangedOnUtc = DateTime.UtcNow;
-                await _erpOrderAdditionalDataService.UpdateErpOrderAdditionalDataAsync(erpOrderAdditionalData);
-            }
-
-            if (!response.IsError)
-            {
-                erpOrderAdditionalData.ErpOrderNumber = response.OrderNumber ?? "[Order is being processed in ERP]";
-                message = $"Erp {erpPlaceOrderDataModel.OrderType} placed successfully with Erp {erpPlaceOrderDataModel.OrderType} number: {erpOrderAdditionalData.ErpOrderNumber}";
-            }
-            else
-            {
-                erpOrderAdditionalData.ErpOrderNumber = "";
-                erpOrderAdditionalData.ERPOrderStatus = "Failed";
-                message = $"Epr {erpPlaceOrderDataModel.OrderType} placement failed.";
-            }
-
-            erpOrderAdditionalData.LastERPUpdateUtc = DateTime.UtcNow;
-            erpOrderAdditionalData.ChangedOnUtc = DateTime.UtcNow;
-            await _erpOrderAdditionalDataService.UpdateErpOrderAdditionalDataAsync(erpOrderAdditionalData);
-            await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Information, ErpSyncLavel.Order, $"{message}. {response.ErrorShortMessage}", response.ErrorFullMessage);
+            if (!await _erpCustomerFunctionalityService.IsConsideredAsB2COrderByB2CUser(b2CUser))
+                return await base.PlaceOrderAsync(processPaymentRequest);
         }
+        else
+            return await base.PlaceOrderAsync(processPaymentRequest);
 
-        #endregion
-
-        #endregion
-
-        #region B2B
-
-        public async Task PlaceERPOrderAtNopAsync(Order order, ErpOrderType erpOrderType)
+        var result = new PlaceOrderResult();
+        try
         {
-            var currentStore = await _storeContext.GetCurrentStoreAsync();
-            var currentCustomer = await _workContext.GetCurrentCustomerAsync();
+            if (processPaymentRequest.OrderGuid == Guid.Empty)
+                throw new Exception("Order GUID is not generated");
 
-            var b2BCustomerAccountSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(currentStore.Id);
+            var details = await PreparePlaceOrderDetailsAsync(processPaymentRequest);
 
-            var erpNopUser = await _erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(await _customerService.GetCustomerByIdAsync(order.CustomerId));
-            var erpAccount = await _erpAccountService.GetErpAccountByIdAsync(erpNopUser?.ErpAccountId ?? 0);
-
-            var b2BOrderPlaceByCustomerType = erpNopUser?.ErpUserType;
-
-            ErpOrderAdditionalData originalQuoteOrder = null;
-            if (erpOrderType == ErpOrderType.B2BSalesOrder || erpOrderType == ErpOrderType.B2CSalesOrder)
+            var processPaymentResult = new ProcessPaymentResult();
+            if (processPaymentResult.Success)
             {
-                var originalQuoteNopOrderIdReference = await _genericAttributeService.GetAttributeAsync<int>(currentCustomer, B2BB2CFeaturesDefaults.B2BOriginalB2BQuoteOrderIdReference, currentStore.Id);
-                if (originalQuoteNopOrderIdReference == 0)
-                    await _genericAttributeService.GetAttributeAsync<int>(currentCustomer, B2BB2CFeaturesDefaults.B2COriginalB2CQuoteOrderIdReference, currentStore.Id);
+                var order = await SaveOrderDetailsAsync(processPaymentRequest, processPaymentResult, details);
+                result.PlacedOrder = order;
 
-                if (originalQuoteNopOrderIdReference > 0)
-                {
-                    originalQuoteOrder = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(originalQuoteNopOrderIdReference);
+                await MoveShoppingCartItemsToOrderItemsAsync(details, order);
 
-                    if (originalQuoteOrder != null)
-                    {
-                        var orderNote = await _localizationService.GetResourceAsync("B2B.B2BOrder.QuoteReferenceNote.QuoteReferenceNumber") + " " + originalQuoteOrder.ErpOrderNumber;
-                        await AddOrderNoteAsync(order, orderNote);
-                    }
-                }
-            }
+                await SaveDiscountUsageHistoryAsync(details, order);
 
-            var erpOrderAdditionalData = new ErpOrderAdditionalData
-            {
-                NopOrderId = order.Id,
-                ErpOrderOriginType = ErpOrderOriginType.OnlineOrder,
-                ErpAccountId = erpAccount.Id,
-                ErpOrderType = erpOrderType,
-                QuoteSalesOrderId = originalQuoteOrder?.Id ?? 0,
-                IsOrderPlaceNotificationSent = false,
-                SpecialInstructions = "",
-                CustomerReference = "",
-                ERPOrderStatus = order.OrderStatus.ToString(),
-                IntegrationStatusTypeId = (int)(order.PaymentStatus == PaymentStatus.Paid ? IntegrationStatusType.Queued : IntegrationStatusType.WaitingForPayment),
-                IntegrationError = "",
-                IsShippingAddressModified = false,
-                ErpShipToAddressId = null,
-                ErpOrderPlaceByCustomerTypeId = (int)b2BOrderPlaceByCustomerType,
-                QuoteExpiryDate = erpOrderType == ErpOrderType.B2BQuote || erpOrderType == ErpOrderType.B2CQuote ? DateTime.Now.AddDays(1) : null,
-                ChangedById = currentCustomer.Id,
-                ChangedOnUtc = DateTime.UtcNow,
-                OrderPlacedByNopCustomerId = currentCustomer.Id,
-                ErpOrderNumber = string.Empty
-            };
+                await SaveGiftCardUsageHistoryAsync(details, order);
 
-            var deliveryDate = DateTime.Now.AddDays(1);
+                if (details.IsRecurringShoppingCart)
+                    await CreateFirstRecurringPaymentAsync(processPaymentRequest, order);
 
-            if (b2BOrderPlaceByCustomerType == ErpUserType.B2BUser)
-            {
-                deliveryDate = await _genericAttributeService.GetAttributeAsync<DateTime>(currentCustomer, B2BB2CFeaturesDefaults.SelectedB2BDeliveryDateAttribute, currentStore.Id);
+                await SendNotificationsAndSaveNotesAsync(order);
 
-            }
-            var isShippingAddressModifiedInCheckout = await _genericAttributeService.GetAttributeAsync<bool>(currentCustomer, B2BB2CFeaturesDefaults.IsShippingAddressModifiedInCheckoutAttribute, currentStore.Id);
-            var modifiedShipToAddressIdOnCheckout = await _genericAttributeService.GetAttributeAsync<int>(currentCustomer, B2BB2CFeaturesDefaults.ShippingAddressModifiedIdInCheckoutAttribute, currentStore.Id);
-            var specialInstructions = "";
-            var customerReference = "";
-            if (erpNopUser?.ErpUserType == ErpUserType.B2BUser)
-            {
-                specialInstructions = await _genericAttributeService.GetAttributeAsync<String>(currentCustomer, B2BB2CFeaturesDefaults.ProvidedB2BSpecialInstructions, currentStore.Id);
-                customerReference = await _genericAttributeService.GetAttributeAsync<String>(currentCustomer, B2BB2CFeaturesDefaults.ProvidedB2BCustomerReferenceAsPO, currentStore.Id);
-            }
-            else
-            {
-                specialInstructions = await _genericAttributeService.GetAttributeAsync<String>(currentCustomer, B2BB2CFeaturesDefaults.B2CSpecialInstructions, currentStore.Id);
-            }
+                await _customerService.ResetCheckoutDataAsync(details.Customer, processPaymentRequest.StoreId, clearCouponCodes: true, clearCheckoutAttributes: true);
+                await _customerActivityService.InsertActivityAsync("PublicStore.PlaceOrder",
+                    string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.PlaceOrder"), order.Id), order);
 
-
-            erpOrderAdditionalData.CustomerReference = customerReference ?? string.Empty;
-            erpOrderAdditionalData.DeliveryDate = deliveryDate;
-            erpOrderAdditionalData.IsShippingAddressModified = isShippingAddressModifiedInCheckout;
-
-            if (order.PickupInStore)
-            {
-                erpOrderAdditionalData.ErpShipToAddress = null;
-                erpOrderAdditionalData.SpecialInstructions = specialInstructions;
-            }
-            else
-            {
-                ErpShipToAddress erpShipToAddress = null;
-                if (modifiedShipToAddressIdOnCheckout > 0)
-                    erpShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdAsync(modifiedShipToAddressIdOnCheckout);
-                else
-                    erpShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdAsync(erpNopUser?.ErpShipToAddressId ?? 0);
-
-                if (erpShipToAddress == null)
-                {
-                    erpShipToAddress = order.ShippingAddressId.HasValue ? await _erpShipToAddressService.GetErpShipToAddressByShippingAddressIdAsync(order.ShippingAddressId.Value) : null;
-                }
-
-                await _erpShipToAddressService.InsertErpShipToAddressAsync(erpShipToAddress);
-
-                erpOrderAdditionalData.ErpShipToAddressId = erpShipToAddress.Id;
-                erpOrderAdditionalData.ErpShipToAddress = erpShipToAddress;
-                erpOrderAdditionalData.SpecialInstructions = erpShipToAddress?.DeliveryNotes + specialInstructions;
-                order.ShippingAddressId = erpShipToAddress.AddressId;
-            }
-
-            if (!string.IsNullOrEmpty(erpOrderAdditionalData.SpecialInstructions))
-            {
-                await AddOrderNoteAsync(order, $"Special Instructions: {erpOrderAdditionalData.SpecialInstructions}");
-            }
-
-            if (!string.IsNullOrEmpty(customerReference))
-            {
-                if (erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BSalesOrder || erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2CSalesOrder)
-                {
-                    await AddOrderNoteAsync(order, $"{await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeaturesPlugins.CustomerReference.PurchaseOrderReference")}: {customerReference}");
-                }
-
-                else if (erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BQuote || erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2CQuote)
-                {
-                    await AddOrderNoteAsync(order, $"{await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeaturesPlugins.CustomerReference.QuoteOrderReference")}: {customerReference}");
-                }
-            }
-
-            await _orderService.UpdateOrderAsync(order);
-
-
-            if (erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BQuote || erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2CQuote || order.PaymentStatus == PaymentStatus.Paid)
-            {
-                erpOrderAdditionalData.IntegrationStatusTypeId = (int)IntegrationStatusType.Queued;
-            }
-            else
-            {
-                erpOrderAdditionalData.IntegrationStatusTypeId = (int)IntegrationStatusType.WaitingForPayment;
-            }
-
-            await _erpOrderAdditionalDataService.InsertErpOrderAdditionalDataAsync(erpOrderAdditionalData);
-
-            var erpPlaceOrderItemList = new List<ErpPlaceOrderItemDataModel>();
-
-            var orderItemCount = 0;
-            var orderItems = await _orderService.GetOrderItemsAsync(order.Id);
-            foreach (var nopOrderItem in orderItems)
-            {
-                orderItemCount++;
-
-                var uom = await _erpSpecificationAttributeService.GetProductUOMByProductIdAndSpecificationAttributeId(nopOrderItem.ProductId, b2BCustomerAccountSettings.PreFilterFacetSpecificationAttributeId) ?? string.Empty;
-
-                var orderItemAdditionalData = new ErpOrderItemAdditionalData
-                {
-                    NopOrderItemId = nopOrderItem.Id,
-                    ErpOrderId = erpOrderAdditionalData.Id,
-                    ErpOrderLineNumber = $"{(orderItemCount * 10): 000000}",
-                    ErpSalesUoM = uom,
-                    ErpOrderLineStatus = "",
-                    ErpDeliveryMethod = "",
-                    ErpInvoiceNumber = "",
-                    ErpOrderLineNotes = "",
-                    ChangedBy = currentCustomer.Id,
-                    ErpDateRequired = deliveryDate,
-                    ErpDateExpected = deliveryDate,
-                };
-
-                await _erpOrderItemAdditionalDataService.InsertErpOrderItemAdditionalDataAsync(orderItemAdditionalData);
-                var unitPriceWithDiscount = nopOrderItem.UnitPriceExclTax;
-                if (nopOrderItem.DiscountAmountExclTax > 0)
-                {
-                    unitPriceWithDiscount = unitPriceWithDiscount + (nopOrderItem.DiscountAmountExclTax / nopOrderItem.Quantity);
-                }
-
-                try
-                {
-                    var totalQuantityDiscount = _currencyService.ConvertCurrency(nopOrderItem.DiscountAmountExclTax, order.CurrencyRate);
-                    var unitDiscount = Math.Round(totalQuantityDiscount / (decimal)nopOrderItem.Quantity, 2);
-
-                    var product = await _productService.GetProductByIdAsync(nopOrderItem.ProductId);
-                    erpPlaceOrderItemList.Add(new ErpPlaceOrderItemDataModel
-                    {
-                        ItemNo = product.Sku,
-                        BatchCode = product.ManufacturerPartNumber,
-                        Description = product.Name,
-                        Quantity = (decimal)nopOrderItem.Quantity,
-                        UOM = uom,
-                        SpecInstruct = erpOrderAdditionalData.SpecialInstructions,
-                        UnitPrice = Math.Round(_currencyService.ConvertCurrency(unitPriceWithDiscount, order.CurrencyRate), 2),
-                        Discount = unitDiscount,
-                        LineTotalExcl = Math.Round(_currencyService.ConvertCurrency(nopOrderItem.PriceExclTax, order.CurrencyRate), 2),
-                        LineTotalIncl = Math.Round(_currencyService.ConvertCurrency(nopOrderItem.PriceInclTax, order.CurrencyRate), 2),
-                    });
-                }
-                catch (Exception ex)
-                {
-                    await _logger.ErrorAsync($"B2B B2BOrderPlaceModel.DetailLine Prepare error for Account Number: {erpAccount.AccountNumber}", ex);
-                }
-            }
-
-            if (originalQuoteOrder != null)
-
-            {
-                originalQuoteOrder.QuoteSalesOrderId = erpOrderAdditionalData.Id;
-                await _erpOrderAdditionalDataService.UpdateErpOrderAdditionalDataAsync(originalQuoteOrder);
-            }
-
-            if (b2BOrderPlaceByCustomerType == ErpUserType.B2BUser)
-            {
-                DateTime? date = null;
-                await _genericAttributeService.SaveAttributeAsync(currentCustomer, B2BB2CFeaturesDefaults.SelectedB2BDeliveryDateAttribute, date, currentStore.Id);
-                await _genericAttributeService.SaveAttributeAsync<bool>(currentCustomer, B2BB2CFeaturesDefaults.IsShippingAddressModifiedInCheckoutAttribute, false, currentStore.Id);
-                await _genericAttributeService.SaveAttributeAsync<int?>(currentCustomer, B2BB2CFeaturesDefaults.ShippingAddressModifiedIdInCheckoutAttribute, 0, currentStore.Id);
-                await _genericAttributeService.SaveAttributeAsync<string>(currentCustomer, B2BB2CFeaturesDefaults.ProvidedB2BSpecialInstructions, null, currentStore.Id);
-                await _genericAttributeService.SaveAttributeAsync<string>(currentCustomer, B2BB2CFeaturesDefaults.ProvidedB2BCustomerReferenceAsPO, null, currentStore.Id);
-
-                if (b2BCustomerAccountSettings.UseERPIntegration && erpOrderAdditionalData.IntegrationStatusType == IntegrationStatusType.Queued)
-                    await PlaceERPOrderAtERPAsync(order, erpOrderAdditionalData, erpNopUser, erpPlaceOrderItemList, b2BCustomerAccountSettings.MaxERPIntegrationOrderPlaceReties);
-            }
-            else
-            {
-                await _genericAttributeService.SaveAttributeAsync<string>(currentCustomer, B2BB2CFeaturesDefaults.B2CSpecialInstructions, null, currentStore.Id);
-            }
-        }
-
-        public async Task<(bool, string)> RetryPlaceERPOrderAtERPAsync(ErpOrderAdditionalData erpOrderAdditionalData, B2BB2CFeaturesSettings b2BB2CFeaturesSettings)
-        {
-            if (!b2BB2CFeaturesSettings.UseERPIntegration)
-                return (false, "Use of ERP Integration is disabled!");
-
-            if (erpOrderAdditionalData == null)
-                return (false, "Erp order details is null");
-
-            if (erpOrderAdditionalData.IntegrationStatusType == IntegrationStatusType.Confirmed)
-                return (false, "Order already placed at ERP");
-
-            if (erpOrderAdditionalData.ErpOrderType != ErpOrderType.B2BQuote && erpOrderAdditionalData.ErpOrderType != ErpOrderType.B2CQuote && erpOrderAdditionalData.IntegrationStatusType == IntegrationStatusType.WaitingForPayment)
-                return (false, "This Order can't be placed at ERP, due to this order is not paid");
-
-            var nopOrder = await _orderService.GetOrderByIdAsync(erpOrderAdditionalData.NopOrderId);
-            if (nopOrder == null)
-                return (false, "Nop Order is null");
-
-            var erpNopUser = await _erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(await _customerService.GetCustomerByIdAsync(nopOrder.CustomerId));
-            if (erpNopUser == null)
-                return (false, "B2B user is null");
-
-
-            var erpPlaceOrderItemList = new List<ErpPlaceOrderItemDataModel>();
-            var b2Bb2CCustomerAccountSettings = _settingService.LoadSetting<B2BB2CFeaturesSettings>((await _storeContext.GetCurrentStoreAsync()).Id);
-
-            var orderItems = await _orderService.GetOrderItemsAsync(nopOrder.Id);
-            foreach (var nopOrderItem in orderItems)
-            {
-                var unitPriceWithDiscount = nopOrderItem.UnitPriceExclTax;
-                if (nopOrderItem.DiscountAmountExclTax > 0)
-                {
-                    unitPriceWithDiscount = unitPriceWithDiscount + (nopOrderItem.DiscountAmountExclTax / nopOrderItem.Quantity);
-                }
-
-                try
-                {
-                    var uom = await _erpSpecificationAttributeService.GetProductUOMByProductIdAndSpecificationAttributeId(nopOrderItem.ProductId, b2Bb2CCustomerAccountSettings.PreFilterFacetSpecificationAttributeId) ?? string.Empty;
-
-                    var totalQuantityDiscount = _currencyService.ConvertCurrency(nopOrderItem.DiscountAmountExclTax, nopOrder.CurrencyRate);
-                    var unitDiscount = Math.Round(totalQuantityDiscount / (decimal)nopOrderItem.Quantity, 2);
-
-                    var product = await _productService.GetProductByIdAsync(nopOrderItem.ProductId);
-
-                    erpPlaceOrderItemList.Add(new ErpPlaceOrderItemDataModel
-                    {
-                        ItemNo = product.Sku,
-                        BatchCode = product.ManufacturerPartNumber,
-                        Description = product.Name,
-                        Quantity = (decimal)nopOrderItem.Quantity,
-                        UOM = uom,
-                        SpecInstruct = "",
-                        UnitPrice = Math.Round(_currencyService.ConvertCurrency(unitPriceWithDiscount, nopOrder.CurrencyRate), 2),
-                        Discount = unitDiscount,
-                        LineTotalExcl = Math.Round(_currencyService.ConvertCurrency(nopOrderItem.PriceExclTax, nopOrder.CurrencyRate), 2),
-                        LineTotalIncl = Math.Round(_currencyService.ConvertCurrency(nopOrderItem.PriceInclTax, nopOrder.CurrencyRate), 2),
-                    });
-                }
-                catch (Exception ex)
-                {
-                    await _logger.ErrorAsync($"B2B B2BOrderPlaceModel.DetailLine Prepare error (while retry erp place) for Nop Order Id: {nopOrder.Id}", ex);
-                }
-            }
-
-            if (erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BSalesOrder || erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2CSalesOrder)
-            {
-                if (erpOrderAdditionalData.IntegrationStatusType != IntegrationStatusType.WaitingForPayment)
-                    await PlaceERPOrderAtERPAsync(nopOrder, erpOrderAdditionalData, erpNopUser, erpPlaceOrderItemList, maxRetries: b2BB2CFeaturesSettings.MaxERPIntegrationOrderPlaceReties);
-            }
-            else
-            {
-                await PlaceERPOrderAtERPAsync(nopOrder, erpOrderAdditionalData, erpNopUser, erpPlaceOrderItemList, maxRetries: b2BB2CFeaturesSettings.MaxERPIntegrationOrderPlaceReties);
-            }
-
-            return (true, string.Empty);
-        }
-
-        public async Task PlaceERPOrderAtERPAsync(Order order, ErpOrderAdditionalData erpOrderAdditionalData, ErpNopUser erpNopUser, IList<ErpPlaceOrderItemDataModel> erpPlaceOrderItemData, int maxRetries = 0)
-        {
-            try
-            {
-                var erpAccount = await _erpAccountService.GetErpAccountByIdAsync(erpNopUser.ErpAccountId);
-                var accountSalesOrg = await _erpSalesOrgService.GetErpSalesOrgByIdAsync(erpAccount.ErpSalesOrgId);
-                var orderTypeString = GetOrderTypeString(erpOrderAdditionalData) ?? string.Empty;
-
-                var currentStore = await _storeContext.GetCurrentStoreAsync();
-                var currentCustomer = await _customerService.GetCustomerByIdAsync(order.CustomerId);
-                var shippingAddress = await _addressService.GetAddressByIdAsync(order.ShippingAddressId ?? 0);
-                var billingAddress = await _addressService.GetAddressByIdAsync(order.BillingAddressId);
-                var erpShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdAsync(erpOrderAdditionalData.ErpShipToAddressId.Value);
-                var erpShipToAddressOfErpNopUser = await _erpShipToAddressService.GetErpShipToAddressByIdAsync(erpNopUser.ErpShipToAddressId);
-
-                var erpPlaceOrderDataModel = new ErpPlaceOrderDataModel()
-                {
-                    AccNo = erpAccount.AccountNumber,
-                    Location = accountSalesOrg.Code,
-                    User = currentCustomer.Email ?? string.Empty,
-                    Reference = order.CustomOrderNumber ?? order.Id.ToString(),
-                    DateRequired = order.PickupInStore || erpOrderAdditionalData.DeliveryDate == null ? DateTime.Now : erpOrderAdditionalData.DeliveryDate.Value,
-                    RepCode = erpShipToAddress == null ? erpShipToAddressOfErpNopUser?.RepNumber ?? string.Empty : erpShipToAddress?.RepNumber ?? string.Empty,
-                    AddressCode = erpShipToAddress == null ? erpShipToAddressOfErpNopUser?.ShipToCode ?? string.Empty : erpShipToAddress?.ShipToCode ?? string.Empty,
-                    ShippingAddress = (order.PickupInStore ? new ErpAddressModel
-                    {
-                        AddressLine3 = (await GetStateProvinceAsync(order.PickupAddressId))?.Abbreviation ?? string.Empty,
-                        Region = (await GetStateProvinceAsync(order.PickupAddressId))?.Abbreviation ?? string.Empty,
-                        Country = await GetCountryNameAsync(order.PickupAddressId) ?? string.Empty
-                    } :
-                            (order.ShippingAddressId == 0 || !erpOrderAdditionalData.IsShippingAddressModified ?
-                            new ErpAddressModel
-                            {
-                                AddressLine3 = (await GetStateProvinceAsync(order.ShippingAddressId))?.Abbreviation ?? string.Empty,
-                                Region = (await GetStateProvinceAsync(order.ShippingAddressId))?.Abbreviation ?? string.Empty,
-                                Country = await GetCountryNameAsync(order.ShippingAddressId) ?? string.Empty
-                            } :
-                            new ErpAddressModel
-                            {
-                                Name = erpShipToAddress?.ShipToName ?? string.Empty,
-                                AddressLine1 = shippingAddress?.Address1 ?? string.Empty,
-                                AddressLine2 = shippingAddress?.Address2 ?? string.Empty,
-                                AddressLine3 = (await GetStateProvinceAsync(order.ShippingAddressId))?.Abbreviation ?? string.Empty,
-                                City = shippingAddress.City ?? string.Empty,
-                                StateOrProvince = (await GetStateProvinceAsync(order.ShippingAddressId))?.Name ?? string.Empty,
-                                Region = (await GetStateProvinceAsync(order.ShippingAddressId))?.Abbreviation ?? string.Empty,
-                                PostalCode = shippingAddress.ZipPostalCode ?? string.Empty,
-                                Country = await GetCountryNameAsync(order.ShippingAddressId) ?? string.Empty,
-                                PhoneNumber = shippingAddress.PhoneNumber ?? string.Empty,
-                                Suburb = erpShipToAddress?.Suburb.ToUpper() ?? string.Empty
-                            })
-                        ),
-                    BillingAddress = new ErpAddressModel
-                    {
-                        Name = $"{billingAddress.FirstName ?? string.Empty} {billingAddress.LastName ?? string.Empty}",
-                        AddressLine1 = billingAddress.Address1 ?? string.Empty,
-                        AddressLine2 = billingAddress.Address2 ?? string.Empty,
-                        AddressLine3 = "",
-                        City = billingAddress.City ?? string.Empty,
-                        StateOrProvince = (await GetStateProvinceAsync(order.BillingAddressId))?.Name ?? "",
-                        Region = (await GetStateProvinceAsync(order.BillingAddressId))?.Abbreviation ?? string.Empty,
-                        PostalCode = billingAddress.ZipPostalCode ?? string.Empty,
-                        Country = (await GetCountryNameAsync(order.BillingAddressId)) ?? string.Empty,
-                        PhoneNumber = billingAddress.PhoneNumber ?? string.Empty
-                    },
-                    CustomerName = erpAccount.AccountName,
-                    CustomerNumber = erpAccount.AccountNumber,
-                    CustomerReference = erpOrderAdditionalData.CustomerReference ?? string.Empty,
-                    DelInstruction1 = erpOrderAdditionalData.SpecialInstructions ?? string.Empty,
-                    OrderCategory = "",
-                    DelMethod = order.PickupInStore ? "COLLECT" : "DELIVERY",
-                    CustomerFirstName = currentCustomer.FirstName,
-                    CustomerLastName = currentCustomer.LastName,
-                    CustomerPhoneNumber = currentCustomer.Phone ?? string.Empty,
-                    CustomerMobileNumber = currentCustomer.Phone ?? string.Empty,
-                    CustomerEmail = currentCustomer.Email,
-                    TaxNumber = erpAccount.VatNumber ?? string.Empty,
-                    OrderType = orderTypeString.ToUpper(),
-                    QuoteNumber = await GetQuoteNumberAsync(erpOrderAdditionalData),
-                    Total_Vat = Math.Round(_currencyService.ConvertCurrency(order.OrderTax, order.CurrencyRate), 2),
-                    Total_Excl = Math.Round(_currencyService.ConvertCurrency((order.OrderTotal - order.OrderTax), order.CurrencyRate), 2),
-                    OrderDate = order.CreatedOnUtc,
-                    Currency = order.CustomerCurrencyCode ?? string.Empty,
-                    ErpPlaceOrderItemDatas = erpPlaceOrderItemData,
-                    DeliveryDate = erpOrderAdditionalData.DeliveryDate == null ? DateTime.Now : erpOrderAdditionalData.DeliveryDate.Value
-                };
-
-                try
-                {
-                    erpOrderAdditionalData.ErpOrderNumber = "[Order is being processed on ERP]";
-                    await Task.Factory.StartNew(() => PlaceOrderOrQuoteOnERPAsync(erpPlaceOrderDataModel, erpOrderAdditionalData));
-                }
-                catch (Exception ex)
-                {
-                    await _erpLogsService.ErrorAsync(ex.Message, ErpSyncLavel.Order, ex, currentCustomer);
-                    erpOrderAdditionalData.IntegrationRetries++;
-                }
-
-                #region Email Notification
-
-                if (erpOrderAdditionalData.IntegrationRetries != null && erpOrderAdditionalData.IntegrationRetries >= maxRetries
-                    && erpOrderAdditionalData.IntegrationStatusType != IntegrationStatusType.Confirmed)
-                {
-                    erpOrderAdditionalData.ERPOrderStatus = await _localizationService.GetLocalizedEnumAsync(IntegrationStatusType.Failed);
-                    erpOrderAdditionalData.IntegrationStatusType = IntegrationStatusType.Failed;
-
-                    if (!string.IsNullOrEmpty(erpShipToAddress?.RepEmail))
-                    {
-                        //sent email notification
-                        var queuedEmailId = await _erpWorkflowMessageService.SendERPOrderPlaceFailedSalesRepNotificationAsync(order, order.CustomerLanguageId, erpShipToAddress);
-                        if (queuedEmailId > 0)
-                            await AddOrderNoteAsync(order, $"\"erp {orderTypeString} place failed\" email (to sales rep) has been queued. queued email identifier: {queuedEmailId}.");
-                    }
-                }
-
-                #endregion
-
-                var note = $"{orderTypeString} place in ERP call complete. Try no: {erpOrderAdditionalData.IntegrationRetries ?? 0}, Integration status: {await _localizationService.GetLocalizedEnumAsync(erpOrderAdditionalData.IntegrationStatusType)}";
-                if (!string.IsNullOrEmpty(erpOrderAdditionalData.IntegrationError))
-                {
-                    note = note + $", Integration error: {erpOrderAdditionalData.IntegrationError}";
-                }
-                await AddOrderNoteAsync(order, note);
-
-                if (erpOrderAdditionalData.IntegrationRetries != null && erpOrderAdditionalData.IntegrationRetries == 1
-                    && erpOrderAdditionalData.IntegrationStatusType != IntegrationStatusType.Confirmed)
-                {
-                    var errorNote = $"{erpOrderAdditionalData.IntegrationError}, for {erpOrderAdditionalData.ErpOrderType}";
-                    await AddOrderNoteAsync(order, errorNote);
-                }
-
-                if (erpOrderAdditionalData.IntegrationStatusType == IntegrationStatusType.Confirmed)
-                {
-                    await AddOrderNoteAsync(order, erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BSalesOrder ? await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.B2BOrder.SuccessOrderNote.OrderPlacedInERP")
-                        : await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.B2BOrder.SuccessOrderNote.QuotePlacedInERP")
-                        );
-                }
-
+                order.OrderStatus = OrderStatus.Complete;
                 await _orderService.UpdateOrderAsync(order);
 
-                if (erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BSalesOrder || erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2CSalesOrder
-                    && erpOrderAdditionalData.IntegrationStatusType == IntegrationStatusType.Confirmed)
+                if (order.PaymentStatus == PaymentStatus.Paid)
+                    await ProcessOrderPaidAsync(order);
+            }
+            else
+                foreach (var paymentError in processPaymentResult.Errors)
+                    result.AddError(string.Format(await _localizationService.GetResourceAsync("Checkout.PaymentError"), paymentError));
+        }
+        catch (Exception exc)
+        {
+            _logger.Error(exc.Message, exc);
+            result.AddError(exc.Message);
+        }
+
+        if (result.Success)
+        {
+            return result;
+        }
+
+        var logError = result.Errors.Aggregate("Error while placing order. ",
+            (current, next) => $"{current}Error {result.Errors.IndexOf(next) + 1}: {next}. ");
+        var customer = await _customerService.GetCustomerByIdAsync(processPaymentRequest.CustomerId);
+        _logger.Error(logError, customer: customer);
+
+        return result;
+    }
+
+    private async Task PlaceOrderOrQuoteOnERPAsync(ErpPlaceOrderDataModel erpPlaceOrderDataModel, ErpOrderAdditionalData erpOrderAdditionalData)
+    {
+        var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin();
+
+        if (erpIntegrationPlugin == null)
+        {
+            await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLavel.Account, "Integration method not found.");
+            return;
+        }
+
+        if (erpPlaceOrderDataModel.OrderType == ERPIntegrationCoreDefaults.ErpB2BOrderFromQuoteType || erpPlaceOrderDataModel.OrderType == ERPIntegrationCoreDefaults.ErpB2COrderFromQuoteType ||
+            erpPlaceOrderDataModel.OrderType == ERPIntegrationCoreDefaults.ErpB2BOrderType || erpPlaceOrderDataModel.OrderType == ERPIntegrationCoreDefaults.ErpB2COrderType)
+        {
+            erpPlaceOrderDataModel.OrderType = ERPIntegrationCoreDefaults.ErpB2BOrderType;
+        }
+        else if (erpPlaceOrderDataModel.OrderType == ERPIntegrationCoreDefaults.ErpB2BQuoteType || erpPlaceOrderDataModel.OrderType == ERPIntegrationCoreDefaults.ErpB2CQuoteType)
+        {
+            erpPlaceOrderDataModel.OrderType = ERPIntegrationCoreDefaults.ErpB2BQuoteType;
+        }
+
+        var response = await erpIntegrationPlugin.CreateOrderOnErpAsync(erpPlaceOrderDataModel);
+
+        var message = "";
+
+        if (erpOrderAdditionalData.Id == 0)
+        {
+            erpOrderAdditionalData.ChangedOnUtc = DateTime.UtcNow;
+            await _erpOrderAdditionalDataService.UpdateErpOrderAdditionalDataAsync(erpOrderAdditionalData);
+        }
+
+        if (!response.IsError)
+        {
+            erpOrderAdditionalData.ErpOrderNumber = response.OrderNumber ?? "[Order is being processed in ERP]";
+            message = $"Erp {erpPlaceOrderDataModel.OrderType} placed successfully with Erp {erpPlaceOrderDataModel.OrderType} number: {erpOrderAdditionalData.ErpOrderNumber}";
+        }
+        else
+        {
+            erpOrderAdditionalData.ErpOrderNumber = "";
+            erpOrderAdditionalData.ERPOrderStatus = "Failed";
+            message = $"Epr {erpPlaceOrderDataModel.OrderType} placement failed.";
+        }
+
+        erpOrderAdditionalData.LastERPUpdateUtc = DateTime.UtcNow;
+        erpOrderAdditionalData.ChangedOnUtc = DateTime.UtcNow;
+        await _erpOrderAdditionalDataService.UpdateErpOrderAdditionalDataAsync(erpOrderAdditionalData);
+        await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Information, ErpSyncLavel.Order, $"{message}. {response.ErrorShortMessage}", response.ErrorFullMessage);
+    }
+
+    #endregion
+
+    #endregion
+
+    #region B2B
+
+    public async Task PlaceERPOrderAtNopAsync(Order order, ErpOrderType erpOrderType)
+    {
+        var currentStore = await _storeContext.GetCurrentStoreAsync();
+        var currentCustomer = await _workContext.GetCurrentCustomerAsync();
+
+        var b2BCustomerAccountSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(currentStore.Id);
+
+        var erpNopUser = await _erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(await _customerService.GetCustomerByIdAsync(order.CustomerId));
+        var erpAccount = await _erpAccountService.GetErpAccountByIdAsync(erpNopUser?.ErpAccountId ?? 0);
+
+        var b2BOrderPlaceByCustomerType = erpNopUser?.ErpUserType;
+
+        ErpOrderAdditionalData originalQuoteOrder = null;
+        if (erpOrderType == ErpOrderType.B2BSalesOrder || erpOrderType == ErpOrderType.B2CSalesOrder)
+        {
+            var originalQuoteNopOrderIdReference = await _genericAttributeService.GetAttributeAsync<int>(currentCustomer, B2BB2CFeaturesDefaults.B2BOriginalB2BQuoteOrderIdReference, currentStore.Id);
+            if (originalQuoteNopOrderIdReference == 0)
+                await _genericAttributeService.GetAttributeAsync<int>(currentCustomer, B2BB2CFeaturesDefaults.B2COriginalB2CQuoteOrderIdReference, currentStore.Id);
+
+            if (originalQuoteNopOrderIdReference > 0)
+            {
+                originalQuoteOrder = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(originalQuoteNopOrderIdReference);
+
+                if (originalQuoteOrder != null)
                 {
-                    await _genericAttributeService.SaveAttributeAsync<int?>(currentCustomer, B2BB2CFeaturesDefaults.B2BOriginalB2BQuoteOrderIdReference, null, currentStore.Id);
-                    await _genericAttributeService.SaveAttributeAsync<int?>(currentCustomer, B2BB2CFeaturesDefaults.ProvidedB2BSpecialInstructions, null, currentStore.Id);
-                    await _genericAttributeService.SaveAttributeAsync<int?>(currentCustomer, B2BB2CFeaturesDefaults.B2CSpecialInstructions, null, currentStore.Id);
-
-                    await SendNotificationsAsync(order);
-                    erpOrderAdditionalData.IsOrderPlaceNotificationSent = true;
+                    var orderNote = await _localizationService.GetResourceAsync("B2B.B2BOrder.QuoteReferenceNote.QuoteReferenceNumber") + " " + originalQuoteOrder.ErpOrderNumber;
+                    await AddOrderNoteAsync(order, orderNote);
                 }
+            }
+        }
 
-                erpOrderAdditionalData.LastERPUpdateUtc = DateTime.UtcNow;
-                erpOrderAdditionalData.ChangedOnUtc = DateTime.UtcNow;
-                await _erpOrderAdditionalDataService.UpdateErpOrderAdditionalDataAsync(erpOrderAdditionalData);
-                await _erpLogsService.InformationAsync("Order placement on ERP is being processed.", ErpSyncLavel.Order);
+        var erpOrderAdditionalData = new ErpOrderAdditionalData
+        {
+            NopOrderId = order.Id,
+            ErpOrderOriginType = ErpOrderOriginType.OnlineOrder,
+            ErpAccountId = erpAccount.Id,
+            ErpOrderType = erpOrderType,
+            QuoteSalesOrderId = originalQuoteOrder?.Id ?? 0,
+            IsOrderPlaceNotificationSent = false,
+            SpecialInstructions = "",
+            CustomerReference = "",
+            ERPOrderStatus = order.OrderStatus.ToString(),
+            IntegrationStatusTypeId = (int)(order.PaymentStatus == PaymentStatus.Paid ? IntegrationStatusType.Queued : IntegrationStatusType.WaitingForPayment),
+            IntegrationError = "",
+            IsShippingAddressModified = false,
+            ErpShipToAddressId = null,
+            ErpOrderPlaceByCustomerTypeId = (int)b2BOrderPlaceByCustomerType,
+            QuoteExpiryDate = erpOrderType == ErpOrderType.B2BQuote || erpOrderType == ErpOrderType.B2CQuote ? DateTime.Now.AddDays(1) : null,
+            ChangedById = currentCustomer.Id,
+            ChangedOnUtc = DateTime.UtcNow,
+            OrderPlacedByNopCustomerId = currentCustomer.Id,
+            ErpOrderNumber = string.Empty
+        };
+
+        var deliveryDate = DateTime.Now.AddDays(1);
+
+        if (b2BOrderPlaceByCustomerType == ErpUserType.B2BUser)
+        {
+            deliveryDate = await _genericAttributeService.GetAttributeAsync<DateTime>(currentCustomer, B2BB2CFeaturesDefaults.SelectedB2BDeliveryDateAttribute, currentStore.Id);
+
+        }
+        var isShippingAddressModifiedInCheckout = await _genericAttributeService.GetAttributeAsync<bool>(currentCustomer, B2BB2CFeaturesDefaults.IsShippingAddressModifiedInCheckoutAttribute, currentStore.Id);
+        var modifiedShipToAddressIdOnCheckout = await _genericAttributeService.GetAttributeAsync<int>(currentCustomer, B2BB2CFeaturesDefaults.ShippingAddressModifiedIdInCheckoutAttribute, currentStore.Id);
+        var specialInstructions = "";
+        var customerReference = "";
+        if (erpNopUser?.ErpUserType == ErpUserType.B2BUser)
+        {
+            specialInstructions = await _genericAttributeService.GetAttributeAsync<String>(currentCustomer, B2BB2CFeaturesDefaults.ProvidedB2BSpecialInstructions, currentStore.Id);
+            customerReference = await _genericAttributeService.GetAttributeAsync<String>(currentCustomer, B2BB2CFeaturesDefaults.ProvidedB2BCustomerReferenceAsPO, currentStore.Id);
+        }
+        else
+        {
+            specialInstructions = await _genericAttributeService.GetAttributeAsync<String>(currentCustomer, B2BB2CFeaturesDefaults.B2CSpecialInstructions, currentStore.Id);
+        }
+
+
+        erpOrderAdditionalData.CustomerReference = customerReference ?? string.Empty;
+        erpOrderAdditionalData.DeliveryDate = deliveryDate;
+        erpOrderAdditionalData.IsShippingAddressModified = isShippingAddressModifiedInCheckout;
+
+        if (order.PickupInStore)
+        {
+            erpOrderAdditionalData.ErpShipToAddress = null;
+            erpOrderAdditionalData.SpecialInstructions = specialInstructions;
+        }
+        else
+        {
+            ErpShipToAddress erpShipToAddress = null;
+            if (modifiedShipToAddressIdOnCheckout > 0)
+                erpShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdAsync(modifiedShipToAddressIdOnCheckout);
+            else
+                erpShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdAsync(erpNopUser?.ErpShipToAddressId ?? 0);
+
+            if (erpShipToAddress == null)
+            {
+                erpShipToAddress = order.ShippingAddressId.HasValue ? await _erpShipToAddressService.GetErpShipToAddressByShippingAddressIdAsync(order.ShippingAddressId.Value) : null;
+            }
+
+            await _erpShipToAddressService.InsertErpShipToAddressAsync(erpShipToAddress);
+
+            erpOrderAdditionalData.ErpShipToAddressId = erpShipToAddress.Id;
+            erpOrderAdditionalData.ErpShipToAddress = erpShipToAddress;
+            erpOrderAdditionalData.SpecialInstructions = erpShipToAddress?.DeliveryNotes + specialInstructions;
+            order.ShippingAddressId = erpShipToAddress.AddressId;
+        }
+
+        if (!string.IsNullOrEmpty(erpOrderAdditionalData.SpecialInstructions))
+        {
+            await AddOrderNoteAsync(order, $"Special Instructions: {erpOrderAdditionalData.SpecialInstructions}");
+        }
+
+        if (!string.IsNullOrEmpty(customerReference))
+        {
+            if (erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BSalesOrder || erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2CSalesOrder)
+            {
+                await AddOrderNoteAsync(order, $"{await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeaturesPlugins.CustomerReference.PurchaseOrderReference")}: {customerReference}");
+            }
+
+            else if (erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BQuote || erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2CQuote)
+            {
+                await AddOrderNoteAsync(order, $"{await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeaturesPlugins.CustomerReference.QuoteOrderReference")}: {customerReference}");
+            }
+        }
+
+        await _orderService.UpdateOrderAsync(order);
+
+
+        if (erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BQuote || erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2CQuote || order.PaymentStatus == PaymentStatus.Paid)
+        {
+            erpOrderAdditionalData.IntegrationStatusTypeId = (int)IntegrationStatusType.Queued;
+        }
+        else
+        {
+            erpOrderAdditionalData.IntegrationStatusTypeId = (int)IntegrationStatusType.WaitingForPayment;
+        }
+
+        await _erpOrderAdditionalDataService.InsertErpOrderAdditionalDataAsync(erpOrderAdditionalData);
+
+        var erpPlaceOrderItemList = new List<ErpPlaceOrderItemDataModel>();
+
+        var orderItemCount = 0;
+        var orderItems = await _orderService.GetOrderItemsAsync(order.Id);
+        foreach (var nopOrderItem in orderItems)
+        {
+            orderItemCount++;
+
+            var uom = await _erpSpecificationAttributeService.GetProductUOMByProductIdAndSpecificationAttributeId(nopOrderItem.ProductId, b2BCustomerAccountSettings.PreFilterFacetSpecificationAttributeId) ?? string.Empty;
+
+            var orderItemAdditionalData = new ErpOrderItemAdditionalData
+            {
+                NopOrderItemId = nopOrderItem.Id,
+                ErpOrderId = erpOrderAdditionalData.Id,
+                ErpOrderLineNumber = $"{(orderItemCount * 10): 000000}",
+                ErpSalesUoM = uom,
+                ErpOrderLineStatus = "",
+                ErpDeliveryMethod = "",
+                ErpInvoiceNumber = "",
+                ErpOrderLineNotes = "",
+                ChangedBy = currentCustomer.Id,
+                ErpDateRequired = deliveryDate,
+                ErpDateExpected = deliveryDate,
+            };
+
+            await _erpOrderItemAdditionalDataService.InsertErpOrderItemAdditionalDataAsync(orderItemAdditionalData);
+            var unitPriceWithDiscount = nopOrderItem.UnitPriceExclTax;
+            if (nopOrderItem.DiscountAmountExclTax > 0)
+            {
+                unitPriceWithDiscount = unitPriceWithDiscount + (nopOrderItem.DiscountAmountExclTax / nopOrderItem.Quantity);
+            }
+
+            try
+            {
+                var totalQuantityDiscount = _currencyService.ConvertCurrency(nopOrderItem.DiscountAmountExclTax, order.CurrencyRate);
+                var unitDiscount = Math.Round(totalQuantityDiscount / (decimal)nopOrderItem.Quantity, 2);
+
+                var product = await _productService.GetProductByIdAsync(nopOrderItem.ProductId);
+                erpPlaceOrderItemList.Add(new ErpPlaceOrderItemDataModel
+                {
+                    Sku = product.Sku,
+                    BatchCode = product.ManufacturerPartNumber,
+                    Description = product.Name,
+                    Quantity = nopOrderItem.Quantity,
+                    UnitOfMeasure = uom,
+                    SpecialInstruction = erpOrderAdditionalData.SpecialInstructions,
+                    UnitPriceExclTax = Math.Round(_currencyService.ConvertCurrency(unitPriceWithDiscount, order.CurrencyRate), 2),
+                    DiscountPercentage = unitDiscount,
+                    PriceExclTax = Math.Round(_currencyService.ConvertCurrency(nopOrderItem.PriceExclTax, order.CurrencyRate), 2),
+                    PriceInclTax = Math.Round(_currencyService.ConvertCurrency(nopOrderItem.PriceInclTax, order.CurrencyRate), 2),
+                });
             }
             catch (Exception ex)
             {
-                await _erpLogsService.WarningAsync(ex.Message, ErpSyncLavel.Order, ex, await _workContext.GetCurrentCustomerAsync());
+                await _logger.ErrorAsync($"B2B B2BOrderPlaceModel.DetailLine Prepare error for Account Number: {erpAccount.AccountNumber}", ex);
             }
         }
-        #endregion
 
-        #region Utilities
+        if (originalQuoteOrder != null)
 
-        protected override async Task<Order> SaveOrderDetailsAsync(ProcessPaymentRequest processPaymentRequest,
-            ProcessPaymentResult processPaymentResult, PlaceOrderContainer details)
         {
-            var currCustomer = await _workContext.GetCurrentCustomerAsync();
-            var currStore = await _storeContext.GetCurrentStoreAsync();
-            var adjustmentValue = await _genericAttributeService.GetAttributeAsync<decimal>(currCustomer, B2BB2CFeaturesDefaults.B2COrderOnlineSavingsAdjustmentValue, currStore.Id);
+            originalQuoteOrder.QuoteSalesOrderId = erpOrderAdditionalData.Id;
+            await _erpOrderAdditionalDataService.UpdateErpOrderAdditionalDataAsync(originalQuoteOrder);
+        }
 
-            if (adjustmentValue > 0)
+        if (b2BOrderPlaceByCustomerType == ErpUserType.B2BUser)
+        {
+            DateTime? date = null;
+            await _genericAttributeService.SaveAttributeAsync(currentCustomer, B2BB2CFeaturesDefaults.SelectedB2BDeliveryDateAttribute, date, currentStore.Id);
+            await _genericAttributeService.SaveAttributeAsync<bool>(currentCustomer, B2BB2CFeaturesDefaults.IsShippingAddressModifiedInCheckoutAttribute, false, currentStore.Id);
+            await _genericAttributeService.SaveAttributeAsync<int?>(currentCustomer, B2BB2CFeaturesDefaults.ShippingAddressModifiedIdInCheckoutAttribute, 0, currentStore.Id);
+            await _genericAttributeService.SaveAttributeAsync<string>(currentCustomer, B2BB2CFeaturesDefaults.ProvidedB2BSpecialInstructions, null, currentStore.Id);
+            await _genericAttributeService.SaveAttributeAsync<string>(currentCustomer, B2BB2CFeaturesDefaults.ProvidedB2BCustomerReferenceAsPO, null, currentStore.Id);
+
+            if (b2BCustomerAccountSettings.UseERPIntegration && erpOrderAdditionalData.IntegrationStatusType == IntegrationStatusType.Queued)
+                await PlaceERPOrderAtERPAsync(order, erpOrderAdditionalData, erpNopUser, erpPlaceOrderItemList, b2BCustomerAccountSettings.MaxERPIntegrationOrderPlaceReties);
+        }
+        else
+        {
+            await _genericAttributeService.SaveAttributeAsync<string>(currentCustomer, B2BB2CFeaturesDefaults.B2CSpecialInstructions, null, currentStore.Id);
+        }
+    }
+
+    public async Task<(bool, string)> RetryPlaceERPOrderAtERPAsync(ErpOrderAdditionalData erpOrderAdditionalData, B2BB2CFeaturesSettings b2BB2CFeaturesSettings)
+    {
+        if (!b2BB2CFeaturesSettings.UseERPIntegration)
+            return (false, "Use of ERP Integration is disabled!");
+
+        if (erpOrderAdditionalData == null)
+            return (false, "Erp order details is null");
+
+        if (erpOrderAdditionalData.IntegrationStatusType == IntegrationStatusType.Confirmed)
+            return (false, "Order already placed at ERP");
+
+        if (erpOrderAdditionalData.ErpOrderType != ErpOrderType.B2BQuote && erpOrderAdditionalData.ErpOrderType != ErpOrderType.B2CQuote && erpOrderAdditionalData.IntegrationStatusType == IntegrationStatusType.WaitingForPayment)
+            return (false, "This Order can't be placed at ERP, due to this order is not paid");
+
+        var nopOrder = await _orderService.GetOrderByIdAsync(erpOrderAdditionalData.NopOrderId);
+        if (nopOrder == null)
+            return (false, "Nop Order is null");
+
+        var erpNopUser = await _erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(await _customerService.GetCustomerByIdAsync(nopOrder.CustomerId));
+        if (erpNopUser == null)
+            return (false, "B2B user is null");
+
+
+        var erpPlaceOrderItemList = new List<ErpPlaceOrderItemDataModel>();
+        var b2Bb2CCustomerAccountSettings = _settingService.LoadSetting<B2BB2CFeaturesSettings>((await _storeContext.GetCurrentStoreAsync()).Id);
+
+        var orderItems = await _orderService.GetOrderItemsAsync(nopOrder.Id);
+        foreach (var nopOrderItem in orderItems)
+        {
+            var unitPriceWithDiscount = nopOrderItem.UnitPriceExclTax;
+            if (nopOrderItem.DiscountAmountExclTax > 0)
             {
-                details.OrderSubTotalInclTax -= adjustmentValue;
-                details.OrderSubTotalExclTax -= adjustmentValue;
+                unitPriceWithDiscount = unitPriceWithDiscount + (nopOrderItem.DiscountAmountExclTax / nopOrderItem.Quantity);
             }
 
-            var order = new Order
+            try
             {
-                StoreId = processPaymentRequest.StoreId,
-                OrderGuid = processPaymentRequest.OrderGuid,
-                CustomerId = details.Customer.Id,
-                CustomerLanguageId = details.CustomerLanguage.Id,
-                CustomerTaxDisplayType = details.CustomerTaxDisplayType,
-                CustomerIp = _webHelper.GetCurrentIpAddress(),
-                OrderSubtotalInclTax = details.OrderSubTotalInclTax,
-                OrderSubtotalExclTax = details.OrderSubTotalExclTax,
-                OrderSubTotalDiscountInclTax = details.OrderSubTotalDiscountInclTax,
-                OrderSubTotalDiscountExclTax = details.OrderSubTotalDiscountExclTax,
-                OrderShippingInclTax = details.OrderShippingTotalInclTax,
-                OrderShippingExclTax = details.OrderShippingTotalExclTax,
-                PaymentMethodAdditionalFeeInclTax = details.PaymentAdditionalFeeInclTax,
-                PaymentMethodAdditionalFeeExclTax = details.PaymentAdditionalFeeExclTax,
-                TaxRates = details.TaxRates,
-                OrderTax = details.OrderTaxTotal,
-                OrderTotal = details.OrderTotal,
-                RefundedAmount = decimal.Zero,
-                OrderDiscount = details.OrderDiscountAmount,
-                CheckoutAttributeDescription = details.CheckoutAttributeDescription,
-                CheckoutAttributesXml = details.CheckoutAttributesXml,
-                CustomerCurrencyCode = details.CustomerCurrencyCode,
-                CurrencyRate = details.CustomerCurrencyRate,
-                AffiliateId = details.AffiliateId,
-                OrderStatus = OrderStatus.Pending,
-                AllowStoringCreditCardNumber = processPaymentResult.AllowStoringCreditCardNumber,
-                CardType = processPaymentResult.AllowStoringCreditCardNumber ? _encryptionService.EncryptText(processPaymentRequest.CreditCardType) : string.Empty,
-                CardName = processPaymentResult.AllowStoringCreditCardNumber ? _encryptionService.EncryptText(processPaymentRequest.CreditCardName) : string.Empty,
-                CardNumber = processPaymentResult.AllowStoringCreditCardNumber ? _encryptionService.EncryptText(processPaymentRequest.CreditCardNumber) : string.Empty,
-                MaskedCreditCardNumber = _encryptionService.EncryptText(_paymentService.GetMaskedCreditCardNumber(processPaymentRequest.CreditCardNumber)),
-                CardCvv2 = processPaymentResult.AllowStoringCreditCardNumber ? _encryptionService.EncryptText(processPaymentRequest.CreditCardCvv2) : string.Empty,
-                CardExpirationMonth = processPaymentResult.AllowStoringCreditCardNumber ? _encryptionService.EncryptText(processPaymentRequest.CreditCardExpireMonth.ToString()) : string.Empty,
-                CardExpirationYear = processPaymentResult.AllowStoringCreditCardNumber ? _encryptionService.EncryptText(processPaymentRequest.CreditCardExpireYear.ToString()) : string.Empty,
-                PaymentMethodSystemName = processPaymentRequest.PaymentMethodSystemName,
-                AuthorizationTransactionId = processPaymentResult.AuthorizationTransactionId,
-                AuthorizationTransactionCode = processPaymentResult.AuthorizationTransactionCode,
-                AuthorizationTransactionResult = processPaymentResult.AuthorizationTransactionResult,
-                CaptureTransactionId = processPaymentResult.CaptureTransactionId,
-                CaptureTransactionResult = processPaymentResult.CaptureTransactionResult,
-                SubscriptionTransactionId = processPaymentResult.SubscriptionTransactionId,
-                PaymentStatus = processPaymentResult.NewPaymentStatus,
-                PaidDateUtc = null,
-                PickupInStore = details.PickupInStore,
-                ShippingStatus = details.ShippingStatus,
-                ShippingMethod = details.ShippingMethodName,
-                ShippingRateComputationMethodSystemName = details.ShippingRateComputationMethodSystemName,
-                CustomValuesXml = _paymentService.SerializeCustomValues(processPaymentRequest),
-                VatNumber = details.VatNumber,
-                CreatedOnUtc = DateTime.UtcNow,
-                CustomOrderNumber = string.Empty
+                var uom = await _erpSpecificationAttributeService.GetProductUOMByProductIdAndSpecificationAttributeId(nopOrderItem.ProductId, b2Bb2CCustomerAccountSettings.PreFilterFacetSpecificationAttributeId) ?? string.Empty;
+
+                var totalQuantityDiscount = _currencyService.ConvertCurrency(nopOrderItem.DiscountAmountExclTax, nopOrder.CurrencyRate);
+                var unitDiscount = Math.Round(totalQuantityDiscount / (decimal)nopOrderItem.Quantity, 2);
+
+                var product = await _productService.GetProductByIdAsync(nopOrderItem.ProductId);
+
+                erpPlaceOrderItemList.Add(new ErpPlaceOrderItemDataModel
+                {
+                    Sku = product.Sku,
+                    BatchCode = product.ManufacturerPartNumber,
+                    Description = product.Name,
+                    Quantity = (decimal)nopOrderItem.Quantity,
+                    UnitOfMeasure = uom,
+                    SpecialInstruction = "",
+                    UnitPriceExclTax = Math.Round(_currencyService.ConvertCurrency(unitPriceWithDiscount, nopOrder.CurrencyRate), 2),
+                    DiscountPercentage = unitDiscount,
+                    PriceExclTax = Math.Round(_currencyService.ConvertCurrency(nopOrderItem.PriceExclTax, nopOrder.CurrencyRate), 2),
+                    PriceInclTax = Math.Round(_currencyService.ConvertCurrency(nopOrderItem.PriceInclTax, nopOrder.CurrencyRate), 2),
+                });
+            }
+            catch (Exception ex)
+            {
+                await _logger.ErrorAsync($"B2B B2BOrderPlaceModel.DetailLine Prepare error (while retry erp place) for Nop Order Id: {nopOrder.Id}", ex);
+            }
+        }
+
+        if (erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BSalesOrder || erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2CSalesOrder)
+        {
+            if (erpOrderAdditionalData.IntegrationStatusType != IntegrationStatusType.WaitingForPayment)
+                await PlaceERPOrderAtERPAsync(nopOrder, erpOrderAdditionalData, erpNopUser, erpPlaceOrderItemList, maxRetries: b2BB2CFeaturesSettings.MaxERPIntegrationOrderPlaceReties);
+        }
+        else
+        {
+            await PlaceERPOrderAtERPAsync(nopOrder, erpOrderAdditionalData, erpNopUser, erpPlaceOrderItemList, maxRetries: b2BB2CFeaturesSettings.MaxERPIntegrationOrderPlaceReties);
+        }
+
+        return (true, string.Empty);
+    }
+
+    public async Task PlaceERPOrderAtERPAsync(Order order, ErpOrderAdditionalData erpOrderAdditionalData, ErpNopUser erpNopUser, IList<ErpPlaceOrderItemDataModel> erpPlaceOrderItemData, int maxRetries = 0)
+    {
+        try
+        {
+            var erpAccount = await _erpAccountService.GetErpAccountByIdAsync(erpNopUser.ErpAccountId);
+            var accountSalesOrg = await _erpSalesOrgService.GetErpSalesOrgByIdAsync(erpAccount.ErpSalesOrgId);
+            var orderTypeString = GetOrderTypeString(erpOrderAdditionalData) ?? string.Empty;
+
+            var currentStore = await _storeContext.GetCurrentStoreAsync();
+            var currentCustomer = await _customerService.GetCustomerByIdAsync(order.CustomerId);
+            var shippingAddress = await _addressService.GetAddressByIdAsync(order.ShippingAddressId ?? 0);
+            var billingAddress = await _addressService.GetAddressByIdAsync(order.BillingAddressId);
+            var erpShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdAsync(erpOrderAdditionalData.ErpShipToAddressId.Value);
+            var erpShipToAddressOfErpNopUser = await _erpShipToAddressService.GetErpShipToAddressByIdAsync(erpNopUser.ErpShipToAddressId);
+
+            var erpPlaceOrderDataModel = new ErpPlaceOrderDataModel()
+            {
+                AccountNumber = erpAccount.AccountNumber,
+                Location = accountSalesOrg.Code,
+                CustomOrderNumber = order.CustomOrderNumber ?? order.Id.ToString(),
+                DateRequired = order.PickupInStore || erpOrderAdditionalData.DeliveryDate == null ? DateTime.Now : erpOrderAdditionalData.DeliveryDate.Value,
+                RepCode = erpShipToAddress == null ? erpShipToAddressOfErpNopUser?.RepNumber ?? string.Empty : erpShipToAddress?.RepNumber ?? string.Empty,
+                AddressCode = erpShipToAddress == null ? erpShipToAddressOfErpNopUser?.ShipToCode ?? string.Empty : erpShipToAddress?.ShipToCode ?? string.Empty,
+                ShippingAddress = (order.PickupInStore ? new ErpAddressModel
+                {
+                    Address1 = (await GetStateProvinceAsync(order.PickupAddressId))?.Abbreviation ?? string.Empty,
+                    Region = (await GetStateProvinceAsync(order.PickupAddressId))?.Abbreviation ?? string.Empty,
+                    Country = await GetCountryNameAsync(order.PickupAddressId) ?? string.Empty
+                } :
+                        (order.ShippingAddressId == 0 || !erpOrderAdditionalData.IsShippingAddressModified ?
+                        new ErpAddressModel
+                        {
+                            Address1 = (await GetStateProvinceAsync(order.ShippingAddressId))?.Abbreviation ?? string.Empty,
+                            Region = (await GetStateProvinceAsync(order.ShippingAddressId))?.Abbreviation ?? string.Empty,
+                            Country = await GetCountryNameAsync(order.ShippingAddressId) ?? string.Empty
+                        } :
+                        new ErpAddressModel
+                        {
+                            Name = erpShipToAddress?.ShipToName ?? string.Empty,
+                            Address1 = shippingAddress?.Address1 ?? string.Empty,
+                            Address2 = shippingAddress?.Address2 ?? string.Empty,
+                            Address3 = (await GetStateProvinceAsync(order.ShippingAddressId))?.Abbreviation ?? string.Empty,
+                            City = shippingAddress.City ?? string.Empty,
+                            StateProvince = (await GetStateProvinceAsync(order.ShippingAddressId))?.Name ?? string.Empty,
+                            Region = (await GetStateProvinceAsync(order.ShippingAddressId))?.Abbreviation ?? string.Empty,
+                            ZipPostalCode = shippingAddress.ZipPostalCode ?? string.Empty,
+                            Country = await GetCountryNameAsync(order.ShippingAddressId) ?? string.Empty,
+                            PhoneNumber = shippingAddress.PhoneNumber ?? string.Empty,
+                            Suburb = erpShipToAddress?.Suburb.ToUpper() ?? string.Empty
+                        })
+                    ),
+                BillingAddress = new ErpAddressModel
+                {
+                    Name = $"{billingAddress.FirstName ?? string.Empty} {billingAddress.LastName ?? string.Empty}",
+                    Address1 = billingAddress.Address1 ?? string.Empty,
+                    Address2 = billingAddress.Address2 ?? string.Empty,
+                    Address3 = "",
+                    City = billingAddress.City ?? string.Empty,
+                    StateProvince = (await GetStateProvinceAsync(order.BillingAddressId))?.Name ?? "",
+                    Region = (await GetStateProvinceAsync(order.BillingAddressId))?.Abbreviation ?? string.Empty,
+                    ZipPostalCode = billingAddress.ZipPostalCode ?? string.Empty,
+                    Country = (await GetCountryNameAsync(order.BillingAddressId)) ?? string.Empty,
+                    PhoneNumber = billingAddress.PhoneNumber ?? string.Empty
+                },
+                CustomerName = erpAccount.AccountName,
+                CustomerReference = erpOrderAdditionalData.CustomerReference ?? string.Empty,
+                DeliveryInstruction = erpOrderAdditionalData.SpecialInstructions ?? string.Empty,
+                OrderCategory = "",
+                DeliveryMethod = order.PickupInStore ? DELIVERY_METHOD_COLLECT : DELIVERY_METHOD_DELIVERY,
+                CustomerFirstName = currentCustomer.FirstName,
+                CustomerLastName = currentCustomer.LastName,
+                CustomerPhoneNumber = currentCustomer.Phone ?? string.Empty,
+                CustomerMobileNumber = currentCustomer.Phone ?? string.Empty,
+                CustomerEmail = currentCustomer.Email,
+                VatNumber = erpAccount.VatNumber ?? string.Empty,
+                OrderType = orderTypeString.ToUpper(),
+                QuoteNumber = await GetQuoteNumberAsync(erpOrderAdditionalData),
+                OrderTax = Math.Round(_currencyService.ConvertCurrency(order.OrderTax, order.CurrencyRate), 2),
+                OrderSubtotalExclTax = Math.Round(_currencyService.ConvertCurrency((order.OrderTotal - order.OrderTax), order.CurrencyRate), 2),
+                OrderDate = order.CreatedOnUtc,
+                CustomerCurrencyCode = order.CustomerCurrencyCode ?? string.Empty,
+                ErpPlaceOrderItemDatas = erpPlaceOrderItemData,
+                DeliveryDate = erpOrderAdditionalData.DeliveryDate == null ? DateTime.Now : erpOrderAdditionalData.DeliveryDate.Value
             };
 
-            if (details.BillingAddress is null)
-                throw new NopException("Billing address is not provided");
-
-            await _addressService.InsertAddressAsync(details.BillingAddress);
-            order.BillingAddressId = details.BillingAddress.Id;
-
-            if (details.PickupAddress != null)
+            try
             {
-                await _addressService.InsertAddressAsync(details.PickupAddress);
-                order.PickupAddressId = details.PickupAddress.Id;
+                erpOrderAdditionalData.ErpOrderNumber = "[Order is being processed on ERP]";
+                await Task.Factory.StartNew(() => PlaceOrderOrQuoteOnERPAsync(erpPlaceOrderDataModel, erpOrderAdditionalData));
+            }
+            catch (Exception ex)
+            {
+                await _erpLogsService.ErrorAsync(ex.Message, ErpSyncLavel.Order, ex, currentCustomer);
+                erpOrderAdditionalData.IntegrationRetries++;
             }
 
-            if (details.ShippingAddress != null)
+            #region Email Notification
+
+            if (erpOrderAdditionalData.IntegrationRetries != null && erpOrderAdditionalData.IntegrationRetries >= maxRetries
+                && erpOrderAdditionalData.IntegrationStatusType != IntegrationStatusType.Confirmed)
             {
-                await _addressService.InsertAddressAsync(details.ShippingAddress);
-                order.ShippingAddressId = details.ShippingAddress.Id;
-            }
+                erpOrderAdditionalData.ERPOrderStatus = await _localizationService.GetLocalizedEnumAsync(IntegrationStatusType.Failed);
+                erpOrderAdditionalData.IntegrationStatusType = IntegrationStatusType.Failed;
 
-            await _orderService.InsertOrderAsync(order);
-
-            //generate and set custom order number
-            order.CustomOrderNumber = _customNumberFormatter.GenerateOrderCustomNumber(order);
-            await _orderService.UpdateOrderAsync(order);
-
-            #region B2B/B2C Customer
-
-            var orderCustomer = await _customerService.GetCustomerByIdAsync(order.CustomerId);
-            var ErpNopUser = await _erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(orderCustomer);
-            var b2BUser = ErpNopUser?.ErpUserType == ErpUserType.B2BUser;
-            var b2CUser = ErpNopUser?.ErpUserType == ErpUserType.B2CUser;
-
-            if (b2BUser && ErpNopUser.ShippingErpShipToAddressId > 0)
-            {
-                var checkoutShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdAsync(ErpNopUser.ErpShipToAddressId);
-
-                if (checkoutShipToAddress != null)
+                if (!string.IsNullOrEmpty(erpShipToAddress?.RepEmail))
                 {
-                    //checkoutShipToAddress.OrderId = order.Id;
-                    checkoutShipToAddress.AddressId = details.ShippingAddress?.Id ?? checkoutShipToAddress.AddressId;
-                    checkoutShipToAddress.UpdatedById = details.Customer.Id;
-                    checkoutShipToAddress.UpdatedOnUtc = DateTime.UtcNow;
-                    await _erpShipToAddressService.UpdateErpShipToAddressAsync(checkoutShipToAddress);
-                }
-            }
-
-            //Quote reference Id
-            var isQuoteOrder = false;
-            var b2BAccountUser = await _erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(orderCustomer);
-            var b2COrderPerUser = new ErpOrderAdditionalData();
-
-            if (b2BAccountUser != null && b2BUser)
-            {
-                // Update allocated stock at B2BPerAccountProductPricing for each item only for sales order
-                isQuoteOrder = await _genericAttributeService.GetAttributeAsync<bool>(currCustomer, B2BB2CFeaturesDefaults.B2BQouteOrderAttribute, currStore.Id);
-                if (!isQuoteOrder)
-                {
-                    var b2BConvertedQuoteOrderId = await _genericAttributeService.GetAttributeAsync<int>(currCustomer, B2BB2CFeaturesDefaults.B2BConvertedQuoteB2BOrderId, currStore.Id);
-                    if (b2BConvertedQuoteOrderId > 0)
-                    {
-                        var b2BOrderPerAccount = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(b2BConvertedQuoteOrderId);
-                        if (await _erpCustomerFunctionalityService.CheckQuoteOrderStatusAsync(b2BOrderPerAccount))
-                        {
-                            //save generic Attribute for original B2B Quote Order Id as reference
-                            await _genericAttributeService.SaveAttributeAsync(currCustomer, B2BB2CFeaturesDefaults.B2BOriginalB2BQuoteOrderIdReference, b2BOrderPerAccount.Id, currStore.Id);
-                        }
-                    }
-                }
-            }
-
-            else if (b2BAccountUser != null && b2CUser)
-            {
-                // Update allocated stock at B2BPerAccountProductPricing for each item only for sales order
-                isQuoteOrder = await _genericAttributeService.GetAttributeAsync<bool>(currCustomer, B2BB2CFeaturesDefaults.B2CQouteOrderAttribute, currStore.Id);
-                if (!isQuoteOrder)
-                {
-                    var b2CConvertedQuoteOrderId = await _genericAttributeService.GetAttributeAsync<int>(currCustomer, B2BB2CFeaturesDefaults.B2CConvertedQuoteB2COrderId, currStore.Id);
-                    if (b2CConvertedQuoteOrderId > 0)
-                    {
-                        var b2COrder = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(b2CConvertedQuoteOrderId);
-                        if (await _erpCustomerFunctionalityService.CheckQuoteOrderStatusAsync(b2COrder))
-                        {
-                            //save generic Attribute for original B2C Quote Order Id as reference
-                            await _genericAttributeService.SaveAttributeAsync(currCustomer, B2BB2CFeaturesDefaults.B2COriginalB2CQuoteOrderIdReference, b2COrder.Id, currStore.Id);
-                        }
-                    }
+                    //sent email notification
+                    var queuedEmailId = await _erpWorkflowMessageService.SendERPOrderPlaceFailedSalesRepNotificationAsync(order, order.CustomerLanguageId, erpShipToAddress);
+                    if (queuedEmailId > 0)
+                        await AddOrderNoteAsync(order, $"\"erp {orderTypeString} place failed\" email (to sales rep) has been queued. queued email identifier: {queuedEmailId}.");
                 }
             }
 
             #endregion
 
-            //reward points history
-            if (details.RedeemedRewardPointsAmount <= decimal.Zero)
-                return order;
+            var note = $"{orderTypeString} place in ERP call complete. Try no: {erpOrderAdditionalData.IntegrationRetries ?? 0}, Integration status: {await _localizationService.GetLocalizedEnumAsync(erpOrderAdditionalData.IntegrationStatusType)}";
+            if (!string.IsNullOrEmpty(erpOrderAdditionalData.IntegrationError))
+            {
+                note = note + $", Integration error: {erpOrderAdditionalData.IntegrationError}";
+            }
+            await AddOrderNoteAsync(order, note);
 
-            order.RedeemedRewardPointsEntryId = await _rewardPointService.AddRewardPointsHistoryEntryAsync(details.Customer, -details.RedeemedRewardPoints, order.StoreId,
-                string.Format(await _localizationService.GetResourceAsync("RewardPoints.Message.RedeemedForOrder", order.CustomerLanguageId), order.CustomOrderNumber),
-                order, details.RedeemedRewardPointsAmount);
-            await _customerService.UpdateCustomerAsync(details.Customer);
+            if (erpOrderAdditionalData.IntegrationRetries != null && erpOrderAdditionalData.IntegrationRetries == 1
+                && erpOrderAdditionalData.IntegrationStatusType != IntegrationStatusType.Confirmed)
+            {
+                var errorNote = $"{erpOrderAdditionalData.IntegrationError}, for {erpOrderAdditionalData.ErpOrderType}";
+                await AddOrderNoteAsync(order, errorNote);
+            }
+
+            if (erpOrderAdditionalData.IntegrationStatusType == IntegrationStatusType.Confirmed)
+            {
+                await AddOrderNoteAsync(order, erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BSalesOrder ? await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.B2BOrder.SuccessOrderNote.OrderPlacedInERP")
+                    : await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.B2BOrder.SuccessOrderNote.QuotePlacedInERP"));
+            }
+
             await _orderService.UpdateOrderAsync(order);
 
-            return order;
-        }
-
-        protected async Task SendNotificationsAsync(Order order)
-        {
-            if (order == null)
-                return;
-
-            //send email notifications
-            var orderPlacedStoreOwnerNotificationQueuedEmailIds = await _workflowMessageService.SendOrderPlacedStoreOwnerNotificationAsync(order, _localizationSettings.DefaultAdminLanguageId);
-            if (orderPlacedStoreOwnerNotificationQueuedEmailIds.Any())
-                await AddOrderNoteAsync(order, $"\"Order placed\" email (to store owner) has been queued. Queued email identifiers: {string.Join(", ", orderPlacedStoreOwnerNotificationQueuedEmailIds)}.");
-
-            var orderPlacedAttachmentFilePath = (_orderSettings.AttachPdfInvoiceToOrderPlacedEmail) ?
-                (_pdfService.PrintOrderToPdfAsync(new MemoryStream(), order)).ToString() : null;
-            var orderPlacedAttachmentFileName = _orderSettings.AttachPdfInvoiceToOrderPlacedEmail ?
-                "order.pdf" : null;
-
-            var orderPlacedCustomerNotificationQueuedEmailIds = await _workflowMessageService.SendOrderPlacedCustomerNotificationAsync(order, order.CustomerLanguageId, orderPlacedAttachmentFilePath, orderPlacedAttachmentFileName);
-            if (orderPlacedCustomerNotificationQueuedEmailIds.Any())
-                await AddOrderNoteAsync(order, $"\"Order placed\" email (to customer) has been queued. Queued email identifiers: {string.Join(", ", orderPlacedCustomerNotificationQueuedEmailIds)}.");
-
-            var vendors = await GetVendorsInOrderAsync(order);
-            foreach (var vendor in vendors)
+            if (erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BSalesOrder || erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2CSalesOrder
+                && erpOrderAdditionalData.IntegrationStatusType == IntegrationStatusType.Confirmed)
             {
-                var orderPlacedVendorNotificationQueuedEmailIds = await _workflowMessageService.SendOrderPlacedVendorNotificationAsync(order, vendor, _localizationSettings.DefaultAdminLanguageId);
-                if (orderPlacedVendorNotificationQueuedEmailIds.Any())
-                    await AddOrderNoteAsync(order, $"\"Order placed\" email (to vendor) has been queued. Queued email identifiers: {string.Join(", ", orderPlacedVendorNotificationQueuedEmailIds)}.");
+                await _genericAttributeService.SaveAttributeAsync<int?>(currentCustomer, B2BB2CFeaturesDefaults.B2BOriginalB2BQuoteOrderIdReference, null, currentStore.Id);
+                await _genericAttributeService.SaveAttributeAsync<int?>(currentCustomer, B2BB2CFeaturesDefaults.ProvidedB2BSpecialInstructions, null, currentStore.Id);
+                await _genericAttributeService.SaveAttributeAsync<int?>(currentCustomer, B2BB2CFeaturesDefaults.B2CSpecialInstructions, null, currentStore.Id);
+
+                await SendNotificationsAsync(order);
+                erpOrderAdditionalData.IsOrderPlaceNotificationSent = true;
             }
 
-            if (order.AffiliateId == 0)
-                return;
+            erpOrderAdditionalData.LastERPUpdateUtc = DateTime.UtcNow;
+            erpOrderAdditionalData.ChangedOnUtc = DateTime.UtcNow;
+            await _erpOrderAdditionalDataService.UpdateErpOrderAdditionalDataAsync(erpOrderAdditionalData);
+            await _erpLogsService.InformationAsync("Order placement on ERP is being processed.", ErpSyncLavel.Order);
+        }
+        catch (Exception ex)
+        {
+            await _erpLogsService.WarningAsync(ex.Message, ErpSyncLavel.Order, ex, await _workContext.GetCurrentCustomerAsync());
+        }
+    }
+    #endregion
 
-            var orderPlacedAffiliateNotificationQueuedEmailIds = await _workflowMessageService.SendOrderPlacedAffiliateNotificationAsync(order, _localizationSettings.DefaultAdminLanguageId);
-            if (orderPlacedAffiliateNotificationQueuedEmailIds.Any())
-                await AddOrderNoteAsync(order, $"\"Order placed\" email (to affiliate) has been queued. Queued email identifiers: {string.Join(", ", orderPlacedAffiliateNotificationQueuedEmailIds)}.");
+    #region Utilities
+
+    protected override async Task<Order> SaveOrderDetailsAsync(ProcessPaymentRequest processPaymentRequest,
+        ProcessPaymentResult processPaymentResult, PlaceOrderContainer details)
+    {
+        var currCustomer = await _workContext.GetCurrentCustomerAsync();
+        var currStore = await _storeContext.GetCurrentStoreAsync();
+        var adjustmentValue = await _genericAttributeService.GetAttributeAsync<decimal>(currCustomer, B2BB2CFeaturesDefaults.B2COrderOnlineSavingsAdjustmentValue, currStore.Id);
+
+        if (adjustmentValue > 0)
+        {
+            details.OrderSubTotalInclTax -= adjustmentValue;
+            details.OrderSubTotalExclTax -= adjustmentValue;
         }
 
-        protected async Task<string> GetQuoteNumberAsync(ErpOrderAdditionalData erpOrderAdditionalData)
+        var order = new Order
         {
-            if (erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BQuote)
-                return string.Empty;
+            StoreId = processPaymentRequest.StoreId,
+            OrderGuid = processPaymentRequest.OrderGuid,
+            CustomerId = details.Customer.Id,
+            CustomerLanguageId = details.CustomerLanguage.Id,
+            CustomerTaxDisplayType = details.CustomerTaxDisplayType,
+            CustomerIp = _webHelper.GetCurrentIpAddress(),
+            OrderSubtotalInclTax = details.OrderSubTotalInclTax,
+            OrderSubtotalExclTax = details.OrderSubTotalExclTax,
+            OrderSubTotalDiscountInclTax = details.OrderSubTotalDiscountInclTax,
+            OrderSubTotalDiscountExclTax = details.OrderSubTotalDiscountExclTax,
+            OrderShippingInclTax = details.OrderShippingTotalInclTax,
+            OrderShippingExclTax = details.OrderShippingTotalExclTax,
+            PaymentMethodAdditionalFeeInclTax = details.PaymentAdditionalFeeInclTax,
+            PaymentMethodAdditionalFeeExclTax = details.PaymentAdditionalFeeExclTax,
+            TaxRates = details.TaxRates,
+            OrderTax = details.OrderTaxTotal,
+            OrderTotal = details.OrderTotal,
+            RefundedAmount = decimal.Zero,
+            OrderDiscount = details.OrderDiscountAmount,
+            CheckoutAttributeDescription = details.CheckoutAttributeDescription,
+            CheckoutAttributesXml = details.CheckoutAttributesXml,
+            CustomerCurrencyCode = details.CustomerCurrencyCode,
+            CurrencyRate = details.CustomerCurrencyRate,
+            AffiliateId = details.AffiliateId,
+            OrderStatus = OrderStatus.Pending,
+            AllowStoringCreditCardNumber = processPaymentResult.AllowStoringCreditCardNumber,
+            CardType = processPaymentResult.AllowStoringCreditCardNumber ? _encryptionService.EncryptText(processPaymentRequest.CreditCardType) : string.Empty,
+            CardName = processPaymentResult.AllowStoringCreditCardNumber ? _encryptionService.EncryptText(processPaymentRequest.CreditCardName) : string.Empty,
+            CardNumber = processPaymentResult.AllowStoringCreditCardNumber ? _encryptionService.EncryptText(processPaymentRequest.CreditCardNumber) : string.Empty,
+            MaskedCreditCardNumber = _encryptionService.EncryptText(_paymentService.GetMaskedCreditCardNumber(processPaymentRequest.CreditCardNumber)),
+            CardCvv2 = processPaymentResult.AllowStoringCreditCardNumber ? _encryptionService.EncryptText(processPaymentRequest.CreditCardCvv2) : string.Empty,
+            CardExpirationMonth = processPaymentResult.AllowStoringCreditCardNumber ? _encryptionService.EncryptText(processPaymentRequest.CreditCardExpireMonth.ToString()) : string.Empty,
+            CardExpirationYear = processPaymentResult.AllowStoringCreditCardNumber ? _encryptionService.EncryptText(processPaymentRequest.CreditCardExpireYear.ToString()) : string.Empty,
+            PaymentMethodSystemName = processPaymentRequest.PaymentMethodSystemName,
+            AuthorizationTransactionId = processPaymentResult.AuthorizationTransactionId,
+            AuthorizationTransactionCode = processPaymentResult.AuthorizationTransactionCode,
+            AuthorizationTransactionResult = processPaymentResult.AuthorizationTransactionResult,
+            CaptureTransactionId = processPaymentResult.CaptureTransactionId,
+            CaptureTransactionResult = processPaymentResult.CaptureTransactionResult,
+            SubscriptionTransactionId = processPaymentResult.SubscriptionTransactionId,
+            PaymentStatus = processPaymentResult.NewPaymentStatus,
+            PaidDateUtc = null,
+            PickupInStore = details.PickupInStore,
+            ShippingStatus = details.ShippingStatus,
+            ShippingMethod = details.ShippingMethodName,
+            ShippingRateComputationMethodSystemName = details.ShippingRateComputationMethodSystemName,
+            CustomValuesXml = _paymentService.SerializeCustomValues(processPaymentRequest),
+            VatNumber = details.VatNumber,
+            CreatedOnUtc = DateTime.UtcNow,
+            CustomOrderNumber = string.Empty
+        };
 
-            if (!erpOrderAdditionalData.QuoteSalesOrderId.HasValue || erpOrderAdditionalData.QuoteSalesOrderId.Value < 1)
-            {
-                return string.Empty;
-            }
-            return (await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(erpOrderAdditionalData.QuoteSalesOrderId.Value))?.ErpOrderNumber ?? string.Empty;
+        if (details.BillingAddress is null)
+            throw new NopException("Billing address is not provided");
+
+        await _addressService.InsertAddressAsync(details.BillingAddress);
+        order.BillingAddressId = details.BillingAddress.Id;
+
+        if (details.PickupAddress != null)
+        {
+            await _addressService.InsertAddressAsync(details.PickupAddress);
+            order.PickupAddressId = details.PickupAddress.Id;
         }
 
-        protected string GetOrderTypeString(ErpOrderAdditionalData erpOrderAdditionalData)
+        if (details.ShippingAddress != null)
         {
-            if (erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BSalesOrder && erpOrderAdditionalData.QuoteSalesOrderId.HasValue)
+            await _addressService.InsertAddressAsync(details.ShippingAddress);
+            order.ShippingAddressId = details.ShippingAddress.Id;
+        }
+
+        await _orderService.InsertOrderAsync(order);
+
+        //generate and set custom order number
+        order.CustomOrderNumber = _customNumberFormatter.GenerateOrderCustomNumber(order);
+        await _orderService.UpdateOrderAsync(order);
+
+        #region B2B/B2C Customer
+
+        var orderCustomer = await _customerService.GetCustomerByIdAsync(order.CustomerId);
+        var erpNopUser = await _erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(orderCustomer);
+        var b2BUser = erpNopUser?.ErpUserType == ErpUserType.B2BUser;
+        var b2CUser = erpNopUser?.ErpUserType == ErpUserType.B2CUser;
+
+        if (b2BUser && erpNopUser.ShippingErpShipToAddressId > 0)
+        {
+            var checkoutShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdAsync(erpNopUser.ErpShipToAddressId);
+
+            if (checkoutShipToAddress != null)
             {
-                return "Order from Quote";
-            }
-            else
-            {
-                return erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BSalesOrder ? "Order" : "Quote";
+                checkoutShipToAddress.AddressId = details.ShippingAddress?.Id ?? checkoutShipToAddress.AddressId;
+                checkoutShipToAddress.UpdatedById = details.Customer.Id;
+                checkoutShipToAddress.UpdatedOnUtc = DateTime.UtcNow;
+                await _erpShipToAddressService.UpdateErpShipToAddressAsync(checkoutShipToAddress);
             }
         }
 
-        protected async Task<StateProvince> GetStateProvinceAsync(int? addressId)
+        //Quote reference Id
+        var isQuoteOrder = false;
+        var b2BAccountUser = await _erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(orderCustomer);
+        var b2COrderPerUser = new ErpOrderAdditionalData();
+
+        if (b2BAccountUser != null && b2BUser)
         {
-            if (addressId.HasValue)
+            // Update allocated stock at B2BPerAccountProductPricing for each item only for sales order
+            isQuoteOrder = await _genericAttributeService.GetAttributeAsync<bool>(currCustomer, B2BB2CFeaturesDefaults.B2BQouteOrderAttribute, currStore.Id);
+            if (!isQuoteOrder)
             {
-                var address = await _addressService.GetAddressByIdAsync(addressId.Value);
-                if (address != null)
+                var b2BConvertedQuoteOrderId = await _genericAttributeService.GetAttributeAsync<int>(currCustomer, B2BB2CFeaturesDefaults.B2BConvertedQuoteB2BOrderId, currStore.Id);
+                if (b2BConvertedQuoteOrderId > 0)
                 {
-                    return await _stateProvinceService.GetStateProvinceByAddressAsync(address);
-                }
-                return null;
-            }
-            return null;
-        }
-
-        protected async Task<string> GetCountryNameAsync(int? addressId)
-        {
-            if (addressId.HasValue)
-            {
-                var address = await _addressService.GetAddressByIdAsync(addressId.Value);
-                if (address != null)
-                {
-                    var country = await _countryService.GetCountryByAddressAsync(address);
-                    return (country == null) ? string.Empty : country.Name;
-                }
-                return string.Empty;
-            }
-            return string.Empty;
-        }
-
-        private async Task<(ErpAccount b2BAccount, ErpNopUser b2BUser, ErpNopUser b2CUser)> GetB2BAccountAndUserOfCurrentCustomerAsync()
-        {
-            var currCustomer = await _workContext.GetCurrentCustomerAsync();
-            var b2BAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(currCustomer.Id);
-            var erpUser = await _erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(currCustomer);
-
-            var b2BUser = erpUser?.ErpUserType == ErpUserType.B2BUser ? erpUser : null;
-            var b2CUser = erpUser?.ErpUserType == ErpUserType.B2CUser ? erpUser : null;
-
-            return (b2BAccount, b2BUser, b2CUser);
-        }
-
-        protected string GetB2COrderTypeString(ErpOrderAdditionalData orderPerUser)
-        {
-            if (orderPerUser.ErpOrderType == ErpOrderType.B2CSalesOrder && orderPerUser.QuoteSalesOrderId.HasValue)
-            {
-                return "Order from B2C Quote";
-            }
-            else
-            {
-                return orderPerUser.ErpOrderType == ErpOrderType.B2CSalesOrder ? "B2COrder" : "B2CQuote";
-            }
-        }
-
-        private async Task<List<ErpPlaceOrderItemDataModel>> GetErpPlaceOrderItemListAsync(Order nopOrder)
-        {
-            var currentStore = await _storeContext.GetCurrentStoreAsync();
-            var b2BCustomerAccountSettings = await _settingService.LoadSettingAsync<ERPIntegrationCoreSettings>(currentStore.Id);
-            var erpPlaceOrderItemList = new List<ErpPlaceOrderItemDataModel>();
-            var orderItems = await _orderService.GetOrderItemsAsync(nopOrder.Id);
-
-            var b2Bb2CCustomerAccountSettings = _settingService.LoadSetting<B2BB2CFeaturesSettings>(currentStore.Id);
-
-            // add B2C Order Item for Order Line
-            foreach (var nopOrderItem in orderItems)
-            {
-                var unitPriceWithDiscount = nopOrderItem.UnitPriceExclTax;
-                if (nopOrderItem.DiscountAmountExclTax > 0)
-                {
-                    unitPriceWithDiscount = unitPriceWithDiscount + (nopOrderItem.DiscountAmountExclTax / nopOrderItem.Quantity);
-                }
-
-                var b2COrderItem = await _erpOrderItemAdditionalDataService.GetErpOrderItemAdditionalDataByNopOrderItemIdAsync(nopOrderItem.Id);
-                try
-                {
-                    var uom = await _erpSpecificationAttributeService.GetProductUOMByProductIdAndSpecificationAttributeId(nopOrderItem.ProductId, b2Bb2CCustomerAccountSettings.PreFilterFacetSpecificationAttributeId) ?? string.Empty;
-
-                    var totalQuantityDiscount = _currencyService.ConvertCurrency(nopOrderItem.DiscountAmountExclTax, nopOrder.CurrencyRate);
-                    var unitDiscount = Math.Round(totalQuantityDiscount / (decimal)nopOrderItem.Quantity, 2);
-                    var product = await _productService.GetProductByIdAsync(nopOrderItem.ProductId);
-                    erpPlaceOrderItemList.Add(new ErpPlaceOrderItemDataModel
+                    var b2BOrderPerAccount = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(b2BConvertedQuoteOrderId);
+                    if (await _erpCustomerFunctionalityService.CheckQuoteOrderStatusAsync(b2BOrderPerAccount))
                     {
-                        ItemNo = product.Sku,
-                        BatchCode = product.ManufacturerPartNumber,
-                        Description = product.Name,
-                        Quantity = nopOrderItem.Quantity,
-                        UOM = uom,
-                        SpecInstruct = b2COrderItem.ErpOrderLineNotes,
-                        UnitPrice = Math.Round(_currencyService.ConvertCurrency(unitPriceWithDiscount, nopOrder.CurrencyRate), 2),
-                        Discount = unitDiscount,
-                        LineTotalExcl = Math.Round(_currencyService.ConvertCurrency(nopOrderItem.PriceExclTax, nopOrder.CurrencyRate), 2),
-                        LineTotalIncl = Math.Round(_currencyService.ConvertCurrency(nopOrderItem.PriceInclTax, nopOrder.CurrencyRate), 2),
-                    });
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error($"RetryPlaceB2COrderAtERP: B2BOrderPlaceModel.DetailLine Prepare error (while retry erp place) for Nop Order Id: {nopOrder.Id}", ex);
+                        //save generic Attribute for original B2B Quote Order Id as reference
+                        await _genericAttributeService.SaveAttributeAsync(currCustomer, B2BB2CFeaturesDefaults.B2BOriginalB2BQuoteOrderIdReference, b2BOrderPerAccount.Id, currStore.Id);
+                    }
                 }
             }
-
-            return erpPlaceOrderItemList;
         }
 
-        public async Task<string> GetB2CQuoteNumberAsync(ErpOrderAdditionalData orderPerUser)
+        else if (b2BAccountUser != null && b2CUser)
         {
-            if (orderPerUser.ErpOrderType == ErpOrderType.B2CQuote)
-                return string.Empty;
-
-            if (!orderPerUser.QuoteSalesOrderId.HasValue || orderPerUser.QuoteSalesOrderId.Value < 1)
+            // Update allocated stock at B2BPerAccountProductPricing for each item only for sales order
+            isQuoteOrder = await _genericAttributeService.GetAttributeAsync<bool>(currCustomer, B2BB2CFeaturesDefaults.B2CQouteOrderAttribute, currStore.Id);
+            if (!isQuoteOrder)
             {
-                return string.Empty;
+                var b2CConvertedQuoteOrderId = await _genericAttributeService.GetAttributeAsync<int>(currCustomer, B2BB2CFeaturesDefaults.B2CConvertedQuoteB2COrderId, currStore.Id);
+                if (b2CConvertedQuoteOrderId > 0)
+                {
+                    var b2COrder = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(b2CConvertedQuoteOrderId);
+                    if (await _erpCustomerFunctionalityService.CheckQuoteOrderStatusAsync(b2COrder))
+                    {
+                        //save generic Attribute for original B2C Quote Order Id as reference
+                        await _genericAttributeService.SaveAttributeAsync(currCustomer, B2BB2CFeaturesDefaults.B2COriginalB2CQuoteOrderIdReference, b2COrder.Id, currStore.Id);
+                    }
+                }
             }
-            var erpOrderAdditionalData = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(orderPerUser.QuoteSalesOrderId.Value);
-
-            return erpOrderAdditionalData?.ErpOrderNumber ?? string.Empty;
         }
 
         #endregion
+
+        //reward points history
+        if (details.RedeemedRewardPointsAmount <= decimal.Zero)
+            return order;
+
+        order.RedeemedRewardPointsEntryId = await _rewardPointService.AddRewardPointsHistoryEntryAsync(details.Customer, -details.RedeemedRewardPoints, order.StoreId,
+            string.Format(await _localizationService.GetResourceAsync("RewardPoints.Message.RedeemedForOrder", order.CustomerLanguageId), order.CustomOrderNumber),
+            order, details.RedeemedRewardPointsAmount);
+        await _customerService.UpdateCustomerAsync(details.Customer);
+        await _orderService.UpdateOrderAsync(order);
+
+        return order;
     }
+
+    protected async Task SendNotificationsAsync(Order order)
+    {
+        if (order == null)
+            return;
+
+        //send email notifications
+        var orderPlacedStoreOwnerNotificationQueuedEmailIds = await _workflowMessageService.SendOrderPlacedStoreOwnerNotificationAsync(order, _localizationSettings.DefaultAdminLanguageId);
+        if (orderPlacedStoreOwnerNotificationQueuedEmailIds.Any())
+            await AddOrderNoteAsync(order, $"\"Order placed\" email (to store owner) has been queued. Queued email identifiers: {string.Join(", ", orderPlacedStoreOwnerNotificationQueuedEmailIds)}.");
+
+        var orderPlacedAttachmentFilePath = (_orderSettings.AttachPdfInvoiceToOrderPlacedEmail) ?
+            (_pdfService.PrintOrderToPdfAsync(new MemoryStream(), order)).ToString() : null;
+        var orderPlacedAttachmentFileName = _orderSettings.AttachPdfInvoiceToOrderPlacedEmail ?
+            "order.pdf" : null;
+
+        var orderPlacedCustomerNotificationQueuedEmailIds = await _workflowMessageService.SendOrderPlacedCustomerNotificationAsync(order, order.CustomerLanguageId, orderPlacedAttachmentFilePath, orderPlacedAttachmentFileName);
+        if (orderPlacedCustomerNotificationQueuedEmailIds.Any())
+            await AddOrderNoteAsync(order, $"\"Order placed\" email (to customer) has been queued. Queued email identifiers: {string.Join(", ", orderPlacedCustomerNotificationQueuedEmailIds)}.");
+
+        var vendors = await GetVendorsInOrderAsync(order);
+        foreach (var vendor in vendors)
+        {
+            var orderPlacedVendorNotificationQueuedEmailIds = await _workflowMessageService.SendOrderPlacedVendorNotificationAsync(order, vendor, _localizationSettings.DefaultAdminLanguageId);
+            if (orderPlacedVendorNotificationQueuedEmailIds.Any())
+                await AddOrderNoteAsync(order, $"\"Order placed\" email (to vendor) has been queued. Queued email identifiers: {string.Join(", ", orderPlacedVendorNotificationQueuedEmailIds)}.");
+        }
+
+        if (order.AffiliateId == 0)
+            return;
+
+        var orderPlacedAffiliateNotificationQueuedEmailIds = await _workflowMessageService.SendOrderPlacedAffiliateNotificationAsync(order, _localizationSettings.DefaultAdminLanguageId);
+        if (orderPlacedAffiliateNotificationQueuedEmailIds.Any())
+            await AddOrderNoteAsync(order, $"\"Order placed\" email (to affiliate) has been queued. Queued email identifiers: {string.Join(", ", orderPlacedAffiliateNotificationQueuedEmailIds)}.");
+    }
+
+    protected async Task<string> GetQuoteNumberAsync(ErpOrderAdditionalData erpOrderAdditionalData)
+    {
+        if (erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BQuote)
+            return string.Empty;
+
+        if (!erpOrderAdditionalData.QuoteSalesOrderId.HasValue || erpOrderAdditionalData.QuoteSalesOrderId.Value < 1)
+        {
+            return string.Empty;
+        }
+        return (await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(erpOrderAdditionalData.QuoteSalesOrderId.Value))?.ErpOrderNumber ?? string.Empty;
+    }
+
+    protected string GetOrderTypeString(ErpOrderAdditionalData erpOrderAdditionalData)
+    {
+        if (erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BSalesOrder && erpOrderAdditionalData.QuoteSalesOrderId.HasValue)
+        {
+            return "Order from Quote";
+        }
+        else
+        {
+            return erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BSalesOrder ? "Order" : "Quote";
+        }
+    }
+
+    protected async Task<StateProvince> GetStateProvinceAsync(int? addressId)
+    {
+        if (addressId.HasValue)
+        {
+            var address = await _addressService.GetAddressByIdAsync(addressId.Value);
+            if (address != null)
+            {
+                return await _stateProvinceService.GetStateProvinceByAddressAsync(address);
+            }
+            return null;
+        }
+        return null;
+    }
+
+    protected async Task<string> GetCountryNameAsync(int? addressId)
+    {
+        if (addressId.HasValue)
+        {
+            var address = await _addressService.GetAddressByIdAsync(addressId.Value);
+            if (address != null)
+            {
+                var country = await _countryService.GetCountryByAddressAsync(address);
+                return (country == null) ? string.Empty : country.Name;
+            }
+            return string.Empty;
+        }
+        return string.Empty;
+    }
+
+    private async Task<(ErpAccount b2BAccount, ErpNopUser b2BUser, ErpNopUser b2CUser)> GetB2BAccountAndUserOfCurrentCustomerAsync()
+    {
+        var currCustomer = await _workContext.GetCurrentCustomerAsync();
+        var b2BAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(currCustomer.Id);
+        var erpUser = await _erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(currCustomer);
+
+        var b2BUser = erpUser?.ErpUserType == ErpUserType.B2BUser ? erpUser : null;
+        var b2CUser = erpUser?.ErpUserType == ErpUserType.B2CUser ? erpUser : null;
+
+        return (b2BAccount, b2BUser, b2CUser);
+    }
+
+    protected string GetB2COrderTypeString(ErpOrderAdditionalData orderPerUser)
+    {
+        if (orderPerUser.ErpOrderType == ErpOrderType.B2CSalesOrder && orderPerUser.QuoteSalesOrderId.HasValue)
+        {
+            return "Order from B2C Quote";
+        }
+        else
+        {
+            return orderPerUser.ErpOrderType == ErpOrderType.B2CSalesOrder ? "B2COrder" : "B2CQuote";
+        }
+    }
+
+    private async Task<List<ErpPlaceOrderItemDataModel>> GetErpPlaceOrderItemListAsync(Order nopOrder)
+    {
+        var currentStore = await _storeContext.GetCurrentStoreAsync();
+        var erpPlaceOrderItemList = new List<ErpPlaceOrderItemDataModel>();
+        var orderItems = await _orderService.GetOrderItemsAsync(nopOrder.Id);
+
+        var b2Bb2CCustomerAccountSettings = _settingService.LoadSetting<B2BB2CFeaturesSettings>(currentStore.Id);
+
+        // add B2C Order Item for Order Line
+        foreach (var nopOrderItem in orderItems)
+        {
+            var unitPriceWithDiscount = nopOrderItem.UnitPriceExclTax;
+            if (nopOrderItem.DiscountAmountExclTax > 0)
+            {
+                unitPriceWithDiscount = unitPriceWithDiscount + (nopOrderItem.DiscountAmountExclTax / nopOrderItem.Quantity);
+            }
+
+            var b2COrderItem = await _erpOrderItemAdditionalDataService.GetErpOrderItemAdditionalDataByNopOrderItemIdAsync(nopOrderItem.Id);
+            try
+            {
+                var uom = await _erpSpecificationAttributeService.GetProductUOMByProductIdAndSpecificationAttributeId(nopOrderItem.ProductId, b2Bb2CCustomerAccountSettings.PreFilterFacetSpecificationAttributeId) ?? string.Empty;
+
+                var totalQuantityDiscount = _currencyService.ConvertCurrency(nopOrderItem.DiscountAmountExclTax, nopOrder.CurrencyRate);
+                var unitDiscount = Math.Round(totalQuantityDiscount / (decimal)nopOrderItem.Quantity, 2);
+                var product = await _productService.GetProductByIdAsync(nopOrderItem.ProductId);
+                erpPlaceOrderItemList.Add(new ErpPlaceOrderItemDataModel
+                {
+                    Sku = product.Sku,
+                    BatchCode = product.ManufacturerPartNumber,
+                    Description = product.Name,
+                    Quantity = nopOrderItem.Quantity,
+                    UnitOfMeasure = uom,
+                    SpecialInstruction = b2COrderItem.ErpOrderLineNotes,
+                    UnitPriceExclTax = Math.Round(_currencyService.ConvertCurrency(unitPriceWithDiscount, nopOrder.CurrencyRate), 2),
+                    DiscountPercentage = unitDiscount,
+                    PriceExclTax = Math.Round(_currencyService.ConvertCurrency(nopOrderItem.PriceExclTax, nopOrder.CurrencyRate), 2),
+                    PriceInclTax = Math.Round(_currencyService.ConvertCurrency(nopOrderItem.PriceInclTax, nopOrder.CurrencyRate), 2),
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"RetryPlaceB2COrderAtERP: B2BOrderPlaceModel.DetailLine Prepare error (while retry erp place) for Nop Order Id: {nopOrder.Id}", ex);
+            }
+        }
+
+        return erpPlaceOrderItemList;
+    }
+
+    public async Task<string> GetB2CQuoteNumberAsync(ErpOrderAdditionalData orderPerUser)
+    {
+        if (orderPerUser.ErpOrderType == ErpOrderType.B2CQuote)
+            return string.Empty;
+
+        if (!orderPerUser.QuoteSalesOrderId.HasValue || orderPerUser.QuoteSalesOrderId.Value < 1)
+        {
+            return string.Empty;
+        }
+        var erpOrderAdditionalData = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(orderPerUser.QuoteSalesOrderId.Value);
+
+        return erpOrderAdditionalData?.ErpOrderNumber ?? string.Empty;
+    }
+
+    #endregion
 }
