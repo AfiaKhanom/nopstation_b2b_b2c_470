@@ -220,7 +220,7 @@ public class ErpAccountSyncService : IErpAccountSyncService
 
                             oldErpAccount.AllowOverspend = erpAccount.AllowOverspend ? erpAccount.AllowOverspend : b2BB2CFeaturesSettings.AllowOverspend;
                             oldErpAccount.AllowAccountsAddressEditOnCheckout = b2BB2CFeaturesSettings.AllowAddressEditOnCheckoutForAll;
-                            oldErpAccount.B2BPriceGroupCodeId = _erpGroupPriceCodeService.GetErpGroupPriceCodeByCodedAsync(erpAccount.PriceGroupCode).Id;
+                            oldErpAccount.B2BPriceGroupCodeId = (await _erpGroupPriceCodeService.GetErpGroupPriceCodeByCodedAsync(erpAccount.PriceGroupCode)).Id;
 
                             oldErpAccount.CreditLimitAvailable = erpAccount.CreditLimitAvailable;
                             oldErpAccount.CreditLimit = erpAccount.CreditLimitUsed + erpAccount.CreditLimitAvailable;
@@ -262,8 +262,8 @@ public class ErpAccountSyncService : IErpAccountSyncService
                         }
                         else
                         {
-                            oldErpAccount.AccountName = erpAccount.AccountName ?? string.Empty;
-                            oldErpAccount.VatNumber = erpAccount.VatNumber ?? string.Empty;
+                            oldErpAccount.AccountName = erpAccount.AccountName;
+                            oldErpAccount.VatNumber = erpAccount.VatNumber;
                             oldErpAccount.PreFilterFacets = erpAccount.PreFilterFacets;
                             oldErpAccount.PaymentTypeCode = erpAccount.PaymentTypeCode;
                             oldErpAccount.BillingAddressId = address.Id;

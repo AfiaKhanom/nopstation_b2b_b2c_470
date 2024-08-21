@@ -699,7 +699,7 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
                     UnitOfMeasure = uom,
                     SpecialInstruction = erpOrderAdditionalData.SpecialInstructions,
                     UnitPriceExclTax = Math.Round(_currencyService.ConvertCurrency(unitPriceWithDiscount, order.CurrencyRate), 2),
-                    DiscountAmountExclTax = unitDiscount,
+                    DiscountPercentage = unitDiscount,
                     PriceExclTax = Math.Round(_currencyService.ConvertCurrency(nopOrderItem.PriceExclTax, order.CurrencyRate), 2),
                     PriceInclTax = Math.Round(_currencyService.ConvertCurrency(nopOrderItem.PriceInclTax, order.CurrencyRate), 2),
                 });
@@ -788,7 +788,7 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
                     UnitOfMeasure = uom,
                     SpecialInstruction = "",
                     UnitPriceExclTax = Math.Round(_currencyService.ConvertCurrency(unitPriceWithDiscount, nopOrder.CurrencyRate), 2),
-                    DiscountAmountExclTax = unitDiscount,
+                    DiscountPercentage = unitDiscount,
                     PriceExclTax = Math.Round(_currencyService.ConvertCurrency(nopOrderItem.PriceExclTax, nopOrder.CurrencyRate), 2),
                     PriceInclTax = Math.Round(_currencyService.ConvertCurrency(nopOrderItem.PriceInclTax, nopOrder.CurrencyRate), 2),
                 });
@@ -1289,7 +1289,7 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
                     UnitOfMeasure = uom,
                     SpecialInstruction = b2COrderItem.ErpOrderLineNotes,
                     UnitPriceExclTax = Math.Round(_currencyService.ConvertCurrency(unitPriceWithDiscount, nopOrder.CurrencyRate), 2),
-                    DiscountAmountExclTax = unitDiscount,
+                    DiscountPercentage = unitDiscount,
                     PriceExclTax = Math.Round(_currencyService.ConvertCurrency(nopOrderItem.PriceExclTax, nopOrder.CurrencyRate), 2),
                     PriceInclTax = Math.Round(_currencyService.ConvertCurrency(nopOrderItem.PriceInclTax, nopOrder.CurrencyRate), 2),
                 });

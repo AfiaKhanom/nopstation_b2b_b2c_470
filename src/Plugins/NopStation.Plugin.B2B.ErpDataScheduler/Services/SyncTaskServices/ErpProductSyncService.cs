@@ -272,7 +272,7 @@ public class ErpProductSyncService : IErpProductSyncService
                         if (oldErpProduct.Id <= 0)
                         {
                             oldErpProduct.Sku = erpProduct.Sku;
-                            oldErpProduct.ManufacturerPartNumber = erpProduct.ManufacturerPartNumber ?? string.Empty;
+                            oldErpProduct.ManufacturerPartNumber = erpProduct.ManufacturerPartNumber;
 
                             oldErpProduct.ShortDescription = (erpProduct.ShortDescription.Length > 400) ? erpProduct.ShortDescription.Substring(0, 400) : erpProduct.ShortDescription;
                             oldErpProduct.FullDescription = lineBreakReplacer.Replace((erpProduct.FullDescription.Length > 400)
@@ -290,7 +290,6 @@ public class ErpProductSyncService : IErpProductSyncService
                             oldErpProduct.StockQuantity = Convert.ToInt32(Math.Min(Math.Max(Math.Round(erpProduct.StockQuantity), int.MinValue), int.MaxValue));
                             oldErpProduct.OrderMinimumQuantity = 1;
 
-                            oldErpProduct.AllowAddingOnlyExistingAttributeCombinations = true;
                             oldErpProduct.IsShipEnabled = true;
 
                             oldErpProduct.PreOrderAvailabilityStartDateTimeUtc = DateTime.UtcNow;

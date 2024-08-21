@@ -494,7 +494,7 @@ public class ErpOrderSyncService : IErpOrderSyncService
                 oldErpOrder.ErpShipToAddressId = newErpShiptoAddress.Id;
                 oldErpOrder.SpecialInstructions = erpOrder.DeliveryInstruction;
                 oldErpOrder.CustomerReference = erpOrder.CustomerReference;
-                oldErpOrder.ERPOrderStatus = OrderStatus.Processing.ToString();
+                oldErpOrder.ERPOrderStatus = nameof(OrderStatus.Processing);
                 oldErpOrder.DeliveryDate = erpOrder.DeliveryDate;
                 oldErpOrder.IntegrationStatusType = IntegrationStatusType.Confirmed;
                 oldErpOrder.IntegrationError = string.Empty;
@@ -517,9 +517,8 @@ public class ErpOrderSyncService : IErpOrderSyncService
                 oldErpOrder.ErpAccountId = erpAccount.Id;
                 oldErpOrder.SpecialInstructions = erpOrder.DeliveryInstruction;
                 oldErpOrder.CustomerReference = erpOrder.CustomerReference;
-                oldErpOrder.ERPOrderStatus = OrderStatus.Processing.ToString();
+                oldErpOrder.ERPOrderStatus = nameof(OrderStatus.Processing);
                 oldErpOrder.DeliveryDate = erpOrder.DeliveryDate;
-
                 oldErpOrder.IntegrationStatusType = IntegrationStatusType.Confirmed;
                 oldErpOrder.IntegrationError = string.Empty;
 

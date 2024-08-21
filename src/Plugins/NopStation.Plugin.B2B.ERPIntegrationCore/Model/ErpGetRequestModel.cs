@@ -23,4 +23,6 @@ public class ErpGetRequestModel
     public string PriceCode { get; set; }
 
     public string UrlExtention { get; set; }
+
+    public bool SkipTransform { get; set; }
 }

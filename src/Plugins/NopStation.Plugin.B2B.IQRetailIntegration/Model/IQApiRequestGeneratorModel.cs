@@ -188,7 +188,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.Model
                         new JProperty("volume_value", VOLUME_VALUE),
                         new JProperty("volume_rounding", VOLUME_ROUNDING)
                     )),
-                    new JProperty("discount_percentage", item.DiscountAmountExclTax),
+                    new JProperty("discount_percentage", item.DiscountPercentage),
                     new JProperty("line_total_inclusive", item.PriceInclTax),
                     new JProperty("line_total_exclusive", item.PriceExclTax),
                     new JProperty("item_price_inclusive", item.UnitPriceInclTax),

@@ -173,16 +173,16 @@ public class ErpInvoiceSyncService : IErpInvoiceSyncService
 
                             if (oldErpInvoiceByThisAccount.Id <= 0)
                             {
-                                oldErpInvoiceByThisAccount.ShipmentDateUtc = erpInvoice.ShipmentDateUtc ?? DateTime.UtcNow;
-                                oldErpInvoiceByThisAccount.PostingDateUtc = erpInvoice.PostingDateUtc ?? DateTime.UtcNow;
-                                oldErpInvoiceByThisAccount.DocumentDateUtc = erpInvoice.DocumentDateUtc ?? DateTime.UtcNow;
+                                oldErpInvoiceByThisAccount.ShipmentDateUtc = erpInvoice.ShipmentDateUtc;
+                                oldErpInvoiceByThisAccount.PostingDateUtc = erpInvoice.PostingDateUtc;
+                                oldErpInvoiceByThisAccount.DocumentDateUtc = erpInvoice.DocumentDateUtc;
                                 oldErpInvoiceByThisAccount.ErpDocumentNumber = erpInvoice.ErpDocumentNumber;
                                 oldErpInvoiceByThisAccount.ErpOrderNumber = erpInvoice.ErpOrderNumber;
                                 oldErpInvoiceByThisAccount.Description = erpInvoice.Description;
                                 oldErpInvoiceByThisAccount.ErpAccountId = erpAccount.Id;
                                 oldErpInvoiceByThisAccount.CurrencyCode = currency.CurrencyCode;
                                 oldErpInvoiceByThisAccount.PODSignedById = erpInvoice.PODSignedById;
-                                oldErpInvoiceByThisAccount.PODSignedOnUtc = erpInvoice.PODSignedOnUtc ?? DateTime.UtcNow;
+                                oldErpInvoiceByThisAccount.PODSignedOnUtc = erpInvoice.PODSignedOnUtc;
                                 oldErpInvoiceByThisAccount.RelatedDocumentNo = erpInvoice.RelatedDocumentNo;
                                 oldErpInvoiceByThisAccount.ItemCount = erpInvoice.Items?.Count ?? 0;
 
@@ -196,12 +196,12 @@ public class ErpInvoiceSyncService : IErpInvoiceSyncService
                             }
                             else
                             {
-                                oldErpInvoiceByThisAccount.ErpDocumentNumber = erpInvoice.ErpDocumentNumber ?? string.Empty;
-                                oldErpInvoiceByThisAccount.ErpOrderNumber = erpInvoice.ErpOrderNumber ?? string.Empty;
-                                oldErpInvoiceByThisAccount.Description = erpInvoice.Description ?? string.Empty;
+                                oldErpInvoiceByThisAccount.ErpDocumentNumber = erpInvoice.ErpDocumentNumber;
+                                oldErpInvoiceByThisAccount.ErpOrderNumber = erpInvoice.ErpOrderNumber;
+                                oldErpInvoiceByThisAccount.Description = erpInvoice.Description;
                                 oldErpInvoiceByThisAccount.ErpAccountId = erpAccount.Id;
                                 oldErpInvoiceByThisAccount.CurrencyCode = currency.CurrencyCode;
-                                oldErpInvoiceByThisAccount.RelatedDocumentNo = erpInvoice.RelatedDocumentNo ?? string.Empty;
+                                oldErpInvoiceByThisAccount.RelatedDocumentNo = erpInvoice.RelatedDocumentNo;
                                 oldErpInvoiceByThisAccount.ItemCount = erpInvoice.Items?.Count ?? 0;
 
                                 if (Enum.TryParse(erpInvoice.DocumentType, out ErpDocumentType parsedDocumentType))

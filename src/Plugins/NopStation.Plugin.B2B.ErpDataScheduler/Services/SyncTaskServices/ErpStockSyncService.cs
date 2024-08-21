@@ -162,7 +162,6 @@ public class ErpStockSyncService : IErpStockSyncService
                         }
 
                         oldErpProduct.StockQuantity = Convert.ToInt32(Math.Min(Math.Max(Math.Round(erpProduct.StockQuantity), int.MinValue), int.MaxValue));
-                        oldErpProduct.OrderMinimumQuantity = 1;
                         oldErpProduct.UpdatedOnUtc = DateTime.UtcNow;
 
                         if (oldErpProduct.StockQuantity == 0)
