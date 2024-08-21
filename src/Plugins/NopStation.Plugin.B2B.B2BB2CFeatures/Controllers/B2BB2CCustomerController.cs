@@ -62,48 +62,17 @@ public class B2BB2CCustomerController : CustomerController
 {
     #region Fields
 
-    private readonly CaptchaSettings _captchaSettings;
-    private readonly CustomerSettings _customerSettings;
-    private readonly DateTimeSettings _dateTimeSettings;
-    private readonly GdprSettings _gdprSettings;
-    private readonly IAddressService _addressService;
-    private readonly IAuthenticationService _authenticationService;
-    private readonly ICountryService _countryService;
-    private readonly IAttributeParser<CustomerAttribute, CustomerAttributeValue> _customerAttributeParser;
-    private readonly IAttributeService<CustomerAttribute, CustomerAttributeValue> _customerAttributeService;
-    private readonly ICustomerRegistrationService _customerRegistrationService;
-    private readonly ICustomerService _customerService;
-    private readonly IEventPublisher _eventPublisher;
-    private readonly IGdprService _gdprService;
-    private readonly IGenericAttributeService _genericAttributeService;
-    private readonly ILocalizationService _localizationService;
-    private readonly ILogger _logger;
-    private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
-    private readonly IStateProvinceService _stateProvinceService;
-    private readonly IStoreContext _storeContext;
-    private readonly ITaxService _taxService;
-    private readonly IWorkContext _workContext;
     private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
-    private readonly IWorkflowMessageService _workflowMessageService;
-    private readonly LocalizationSettings _localizationSettings;
-    private readonly TaxSettings _taxSettings;
     private readonly IB2BRegisterModelFactory _b2BRegisterModelFactory;
     private readonly IErpAccountService _erpAccountService;
     private readonly IErpNopUserService _erpNopUserService;
     private readonly IErpNopUserAccountMapService _erpNopUserAccountMapService;
     private readonly IErpShipToAddressService _erpShipToAddressService;
     private readonly ISettingService _settingService;
-    private readonly INotificationService _notificationService;
-    private readonly Nop.Web.Factories.ICustomerModelFactory _customerModelFactory;
-    private readonly HtmlEncoder _htmlEncoder;
-    private readonly ICustomerActivityService _customerActivityService;
-    private readonly StoreInformationSettings _storeInformationSettings;
     private readonly IErpLogsService _erpLogsService;
     private readonly IErpIntegrationPluginManager _erpIntegrationPluginManager;
-    private readonly B2BB2CFeaturesSettings _b2BB2CFeaturesSettings;
     private readonly IStaticCacheManager _staticCacheManager;
     private readonly IErpActivityLogsService _erpActivityLogsService;
-    private const string ADMININSTRATOR_ROLE_SYSTEM_NAME = "Administrators";
     private readonly IErpAccountCustomerRegistrationFormService _erpAccountCustomerRegistrationFormService;
     private readonly IErpAccountCustomerRegistrationBankingDetailsService _erpAccountCustomerRegistrationBankingDetailsService;
     private readonly IErpAccountCustomerRegistrationPremisesService _erpAccountCustomerRegistrationPremisesService;
@@ -115,8 +84,7 @@ public class B2BB2CCustomerController : CustomerController
 
     #region Ctor
 
-    public B2BB2CCustomerController(
-        CaptchaSettings captchaSettings,
+    public B2BB2CCustomerController(CaptchaSettings captchaSettings,
         CustomerSettings customerSettings,
         DateTimeSettings dateTimeSettings,
         GdprSettings gdprSettings,
@@ -179,94 +147,63 @@ public class B2BB2CCustomerController : CustomerController
         IErpAccountCustomerRegistrationPremisesService erpAccountCustomerRegistrationPremisesService,
         IErpAccountCustomerRegistrationPhysicalTradingAddressService erpAccountCustomerRegistrationPhysicalTradingAddressService,
         IErpAccountCustomerRegistrationTradeReferencesService erpAccountCustomerRegistrationTradeReferencesService,
-        IErpWorkflowMessageService erpWorkflowMessageService) :
-        base(
-         addressSettings,
-         captchaSettings,
-         customerSettings,
-         dateTimeSettings,
-         forumSettings,
-         gdprSettings,
-         htmlEncoder,
-         addressModelFactory,
-         addressService,
-         addressAttributeParser,
-         customerAttributeParser,
-         customerAttributeService,
-         authenticationService,
-         countryService,
-         currencyService,
-         customerActivityService,
-         customerModelFactory,
-         customerRegistrationService,
-         customerService,
-         downloadService,
-         eventPublisher,
-         exportManager,
-         externalAuthenticationService,
-         gdprService,
-         genericAttributeService,
-         giftCardService,
-         localizationService,
-         logger,
-         multiFactorAuthenticationPluginManager,
-         newsLetterSubscriptionService,
-         notificationService,
-         orderService,
-         permissionService,
-         pictureService,
-         priceFormatter,
-         productService,
-         stateProvinceService,
-         storeContext,
-         taxService,
-         workContext,
-         workflowMessageService,
-         localizationSettings,
-         mediaSettings,
-         multiFactorAuthenticationSettings,
-         storeInformationSettings,
-         taxSettings)
+        IErpWorkflowMessageService erpWorkflowMessageService) :  base(addressSettings,
+             captchaSettings,
+             customerSettings,
+             dateTimeSettings,
+             forumSettings,
+             gdprSettings,
+             htmlEncoder,
+             addressModelFactory,
+             addressService,
+             addressAttributeParser,
+             customerAttributeParser,
+             customerAttributeService,
+             authenticationService,
+             countryService,
+             currencyService,
+             customerActivityService,
+             customerModelFactory,
+             customerRegistrationService,
+             customerService,
+             downloadService,
+             eventPublisher,
+             exportManager,
+             externalAuthenticationService,
+             gdprService,
+             genericAttributeService,
+             giftCardService,
+             localizationService,
+             logger,
+             multiFactorAuthenticationPluginManager,
+             newsLetterSubscriptionService,
+             notificationService,
+             orderService,
+             permissionService,
+             pictureService,
+             priceFormatter,
+             productService,
+             stateProvinceService,
+             storeContext,
+             taxService,
+             workContext,
+             workflowMessageService,
+             localizationSettings,
+             mediaSettings,
+             multiFactorAuthenticationSettings,
+             storeInformationSettings,
+             taxSettings)
     {
-        _captchaSettings = captchaSettings;
-        _customerSettings = customerSettings;
-        _dateTimeSettings = dateTimeSettings;
-        _gdprSettings = gdprSettings;
-        _addressService = addressService;
-        _authenticationService = authenticationService;
-        _countryService = countryService;
-        _customerAttributeParser = customerAttributeParser;
-        _customerAttributeService = customerAttributeService;
-        _customerRegistrationService = customerRegistrationService;
-        _customerService = customerService;
-        _eventPublisher = eventPublisher;
-        _gdprService = gdprService;
-        _genericAttributeService = genericAttributeService;
-        _localizationService = localizationService;
-        _logger = logger;
-        _newsLetterSubscriptionService = newsLetterSubscriptionService;
-        _stateProvinceService = stateProvinceService;
-        _storeContext = storeContext;
-        _taxService = taxService;
-        _workContext = workContext;
+        
         _b2BB2CWorkContext = b2BB2CWorkContext;
-        _workflowMessageService = workflowMessageService;
-        _localizationSettings = localizationSettings;
-        _taxSettings = taxSettings;
         _b2BRegisterModelFactory = b2BRegisterModelFactory;
         _erpAccountService = erpAccountService;
         _erpNopUserService = erpNopUserService;
         _erpNopUserAccountMapService = erpNopUserAccountMapService;
         _erpShipToAddressService = erpShipToAddressService;
         _settingService = settingService;
-        _notificationService = notificationService;
-        _customerModelFactory = customerModelFactory;
-        _htmlEncoder = htmlEncoder;
-        _customerActivityService = customerActivityService;
-        _storeInformationSettings = storeInformationSettings;
         _erpLogsService = erpLogsService;
         _erpIntegrationPluginManager = erpIntegrationPluginManager;
-        _b2BB2CFeaturesSettings = b2BB2CFeaturesSettings;
         _staticCacheManager = staticCacheManager;
         _erpActivityLogsService = erpActivityLogsService;
         _erpAccountCustomerRegistrationFormService = erpAccountCustomerRegistrationFormService;
@@ -281,7 +218,7 @@ public class B2BB2CCustomerController : CustomerController
 
     #region Utilities
 
-    protected async Task<string> ParseCustomCustomerAttributesAsync(IFormCollection form)
+    protected override async Task<string> ParseCustomCustomerAttributesAsync(IFormCollection form)
     {
         if (form is null)
             throw new ArgumentNullException(nameof(form));
@@ -360,7 +297,7 @@ public class B2BB2CCustomerController : CustomerController
         return attributesXml;
     }
 
-    protected virtual async Task LogGdprAsync(Customer customer, CustomerInfoModel oldCustomerInfoModel,
+    protected override async Task LogGdprAsync(Customer customer, CustomerInfoModel oldCustomerInfoModel,
         CustomerInfoModel newCustomerInfoModel, IFormCollection form)
     {
         try
@@ -454,7 +391,7 @@ public class B2BB2CCustomerController : CustomerController
         }
     }
 
-    protected async virtual Task ValidateRequiredConsentsAsync(List<GdprConsent> consents, IFormCollection form)
+    protected virtual void ValidateRequiredConsentsAsync(List<GdprConsent> consents, IFormCollection form)
     {
         foreach (var consent in consents)
         {
@@ -467,7 +404,7 @@ public class B2BB2CCustomerController : CustomerController
         }
     }
 
-    protected async virtual Task<IActionResult> SaveNopCustomerAsync(B2BRegisterModel model, string returnUrl, bool captchaValid, IFormCollection form, Customer customer)
+    protected virtual async Task<IActionResult> SaveNopCustomerAsync(B2BRegisterModel model, string returnUrl, bool captchaValid, IFormCollection form, Customer customer)
     {
         try
         {
@@ -506,7 +443,7 @@ public class B2BB2CCustomerController : CustomerController
                 var consents = (await _gdprService
                     .GetAllConsentsAsync()).Where(consent => consent.DisplayDuringRegistration && consent.IsRequired).ToList();
 
-                await ValidateRequiredConsentsAsync(consents, form);
+                ValidateRequiredConsentsAsync(consents, form);
             }
 
             if (ModelState.IsValid)

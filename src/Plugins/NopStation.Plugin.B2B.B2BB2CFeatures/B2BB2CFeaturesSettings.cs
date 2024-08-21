@@ -60,7 +60,7 @@ public partial class B2BB2CFeaturesSettings : ISettings
 
     public int ERPTimeOutMilliseconds { get; set; }
 
-    public int MaxERPIntegrationOrderPlaceReties { get; set; }
+    public int MaxErpIntegrationOrderPlaceRetries { get; set; }
 
     public bool EnableLogOnErpCall { get; set; }
 

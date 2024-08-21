@@ -738,6 +738,7 @@
       <Private>False</Private>
       <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
     </ProjectReference>
+    <ProjectReference Include="..\NopStation.Plugin.Misc.Actions\NopStation.Plugin.Misc.Actions.csproj" />
     <ProjectReference Include="..\NopStation.Plugin.Misc.Core\NopStation.Plugin.Misc.Core.csproj" />
     <ClearPluginAssemblies Include="$(MSBuildProjectDirectory)\..\..\Build\ClearPluginAssemblies.proj" />
   </ItemGroup>

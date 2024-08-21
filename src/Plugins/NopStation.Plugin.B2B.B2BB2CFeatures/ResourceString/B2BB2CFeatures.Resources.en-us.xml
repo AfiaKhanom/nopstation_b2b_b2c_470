@@ -153,11 +153,11 @@
         <Value>Enter ERP time out milliseconds</Value>
     </LocaleResource>
 
-    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.MaxERPIntegrationOrderPlaceReties">
+    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.MaxErpIntegrationOrderPlaceRetries">
         <Value>Max ERP integration order place reties</Value>
     </LocaleResource>
 
-    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.MaxERPIntegrationOrderPlaceReties.Hint">
+    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.MaxErpIntegrationOrderPlaceRetries.Hint">
         <Value>Enter max ERP integration order place reties</Value>
     </LocaleResource>
 

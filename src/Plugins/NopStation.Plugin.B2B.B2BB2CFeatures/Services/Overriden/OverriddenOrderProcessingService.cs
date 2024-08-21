@@ -514,7 +514,7 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
 
     #region B2B
 
-    public async Task PlaceERPOrderAtNopAsync(Order order, ErpOrderType erpOrderType)
+    public async Task PlaceErpOrderAtNopAsync(Order order, ErpOrderType erpOrderType)
     {
         var currentStore = await _storeContext.GetCurrentStoreAsync();
         var currentCustomer = await _workContext.GetCurrentCustomerAsync();
@@ -727,7 +727,7 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
             await _genericAttributeService.SaveAttributeAsync<string>(currentCustomer, B2BB2CFeaturesDefaults.ProvidedB2BCustomerReferenceAsPO, null, currentStore.Id);
 
             if (b2BCustomerAccountSettings.UseERPIntegration && erpOrderAdditionalData.IntegrationStatusType == IntegrationStatusType.Queued)
-                await PlaceERPOrderAtERPAsync(order, erpOrderAdditionalData, erpNopUser, erpPlaceOrderItemList, b2BCustomerAccountSettings.MaxERPIntegrationOrderPlaceReties);
+                await PlaceERPOrderAtERPAsync(order, erpOrderAdditionalData, erpNopUser, erpPlaceOrderItemList, b2BCustomerAccountSettings.MaxErpIntegrationOrderPlaceRetries);
         }
         else
         {
@@ -735,7 +735,7 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
         }
     }
 
-    public async Task<(bool, string)> RetryPlaceERPOrderAtERPAsync(ErpOrderAdditionalData erpOrderAdditionalData, B2BB2CFeaturesSettings b2BB2CFeaturesSettings)
+    public async Task<(bool, string)> RetryPlaceErpOrderAtErpAsync(ErpOrderAdditionalData erpOrderAdditionalData, B2BB2CFeaturesSettings b2BB2CFeaturesSettings)
     {
         if (!b2BB2CFeaturesSettings.UseERPIntegration)
             return (false, "Use of ERP Integration is disabled!");
@@ -802,11 +802,11 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
         if (erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BSalesOrder || erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2CSalesOrder)
         {
             if (erpOrderAdditionalData.IntegrationStatusType != IntegrationStatusType.WaitingForPayment)
-                await PlaceERPOrderAtERPAsync(nopOrder, erpOrderAdditionalData, erpNopUser, erpPlaceOrderItemList, maxRetries: b2BB2CFeaturesSettings.MaxERPIntegrationOrderPlaceReties);
+                await PlaceERPOrderAtERPAsync(nopOrder, erpOrderAdditionalData, erpNopUser, erpPlaceOrderItemList, maxRetries: b2BB2CFeaturesSettings.MaxErpIntegrationOrderPlaceRetries);
         }
         else
         {
-            await PlaceERPOrderAtERPAsync(nopOrder, erpOrderAdditionalData, erpNopUser, erpPlaceOrderItemList, maxRetries: b2BB2CFeaturesSettings.MaxERPIntegrationOrderPlaceReties);
+            await PlaceERPOrderAtERPAsync(nopOrder, erpOrderAdditionalData, erpNopUser, erpPlaceOrderItemList, maxRetries: b2BB2CFeaturesSettings.MaxErpIntegrationOrderPlaceRetries);
         }
 
         return (true, string.Empty);
@@ -970,6 +970,7 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
             await _erpLogsService.WarningAsync(ex.Message, ErpSyncLavel.Order, ex, await _workContext.GetCurrentCustomerAsync());
         }
     }
+    
     #endregion
 
     #region Utilities
