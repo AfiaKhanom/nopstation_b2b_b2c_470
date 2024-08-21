@@ -192,8 +192,7 @@ public class ErpOrderDetailsModelFactory : IErpOrderDetailsModelFactory
         var language = await _b2BB2CWorkContext.GetWorkingLanguageAsync();
         var languageId = language.Id;
         var erpBillingAddress = await _addressService.GetAddressByIdAsync(b2BAccount.BillingAddressId ?? 0);
-        var tmp = await _erpSalesOrgService.GetErpSalesOrgByIdAsync(b2BAccount.ErpSalesOrgId);
-        var orgSaleName = tmp.Name + '-' + tmp.Code;
+        var salesOrg = await _erpSalesOrgService.GetErpSalesOrgByIdAsync(b2BAccount.ErpSalesOrgId);
         var erpStateProvidenAddress = await _stateProvinceService.GetStateProvinceByAddressAsync(erpBillingAddress);
         var erpCountry = await _countryService.GetCountryByIdAsync(erpBillingAddress.CountryId ?? 0);
 
@@ -203,7 +202,7 @@ public class ErpOrderDetailsModelFactory : IErpOrderDetailsModelFactory
             AccountName = b2BAccount.AccountName,
             PaymentTypeCode = b2BAccount.PaymentTypeCode,
             Address1 = erpBillingAddress?.City + "," + erpBillingAddress?.County + "," + erpStateProvidenAddress?.Name + erpBillingAddress?.ZipPostalCode + "," + erpCountry?.Name,
-            ErpSalesOrgName = orgSaleName,
+            ErpSalesOrgCode = salesOrg.Code,
             IsActive = b2BAccount.IsActive,
             CreditLimitUsed = b2BAccount.CreditLimit - b2BAccount.CreditLimitAvailable,
             CreditLimitAvailable = b2BAccount.CreditLimitAvailable,

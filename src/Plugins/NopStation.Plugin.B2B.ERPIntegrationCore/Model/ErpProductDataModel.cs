@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace NopStation.Plugin.B2B.ERPIntegrationCore.Model;
 
@@ -17,8 +18,11 @@ public class ErpProductDataModel
     public decimal StockQuantity { get; set; }
     public IEnumerable<ErpCategoryDataModel> ProductCategories { get; set; } = new List<ErpCategoryDataModel>();
     public List<KeyValuePair<string, string>> ProductAttributes { get; set; } = new List<KeyValuePair<string, string>>();
-    public string TaxCategoryName { get; set; }
+    public int TaxCategoryId { get; set; }
     public string Published { get; set; }
     public string ManufacturerName { get; set; }
-    public string ManufacturerDescription { get; set; }
+    public string ManufacturerCode { get; set; }
+    public string VendorCode { get; set; }
+    public string VendorName { get; set; }
+    public DateTime LastChangedDate { get; set; }
 }

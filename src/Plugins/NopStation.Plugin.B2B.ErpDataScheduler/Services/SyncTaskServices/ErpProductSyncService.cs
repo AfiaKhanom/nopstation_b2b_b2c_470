@@ -5,6 +5,7 @@ using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Common;
 using Nop.Core.Domain.Shipping;
 using Nop.Core.Domain.Tax;
+using Nop.Core.Domain.Vendors;
 using Nop.Services.Catalog;
 using Nop.Services.Common;
 using Nop.Services.Configuration;
@@ -174,6 +175,7 @@ public class ErpProductSyncService : IErpProductSyncService
             
             var specificationAttributes = await _specificationAttributeService.GetSpecificationAttributesAsync();
 
+            var allVendors = (await _vendorService.GetAllVendorsAsync()).ToList();
             var allManufacturers = (await _manufacturerService.GetAllManufacturersAsync()).ToList();
             var allCategories = (await _categoryService.GetAllCategoriesAsync()).ToList();
             var allProductCategories = new List<ProductCategory>();
@@ -269,6 +271,8 @@ public class ErpProductSyncService : IErpProductSyncService
                     foreach (var erpProduct in response.Data)
                     {
                         var oldErpProduct = await _productService.GetProductBySkuAsync(erpProduct.Sku) ?? new Product();
+                        var vendor = allVendors.FirstOrDefault(x => x.Name.Equals(erpProduct.VendorCode) || x.Name.Equals(erpProduct.VendorName)) ?? new Vendor();
+                        
                         if (oldErpProduct.Id <= 0)
                         {
                             oldErpProduct.Sku = erpProduct.Sku;
@@ -286,6 +290,7 @@ public class ErpProductSyncService : IErpProductSyncService
                             oldErpProduct.ProductTemplateId = productTemplate.Id;
 
                             oldErpProduct.WarehouseId = warehouse.Id;
+                            oldErpProduct.VendorId = vendor.Id;
 
                             oldErpProduct.StockQuantity = Convert.ToInt32(Math.Min(Math.Max(Math.Round(erpProduct.StockQuantity), int.MinValue), int.MaxValue));
                             oldErpProduct.OrderMinimumQuantity = 1;
@@ -321,6 +326,9 @@ public class ErpProductSyncService : IErpProductSyncService
                         else
                         {
                             oldErpProduct.ShortDescription = (erpProduct.ShortDescription.Length > 400) ? erpProduct.ShortDescription.Substring(0, 400) : erpProduct.ShortDescription;
+
+                            oldErpProduct.VendorId = vendor.Id;
+                            oldErpProduct.WarehouseId = warehouse.Id;
 
                             oldErpProduct.FullDescription = lineBreakReplacer.Replace((erpProduct.FullDescription.Length > 400)
                                 ? erpProduct.FullDescription.Substring(0, 400) : erpProduct.FullDescription, "<br/>");
@@ -468,7 +476,8 @@ public class ErpProductSyncService : IErpProductSyncService
 
                         if (!string.IsNullOrWhiteSpace(erpProduct.ManufacturerName))
                         {
-                            var currentManufacturer = allManufacturers.Find(mft => mft.Name == erpProduct.ManufacturerName) ?? new Manufacturer();
+                            var currentManufacturer = allManufacturers
+                                .Find(mft => mft.Name.Equals(erpProduct.ManufacturerName) || mft.Name.Equals(erpProduct.ManufacturerCode)) ?? new Manufacturer();
 
                             if (currentManufacturer.Id == 0)
                             {

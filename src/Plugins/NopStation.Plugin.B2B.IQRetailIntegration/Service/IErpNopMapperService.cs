@@ -9,7 +9,8 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.Service
     {
         Task<IList<ErpAccountDataModel>> ErpAccountMapNop(IList<DebtorsMasterModel> debtorsMasters);
         Task<IList<ErpInvoiceDataModel>> ErpInvoiceMapNop(IList<ProcessingDocumentModel> erpInvoicesResponse);
-        Task<IList<ErpProductDataModel>> ErpStockMapNop(IList<ErpStockRecordModel> erpStockResponses);
+        Task<IList<ErpProductDataModel>> ErpProductMapNop(IList<ErpStockRecordModel> erpStockResponses);
+        Task<IList<ErpStockDataModel>> ErpStockMapNop(IList<ErpStockRecordModel> erpStockResponses);
         Task<IList<ErpShipToAddressDataModel>> ErpShipToAddressMapNop(IList<DebtorsMasterModel> erpShipToAddressResponse);
         Task<IList<ErpPriceGroupPricingDataModel>> ErpGroupPriceMapNop(IList<ErpStockRecordModel> erpGroupPriceResponses);
         Task<IList<ErpPriceSpecialPricingDataModel>> ErpSpecialPriceMapNop(IList<ErpStockRecordModel> erpSpecialPriceResponses);

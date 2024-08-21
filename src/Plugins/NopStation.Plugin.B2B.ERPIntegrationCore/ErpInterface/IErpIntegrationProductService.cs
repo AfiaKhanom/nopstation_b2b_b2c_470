@@ -13,11 +13,9 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.ErpInterface
 
         Task<ErpResponseData<IList<ErpProductDataModel>>> GetProductsFromErpAsync(ErpGetRequestModel erpRequest);
 
-        Task ProductListLiveStockDataAsync(ErpAccount erpAccount, IList<Product> products, IProductService productService);
+        Task<ErpResponseData<ErpStockDataModel>> GetStockByItemNoFromErpAsync(ErpGetRequestModel erpRequest);
 
-        Task<ErpResponseData<ErpProductDataModel>> GetStockByItemNoFromErpAsync(ErpGetRequestModel erpRequest);
-
-        Task<ErpResponseData<IList<ErpProductDataModel>>> GetStocksFromErpAsync(ErpGetRequestModel erpRequest);
+        Task<ErpResponseData<IList<ErpStockDataModel>>> GetStocksFromErpAsync(ErpGetRequestModel erpRequest);
 
         Task<ErpResponseData<ErpPriceGroupPricingDataModel>> GetProductGroupPriceFromErpAsync(ErpGetRequestModel erpRequest);
 
@@ -26,5 +24,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.ErpInterface
         Task<ErpResponseData<ErpPriceSpecialPricingDataModel>> GetProductSpecialPriceFromErpAsync(ErpGetRequestModel erpRequest);
 
         Task<ErpResponseData<IList<ErpPriceSpecialPricingDataModel>>> GetProductSpecialPricesFromErpAsync(ErpGetRequestModel erpRequest);
+
+        Task ProductListLiveStockDataAsync(ErpAccount erpAccount, IList<Product> products, IProductService productService);
     }
 }

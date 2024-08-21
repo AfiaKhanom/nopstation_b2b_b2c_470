@@ -6,8 +6,9 @@ public class ErpAccountDataModel
 {
     public string AccountNumber { get; set; }
     public string AccountName { get; set; }
-    public string ErpSalesOrgName { get; set; }
+    public string ErpSalesOrgCode { get; set; }
     public string BillingSuburb { get; set; }
+    public ErpAddressModel BillingName { get; set; }
     public string VatNumber { get; set; }
     public decimal CreditLimitUsed { get; set; }
     public decimal CreditLimitAvailable { get; set; }

@@ -310,7 +310,7 @@ public class ErpNopMapperService : IErpNopMapperService
         return erpOrders;
     }
 
-    public async Task<IList<ErpProductDataModel>> ErpStockMapNop(IList<ErpStockRecordModel> erpStockResponses)
+    public async Task<IList<ErpProductDataModel>> ErpProductMapNop(IList<ErpStockRecordModel> erpStockResponses)
     {
         var erpStocks = (await Task.WhenAll(erpStockResponses.Select(async stocks =>
         {
@@ -322,7 +322,10 @@ public class ErpNopMapperService : IErpNopMapperService
                 FullDescription = stocks.Description ?? string.Empty,
                 Price = stocks.SellPrice1,
                 ManufacturerName = stocks.BrandName,
-                ManufacturerDescription = stocks.AlternativeDescription ?? string.Empty,
+                VendorCode = string.Empty,
+                VendorName = string.Empty,
+                TaxCategoryId = 0,
+                Published = "true",
                 ProductCategories = new List<ErpCategoryDataModel>()
                 {
                     new ()
@@ -343,6 +346,23 @@ public class ErpNopMapperService : IErpNopMapperService
                     new (nameof(ErpStockRecordModel.Colour), stocks.Colour),
                     new (nameof(ErpStockRecordModel.Size), stocks.Size)
                 }
+            };
+        }))).ToList();
+
+        return erpStocks;
+    }
+
+    public async Task<IList<ErpStockDataModel>> ErpStockMapNop(IList<ErpStockRecordModel> erpStockResponses)
+    {
+        var erpStocks = (await Task.WhenAll(erpStockResponses.Select(async stocks =>
+        {
+            return new ErpStockDataModel
+            {
+                AccountNumber = string.Empty,
+                Sku = stocks.Code ?? string.Empty,
+                SalesOrgCode = string.Empty,
+                QuantityOnHand = stocks.OnHand,
+                LastChangedDate = DateTime.MinValue
             };
         }))).ToList();
 
