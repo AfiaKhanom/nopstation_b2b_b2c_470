@@ -89,6 +89,7 @@ public class ErpNopMapperService : IErpNopMapperService
             PreFilterFacets = string.Empty,
             VatNumber = account.TaxNumber ?? string.Empty,
             PriceGroupCode = account.PreferredSellPrice ?? string.Empty,
+            CreditLimit = account.CreditLimit,
             CreditLimitUsed = account.CreditLimitInsured,
             CreditLimitAvailable = account.CreditLimitReserved,
             CurrentBalance = account.BalanceCurrent

@@ -55,6 +55,7 @@ public class OrderSummaryContentDealsViewComponent : NopViewComponent
             AccountName = erpAccount.AccountName,
             PaymentTypeCode = erpAccount.PaymentTypeCode,
             IsActive = erpAccount.IsActive,
+            CreditLimit = erpAccount.CreditLimit,
             CreditLimitUsed = erpAccount.CreditLimit - erpAccount.CreditLimitAvailable,
             CreditLimitAvailable = erpAccount.CreditLimitAvailable,
             CurrentBalance = erpAccount.CurrentBalance
@@ -63,6 +64,7 @@ public class OrderSummaryContentDealsViewComponent : NopViewComponent
         erpAccountModel.CurrentBalanceStr = await _priceFormatter.FormatPriceAsync(erpAccount.CurrentBalance);
         erpAccountModel.CreditLimitAvailableStr = await _priceFormatter.FormatPriceAsync(erpAccount.CreditLimitAvailable);
         erpAccountModel.CreditLimitUsedStr = await _priceFormatter.FormatPriceAsync(erpAccount.CreditLimit - erpAccount.CreditLimitAvailable);
+        erpAccountModel.CreditLimitStr = await _priceFormatter.FormatPriceAsync(erpAccount.CreditLimit);
 
         return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/Shared/Components/OrderSummaryContentDeals/Default.cshtml", erpAccountModel);
     }

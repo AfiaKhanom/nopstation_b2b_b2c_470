@@ -223,8 +223,8 @@ public class ErpAccountSyncService : IErpAccountSyncService
                             oldErpAccount.B2BPriceGroupCodeId = (await _erpGroupPriceCodeService.GetErpGroupPriceCodeByCodedAsync(erpAccount.PriceGroupCode)).Id;
 
                             oldErpAccount.CreditLimitAvailable = erpAccount.CreditLimitAvailable;
-                            oldErpAccount.CreditLimit = erpAccount.CreditLimitUsed + erpAccount.CreditLimitAvailable;
-                            oldErpAccount.CurrentBalance = erpAccount.CurrentBalance;                           
+                            oldErpAccount.CreditLimit = erpAccount.CreditLimit;
+                            oldErpAccount.CurrentBalance = erpAccount.CurrentBalance;                       
 
                             var hideStockValues = erpAccount.ErpAccountAttributes?.Exists(kvp =>
                                     HIDE_STOCK_VALUES.Equals(kvp.Key, StringComparison.InvariantCultureIgnoreCase) 
@@ -274,7 +274,7 @@ public class ErpAccountSyncService : IErpAccountSyncService
                             oldErpAccount.B2BPriceGroupCodeId = _erpGroupPriceCodeService.GetErpGroupPriceCodeByCodedAsync(erpAccount.PriceGroupCode).Id;
 
                             oldErpAccount.CreditLimitAvailable = erpAccount.CreditLimitAvailable;
-                            oldErpAccount.CreditLimit = erpAccount.CreditLimitUsed + erpAccount.CreditLimitAvailable;
+                            oldErpAccount.CreditLimit = erpAccount.CreditLimit;
                             oldErpAccount.CurrentBalance = erpAccount.CurrentBalance;
                             
 

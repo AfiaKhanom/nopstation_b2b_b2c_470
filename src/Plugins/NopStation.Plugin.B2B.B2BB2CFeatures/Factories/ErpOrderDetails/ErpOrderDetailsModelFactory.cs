@@ -204,6 +204,7 @@ public class ErpOrderDetailsModelFactory : IErpOrderDetailsModelFactory
             Address1 = erpBillingAddress?.City + "," + erpBillingAddress?.County + "," + erpStateProvidenAddress?.Name + erpBillingAddress?.ZipPostalCode + "," + erpCountry?.Name,
             ErpSalesOrgCode = salesOrg.Code,
             IsActive = b2BAccount.IsActive,
+            CreditLimit = b2BAccount.CreditLimit,
             CreditLimitUsed = b2BAccount.CreditLimit - b2BAccount.CreditLimitAvailable,
             CreditLimitAvailable = b2BAccount.CreditLimitAvailable,
             CurrentBalance = b2BAccount.CurrentBalance
@@ -212,6 +213,7 @@ public class ErpOrderDetailsModelFactory : IErpOrderDetailsModelFactory
         b2BOrderDetailsModel.ErpAccountDataModel.CurrentBalanceStr = await _priceFormatter.FormatPriceAsync(b2BAccount.CurrentBalance);
         b2BOrderDetailsModel.ErpAccountDataModel.CreditLimitAvailableStr = await _priceFormatter.FormatPriceAsync(b2BAccount.CreditLimitAvailable);
         b2BOrderDetailsModel.ErpAccountDataModel.CreditLimitUsedStr = await _priceFormatter.FormatPriceAsync(b2BAccount.CreditLimit - b2BAccount.CreditLimitAvailable);
+        b2BOrderDetailsModel.ErpAccountDataModel.CreditLimitStr = await _priceFormatter.FormatPriceAsync(b2BAccount.CreditLimit);
 
         var billingAddress = await _addressService.GetAddressByIdAsync(order.BillingAddressId);
         await _addressModelFactory.PrepareAddressModelAsync(b2BOrderDetailsModel.ErpBillingAddressModel, billingAddress, false, _addressSettings);
