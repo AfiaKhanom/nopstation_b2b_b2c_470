@@ -359,7 +359,7 @@ public class ErpNopMapperService : IErpNopMapperService
         {
             return new ErpStockDataModel
             {
-                AccountNumber = string.Empty,
+                WarehouseNameOrCode = string.Empty,
                 Sku = stocks.Code ?? string.Empty,
                 SalesOrgCode = string.Empty,
                 QuantityOnHand = stocks.OnHand,

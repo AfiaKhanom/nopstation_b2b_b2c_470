@@ -25,5 +25,7 @@ public class ErpProductDataModel
     public string ManufacturerCode { get; set; }
     public string VendorCode { get; set; }
     public string VendorName { get; set; }
-    public DateTime LastChangedDate { get; set; }
+    public string ProductTags { get; set; }
+    public DateTime? LastChangedDate { get; set; }
+    public string WarehouseNameOrCode { get; set; }
 }

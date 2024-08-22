@@ -4,7 +4,7 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncLogServices
 {
     public interface ISyncLogService
     {
-        Task SyncLogSaveOnFileAsync(string syncTaskName = "", ErpSyncLavel syncLavel = 0, string shortMessage = "", string fullMessage = "");
+        Task SyncLogSaveOnFileAsync(string syncTaskName = "", ErpSyncLevel syncLavel = 0, string shortMessage = "", string fullMessage = "");
 
         Task<IList<string>> GetAllSyncLogFiles(string syncTaskName = "", int syncTaskId = 0);
 

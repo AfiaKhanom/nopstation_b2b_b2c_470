@@ -37,7 +37,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.Service
 
         #region Method
 
-        public async Task<HttpResponseMessage> HttpCall(string urlExtension, string payloadData, ErpSyncLavel erpSyncLabel)
+        public async Task<HttpResponseMessage> HttpCall(string urlExtension, string payloadData, ErpSyncLevel erpSyncLabel)
         {
             try
             {

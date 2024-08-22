@@ -213,7 +213,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                     var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesRepSalesOrgMap.ActivityLog.Updated");
                     _notificationService.SuccessNotification(successMsg);
 
-                    await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLavel.SalesRep, customer: currentCustomer);
+                    await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLevel.SalesRep, customer: currentCustomer);
 
                     //erp activity log
                     await _erpActivityLogsService.InsertErpActivityAsync("Erp_AddNewErpSalesRep",
@@ -224,7 +224,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 catch (Exception ex)
                 {
                     _notificationService.ErrorNotification(ex.Message);
-                    await _erpLogsService.ErrorAsync($"{ex.Message}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLavel.SalesRep, ex, customer: currentCustomer);
+                    await _erpLogsService.ErrorAsync($"{ex.Message}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLevel.SalesRep, ex, customer: currentCustomer);
                 }
 
                 if (!continueEditing)
@@ -287,7 +287,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                     var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesRep.Updated");
                     _notificationService.SuccessNotification(successMsg);
 
-                    await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLavel.SalesRep, customer: currentCustomer);
+                    await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLevel.SalesRep, customer: currentCustomer);
 
                     //erp activity log
                     await _erpActivityLogsService.InsertErpActivityAsync("Erp_EditErpSalesRep",
@@ -341,7 +341,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesRep.Deleted");
                 _notificationService.SuccessNotification(successMsg);
 
-                await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLavel.SalesRep, customer: currentCustomer);
+                await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLevel.SalesRep, customer: currentCustomer);
 
                 //erp activity log
                 await _erpActivityLogsService.InsertErpActivityAsync("Erp_DeleteErpSalesRep",
@@ -354,7 +354,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             catch (Exception exc)
             {
                 _notificationService.ErrorNotification(exc.Message);
-                await _erpLogsService.ErrorAsync($"{exc.Message}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLavel.SalesRep, exc, customer: currentCustomer);
+                await _erpLogsService.ErrorAsync($"{exc.Message}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLevel.SalesRep, exc, customer: currentCustomer);
                 return RedirectToAction("Edit", new { id = salesRep.Id });
             }
         }
@@ -379,7 +379,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesRep.Deleted");
                 _notificationService.SuccessNotification(successMsg);
 
-                await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Rep Ids: {string.Join(",", selectedIds)}", ErpSyncLavel.SalesRep, customer: currentCustomer);
+                await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Rep Ids: {string.Join(",", selectedIds)}", ErpSyncLevel.SalesRep, customer: currentCustomer);
 
                 //erp activity log
                 await _erpActivityLogsService.InsertErpActivityAsync("Erp_DeleteErpSalesRep",
@@ -392,7 +392,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             catch (Exception exc)
             {
                 _notificationService.ErrorNotification(exc.Message);
-                await _erpLogsService.ErrorAsync($"{exc.Message}. Erp Sales Rep Ids: {string.Join(",", selectedIds)}", ErpSyncLavel.SalesRep, exc, customer: currentCustomer);
+                await _erpLogsService.ErrorAsync($"{exc.Message}. Erp Sales Rep Ids: {string.Join(",", selectedIds)}", ErpSyncLevel.SalesRep, exc, customer: currentCustomer);
             }
             return Json(new { Result = false });
         }

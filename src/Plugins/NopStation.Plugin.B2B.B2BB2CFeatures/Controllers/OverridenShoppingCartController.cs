@@ -707,7 +707,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
                 _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.Wishlist.ClearCart.Error"));
 
                 //ERP activity log
-                await _erpLogsService.ErrorAsync(_localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.Wishlist.ClearCart.Error") + " " + ex.Message, ErpSyncLavel.Order, customer: currentCustomer);
+                await _erpLogsService.ErrorAsync(_localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.Wishlist.ClearCart.Error") + " " + ex.Message, ErpSyncLevel.Order, customer: currentCustomer);
 
                 return Json(new
                 {

@@ -1024,7 +1024,7 @@ public class ErpCheckoutController : CheckoutController
                 await ClearGenericAttributeForQuoteOrderAsync();   //clear generic Attribute for Quote Order
 
                 //ERP activity log
-                await _erpLogsService.InformationAsync("B2B Quote order placed successfully! OrderId: " + placeOrderResult.PlacedOrder.Id + ", Erp Order Id: " + placeOrderResult.PlacedOrder.CustomOrderNumber, ErpSyncLavel.Order, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+                await _erpLogsService.InformationAsync("B2B Quote order placed successfully! OrderId: " + placeOrderResult.PlacedOrder.Id + ", Erp Order Id: " + placeOrderResult.PlacedOrder.CustomOrderNumber, ErpSyncLevel.Order, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
 
                 return RedirectToRoute("CheckoutCompleted", new { orderId = placeOrderResult.PlacedOrder.Id });
             }
@@ -1219,7 +1219,7 @@ public class ErpCheckoutController : CheckoutController
 
                     await ClearGenericAttributeForQuoteOrderAsync();
 
-                    await _erpLogsService.InformationAsync($"B2B Quote order placed successfully! OrderId: {placeOrderResult.PlacedOrder.Id}, Erp Order Id: {placeOrderResult.PlacedOrder.CustomOrderNumber}", ErpSyncLavel.Order, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+                    await _erpLogsService.InformationAsync($"B2B Quote order placed successfully! OrderId: {placeOrderResult.PlacedOrder.Id}, Erp Order Id: {placeOrderResult.PlacedOrder.CustomOrderNumber}", ErpSyncLevel.Order, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
 
                     //erp activity log
                     await _erpActivityLogsService.InsertErpActivityAsync("Erp_B2BQuoteOrderPlacement",
@@ -1260,7 +1260,7 @@ public class ErpCheckoutController : CheckoutController
                         await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, ErpOrderType.B2BSalesOrder);
 
                         //activity log
-                        await _erpLogsService.InformationAsync($"B2B Order placed successfully! OrderId: {placeOrderResult.PlacedOrder.Id}, Erp Order Id: {placeOrderResult.PlacedOrder.CustomOrderNumber}", ErpSyncLavel.Order, customer: customer);
+                        await _erpLogsService.InformationAsync($"B2B Order placed successfully! OrderId: {placeOrderResult.PlacedOrder.Id}, Erp Order Id: {placeOrderResult.PlacedOrder.CustomOrderNumber}", ErpSyncLevel.Order, customer: customer);
 
                         //erp activity log
                         await _erpActivityLogsService.InsertErpActivityAsync(await _b2BB2CWorkContext.GetCurrentCustomerAsync(), "Erp_ErpOrderPlacement",
@@ -1589,7 +1589,7 @@ public class ErpCheckoutController : CheckoutController
 
                     if (shippingAddressModel.ExistingErpShipToAddresses == null || shippingAddressModel.ExistingErpShipToAddresses.Count == 0)
                     {
-                        await _erpLogsService.ErrorAsync(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeaturesPlugins.ErpCheckout.ShipToAddress.NotFound"), ErpSyncLavel.Order, null, customer);
+                        await _erpLogsService.ErrorAsync(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeaturesPlugins.ErpCheckout.ShipToAddress.NotFound"), ErpSyncLevel.Order, null, customer);
                         _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeaturesPlugins.ErpCheckout.ShipToAddress.NotFound"));
                         return Json(new
                         {
@@ -1986,7 +1986,7 @@ public class ErpCheckoutController : CheckoutController
                             new ErpOrderAdditionalData());
                     }
 
-                    await _erpLogsService.InformationAsync($"B2B Quote order placed successfully! OrderId: {placeOrderResult.PlacedOrder.Id}, Erp Order Id: {placeOrderResult.PlacedOrder.CustomOrderNumber}", ErpSyncLavel.Order, customer: currCustomer);
+                    await _erpLogsService.InformationAsync($"B2B Quote order placed successfully! OrderId: {placeOrderResult.PlacedOrder.Id}, Erp Order Id: {placeOrderResult.PlacedOrder.CustomOrderNumber}", ErpSyncLevel.Order, customer: currCustomer);
 
                     //erp activity log
                     await _erpActivityLogsService.InsertErpActivityAsync(currCustomer, "Erp_B2BQuoteOrderPlacement",
@@ -2038,7 +2038,7 @@ public class ErpCheckoutController : CheckoutController
 
                         await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, (ErpOrderType)Enum.ToObject(typeof(ErpOrderType), erpOrderTypeId));
 
-                        await _erpLogsService.InformationAsync($"B2B Order placed successfully! OrderId: {placeOrderResult.PlacedOrder.Id}, Erp Order Id: {placeOrderResult.PlacedOrder.CustomOrderNumber}", ErpSyncLavel.Order, customer: currCustomer);
+                        await _erpLogsService.InformationAsync($"B2B Order placed successfully! OrderId: {placeOrderResult.PlacedOrder.Id}, Erp Order Id: {placeOrderResult.PlacedOrder.CustomOrderNumber}", ErpSyncLevel.Order, customer: currCustomer);
 
                         //erp activity log
                         await _erpActivityLogsService.InsertErpActivityAsync(currCustomer, "Erp_ErpOrderPlacement",

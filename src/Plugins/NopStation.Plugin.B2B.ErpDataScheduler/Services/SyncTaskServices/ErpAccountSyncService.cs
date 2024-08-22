@@ -71,7 +71,7 @@ public class ErpAccountSyncService : IErpAccountSyncService
         {
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
-                ErpSyncLavel.Account,
+                ErpSyncLevel.Account,
                 "No integration method found.");
 
             return false;
@@ -99,7 +99,7 @@ public class ErpAccountSyncService : IErpAccountSyncService
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
-                        ErpSyncLavel.Account,
+                        ErpSyncLevel.Account,
                         $"No Sales org found with Sales org code: {salesOrgCode}. Unable to run {ErpDataSchedulerDefaults.ErpAccountSyncTaskName}.");
 
                     return false;
@@ -123,7 +123,7 @@ public class ErpAccountSyncService : IErpAccountSyncService
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
-                ErpSyncLavel.Account,
+                ErpSyncLevel.Account,
                 "Erp Account Sync started.");
 
             foreach (var salesOrg in listOfSalesOrgs)
@@ -150,7 +150,7 @@ public class ErpAccountSyncService : IErpAccountSyncService
 
                         await _erpSyncLogService.SyncLogSaveOnFileAsync(
                             ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
-                            ErpSyncLavel.Account,
+                            ErpSyncLevel.Account,
                             response.ErpResponseModel.ErrorShortMessage,
                             response.ErpResponseModel.ErrorFullMessage);
                         break;
@@ -324,20 +324,20 @@ public class ErpAccountSyncService : IErpAccountSyncService
                     await _erpAccountService.InActiveAllOldAccount(syncStartTime);
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                             ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
-                            ErpSyncLavel.Account,
+                            ErpSyncLevel.Account,
                             $"Erp Accounts sync is successful for Sales Org: {salesOrg.Name}. The accounts which were updated before {syncStartTime} are deactivated.");
                 }
                 else
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                             ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
-                            ErpSyncLavel.Account,
+                            ErpSyncLevel.Account,
                             $"Erp Accounts sync is partially or not successful for Sales Org: {salesOrg.Name}");
                 }
 
                 await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
-                    ErpSyncLavel.Account,
+                    ErpSyncLevel.Account,
                     (lastErpAccountSynced is not null ?
                     $"The last synced Erp Account: {lastErpAccountSynced.AccountNumber}, for Sales Org: {salesOrg.Name}. " : string.Empty) +
                     $"Total synced in this session: {totalSyncedSoFar}");
@@ -345,7 +345,7 @@ public class ErpAccountSyncService : IErpAccountSyncService
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
-                ErpSyncLavel.Account,
+                ErpSyncLevel.Account,
                 "Erp Account Sync ended.");
 
             return true;
@@ -354,13 +354,13 @@ public class ErpAccountSyncService : IErpAccountSyncService
         {
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
-                ErpSyncLavel.Account,
+                ErpSyncLevel.Account,
                 ex.Message,
                 ex.StackTrace);
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
-                ErpSyncLavel.Account,
+                ErpSyncLevel.Account,
                 "Erp Account Sync ended.");
 
             return false;

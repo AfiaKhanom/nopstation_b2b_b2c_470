@@ -167,7 +167,7 @@ public class CustomerImpersonateController : BasePublicController
         }
 
         var successMsg = await _localizationService.GetResourceAsync("ActivityLog.Impersonation.Started.Customer");
-        await _erpLogsService.InformationAsync($"{successMsg}. Impersonated Customer: {customer.Email}, Id: {customer.Id}. Original Customer Email: {currentCustomer.Email}, Id: {currentCustomer.Id}", ErpSyncLavel.LoginLogout, customer: customer);
+        await _erpLogsService.InformationAsync($"{successMsg}. Impersonated Customer: {customer.Email}, Id: {customer.Id}. Original Customer Email: {currentCustomer.Email}, Id: {currentCustomer.Id}", ErpSyncLevel.LoginLogout, customer: customer);
 
         //erp activity log
         await _erpActivityLogsService.InsertErpActivityAsync(customer, "Erp_CustomerImpersonationStart",
@@ -187,7 +187,7 @@ public class CustomerImpersonateController : BasePublicController
         var customer = await _workContext.GetCurrentCustomerAsync();
         if (_workContext.OriginalCustomerIfImpersonated != null)
         {
-            await _erpLogsService.InformationAsync($"Customer impersonation finished as: {customer.Email}, Customer Id: {customer.Id}. Original Customer Email: {_workContext.OriginalCustomerIfImpersonated.Email}, Id: {_workContext.OriginalCustomerIfImpersonated.Id}", ErpSyncLavel.LoginLogout, customer: customer);
+            await _erpLogsService.InformationAsync($"Customer impersonation finished as: {customer.Email}, Customer Id: {customer.Id}. Original Customer Email: {_workContext.OriginalCustomerIfImpersonated.Email}, Id: {_workContext.OriginalCustomerIfImpersonated.Id}", ErpSyncLevel.LoginLogout, customer: customer);
 
             //erp activity log
             await _erpActivityLogsService.InsertErpActivityAsync(_workContext.OriginalCustomerIfImpersonated, "Erp_CustomerImpersonationEnd",
@@ -214,7 +214,7 @@ public class CustomerImpersonateController : BasePublicController
             return RedirectToAction(nameof(List));
         }
         //activity log
-        await _erpLogsService.InformationAsync($"Customer Logged out as: {customer.Email}, Customer Id: {customer.Id}", ErpSyncLavel.LoginLogout, customer: customer);
+        await _erpLogsService.InformationAsync($"Customer Logged out as: {customer.Email}, Customer Id: {customer.Id}", ErpSyncLevel.LoginLogout, customer: customer);
 
         if (await _customerService.IsAdminAsync(customer))
         {

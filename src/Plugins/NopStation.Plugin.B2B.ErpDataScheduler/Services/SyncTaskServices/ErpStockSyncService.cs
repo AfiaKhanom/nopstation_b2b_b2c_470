@@ -62,7 +62,7 @@ public class ErpStockSyncService : IErpStockSyncService
         {
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpStockSyncTaskName,
-                ErpSyncLavel.Stock,
+                ErpSyncLevel.Stock,
                 "No integration method found.");
 
             return false;
@@ -85,7 +85,7 @@ public class ErpStockSyncService : IErpStockSyncService
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpStockSyncTaskName,
-                    ErpSyncLavel.Stock,
+                    ErpSyncLevel.Stock,
                     $"No Sales org found with Sales org code: {salesOrgCode}. Unable to run {ErpDataSchedulerDefaults.ErpStockSyncTaskName}.");
 
                     return false;
@@ -109,7 +109,7 @@ public class ErpStockSyncService : IErpStockSyncService
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpStockSyncTaskName,
-                ErpSyncLavel.Stock,
+                ErpSyncLevel.Stock,
                 "Erp Stock Sync started.");
 
             foreach (var salesOrg in listOfSalesOrgs)
@@ -138,7 +138,7 @@ public class ErpStockSyncService : IErpStockSyncService
 
                         await _erpSyncLogService.SyncLogSaveOnFileAsync(
                             ErpDataSchedulerDefaults.ErpStockSyncTaskName,
-                            ErpSyncLavel.Stock,
+                            ErpSyncLevel.Stock,
                             response.ErpResponseModel?.ErrorShortMessage ?? string.Empty,
                             response.ErpResponseModel?.ErrorFullMessage ?? string.Empty);
 
@@ -185,7 +185,7 @@ public class ErpStockSyncService : IErpStockSyncService
                     {
                         await _erpSyncLogService.SyncLogSaveOnFileAsync(
                             ErpDataSchedulerDefaults.ErpStockSyncTaskName,
-                            ErpSyncLavel.Stock,
+                            ErpSyncLevel.Stock,
                             (lastErpProductStockSynced is not null ? $"The last synced Stock of Erp Product : {lastErpProductStockSynced.Sku} in this batch." : string.Empty) + $"Total product stock synced so far: {totalSyncedSoFar}");
                     }
                 }
@@ -196,26 +196,26 @@ public class ErpStockSyncService : IErpStockSyncService
 
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpStockSyncTaskName,
-                        ErpSyncLavel.Stock,
+                        ErpSyncLevel.Stock,
                         $"Erp Stock sync successful. The products having stock quantity of 0 (zero) are unpublished for Sales Org: {salesOrg.Name}.");
                 }
                 else
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpStockSyncTaskName,
-                        ErpSyncLavel.Stock,
+                        ErpSyncLevel.Stock,
                         $"Erp Stock sync is partially or not successful for Sales Org: {salesOrg.Name}.");
                 }
 
                 await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpStockSyncTaskName,
-                    ErpSyncLavel.Stock,
+                    ErpSyncLevel.Stock,
                     (lastErpProductStockSynced is not null ? $"The last synced Erp Product Stock: {lastErpProductStockSynced.Sku}, for Sales Org: {salesOrg.Name}. " : string.Empty) + $"Total synced in this session: {totalSyncedSoFar}");
             }
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpStockSyncTaskName,
-                ErpSyncLavel.Stock,
+                ErpSyncLevel.Stock,
                 "Erp Stock Sync ended.");
 
             return true;
@@ -224,13 +224,13 @@ public class ErpStockSyncService : IErpStockSyncService
         {
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpStockSyncTaskName,
-                ErpSyncLavel.Stock,
+                ErpSyncLevel.Stock,
                 ex.Message,
                 ex.StackTrace);
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpStockSyncTaskName,
-                ErpSyncLavel.Stock,
+                ErpSyncLevel.Stock,
                 "Erp Stock Sync ended.");
 
             return false;

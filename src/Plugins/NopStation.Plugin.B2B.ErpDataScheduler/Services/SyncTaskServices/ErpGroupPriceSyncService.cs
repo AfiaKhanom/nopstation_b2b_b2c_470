@@ -54,7 +54,7 @@ public class ErpGroupPriceSyncService : IErpGroupPriceSyncService
         {                
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpGroupPriceSyncTaskName,
-                ErpSyncLavel.GroupPrice,
+                ErpSyncLevel.GroupPrice,
                 "No integration method found.");
 
             return false;
@@ -68,7 +68,7 @@ public class ErpGroupPriceSyncService : IErpGroupPriceSyncService
             {
                 await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpGroupPriceSyncTaskName,
-                    ErpSyncLavel.GroupPrice,
+                    ErpSyncLevel.GroupPrice,
                     "No Erp Sales Org found to perform the Erp Group Price Sync service.");
 
                 return false;
@@ -77,7 +77,7 @@ public class ErpGroupPriceSyncService : IErpGroupPriceSyncService
             
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpGroupPriceSyncTaskName,
-                ErpSyncLavel.GroupPrice,
+                ErpSyncLevel.GroupPrice,
                 "Erp Group Price Sync started.");
 
             foreach (var salesOrg in allErpSalesOrgs)
@@ -110,7 +110,7 @@ public class ErpGroupPriceSyncService : IErpGroupPriceSyncService
                         
                         await _erpSyncLogService.SyncLogSaveOnFileAsync(
                             ErpDataSchedulerDefaults.ErpGroupPriceSyncTaskName,
-                            ErpSyncLavel.GroupPrice,
+                            ErpSyncLevel.GroupPrice,
                             response.ErpResponseModel.ErrorShortMessage, 
                             response.ErpResponseModel.ErrorFullMessage);
 
@@ -261,26 +261,26 @@ public class ErpGroupPriceSyncService : IErpGroupPriceSyncService
                     
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpGroupPriceSyncTaskName,
-                        ErpSyncLavel.GroupPrice,
+                        ErpSyncLevel.GroupPrice,
                         $"Erp Group Price sync successful for Sales Org: {salesOrg.Name}. The group prices which were updated before {syncStartTime} are deactivated.");
                 }
                 else
                 {                        
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpGroupPriceSyncTaskName,
-                        ErpSyncLavel.GroupPrice,
+                        ErpSyncLevel.GroupPrice,
                         $"Erp Group Price sync is paritally or not successful for Sales Org: {salesOrg.Name}");
                 }
 
                 await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpGroupPriceSyncTaskName,
-                        ErpSyncLavel.GroupPrice,
+                        ErpSyncLevel.GroupPrice,
                         (lastErpGroupPriceCodeSynced is not null ? $"The last synced Erp Group Price Code: {lastErpGroupPriceCodeSynced.Code}, for Sales Org: {salesOrg.Name}. " : string.Empty) + $"Total synced in this session: {totalSyncedSoFar}");
             }
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpGroupPriceSyncTaskName,
-                ErpSyncLavel.GroupPrice,
+                ErpSyncLevel.GroupPrice,
                 "Erp Group Price Sync ended.");
 
             return true;
@@ -289,13 +289,13 @@ public class ErpGroupPriceSyncService : IErpGroupPriceSyncService
         {
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpGroupPriceSyncTaskName,
-                ErpSyncLavel.GroupPrice,
+                ErpSyncLevel.GroupPrice,
                 ex.Message,
                 ex.StackTrace);
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpGroupPriceSyncTaskName,
-                ErpSyncLavel.GroupPrice,
+                ErpSyncLevel.GroupPrice,
                 "Erp Group Price Sync ended.");
 
             return false;

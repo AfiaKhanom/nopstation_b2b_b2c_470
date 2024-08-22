@@ -100,7 +100,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Factories
                 throw new ArgumentNullException(nameof(items));
 
             //prepare available Erp activity log sync label
-            var availableActivityTypes = await ErpSyncLavel.Order.ToSelectListAsync(false);
+            var availableActivityTypes = await ErpSyncLevel.Order.ToSelectListAsync(false);
             foreach (var types in availableActivityTypes)
             {
                 items.Add(types);
@@ -175,7 +175,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Factories
 
                     activityLogModel.ErpLogLevel = await _localizationService.GetLocalizedEnumAsync(activityLog.LogLevel);
                     activityLogModel.CreatedOnUtc = activityLog.CreatedOnUtc;
-                    activityLogModel.ErpSyncLavel = await _localizationService.GetLocalizedEnumAsync(activityLog.ErpSyncLavel);
+                    activityLogModel.ErpSyncLevel = await _localizationService.GetLocalizedEnumAsync(activityLog.ErpSyncLevel);
                     activityLogModel.ChangedByCustomerEmail = activityLog.CustomerId.HasValue ? (await _customerService.GetCustomerByIdAsync(activityLog.CustomerId.Value))?.Email : string.Empty;
                     activityLogModel.CreatedOnUtc = await _dateTimeHelper.ConvertToUserTimeAsync(activityLog.CreatedOnUtc, DateTimeKind.Utc);
 
@@ -196,7 +196,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Factories
                     model = log.ToModel<ErpActivityLogModel>();
 
                     model.ErpLogLevel = await _localizationService.GetLocalizedEnumAsync(log.LogLevel);
-                    model.ErpSyncLavel = await _localizationService.GetLocalizedEnumAsync(log.ErpSyncLavel);
+                    model.ErpSyncLevel = await _localizationService.GetLocalizedEnumAsync(log.ErpSyncLevel);
                     model.ShortMessage = _htmlFormatter.FormatText(log.ShortMessage, false, true, false, false, false, false);
                     model.FullMessage = _htmlFormatter.FormatText(log.FullMessage, false, true, false, false, false, false);
                     model.CreatedOnUtc = await _dateTimeHelper.ConvertToUserTimeAsync(log.CreatedOnUtc, DateTimeKind.Utc);

@@ -466,7 +466,7 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
 
         if (erpIntegrationPlugin == null)
         {
-            await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLavel.Account, "Integration method not found.");
+            await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLevel.Account, "Integration method not found.");
             return;
         }
 
@@ -505,7 +505,7 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
         erpOrderAdditionalData.LastERPUpdateUtc = DateTime.UtcNow;
         erpOrderAdditionalData.ChangedOnUtc = DateTime.UtcNow;
         await _erpOrderAdditionalDataService.UpdateErpOrderAdditionalDataAsync(erpOrderAdditionalData);
-        await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Information, ErpSyncLavel.Order, $"{message}. {response.ErrorShortMessage}", response.ErrorFullMessage);
+        await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Information, ErpSyncLevel.Order, $"{message}. {response.ErrorShortMessage}", response.ErrorFullMessage);
     }
 
     #endregion
@@ -904,7 +904,7 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
             }
             catch (Exception ex)
             {
-                await _erpLogsService.ErrorAsync(ex.Message, ErpSyncLavel.Order, ex, currentCustomer);
+                await _erpLogsService.ErrorAsync(ex.Message, ErpSyncLevel.Order, ex, currentCustomer);
                 erpOrderAdditionalData.IntegrationRetries++;
             }
 
@@ -963,11 +963,11 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
             erpOrderAdditionalData.LastERPUpdateUtc = DateTime.UtcNow;
             erpOrderAdditionalData.ChangedOnUtc = DateTime.UtcNow;
             await _erpOrderAdditionalDataService.UpdateErpOrderAdditionalDataAsync(erpOrderAdditionalData);
-            await _erpLogsService.InformationAsync("Order placement on ERP is being processed.", ErpSyncLavel.Order);
+            await _erpLogsService.InformationAsync("Order placement on ERP is being processed.", ErpSyncLevel.Order);
         }
         catch (Exception ex)
         {
-            await _erpLogsService.WarningAsync(ex.Message, ErpSyncLavel.Order, ex, await _workContext.GetCurrentCustomerAsync());
+            await _erpLogsService.WarningAsync(ex.Message, ErpSyncLevel.Order, ex, await _workContext.GetCurrentCustomerAsync());
         }
     }
     

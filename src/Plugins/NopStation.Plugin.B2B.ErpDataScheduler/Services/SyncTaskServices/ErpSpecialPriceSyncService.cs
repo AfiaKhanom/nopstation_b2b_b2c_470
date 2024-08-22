@@ -60,7 +60,7 @@ public class ErpSpecialPriceSyncService : IErpSpecialPriceSyncService
         {
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpSpecialPriceSyncTaskName,
-                ErpSyncLavel.SpecialPrice,
+                ErpSyncLevel.SpecialPrice,
                 "No integration method found.");
 
             return false;
@@ -83,7 +83,7 @@ public class ErpSpecialPriceSyncService : IErpSpecialPriceSyncService
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpSpecialPriceSyncTaskName,
-                    ErpSyncLavel.SpecialPrice,
+                    ErpSyncLevel.SpecialPrice,
                     $"No Sales org found with Sales org code: {salesOrgCode}. Unable to run {ErpDataSchedulerDefaults.ErpSpecialPriceSyncTaskName}.");
 
                     return false;
@@ -107,7 +107,7 @@ public class ErpSpecialPriceSyncService : IErpSpecialPriceSyncService
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpSpecialPriceSyncTaskName,
-                ErpSyncLavel.SpecialPrice,
+                ErpSyncLevel.SpecialPrice,
                 "Erp Special Price Sync started.");
 
             foreach (var salesOrg in listOfSalesOrgs)
@@ -117,7 +117,7 @@ public class ErpSpecialPriceSyncService : IErpSpecialPriceSyncService
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpSpecialPriceSyncTaskName,
-                        ErpSyncLavel.SpecialPrice,
+                        ErpSyncLevel.SpecialPrice,
                         $"No Erp Accounts found with the Sales org : {salesOrg.Name}");
 
                     return false;
@@ -218,28 +218,28 @@ public class ErpSpecialPriceSyncService : IErpSpecialPriceSyncService
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpSpecialPriceSyncTaskName,
-                        ErpSyncLavel.SpecialPrice,
+                        ErpSyncLevel.SpecialPrice,
                         $"Erp Special Price sync successful for Sales Org: {salesOrg.Name}");
                 }
                 else
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpSpecialPriceSyncTaskName,
-                        ErpSyncLavel.SpecialPrice,
+                        ErpSyncLevel.SpecialPrice,
                         $"Erp Special Price sync is partially or not successful for Sales Org: {salesOrg.Name}",
                         lastErrorMessage);
                 }
 
                 await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpSpecialPriceSyncTaskName,
-                    ErpSyncLavel.SpecialPrice,
+                    ErpSyncLevel.SpecialPrice,
                     (lastErpSpecialPriceSynced is not null ? $"The last synced Erp Special Price: {lastErpSpecialPriceSynced.Price}, on Product: {lastErpSpecialPriceSyncedofProduct}, of Erp Account: {lastErpSpecialPriceSyncedOfErpAccount} for Sales Org: {salesOrg.Name}. " : string.Empty) + $"Total synced in this session: {totalSyncedSoFar}");
 
             }
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpSpecialPriceSyncTaskName,
-                ErpSyncLavel.SpecialPrice,
+                ErpSyncLevel.SpecialPrice,
                 "Erp Special Price Sync ended.");
 
             return true;
@@ -248,13 +248,13 @@ public class ErpSpecialPriceSyncService : IErpSpecialPriceSyncService
         {
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpSpecialPriceSyncTaskName,
-                ErpSyncLavel.SpecialPrice,
+                ErpSyncLevel.SpecialPrice,
                 ex.Message,
                 ex.StackTrace);
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpSpecialPriceSyncTaskName,
-                ErpSyncLavel.SpecialPrice,
+                ErpSyncLevel.SpecialPrice,
                 "Erp Special Price Sync ended.");
 
             return false;

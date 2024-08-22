@@ -128,7 +128,7 @@ public class ErpOrderSyncService : IErpOrderSyncService
         {
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
-                ErpSyncLavel.Order,
+                ErpSyncLevel.Order,
                 "No integration method found.");
 
             return false;
@@ -156,7 +156,7 @@ public class ErpOrderSyncService : IErpOrderSyncService
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
-                    ErpSyncLavel.Order,
+                    ErpSyncLevel.Order,
                     $"No Sales org found with Sales org code: {salesOrgCode}. Unable to run {ErpDataSchedulerDefaults.ErpOrderSyncTaskName}.");
 
                     return false;
@@ -180,7 +180,7 @@ public class ErpOrderSyncService : IErpOrderSyncService
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
-                    ErpSyncLavel.Order,
+                    ErpSyncLevel.Order,
                     "Erp Order Sync started.");
 
             foreach (var salesOrg in listOfSalesOrgs)
@@ -190,7 +190,7 @@ public class ErpOrderSyncService : IErpOrderSyncService
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
-                        ErpSyncLavel.Order,
+                        ErpSyncLevel.Order,
                         $"No Erp Accounts found with the Sales org : {salesOrg.Name}");
 
                     return false;
@@ -289,28 +289,28 @@ public class ErpOrderSyncService : IErpOrderSyncService
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
-                        ErpSyncLavel.Order,
+                        ErpSyncLevel.Order,
                         $"Erp Order sync successful for Sales Org: {salesOrg.Name}");
                 }
                 else
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
-                        ErpSyncLavel.Order,
+                        ErpSyncLevel.Order,
                         $"Erp Order sync is partially or not successful for Sales Org: {salesOrg.Name}",
                         lastErrorMessage);
                 }
 
                 await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
-                    ErpSyncLavel.Order,
+                    ErpSyncLevel.Order,
                     (lastErpOrderSynced is not null ? $"The last synced Erp Order: {lastErpOrderSynced.ErpOrderNumber}, of Erp Account: {lastErpOrderSyncedOfErpAccount} for Sales Org: {salesOrg.Name}. " : string.Empty) + $"Total synced in this session: {totalSyncedSoFar}");
 
             }
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
-                ErpSyncLavel.Order,
+                ErpSyncLevel.Order,
                 "Erp Order Sync ended.");
 
             return true;
@@ -319,13 +319,13 @@ public class ErpOrderSyncService : IErpOrderSyncService
         {
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
-                ErpSyncLavel.Order,
+                ErpSyncLevel.Order,
                 ex.Message,
                 ex.StackTrace);
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpOrderSyncTaskName,
-                ErpSyncLavel.Order,
+                ErpSyncLevel.Order,
                 "Erp Order Sync ended.");
 
             return false;

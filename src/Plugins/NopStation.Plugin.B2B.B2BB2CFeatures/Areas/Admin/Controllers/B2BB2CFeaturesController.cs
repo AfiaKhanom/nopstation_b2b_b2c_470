@@ -271,7 +271,7 @@ public class B2BB2CFeaturesController : NopStationAdminController
             var successMsg = await _localizationService.GetResourceAsync("B2BB2CFeatures.Configuration.Updated");
             _notificationService.SuccessNotification(successMsg);
 
-            await _erpLogsService.InformationAsync(successMsg, ErpSyncLavel.Account, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+            await _erpLogsService.InformationAsync(successMsg, ErpSyncLevel.Account, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
 
             //erp activity log
             await _erpActivityLogsService.InsertErpActivityAsync("Erp_EditSettings", await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.ErpActivityLogs.EditConfigurations"));

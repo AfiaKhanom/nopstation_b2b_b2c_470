@@ -470,7 +470,7 @@ public class B2BB2CCustomerController : CustomerController
                     if (erpAccount is null)
                     {
                         ModelState.AddModelError("", await _localizationService.GetResourceAsync("B2BB2C.Account.Registration.ERPAccountNotFound"));
-                        await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLavel.Account, await _localizationService.GetResourceAsync("B2BB2C.Account.Registration.ERPAccountNotFound"));
+                        await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLevel.Account, await _localizationService.GetResourceAsync("B2BB2C.Account.Registration.ERPAccountNotFound"));
                     }
                     else
                     {
@@ -478,7 +478,7 @@ public class B2BB2CCustomerController : CustomerController
                         if (existingShipToAddressList is null || !existingShipToAddressList.Any())
                         {
                             ModelState.AddModelError("", await _localizationService.GetResourceAsync("B2BB2C.Account.Registration.ShipToAddressNotFound"));
-                            await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLavel.Account, await _localizationService.GetResourceAsync("B2BB2C.Account.Registration.ShipToAddressNotFound"));
+                            await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLevel.Account, await _localizationService.GetResourceAsync("B2BB2C.Account.Registration.ShipToAddressNotFound"));
                         }
                     }
 
@@ -507,7 +507,7 @@ public class B2BB2CCustomerController : CustomerController
                         if (erpIntegrationPlugin == null)
                         {
                             ModelState.AddModelError("", await _localizationService.GetResourceAsync("B2BB2C.Account.Registration.AccountNotCreated"));
-                            await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLavel.Account, "Integration method not found.");
+                            await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLevel.Account, "Integration method not found.");
                         }
                         else if (!b2BB2CFeaturesSettings.UseDefaultAccountForB2CUser)
                         {
@@ -541,11 +541,11 @@ public class B2BB2CCustomerController : CustomerController
                                 {
                                     ModelState.AddModelError(string.Empty, await _localizationService.GetResourceAsync("B2BB2C.Account.Registration.AccountNotCreated"));
                                     ModelState.AddModelError(string.Empty, erpAccountInfo.ErrorShortMessage);
-                                    await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLavel.Account, erpAccountInfo.ErrorShortMessage, erpAccountInfo.ErrorFullMessage);
+                                    await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLevel.Account, erpAccountInfo.ErrorShortMessage, erpAccountInfo.ErrorFullMessage);
                                 }
                                 else
                                 {
-                                    await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Information, ErpSyncLavel.Account, $"ERP Account created successfully at ERP with Account Number: {erpAccountInfo.AccountNumber}");
+                                    await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Information, ErpSyncLevel.Account, $"ERP Account created successfully at ERP with Account Number: {erpAccountInfo.AccountNumber}");
 
                                     //create shipToAddress for b2c user at ERP
                                     if (erpAccountInfo != null && !string.IsNullOrEmpty(erpAccountInfo.AccountNumber))
@@ -563,7 +563,7 @@ public class B2BB2CCustomerController : CustomerController
                                             if (erpShipToAddressesbyErpAccount.Data is null || erpShipToAddressesbyErpAccount.ErpResponseModel.IsError)
                                             {
                                                 ModelState.AddModelError("", await _localizationService.GetResourceAsync("B2BB2C.Account.Registration.AccountNotCreated"));
-                                                await _erpLogsService.ErrorAsync(await _localizationService.GetResourceAsync("B2BB2C.Account.Registration.AccountNotCreated.ShipToAddressNotCreatedAtERP"), ErpSyncLavel.Account);
+                                                await _erpLogsService.ErrorAsync(await _localizationService.GetResourceAsync("B2BB2C.Account.Registration.AccountNotCreated.ShipToAddressNotCreatedAtERP"), ErpSyncLevel.Account);
                                             }
                                             else
                                             {
@@ -573,14 +573,14 @@ public class B2BB2CCustomerController : CustomerController
                                         catch (Exception ex)
                                         {
                                             ModelState.AddModelError("", await _localizationService.GetResourceAsync("B2BB2C.Account.Registration.AccountNotCreated"));
-                                            await _erpLogsService.ErrorAsync(ex.Message, ErpSyncLavel.Account);
+                                            await _erpLogsService.ErrorAsync(ex.Message, ErpSyncLevel.Account);
                                             await _logger.ErrorAsync(ex.Message, ex, customer);
                                         }
                                     }
                                     else
                                     {
                                         ModelState.AddModelError("", await _localizationService.GetResourceAsync("B2BB2C.Account.Registration.AccountNotCreated"));
-                                        await _erpLogsService.ErrorAsync(await _localizationService.GetResourceAsync("B2BB2C.Account.Registration.AccountNotCreated.AccountNotCreatedAtERP"), ErpSyncLavel.Account);
+                                        await _erpLogsService.ErrorAsync(await _localizationService.GetResourceAsync("B2BB2C.Account.Registration.AccountNotCreated.AccountNotCreatedAtERP"), ErpSyncLevel.Account);
                                     }
                                 }
                             }
@@ -781,7 +781,7 @@ public class B2BB2CCustomerController : CustomerController
                         }
                         else
                         {
-                            await _erpLogsService.ErrorAsync("New address was not created due to invalidity.", ErpSyncLavel.Account);
+                            await _erpLogsService.ErrorAsync("New address was not created due to invalidity.", ErpSyncLevel.Account);
                         }
 
                         //notifications
@@ -817,7 +817,7 @@ public class B2BB2CCustomerController : CustomerController
                                 };
 
                                 await _erpAccountService.InsertErpAccountAsync(erpAccount);
-                                await _erpLogsService.InformationAsync($"{await _localizationService.GetResourceAsync("Plugin.Misc.Nopstation.ERPIntegrationCore.ErpAccount.Added")}, Erp Account Id: {erpAccount.Id}. For register customer Id: {customer.Id}", ErpSyncLavel.Account, customer: customer);
+                                await _erpLogsService.InformationAsync($"{await _localizationService.GetResourceAsync("Plugin.Misc.Nopstation.ERPIntegrationCore.ErpAccount.Added")}, Erp Account Id: {erpAccount.Id}. For register customer Id: {customer.Id}", ErpSyncLevel.Account, customer: customer);
 
                                 //erp activity log
                                 await _erpActivityLogsService.InsertErpActivityAsync("Erp_AddNewErpAccount",
@@ -852,7 +852,7 @@ public class B2BB2CCustomerController : CustomerController
 
                                         await _erpShipToAddressService.InsertErpShipToAddressAsync(erpShipToAddress);
                                         await _erpShipToAddressService.InsertErpShipToAddressErpAccountMapAsync(erpAccount, erpShipToAddress);
-                                        await _erpLogsService.InformationAsync($"{await _localizationService.GetResourceAsync("Admin.ErpShipToAddresss.Added")}, Erp Ship To Address Id: {erpShipToAddress.Id}. For register customer Id: {customer.Id}", ErpSyncLavel.Account, customer: customer);
+                                        await _erpLogsService.InformationAsync($"{await _localizationService.GetResourceAsync("Admin.ErpShipToAddresss.Added")}, Erp Ship To Address Id: {erpShipToAddress.Id}. For register customer Id: {customer.Id}", ErpSyncLevel.Account, customer: customer);
 
                                         //erp activity log
                                         await _erpActivityLogsService.InsertErpActivityAsync("Erp_AddNewErpShipToAddress",
@@ -894,7 +894,7 @@ public class B2BB2CCustomerController : CustomerController
 
                                     await _erpShipToAddressService.InsertErpShipToAddressAsync(erpShipToAddress);
                                     await _erpShipToAddressService.InsertErpShipToAddressErpAccountMapAsync(erpAccount, erpShipToAddress);
-                                    await _erpLogsService.InformationAsync($"{await _localizationService.GetResourceAsync("Admin.ErpShipToAddresss.Added")}, Erp Ship To Address Id: {erpShipToAddress.Id}. For register customer Id: {customer.Id}", ErpSyncLavel.Account, customer: customer);
+                                    await _erpLogsService.InformationAsync($"{await _localizationService.GetResourceAsync("Admin.ErpShipToAddresss.Added")}, Erp Ship To Address Id: {erpShipToAddress.Id}. For register customer Id: {customer.Id}", ErpSyncLevel.Account, customer: customer);
 
                                     //erp activity log
                                     await _erpActivityLogsService.InsertErpActivityAsync("Erp_AddNewErpShipToAddress",
@@ -921,7 +921,7 @@ public class B2BB2CCustomerController : CustomerController
 
                         if (!defaultAddressValidation && shipToAddressIdForB2BB2CUserId == 0)
                         {
-                            await _erpLogsService.ErrorAsync($"New ShipToAddress was not created for Erp Account ({erpAccount.AccountNumber}), Customer Id: {customer.Id} due to invalid address.", ErpSyncLavel.Account);
+                            await _erpLogsService.ErrorAsync($"New ShipToAddress was not created for Erp Account ({erpAccount.AccountNumber}), Customer Id: {customer.Id} due to invalid address.", ErpSyncLevel.Account);
                         }
 
                         var erpNopUser = new ErpNopUser
@@ -940,7 +940,7 @@ public class B2BB2CCustomerController : CustomerController
                         };
                         await _erpNopUserService.InsertErpNopUserAsync(erpNopUser);
 
-                        await _erpLogsService.InformationAsync($"{await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Added")}, Erp Nop User Id: {erpNopUser.Id}. For register customer Id: {customer.Id}", ErpSyncLavel.Account, customer: customer);
+                        await _erpLogsService.InformationAsync($"{await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Added")}, Erp Nop User Id: {erpNopUser.Id}. For register customer Id: {customer.Id}", ErpSyncLevel.Account, customer: customer);
 
                         //erp activity log
                         await _erpActivityLogsService.InsertErpActivityAsync("Erp_AddNewErpNopUser",
@@ -984,7 +984,7 @@ public class B2BB2CCustomerController : CustomerController
                         if (string.IsNullOrEmpty(customer.Email) && !string.IsNullOrEmpty(customerEmail))
                             customer.Email = customerEmail;
 
-                        await _erpLogsService.InformationAsync($"Registration successful! Customer Id: {customer.Id}", ErpSyncLavel.Account, customer: customer);
+                        await _erpLogsService.InformationAsync($"Registration successful! Customer Id: {customer.Id}", ErpSyncLevel.Account, customer: customer);
 
                         //erp activity log
                         await _erpActivityLogsService.InsertErpActivityAsync(addErpCustomerActivityLogSystemKeyword,
@@ -1033,7 +1033,7 @@ public class B2BB2CCustomerController : CustomerController
         }
         catch (Exception ex)
         {
-            await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLavel.Account, "Error while saving the Erp Nop User!" + (customer.Id > 0 ? $"Customer: {customer.FirstName} (Id - {customer.Id})" : string.Empty) + $" Exception Message: {ex.Message}", ex.StackTrace, customer: customer);
+            await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLevel.Account, "Error while saving the Erp Nop User!" + (customer.Id > 0 ? $"Customer: {customer.FirstName} (Id - {customer.Id})" : string.Empty) + $" Exception Message: {ex.Message}", ex.StackTrace, customer: customer);
         }
 
         //If we got this far, something failed, redisplay form
@@ -1232,7 +1232,7 @@ public class B2BB2CCustomerController : CustomerController
         var customer = await _workContext.GetCurrentCustomerAsync();
         if (_workContext.OriginalCustomerIfImpersonated != null)
         {
-            await _erpLogsService.InformationAsync($"Customer impersonation finished as: {customer.Email}, Customer Id: {customer.Id}. Original Customer Email: {_workContext.OriginalCustomerIfImpersonated.Email}, Id: {_workContext.OriginalCustomerIfImpersonated.Id}", ErpSyncLavel.LoginLogout, customer: customer);
+            await _erpLogsService.InformationAsync($"Customer impersonation finished as: {customer.Email}, Customer Id: {customer.Id}. Original Customer Email: {_workContext.OriginalCustomerIfImpersonated.Email}, Id: {_workContext.OriginalCustomerIfImpersonated.Id}", ErpSyncLevel.LoginLogout, customer: customer);
 
             //erp activity log
             await _erpActivityLogsService.InsertErpActivityAsync(_workContext.OriginalCustomerIfImpersonated, "Erp_CustomerImpersonationEnd",
@@ -1257,7 +1257,7 @@ public class B2BB2CCustomerController : CustomerController
         await _authenticationService.SignOutAsync();
 
         //activity log
-        await _erpLogsService.InformationAsync($"Customer Logged out as: {customer.Email}, Customer Id: {customer.Id}", ErpSyncLavel.LoginLogout, customer: customer);
+        await _erpLogsService.InformationAsync($"Customer Logged out as: {customer.Email}, Customer Id: {customer.Id}", ErpSyncLevel.LoginLogout, customer: customer);
 
         if (!await _customerService.IsAdminAsync(customer))
         {
@@ -1315,7 +1315,7 @@ public class B2BB2CCustomerController : CustomerController
 
                 await _b2BB2CWorkContext.SetCurrentERPCustomerAsync(erpAccountId: model.ErpAccountId);
 
-                await _erpLogsService.InformationAsync($"Erp Account (Id: {erpUser.ErpAccountId}) set to Erp User Id: {erpUser.Id}", ErpSyncLavel.Account, customer: currentCustomer);
+                await _erpLogsService.InformationAsync($"Erp Account (Id: {erpUser.ErpAccountId}) set to Erp User Id: {erpUser.Id}", ErpSyncLevel.Account, customer: currentCustomer);
 
                 //erp activity log
                 await _erpActivityLogsService.InsertErpActivityAsync("Erp_ErpNopUserAccountSwitch",
@@ -1328,7 +1328,7 @@ public class B2BB2CCustomerController : CustomerController
         {
             _notificationService.ErrorNotification(ex.Message);
             _logger.Error(ex.Message, ex, customer: currentCustomer);
-            await _erpLogsService.ErrorAsync(ex.Message, ErpSyncLavel.Account, ex, customer: currentCustomer);
+            await _erpLogsService.ErrorAsync(ex.Message, ErpSyncLevel.Account, ex, customer: currentCustomer);
         }
 
         return Redirect(model.RedirectUrl);
@@ -1498,7 +1498,7 @@ public class B2BB2CCustomerController : CustomerController
             var successMsg = await _localizationService.GetResourceAsync("B2BB2CFeatures.ErpAccountCustomerRegistrationForm.Added");
             _notificationService.SuccessNotification(successMsg);
 
-            await _erpLogsService.InformationAsync(successMsg + " Erp Account Customer Registration Form Id: " + applicationForm.Id, ErpSyncLavel.Account, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+            await _erpLogsService.InformationAsync(successMsg + " Erp Account Customer Registration Form Id: " + applicationForm.Id, ErpSyncLevel.Account, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
 
             //Send Email to Admin and Customer
             await _erpWorkflowMessageService.SendERPCustomerRegistrationApplicationCreatedNotificationAsync(applicationForm, (await _b2BB2CWorkContext.GetWorkingLanguageAsync()).Id);

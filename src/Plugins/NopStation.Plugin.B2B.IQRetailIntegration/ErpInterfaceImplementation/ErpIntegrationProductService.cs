@@ -82,7 +82,7 @@ public class ErpIntegrationProductService
                 return erpResponseData;
             }
 
-            var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestGenericSQL, serialized, ErpSyncLavel.Product);
+            var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestGenericSQL, serialized, ErpSyncLevel.Product);
             if (!response.IsSuccessStatusCode)
             {
                 erpResponseData.ErpResponseModel.IsError = true;
@@ -167,7 +167,7 @@ public class ErpIntegrationProductService
                 return erpResponseData;
             }
 
-            var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestGenericSQL, serialized, ErpSyncLavel.Product);
+            var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestGenericSQL, serialized, ErpSyncLevel.Product);
             if (!response.IsSuccessStatusCode)
             {
                 erpResponseData.ErpResponseModel.IsError = true;
@@ -241,7 +241,7 @@ public class ErpIntegrationProductService
                 return erpResponseData;
             }
 
-            var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestGenericSQL, serialized, ErpSyncLavel.GroupPrice);
+            var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestGenericSQL, serialized, ErpSyncLevel.GroupPrice);
             if (!response.IsSuccessStatusCode)
             {
                 erpResponseData.ErpResponseModel.IsError = true;
@@ -317,7 +317,7 @@ public class ErpIntegrationProductService
                 return erpResponseData;
             }
 
-            var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestGenericSQL, serialized, ErpSyncLavel.GroupPrice);
+            var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestGenericSQL, serialized, ErpSyncLevel.GroupPrice);
             if (!response.IsSuccessStatusCode)
             {
                 erpResponseData.ErpResponseModel.IsError = true;
@@ -397,7 +397,7 @@ public class ErpIntegrationProductService
                 return erpResponseData;
             }
 
-            var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestGenericSQL, serialized, ErpSyncLavel.SpecialPrice);
+            var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestGenericSQL, serialized, ErpSyncLevel.SpecialPrice);
             if (!response.IsSuccessStatusCode)
             {
                 erpResponseData.ErpResponseModel.IsError = true;
@@ -482,7 +482,7 @@ public class ErpIntegrationProductService
                 return erpResponseData;
             }
 
-            var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestGenericSQL, serialized, ErpSyncLavel.SpecialPrice);
+            var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestGenericSQL, serialized, ErpSyncLevel.SpecialPrice);
             if (!response.IsSuccessStatusCode)
             {
                 erpResponseData.ErpResponseModel.IsError = true;
@@ -561,7 +561,7 @@ public class ErpIntegrationProductService
                 return erpResponseData;
             }
 
-            var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestGenericSQL, serialized, ErpSyncLavel.Stock);
+            var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestGenericSQL, serialized, ErpSyncLevel.Stock);
             if (!response.IsSuccessStatusCode)
             {
                 erpResponseData.ErpResponseModel.IsError = true;
@@ -646,7 +646,7 @@ public class ErpIntegrationProductService
                 return erpResponseData;
             }
 
-            var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestGenericSQL, serialized, ErpSyncLavel.Stock);
+            var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestGenericSQL, serialized, ErpSyncLevel.Stock);
             if (!response.IsSuccessStatusCode)
             {
                 erpResponseData.ErpResponseModel.IsError = true;

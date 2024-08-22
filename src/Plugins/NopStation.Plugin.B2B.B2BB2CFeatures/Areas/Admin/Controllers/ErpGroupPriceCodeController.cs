@@ -123,7 +123,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPriceCode.Added");
                 _notificationService.SuccessNotification(successMsg);
 
-                await _erpLogsService.InformationAsync($"{successMsg}. Group Price Code Id: {erpGroupPriceCode.Id}", ErpSyncLavel.GroupPrice, customer: currentCustomer);
+                await _erpLogsService.InformationAsync($"{successMsg}. Group Price Code Id: {erpGroupPriceCode.Id}", ErpSyncLevel.GroupPrice, customer: currentCustomer);
 
                 //erp activity log
                 await _erpActivityLogsService.InsertErpActivityAsync(currentCustomer, "Erp_AddNewErpGroupPriceCode",
@@ -190,7 +190,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                         var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPriceCode.Updated");
                         _notificationService.SuccessNotification(successMsg);
 
-                        await _erpLogsService.InformationAsync($"{successMsg}. Group Price Code Id: {erpGroupPriceCode.Id}", ErpSyncLavel.GroupPrice, customer: currentCustomer);
+                        await _erpLogsService.InformationAsync($"{successMsg}. Group Price Code Id: {erpGroupPriceCode.Id}", ErpSyncLevel.GroupPrice, customer: currentCustomer);
 
                         //erp activity log
                         await _erpActivityLogsService.InsertErpActivityAsync(currentCustomer, "Erp_EditErpGroupPriceCode",
@@ -207,7 +207,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 catch (Exception ex)
                 {
                     _notificationService.ErrorNotification(ex.Message);
-                    await _erpLogsService.ErrorAsync(ex.Message + " Code Id: " + erpGroupPriceCode.Id, ErpSyncLavel.GroupPrice, ex, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+                    await _erpLogsService.ErrorAsync(ex.Message + " Code Id: " + erpGroupPriceCode.Id, ErpSyncLevel.GroupPrice, ex, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
                 }
             }
 
@@ -234,7 +234,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPriceCode.Deleted");
             _notificationService.SuccessNotification(successMsg);
             
-            await _erpLogsService.InformationAsync($"{successMsg}. Group Price Code Id:  {erpPriceGroupCode.Id}", ErpSyncLavel.GroupPrice, customer: currentCustomer);
+            await _erpLogsService.InformationAsync($"{successMsg}. Group Price Code Id:  {erpPriceGroupCode.Id}", ErpSyncLevel.GroupPrice, customer: currentCustomer);
 
             //erp activity log
             await _erpActivityLogsService.InsertErpActivityAsync(currentCustomer, "Erp_DeleteErpGroupPriceCode",

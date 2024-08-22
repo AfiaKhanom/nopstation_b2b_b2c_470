@@ -167,7 +167,7 @@ public class ErpAccountController : NopStationAdminController
                 if (erpIntegrationPlugin == null)
                 {
                     ModelState.AddModelError("", await _localizationService.GetResourceAsync("B2BB2C.Account.Registration.AccountNotCreated"));
-                    await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLavel.Account, "Integration method not found.");
+                    await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLevel.Account, "Integration method not found.");
                 }
                 else
                 {
@@ -194,7 +194,7 @@ public class ErpAccountController : NopStationAdminController
                     if (erpAccountInfo.IsError)
                     {
                         _notificationService.ErrorNotification(erpAccountInfo.ErrorShortMessage);
-                        await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLavel.Account, erpAccountInfo.ErrorShortMessage, erpAccountInfo.ErrorFullMessage);
+                        await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLevel.Account, erpAccountInfo.ErrorShortMessage, erpAccountInfo.ErrorFullMessage);
                         model = await _erpAccountModelFactory.PrepareErpAccountModelAsync(model, null);
                         return View(model);
                     }
@@ -226,7 +226,7 @@ public class ErpAccountController : NopStationAdminController
             var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Added");
             _notificationService.SuccessNotification(successMsg);
 
-            await _erpLogsService.InformationAsync($"{successMsg}. Erp Account Id: {erpAccount.Id}", ErpSyncLavel.Account, customer: currentCustomer);
+            await _erpLogsService.InformationAsync($"{successMsg}. Erp Account Id: {erpAccount.Id}", ErpSyncLevel.Account, customer: currentCustomer);
 
             //erp activity log
             await _erpActivityLogsService.InsertErpActivityAsync("Erp_AddNewErpAccount",
@@ -341,7 +341,7 @@ public class ErpAccountController : NopStationAdminController
                 var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Updated");
                 _notificationService.SuccessNotification(successMsg);
 
-                await _erpLogsService.InformationAsync($"{successMsg}. Erp Account Id: {erpAccount.Id}", ErpSyncLavel.Account, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+                await _erpLogsService.InformationAsync($"{successMsg}. Erp Account Id: {erpAccount.Id}", ErpSyncLevel.Account, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
 
                 //erp activity log
                 await _erpActivityLogsService.InsertErpActivityAsync("Erp_EditErpAccount",
@@ -384,7 +384,7 @@ public class ErpAccountController : NopStationAdminController
         var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Deleted");
         _notificationService.SuccessNotification(successMsg);
 
-        await _erpLogsService.InformationAsync($"{successMsg}. Erp Account Id: {erpAccount.Id}", ErpSyncLavel.Account, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+        await _erpLogsService.InformationAsync($"{successMsg}. Erp Account Id: {erpAccount.Id}", ErpSyncLevel.Account, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
 
         //erp activity log
         await _erpActivityLogsService.InsertErpActivityAsync("Erp_DeleteErpAccount",

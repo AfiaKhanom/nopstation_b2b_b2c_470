@@ -143,7 +143,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
 
                 ModelState.AddModelError(string.Empty, errMsg);
                 _notificationService.ErrorNotification(errMsg);
-                await _erpLogsService.ErrorAsync(errMsg, ErpSyncLavel.SalesOrg, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+                await _erpLogsService.ErrorAsync(errMsg, ErpSyncLevel.SalesOrg, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
             }
 
             if (ModelState.IsValid)
@@ -172,7 +172,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Added");
                 _notificationService.SuccessNotification(successMsg);
 
-                await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Org Id: {erpSalesOrg.Id}", ErpSyncLavel.SalesOrg, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+                await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Org Id: {erpSalesOrg.Id}", ErpSyncLevel.SalesOrg, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
 
                 //erp activity log
                 await _erpActivityLogsService.InsertErpActivityAsync("Erp_AddNewErpSalesOrg",
@@ -228,7 +228,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
 
                 ModelState.AddModelError(string.Empty, errMsg);
                 _notificationService.ErrorNotification(errMsg);
-                await _erpLogsService.ErrorAsync(errMsg, ErpSyncLavel.SalesOrg, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+                await _erpLogsService.ErrorAsync(errMsg, ErpSyncLevel.SalesOrg, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
             }
 
             if (ModelState.IsValid)
@@ -280,7 +280,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                     var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Updated");
                     _notificationService.SuccessNotification(successMsg);
 
-                    await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Org Id: {erpSalesOrg.Id}", ErpSyncLavel.SalesOrg, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+                    await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Org Id: {erpSalesOrg.Id}", ErpSyncLevel.SalesOrg, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
 
                     //erp activity log
                     await _erpActivityLogsService.InsertErpActivityAsync("Erp_EditErpSalesOrg",
@@ -296,7 +296,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 catch (Exception exc)
                 {
                     _notificationService.ErrorNotification(exc.Message);
-                    await _erpLogsService.ErrorAsync(exc.Message + " Sales Org Id: " + erpSalesOrg.Id, ErpSyncLavel.SalesOrg, exc, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+                    await _erpLogsService.ErrorAsync(exc.Message + " Sales Org Id: " + erpSalesOrg.Id, ErpSyncLevel.SalesOrg, exc, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
                 }
             }
 
@@ -324,7 +324,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Deleted");
             _notificationService.SuccessNotification(successMsg);
 
-            await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Org Id: {erpSalesOrg.Id}", ErpSyncLavel.SalesOrg, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+            await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Org Id: {erpSalesOrg.Id}", ErpSyncLevel.SalesOrg, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
 
             //erp activity log
             await _erpActivityLogsService.InsertErpActivityAsync("Erp_DeleteErpSalesOrg",

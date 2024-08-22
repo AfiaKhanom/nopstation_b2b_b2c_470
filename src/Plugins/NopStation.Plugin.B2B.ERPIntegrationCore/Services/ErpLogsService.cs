@@ -82,7 +82,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
 
         #region Insert/Update
 
-        public async Task<ErpLogs> InsertErpLogAsync(ErpLogLevel logLevel, ErpSyncLavel syncLavel, string shortMessage, string fullMessage = "", Customer customer = null)
+        public async Task<ErpLogs> InsertErpLogAsync(ErpLogLevel logLevel, ErpSyncLevel syncLavel, string shortMessage, string fullMessage = "", Customer customer = null)
         {
             if (IgnoreLog(shortMessage) || IgnoreLog(fullMessage))
                 return null;
@@ -105,7 +105,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
             return log;
         }
 
-        public ErpLogs InsertErpLog(ErpLogLevel logLevel, ErpSyncLavel syncLavel, string shortMessage, string fullMessage = "", Customer customer = null)
+        public ErpLogs InsertErpLog(ErpLogLevel logLevel, ErpSyncLevel syncLavel, string shortMessage, string fullMessage = "", Customer customer = null)
         {
             if (IgnoreLog(shortMessage) || IgnoreLog(fullMessage))
                 return null;
@@ -209,7 +209,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
             return await _erpLogsRepository.GetByIdsAsync(erpLogIds);
         }
 
-        public async Task InformationAsync(string message, ErpSyncLavel syncLavel, Exception exception = null, Customer customer = null)
+        public async Task InformationAsync(string message, ErpSyncLevel syncLavel, Exception exception = null, Customer customer = null)
         {
 
             //don't log thread abort exception
@@ -220,7 +220,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
                 await InsertErpLogAsync(ErpLogLevel.Information, syncLavel, message, exception?.ToString() ?? string.Empty, customer);
         }
 
-        public void Information(string message, ErpSyncLavel syncLavel, Exception exception = null, Customer customer = null)
+        public void Information(string message, ErpSyncLevel syncLavel, Exception exception = null, Customer customer = null)
         {
 
             //don't log thread abort exception
@@ -231,7 +231,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
                 InsertErpLog(ErpLogLevel.Information, syncLavel, message, exception?.ToString() ?? string.Empty, customer);
         }
 
-        public async Task WarningAsync(string message, ErpSyncLavel syncLavel, Exception exception = null, Customer customer = null)
+        public async Task WarningAsync(string message, ErpSyncLevel syncLavel, Exception exception = null, Customer customer = null)
         {
 
             //don't log thread abort exception
@@ -242,7 +242,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
                 await InsertErpLogAsync(ErpLogLevel.Warning, syncLavel, message, exception?.ToString() ?? string.Empty, customer);
         }
 
-        public void Warning(string message, ErpSyncLavel syncLavel, Exception exception = null, Customer customer = null)
+        public void Warning(string message, ErpSyncLevel syncLavel, Exception exception = null, Customer customer = null)
         {
 
             //don't log thread abort exception
@@ -253,7 +253,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
                 InsertErpLog(ErpLogLevel.Warning, syncLavel, message, exception?.ToString() ?? string.Empty, customer);
         }
 
-        public async Task ErrorAsync(string message, ErpSyncLavel syncLavel, Exception exception = null, Customer customer = null)
+        public async Task ErrorAsync(string message, ErpSyncLevel syncLavel, Exception exception = null, Customer customer = null)
         {
 
             //don't log thread abort exception
@@ -264,7 +264,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
                 await InsertErpLogAsync(ErpLogLevel.Error, syncLavel, message, exception?.ToString() ?? string.Empty, customer);
         }
 
-        public void Error(string message, ErpSyncLavel syncLavel, Exception exception = null, Customer customer = null)
+        public void Error(string message, ErpSyncLevel syncLavel, Exception exception = null, Customer customer = null)
         {
             //don't log thread abort exception
             if (exception is System.Threading.ThreadAbortException)

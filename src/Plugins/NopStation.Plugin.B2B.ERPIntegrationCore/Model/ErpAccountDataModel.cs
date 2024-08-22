@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace NopStation.Plugin.B2B.ERPIntegrationCore.Model;
 
@@ -36,4 +37,9 @@ public class ErpAccountDataModel
     public string CompanyNo { get; set; }
     public bool IsActive { get; set; }
     public List<KeyValuePair<string, string>> ErpAccountAttributes { get; set; }
+    public bool IsDeleted { get; set; }
+    public DateTime? UpdatedOnUtc { get; set; }
+    public bool OverrideBackOrderingConfigSetting { get; set; }
+    public bool AllowAccountsBackOrdering { get; set; }
+    public bool AllowAccountsAddressEditOnCheckout { get; set; }
 }

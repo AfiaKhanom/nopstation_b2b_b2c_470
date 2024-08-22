@@ -3845,7 +3845,7 @@
         <Value>ERP Log Level</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ErpSyncLavel">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ErpSyncLevel">
         <Value>ERP Sync Label</Value>
     </LocaleResource>
 
@@ -3889,7 +3889,7 @@
         <Value>ERP Log Level represents the log elements type.</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ErpSyncLavel.Hint">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ErpSyncLevel.Hint">
         <Value>ERP Sync Label represents the log entity/module type.</Value>
     </LocaleResource>
 

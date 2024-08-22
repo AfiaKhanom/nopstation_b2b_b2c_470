@@ -115,7 +115,7 @@ public class ErpOrderController : NopStationAdminController
             var msg = await _localizationService.GetResourceAsync("NopStation.Plugin.NopStation.B2BB2CFeatures.Order.AlreadyConfirmed");
             _notificationService.ErrorNotification(msg);
 
-            await _erpLogsService.ErrorAsync($"{msg}. Order Id: {erpOrder.Id}", ErpSyncLavel.Order, customer: currentCustomer);
+            await _erpLogsService.ErrorAsync($"{msg}. Order Id: {erpOrder.Id}", ErpSyncLevel.Order, customer: currentCustomer);
 
             return RedirectToAction("Edit", new { id = model.Id });
         }
@@ -131,7 +131,7 @@ public class ErpOrderController : NopStationAdminController
         {
             _notificationService.ErrorNotification(errorMsg);
 
-            await _erpLogsService.ErrorAsync($"{errorMsg}. Order Id: {erpOrder.Id}", ErpSyncLavel.Order, customer: currentCustomer);
+            await _erpLogsService.ErrorAsync($"{errorMsg}. Order Id: {erpOrder.Id}", ErpSyncLevel.Order, customer: currentCustomer);
 
             return RedirectToAction("Edit", new { id = model.Id });
         }
@@ -139,7 +139,7 @@ public class ErpOrderController : NopStationAdminController
         var successMsg = await _localizationService.GetResourceAsync("NopStation.Plugin.NopStation.B2BB2CFeatures.Order.Reprocessed");
         _notificationService.SuccessNotification(successMsg);
 
-        await _erpLogsService.InformationAsync($"{successMsg}. Order Id: {erpOrder.Id}", ErpSyncLavel.Order, customer: currentCustomer);
+        await _erpLogsService.InformationAsync($"{successMsg}. Order Id: {erpOrder.Id}", ErpSyncLevel.Order, customer: currentCustomer);
 
         //erp activity log
         await _erpActivityLogsService.InsertErpActivityAsync("Erp_ReprocessErpOrder",
@@ -165,7 +165,7 @@ public class ErpOrderController : NopStationAdminController
             var msg = await _localizationService.GetResourceAsync("NopStation.Plugin.NopStation.B2BB2CFeatures.Order.AlreadyConfirmed");
             _notificationService.ErrorNotification(msg);
 
-            await _erpLogsService.ErrorAsync($"{msg}. Order Id: {erpOrder.Id}", ErpSyncLavel.Order, customer: currentCustomer);
+            await _erpLogsService.ErrorAsync($"{msg}. Order Id: {erpOrder.Id}", ErpSyncLevel.Order, customer: currentCustomer);
 
             return RedirectToAction("List");
         }
@@ -182,7 +182,7 @@ public class ErpOrderController : NopStationAdminController
         {
             _notificationService.ErrorNotification(errorMsg);
 
-            await _erpLogsService.ErrorAsync($"{errorMsg}. Order Id: {erpOrder.Id}", ErpSyncLavel.Order, customer: currentCustomer);
+            await _erpLogsService.ErrorAsync($"{errorMsg}. Order Id: {erpOrder.Id}", ErpSyncLevel.Order, customer: currentCustomer);
 
             return RedirectToAction("List");
         }
@@ -190,7 +190,7 @@ public class ErpOrderController : NopStationAdminController
         var successMsg = await _localizationService.GetResourceAsync("NopStation.Plugin.NopStation.B2BB2CFeatures.Order.Reprocessed");
         _notificationService.SuccessNotification(successMsg);
 
-        await _erpLogsService.InformationAsync($"{successMsg}. Order Id: {erpOrder.Id}", ErpSyncLavel.Order, customer: currentCustomer);
+        await _erpLogsService.InformationAsync($"{successMsg}. Order Id: {erpOrder.Id}", ErpSyncLevel.Order, customer: currentCustomer);
 
         //erp activity log
         await _erpActivityLogsService.InsertErpActivityAsync("Erp_ReprocessErpOrder",

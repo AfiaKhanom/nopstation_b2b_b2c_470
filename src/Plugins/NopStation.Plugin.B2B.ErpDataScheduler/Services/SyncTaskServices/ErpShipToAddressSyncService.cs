@@ -70,7 +70,7 @@ public class ErpShipToAddressSyncService : IErpShipToAddressSyncService
         {
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpShipToAddressSyncTaskName,
-                ErpSyncLavel.ShipToAddress,
+                ErpSyncLevel.ShipToAddress,
                 "No integration method found.");
 
             return false;
@@ -95,7 +95,7 @@ public class ErpShipToAddressSyncService : IErpShipToAddressSyncService
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpShipToAddressSyncTaskName,
-                    ErpSyncLavel.ShipToAddress,
+                    ErpSyncLevel.ShipToAddress,
                     $"No Sales org found with Sales org code: {salesOrgCode}. Unable to run {ErpDataSchedulerDefaults.ErpShipToAddressSyncTaskName}.");
 
                     return false;
@@ -119,7 +119,7 @@ public class ErpShipToAddressSyncService : IErpShipToAddressSyncService
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpShipToAddressSyncTaskName,
-                ErpSyncLavel.ShipToAddress,
+                ErpSyncLevel.ShipToAddress,
                 "Erp ShipToAddress Sync started.");
 
             foreach (var salesOrg in listOfSalesOrgs)
@@ -130,7 +130,7 @@ public class ErpShipToAddressSyncService : IErpShipToAddressSyncService
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpShipToAddressSyncTaskName,
-                        ErpSyncLavel.ShipToAddress,
+                        ErpSyncLevel.ShipToAddress,
                         $"No Erp Accounts found with the Sales org : {salesOrg.Name}");
 
                     return false;
@@ -286,28 +286,28 @@ public class ErpShipToAddressSyncService : IErpShipToAddressSyncService
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpShipToAddressSyncTaskName,
-                        ErpSyncLavel.ShipToAddress,
+                        ErpSyncLevel.ShipToAddress,
                         $"Erp Ship to address sync successful for Sales Org: {salesOrg.Name}");
                 }
                 else
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpShipToAddressSyncTaskName,
-                        ErpSyncLavel.ShipToAddress,
+                        ErpSyncLevel.ShipToAddress,
                         $"Erp Ship to address sync is partially or not successful for Sales Org: {salesOrg.Name}",
                         lastErrorMessage);
                 }
 
                 await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpShipToAddressSyncTaskName,
-                    ErpSyncLavel.ShipToAddress,
+                    ErpSyncLevel.ShipToAddress,
                     (lastErpShipToAddressSynced is not null ? $"The last synced Erp Ship To Address: {lastErpShipToAddressSynced.ShipToCode}, of Erp Account: {lastErpShipToAddressSyncedOfErpAccount} for Sales Org: {salesOrg.Name}. " : string.Empty) + $"Total synced in this session: {totalSyncedSoFar}");
 
             }
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpShipToAddressSyncTaskName,
-                ErpSyncLavel.ShipToAddress,
+                ErpSyncLevel.ShipToAddress,
                 "Erp ShipToAddress Sync ended.");
 
             return true;
@@ -316,13 +316,13 @@ public class ErpShipToAddressSyncService : IErpShipToAddressSyncService
         {
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpShipToAddressSyncTaskName,
-                ErpSyncLavel.ShipToAddress,
+                ErpSyncLevel.ShipToAddress,
                 ex.Message,
                 ex.StackTrace);
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpShipToAddressSyncTaskName,
-                ErpSyncLavel.ShipToAddress,
+                ErpSyncLevel.ShipToAddress,
                 "Erp ShipToAddress Sync ended.");
 
             return false;

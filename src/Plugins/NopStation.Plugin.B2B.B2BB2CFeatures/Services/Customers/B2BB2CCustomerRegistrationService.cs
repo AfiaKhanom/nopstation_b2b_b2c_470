@@ -146,7 +146,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Customers
 
             if (customer.Active)
             {
-                await _erpLogsService.InformationAsync($"Customer Logged in as: {customer.Email}, Customer Id: {customer.Id}", ErpSyncLavel.LoginLogout, customer: customer);
+                await _erpLogsService.InformationAsync($"Customer Logged in as: {customer.Email}, Customer Id: {customer.Id}", ErpSyncLevel.LoginLogout, customer: customer);
 
                 if (!await _customerService.IsAdminAsync(customer))
                 {

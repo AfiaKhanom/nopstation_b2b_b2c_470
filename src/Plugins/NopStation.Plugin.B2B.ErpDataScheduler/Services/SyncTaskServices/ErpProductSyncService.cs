@@ -147,13 +147,13 @@ public class ErpProductSyncService : IErpProductSyncService
         {
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpProductSyncTaskName,
-                ErpSyncLavel.Product,
+                ErpSyncLevel.Product,
                 "No integration method found.");
 
             return false;
         }
 
-        var warehouse = await _shippingService.GetNearestWarehouseAsync(new Address()) ?? new Warehouse();
+        var allWarehouses = await _shippingService.GetAllWarehousesAsync();
         var erpDataSchedulersettings = await _settingService.LoadSettingAsync<ErpDataSchedulerSettings>();
 
         var lineBreakReplacer = new Regex(@"\r?\n");
@@ -197,7 +197,7 @@ public class ErpProductSyncService : IErpProductSyncService
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpStockSyncTaskName,
-                    ErpSyncLavel.Stock,
+                    ErpSyncLevel.Stock,
                     $"No Sales org found with Sales org code: {salesOrgCode}. Unable to run {ErpDataSchedulerDefaults.ErpStockSyncTaskName}.");
 
                     return false;
@@ -221,7 +221,7 @@ public class ErpProductSyncService : IErpProductSyncService
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpProductSyncTaskName,
-                    ErpSyncLavel.Product,
+                    ErpSyncLevel.Product,
                     "Erp Product Sync started.");
 
             foreach (var salesOrg in listOfSalesOrgs)
@@ -253,7 +253,7 @@ public class ErpProductSyncService : IErpProductSyncService
 
                         await _erpSyncLogService.SyncLogSaveOnFileAsync(
                             ErpDataSchedulerDefaults.ErpProductSyncTaskName,
-                            ErpSyncLavel.Product,
+                            ErpSyncLevel.Product,
                             response.ErpResponseModel.ErrorShortMessage,
                             response.ErpResponseModel.ErrorFullMessage);
 
@@ -271,7 +271,6 @@ public class ErpProductSyncService : IErpProductSyncService
                     foreach (var erpProduct in response.Data)
                     {
                         var oldErpProduct = await _productService.GetProductBySkuAsync(erpProduct.Sku) ?? new Product();
-                        var vendor = allVendors.FirstOrDefault(x => x.Name.Equals(erpProduct.VendorCode) || x.Name.Equals(erpProduct.VendorName)) ?? new Vendor();
                         
                         if (oldErpProduct.Id <= 0)
                         {
@@ -289,8 +288,8 @@ public class ErpProductSyncService : IErpProductSyncService
                             oldErpProduct.AdminComment = $"Created by {programName} (B2B) on {DateTime.UtcNow.ToString("u")}";
                             oldErpProduct.ProductTemplateId = productTemplate.Id;
 
-                            oldErpProduct.WarehouseId = warehouse.Id;
-                            oldErpProduct.VendorId = vendor.Id;
+                            oldErpProduct.WarehouseId = allWarehouses.FirstOrDefault(x => x.Name.Equals(erpProduct.WarehouseNameOrCode))?.Id ?? 0;
+                            oldErpProduct.VendorId = allVendors.Find(x => x.Name.Equals(erpProduct.VendorCode) || x.Name.Equals(erpProduct.VendorName))?.Id ?? 0;
 
                             oldErpProduct.StockQuantity = Convert.ToInt32(Math.Min(Math.Max(Math.Round(erpProduct.StockQuantity), int.MinValue), int.MaxValue));
                             oldErpProduct.OrderMinimumQuantity = 1;
@@ -327,8 +326,8 @@ public class ErpProductSyncService : IErpProductSyncService
                         {
                             oldErpProduct.ShortDescription = (erpProduct.ShortDescription.Length > 400) ? erpProduct.ShortDescription.Substring(0, 400) : erpProduct.ShortDescription;
 
-                            oldErpProduct.VendorId = vendor.Id;
-                            oldErpProduct.WarehouseId = warehouse.Id;
+                            oldErpProduct.VendorId = allVendors.Find(x => x.Name.Equals(erpProduct.VendorCode) || x.Name.Equals(erpProduct.VendorName))?.Id ?? 0;
+                            oldErpProduct.WarehouseId = allWarehouses.FirstOrDefault(x => x.Name.Equals(erpProduct.WarehouseNameOrCode))?.Id ?? 0;
 
                             oldErpProduct.FullDescription = lineBreakReplacer.Replace((erpProduct.FullDescription.Length > 400)
                                 ? erpProduct.FullDescription.Substring(0, 400) : erpProduct.FullDescription, "<br/>");
@@ -432,6 +431,9 @@ public class ErpProductSyncService : IErpProductSyncService
                                 await _specificationAttributeService.InsertSpecificationAttributeAsync(specAttr);
                                 specificationAttributes.Add(specAttr);
                             }
+
+                            if (string.IsNullOrWhiteSpace(attribute.Value))
+                                continue;
 
                             var specificationAttributeOptions = await _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttributeAsync(specAttr.Id);
                             int specAttrOptionId = specificationAttributeOptions.FirstOrDefault(o => o.Name == attribute.Value)?.Id ?? 0;
@@ -547,7 +549,7 @@ public class ErpProductSyncService : IErpProductSyncService
 
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpProductSyncTaskName,
-                        ErpSyncLavel.Product,
+                        ErpSyncLevel.Product,
                         (lastErpProductSynced is not null ? $"The last synced Erp Product: {lastErpProductSynced.Sku} in this batch." : string.Empty) + $"Total product synced so far: {totalSyncedSoFar}");
                 }
 
@@ -557,7 +559,7 @@ public class ErpProductSyncService : IErpProductSyncService
 
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpProductSyncTaskName,
-                        ErpSyncLavel.Product,
+                        ErpSyncLevel.Product,
                         $"Erp Product sync successful. The products which were updated before {syncStartTime} are unpublished.");
 
                     // Clear attributes if sync successful.
@@ -571,7 +573,7 @@ public class ErpProductSyncService : IErpProductSyncService
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpProductSyncTaskName,
-                        ErpSyncLavel.Product,
+                        ErpSyncLevel.Product,
                          $"Erp Product sync is partially or not successful");
 
                     if (erpDataSchedulersettings.StartProductSyncAfterLastSyncedProduct)
@@ -583,13 +585,13 @@ public class ErpProductSyncService : IErpProductSyncService
 
                 await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpProductSyncTaskName,
-                    ErpSyncLavel.Product,
+                    ErpSyncLevel.Product,
                     (lastErpProductSynced is not null ? $"The last synced Erp Product: {lastErpProductSynced.Sku}. " : string.Empty) + $"Total synced in this session: {totalSyncedSoFar}");
             }
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpProductSyncTaskName,
-                    ErpSyncLavel.Product,
+                    ErpSyncLevel.Product,
                     "Erp Product Sync ended.");
 
             return true;
@@ -604,13 +606,13 @@ public class ErpProductSyncService : IErpProductSyncService
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpProductSyncTaskName,
-                    ErpSyncLavel.Product,
+                    ErpSyncLevel.Product,
                     ex.Message,
                     ex.StackTrace);
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
             ErpDataSchedulerDefaults.ErpProductSyncTaskName,
-            ErpSyncLavel.Product,
+            ErpSyncLevel.Product,
                     "Erp Product Sync ended.");
 
             return false;

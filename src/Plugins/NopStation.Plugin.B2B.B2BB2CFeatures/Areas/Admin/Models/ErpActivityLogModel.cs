@@ -17,8 +17,8 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models
 
         public int ErpLogLevelId { get; set; }
 
-        [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpActivityLog.Field.ErpSyncLavel")]
-        public string ErpSyncLavel { get; set; }
+        [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpActivityLog.Field.ErpSyncLevel")]
+        public string ErpSyncLevel { get; set; }
 
         public int ErpSyncLavelId { get; set; }
 

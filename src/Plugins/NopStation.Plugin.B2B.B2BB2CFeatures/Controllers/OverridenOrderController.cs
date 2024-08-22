@@ -440,7 +440,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
                     }
 
                     await _orderProcessingService.ReOrderAsync(order);
-                    await _erpLogsService.InformationAsync($"Reordered! Order id: {order.Id}", ErpSyncLavel.Order, customer: customer);
+                    await _erpLogsService.InformationAsync($"Reordered! Order id: {order.Id}", ErpSyncLevel.Order, customer: customer);
 
                     //erp activity log
                     await _erpActivityLogsService.InsertErpActivityAsync(customer, "Erp_ReOrder",
@@ -454,7 +454,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
                     var msg = await _localizationService.GetResourceAsync("Plugins.Payments.B2BCustomerAccount.Reorder.Error");
                     _logger.Error(msg + " " + ex.Message, ex);
                     _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("Plugins.Payments.B2BCustomerAccount.Reorder.Error"));
-                    await _erpLogsService.ErrorAsync(msg, ErpSyncLavel.Order, ex, customer: customer);
+                    await _erpLogsService.ErrorAsync(msg, ErpSyncLevel.Order, ex, customer: customer);
                 }
                 finally
                 {

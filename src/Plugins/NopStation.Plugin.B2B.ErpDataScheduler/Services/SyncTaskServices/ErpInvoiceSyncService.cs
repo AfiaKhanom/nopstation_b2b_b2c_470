@@ -65,7 +65,7 @@ public class ErpInvoiceSyncService : IErpInvoiceSyncService
         {
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpInvoiceSyncTaskName,
-                ErpSyncLavel.Invoice,
+                ErpSyncLevel.Invoice,
                 "No integration method found.");
 
             return false;
@@ -89,7 +89,7 @@ public class ErpInvoiceSyncService : IErpInvoiceSyncService
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpInvoiceSyncTaskName,
-                    ErpSyncLavel.Invoice,
+                    ErpSyncLevel.Invoice,
                     $"No Sales org found with Sales org code: {salesOrgCode}. Unable to run {ErpDataSchedulerDefaults.ErpInvoiceSyncTaskName}.");
 
                     return false;
@@ -113,7 +113,7 @@ public class ErpInvoiceSyncService : IErpInvoiceSyncService
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpInvoiceSyncTaskName,
-                ErpSyncLavel.Invoice,
+                ErpSyncLevel.Invoice,
                 "Erp Invoice Sync started.");
 
             foreach (var salesOrg in listOfSalesOrgs)
@@ -123,7 +123,7 @@ public class ErpInvoiceSyncService : IErpInvoiceSyncService
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpInvoiceSyncTaskName,
-                        ErpSyncLavel.Invoice,
+                        ErpSyncLevel.Invoice,
                         $"No Erp Accounts found with the Sales org : {salesOrg.Name}");
 
                     continue;
@@ -230,28 +230,28 @@ public class ErpInvoiceSyncService : IErpInvoiceSyncService
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpInvoiceSyncTaskName,
-                        ErpSyncLavel.Invoice,
+                        ErpSyncLevel.Invoice,
                         $"Erp Invoice sync successful for Sales Org: {salesOrg.Name}");
                 }
                 else
                 {
                     await _erpSyncLogService.SyncLogSaveOnFileAsync(
                         ErpDataSchedulerDefaults.ErpInvoiceSyncTaskName,
-                        ErpSyncLavel.Invoice,
+                        ErpSyncLevel.Invoice,
                         $"Erp Invoice sync is partially or not successful for Sales Org: {salesOrg.Name}",
                         lastErrorMessage);
                 }
 
                 await _erpSyncLogService.SyncLogSaveOnFileAsync(
                     ErpDataSchedulerDefaults.ErpInvoiceSyncTaskName,
-                    ErpSyncLavel.Invoice,
+                    ErpSyncLevel.Invoice,
                     (lastErpInvoiceSynced is not null ?
                     $"The last synced Erp Invoice: {lastErpInvoiceSynced.ErpDocumentNumber}, of Erp Account: {lastErpInvoiceSyncedOfErpAccount} for Sales Org: {salesOrg.Name}. " : string.Empty) + $"Total synced in this session: {totalSyncedSoFar}");
             }
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpInvoiceSyncTaskName,
-                ErpSyncLavel.Invoice,
+                ErpSyncLevel.Invoice,
                 "Erp Invoice Sync ended.");
 
             return true;
@@ -260,13 +260,13 @@ public class ErpInvoiceSyncService : IErpInvoiceSyncService
         {
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpInvoiceSyncTaskName,
-                ErpSyncLavel.Invoice,
+                ErpSyncLevel.Invoice,
                 ex.Message,
                 ex.StackTrace);
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpInvoiceSyncTaskName,
-                ErpSyncLavel.Invoice,
+                ErpSyncLevel.Invoice,
                 "Erp Invoice Sync ended.");
 
             return false;

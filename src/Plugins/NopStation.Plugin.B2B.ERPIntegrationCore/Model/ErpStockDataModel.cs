@@ -4,7 +4,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Model;
 
 public class ErpStockDataModel
 {
-    public string AccountNumber { get; set; }
+    public string WarehouseNameOrCode { get; set; }
     public string Sku { get; set; }
     public string SalesOrgCode { get; set; }
     public decimal QuantityOnHand { get; set; }

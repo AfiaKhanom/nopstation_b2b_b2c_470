@@ -1,6 +1,6 @@
 ﻿namespace NopStation.Plugin.B2B.ERPIntegrationCore.Enums
 {
-    public enum ErpSyncLavel
+    public enum ErpSyncLevel
     {
         Account = 10,
         GroupPrice = 20,

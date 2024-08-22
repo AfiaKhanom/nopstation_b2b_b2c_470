@@ -178,7 +178,7 @@ public class ErpAccountPublicController : BasePluginController
 
         if (erpIntegrationPlugin is null)
         {
-            await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLavel.Invoice, "No integration method found.");
+            await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLevel.Invoice, "No integration method found.");
             return null;
         }
 
@@ -218,7 +218,7 @@ public class ErpAccountPublicController : BasePluginController
             }
             else
             {
-                await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLavel.Invoice, response.ErpResponseModel.ErrorShortMessage, response.ErpResponseModel.ErrorFullMessage);
+                await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Error, ErpSyncLevel.Invoice, response.ErpResponseModel.ErrorShortMessage, response.ErpResponseModel.ErrorFullMessage);
             }
             _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("B2BB2CFeatures.DownloadInvoice.ErrorMessage.InvoiceDataNotFound"));
 
@@ -226,7 +226,7 @@ public class ErpAccountPublicController : BasePluginController
         }
         catch (Exception ex)
         {
-            await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Information, ErpSyncLavel.Account, ex.Message, ex.StackTrace);
+            await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Information, ErpSyncLevel.Account, ex.Message, ex.StackTrace);
             _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("B2BB2CFeatures.DownloadInvoice.ErrorMessage.InvoiceDataNotFound"));
             return RedirectToAction("ErpAccountInvoices");
         }
@@ -342,7 +342,7 @@ public class ErpAccountPublicController : BasePluginController
         }
         catch (Exception ex)
         {
-            await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Information, ErpSyncLavel.Account, ex.Message, ex.StackTrace);
+            await _erpLogsService.InsertErpLogAsync(ErpLogLevel.Information, ErpSyncLevel.Account, ex.Message, ex.StackTrace);
             _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("B2BB2CFeatures.DownloadInvoice.ErrorMessage.InvoiceDataNotFound"));
             return RedirectToAction("ErpAccountInvoices");
         }
