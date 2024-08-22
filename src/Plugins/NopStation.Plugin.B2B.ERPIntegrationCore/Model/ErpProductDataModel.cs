@@ -19,6 +19,7 @@ public class ErpProductDataModel
     public IEnumerable<ErpCategoryDataModel> ProductCategories { get; set; } = new List<ErpCategoryDataModel>();
     public List<KeyValuePair<string, string>> ProductAttributes { get; set; } = new List<KeyValuePair<string, string>>();
     public int TaxCategoryId { get; set; }
+    public string TaxCategoryName { get; set; }
     public string Published { get; set; }
     public string ManufacturerName { get; set; }
     public string ManufacturerCode { get; set; }
