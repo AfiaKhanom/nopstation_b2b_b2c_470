@@ -1,0 +1,94 @@
+
+@media all and (min-width: 1280px) {
+
+.header-upper .center,
+.header-lower .center,
+.header-menu > ul {
+    min-width: 1200px;
+    max-width: 1500px;
+}
+.slider-wrapper {
+    margin: 0 0 50px;
+}
+.master-column-wrapper {
+    min-width: 1200px;
+    max-width: 1500px;
+}
+.footer-upper .center,
+.footer-middle .center,
+.footer-lower .center {
+    min-width: 1200px;
+    max-width: 1500px;
+}
+.home-page-category-grid .item-box,
+.sub-category-grid .item-box,
+.manufacturer-grid .item-box,
+.vendor-grid .item-box {
+	margin-bottom: 45px;
+}
+.center-2 {
+	width: calc(100% - 285px);
+}
+.side-2 {
+	width: 250px;
+}
+.center-1 .item-box {
+	width: 23.5%;
+    margin: 0 0.75% 45px;
+}
+.center-1 .item-box:nth-child(3n+1) {
+	clear: none;
+}
+.center-1 .item-box:nth-child(4n+1) {
+	clear: both;
+}
+/*.attributes dt {
+	float: left;
+	clear: left;
+	min-width: 60px;
+	margin-right: 10px;
+}
+.attributes dt label {
+	line-height: 32px;
+}
+.attributes dd {
+	float: left;
+	margin-right: 10px;
+}*/
+.rental-attributes dt {
+	clear: none;
+	width: auto;
+}
+.registration-page .page-body,
+.login-page .page-body {
+    max-width: 1200px;
+    margin: auto;
+}
+.shopping-cart-page .common-buttons button,
+.shopping-cart-page .common-buttons a {
+    min-width: 14.5%;
+	margin: 0 0 0 15px;
+}
+	
+}
+
+@media all and (min-width: 1345px) {
+
+.newsletter-email input[type="email"] {
+	width: 250px;
+}
+.center-2 .item-box {
+	width: 23.5%;
+    margin: 0 0.75% 45px;
+}
+.center-2 .item-box:nth-child(3n+1) {
+	clear: none;
+}
+.center-2 .item-box:nth-child(4n+1) {
+	clear: both;
+}
+.gallery .thumb-item {
+    width: calc(25% - 10px);
+}
+
+}

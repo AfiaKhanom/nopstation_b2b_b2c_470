@@ -1,0 +1,51 @@
+﻿@model LanguageSelectorModel
+
+@inject Nop.Core.IWebHelper webHelper
+
+@if (Model.AvailableLanguages.Count > 1)
+{
+    var returnUrl = webHelper.GetRawUrl(Context.Request);
+    
+    <div class="language-selector">
+        <div class="header-languageselector">
+            @if (Model.UseImages)
+            {
+                <ul class="language-list">
+                    @foreach (var lang in Model.AvailableLanguages)
+                    {
+                        <li>
+                        	<a href="@Url.RouteUrl("ChangeLanguage", new { langid = lang.Id, returnUrl }, webHelper.GetCurrentRequestProtocol())" title="@lang.Name">
+                                <img title='@lang.Name' alt='@lang.Name' @(lang.Id == Model.CurrentLanguageId ? " class=selected" : null)
+                                     src="@Url.Content("~/images/flags/" + @lang.FlagImageFileName) " />
+                            </a>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                var languages = await Model.AvailableLanguages.SelectAwait(async lang => new SelectListItem
+                {
+                    Text = lang.Name,
+                	Value = Url.RouteUrl("ChangeLanguage", new { langid = lang.Id, returnUrl }, webHelper.GetCurrentRequestProtocol()),
+                    Selected = lang.Id.Equals(Model.CurrentLanguageId)
+                }).ToListAsync();
+
+                <script src="~/Plugins/SevenSpikes.Core/Scripts/jquery.styleSelect.min.js" asp-location="Footer"></script>
+                <script src="~/Plugins/SevenSpikes.Core/Scripts/jquery.jscrollpane.min.js" asp-location="Footer"></script>
+
+            	<select id="customerlanguage" name="customerlanguage" asp-items="@languages" onchange="setLocation(this.value);" aria-label="@T("Languages.Selector.Label")"></select>
+
+                <script type="text/javascript" asp-location="Footer">
+                    $(function() {
+                        var options = {
+                            styleClass: "new_select",
+                            jScrollPane: 1
+                        }
+                        $("#customerlanguage").styleSelect(options);
+                    });
+                </script>
+            }
+        </div>
+    </div>
+}

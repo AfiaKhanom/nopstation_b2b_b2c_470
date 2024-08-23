@@ -1,0 +1,44 @@
+
+@media all and (max-width: 1024px) {
+
+    .responsive-nav-wrapper > div > span {
+        padding: 15px 35px 15px 15px;
+    }
+    .responsive-nav-wrapper .menu-title,
+    .responsive-nav-wrapper .filters-button {
+        background-position: right center;
+    }
+    .justAFixingDivBefore,
+    .header-menu {
+        right: 0;
+        left: auto;
+        text-align: right;
+        -webkit-transform: translate(320px);
+        -ms-transform: translate(320px);
+        transform: translate(320px);
+    }
+    .header-menu .close-menu,
+    .header-menu .back-button {
+        text-align: left;
+    }
+    .header-menu .close-menu:before,
+    .header-menu .back-button:before {
+        right: 10px;
+        left: auto;
+    }
+    .header-menu > ul li > .with-subcategories {
+        float: right;
+    }
+    .header-menu .plus-button {
+        float: left;
+        border-right: 1px dotted #5be;
+        border-left: none;
+    }
+    .header-menu .sublist-wrap {
+        right: 0;
+        left: auto;
+        -webkit-transform: translate(320px);
+        -ms-transform: translate(320px);
+        transform: translate(320px);
+    }
+}

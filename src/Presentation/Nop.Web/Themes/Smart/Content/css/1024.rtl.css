@@ -1,0 +1,179 @@
+﻿
+@media all and (min-width: 1025px) {
+
+    .inputs label {
+        margin: 0 -180px 0 10px;
+        text-align: left;
+    }
+    .inputs .gender {
+        text-align: right;
+    }
+    .header {
+        text-align: right;
+    }
+    .header-links li > a {
+        background-position: right !important;
+        padding-right: 30px;
+        padding-left: 0;
+    }
+    .header-links a.ico-inbox,
+    .header-links a.ico-wishlist,
+    .header-links a.ico-cart {
+        padding-right: 38px;
+        padding-left: 0;
+    }
+    .header-links span.qty {
+        right: 21px;
+        left: auto;
+    }
+    .header-selectors-wrapper > div {
+        float: right;
+        margin: 0 10px 0 0;
+    }
+    .mini-shopping-cart .count {
+        border-radius: 18px 18px 0 0;
+    }
+    .mini-shopping-cart .picture {
+        float: right;
+    }
+    .mini-shopping-cart .picture + .product {
+        margin: 0 70px 0 0;
+    }
+    .mini-shopping-cart .totals {
+        text-align: left;
+    }
+    .mini-shopping-cart .buttons {
+        text-align: left;
+    }
+    .header-logo {
+        float: right;
+    }
+    .header .search-box {
+        float: left;
+    }
+    .header-menu {
+        text-align: right;
+    }
+    .header-menu .sublist li a {
+        padding: 8px 26px 8px 14px;
+    }
+    .header-menu .sublist li a:before {
+        right: 10px;
+        left: auto;
+        border-radius: 2px 2px 2px 2px;
+    }
+    .header-menu .sublist-wrap .sublist-wrap {
+        right: 100%;
+        left: auto;
+    }
+    .footbox {
+        text-align: right;
+    }
+    .contacts li {
+        text-align: right;
+    }
+    .contacts li span:before {
+        margin: 0 0 0 10px;
+    }
+    .footlist {
+        text-align: right;
+    }
+    .footer-lower .inner-wrapper {
+        padding-right: 0;
+    }
+    .footer-lower .footer-powered-by,
+    .footer-lower .footer-designed-by {
+        float: left;
+    }
+    .footer-lower .footer-disclaimer {
+        float: right;
+        text-align: right;
+    }
+    .center-2 {
+        float: left;
+    }
+    .side-2 {
+        float: right;
+    }
+    .block .listbox {
+        padding: 0 8px 0 0;
+    }
+    .block .product-picture {
+        float: right;
+        margin: 0 0 0 10px;
+    }
+    .block a.product-picture {
+        padding-right: 0;
+    }
+    .pager ul {
+        text-align: left;
+    }
+    .pager li {
+        margin: 0 10px 0 0;
+    }
+    .rental-attributes dt {
+        clear: right;
+    }
+    .giftcard label {
+        text-align: right;
+    }
+    .topic-password {
+        text-align: right;
+    }
+    .block-account-navigation {
+        text-align: right !important;
+    }
+    .selected-checkout-attributes,
+    .order-summary-content .tax-shipping-info {
+        text-align: left;
+    }
+    .shopping-cart-page .common-buttons,
+    .checkout-attributes {
+        text-align: left;
+    }
+    .shopping-cart-page .common-buttons button,
+    .shopping-cart-page .common-buttons a {
+        margin: 0 10px 0 0;
+    }
+    .cart-footer .totals {
+        text-align: right;
+    }
+    .cart-collaterals .deals > div {
+        margin: 0 0 0 30px;
+    }
+    .estimate-shipping .shipping-options .inputs,
+    .estimate-shipping .shipping-options .buttons {
+        margin: 10px 0 10px 10px;
+        text-align: right;
+    }
+    .cart-collaterals .shipping label {
+        text-align: right;
+    }
+    .checkout-page .selected-checkout-attributes {
+        text-align: left;
+    }
+    .checkout-page .totals {
+        float: left;
+    }
+    .order-details-page .tax-shipping-info {
+        text-align: left;
+    }
+    .advanced-search .price-range {
+        margin-right: -35px;
+        margin-left: 0;
+    }
+    .news-list-homepage .news-item {
+        margin: 0 0 45px 4%;
+        text-align: right;
+    }
+    .news-list-homepage .news-item:nth-child(even) {
+        margin-left: 0;
+    }
+    .news-list-homepage .news-body:after {
+        right: 0;
+        left: auto;
+    }
+    .news-list-homepage .read-more {
+        float: left;
+    }
+}
