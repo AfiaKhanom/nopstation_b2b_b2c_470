@@ -24,4 +24,5 @@ public class ErpShipToAddressDataModel
     public string RepFullName { get; set; }
     public string RepPhoneNumber { get; set; }
     public string RepEmail { get; set; }
+    public string SalesOrgCode { get; set; }
 }

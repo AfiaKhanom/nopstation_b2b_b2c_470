@@ -134,7 +134,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
 
         public async Task<bool> IsCurrentCustomerInB2BQuoteAssistantRole()
         {
-            return await _customerService.IsInCustomerRoleAsync(await _workContext.GetCurrentCustomerAsync(), B2BB2CFeaturesDefaults.B2BCustomerRoleSystemName);
+            return await _customerService.IsInCustomerRoleAsync(await _workContext.GetCurrentCustomerAsync(), B2BB2CFeaturesDefaults.B2BQuoteAssistantRoleSystemName);
         }
 
         public async Task<bool> IsCustomerInB2BQuoteAssistantRole(Customer customer)

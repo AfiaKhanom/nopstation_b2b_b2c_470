@@ -12,34 +12,95 @@
 
 <div class="page checkout-page shipping-address-page">
     @await Component.InvokeAsync(typeof(CheckoutProgressViewComponent), new { step = CheckoutProgressStep.Address })
-    <div class="page-title">
-        <h1>@T("Checkout.ShippingAddress")</h1>
-    </div>
     <div class="page-body checkout-data">
+
+        <h1 id="header-text">SELECT DELIVER OR COLLECT</h1>
+
         <form id="ErpShiptoAddressForm" asp-controller="ErpCheckout" asp-action="ErpShippingAddress" method="post">
+
+            <label><input type="radio" name="deliveryOption" id="deliver" checked>Deliver</label>
+            <label style="margin-left: 20px; display:none" id="collect-radio-button-level"><input type="radio" id="collect">Collect</label>
+            <h1 id="option-description"></h1>
 
             @if (Model.DisplayPickupInStore && Model.PickupPointsModel.AllowPickupInStore)
             {
                 @await Html.PartialAsync("~/Views/Checkout/_PickupPoints.cshtml", Model.PickupPointsModel)
+
                 <script asp-location="Footer">
                     $(document).ready(function () {
+                        $('#pickup-points-form').hide();
+                        $('.pickup-in-store .selector').hide();
+                        $('.pickup-in-store .description').hide();
+                        $('#collect-radio-button-level').show();
+                        $('#option-description').text('SELECT YOUR DELIVERY ADDRESS');
+
+                        $('#deliver').on('change', function () {
+                            if ($(this).is(':checked')) {
+                                $('#option-description').text('SELECT YOUR DELIVERY ADDRESS');
+                                $('#shipping-addresses-form').show();
+                                $('#shippingaddress-new-form').show();
+                                $('#select-delivery-date').show();
+                                $('#pickup-points-form').hide();
+                                $('#collect').prop('checked', false);
+                            }
+                        });
+
+                        $('#collect').on('change', function () {
+                            if ($(this).is(':checked')) {
+                                $('#option-description').text('SELECT COLLECTION POINT');
+                                $('#shipping-addresses-form').hide();
+                                $('#shippingaddress-new-form').hide();
+                                $('#select-delivery-date').hide();
+                                $('#pickup-points-form').show();
+                                $('#deliver').prop('checked', false);
+                            }
+                        });
+                    });
+                </script>
+
+                @* @await Html.PartialAsync("~/Views/Checkout/_PickupPoints.cshtml", Model.PickupPointsModel)
+                    <script asp-location="Footer">
+                        $(document).ready(function () {
                         $(document).unbind('checkout_toggle_pickup_in_store');
                         $(document).on('checkout_toggle_pickup_in_store', function (e) {
                             if (e.checked) {
                                 $('#shipping-addresses-form').hide();
                                 $('#shippingaddress-new-form').hide();
+                                $('#select-delivery-date').hide();
                             }
                             else {
                                 $('#shipping-addresses-form').show();
                                 $('#shippingaddress-new-form').show();
+                                $('#select-delivery-date').show();
                             }
                         });
                     });
-                </script>
+                </script> *@
             }
+
             @if (Model.PickupPointsModel == null || !Model.PickupPointsModel.PickupInStoreOnly)
             {
+                <!-- Address Modal -->
+                <div id="addressModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <div id="modal-body-content">
+                            <!-- Content will be loaded here via AJAX -->
+                        </div>
+                    </div>
+                </div>
+
                 <script asp-location="Footer">
+                    function editSelectedAddress() {
+                        console.log('Got it');
+                        var selectedAddress = $('input[type="radio"][data-id]:checked');
+
+                        var shipToId = selectedAddress.data('id');
+                        console.log('Current selected ship to address id: ' + shipToId);
+
+                        loadB2BShipToAddress(shipToId);
+                    }
+
                     function loadB2BShipToAddress(shipToId) {
                         displayAjaxLoading(true);
                         var postData = {
@@ -55,7 +116,10 @@
                                 success: function (response) {
                                     if (response.isSucceed) {
                                         console.log(response.Data);
-                                        $("#shippingaddress-new-form").html(response.Data);
+                                        // Load the response into the modal body
+                                        $("#modal-body-content").html(response.Data);
+                                        // Open the modal
+                                        $("#addressModal").show();
                                     }
                                 },
                                 error: function () {
@@ -63,12 +127,25 @@
                                 },
                                 complete: function () {
                                     displayAjaxLoading();
-                                    $(".new-shipping-address").css("top", 10);
-                                    window.scrollTo(0, 10);
+                                    //$(".new-shipping-address").css("top", 10);
+                                    //window.scrollTo(0, 10);
                                 }
                             });
                         }
                     }
+                    // Script to close the modal
+                    $(document).ready(function () {
+                        $(".close").on('click', function () {
+                            $("#addressModal").hide();
+                        });
+
+                        // Close the modal when clicking outside of it
+                        $(window).on('click', function (event) {
+                            if (event.target == $("#addressModal")[0]) {
+                                $("#addressModal").hide();
+                            }
+                        });
+                    });
                 </script>
                 <div class="shipping-addresses" id="shipping-addresses-form">
                     @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutShippingAddressTop, additionalData = Model })
@@ -76,14 +153,13 @@
                     {
                         <div class="section select-shipping-address">
                             <div class="title">
-                                <strong>@T("Checkout.SelectShippingAddress")</strong>
+                                @* <strong>@T("Checkout.SelectShippingAddress")</strong> *@
                             </div>
                             <div class="shipping-address-body" style="text-align:center;">
                                 @foreach (var item in Model.ExistingErpShipToAddresses)
                                 {
                                     var addressLine = string.Join(", ", new string[] {
                                         item.ShipToName,
-                                        //item.ShipToCode,
                                         item.Address1,
                                         item.Address2,
                                         item.Suburb,
@@ -91,19 +167,22 @@
                                         item.StateProvinceName,
                                         item.ZipPostalCode
                                     }.Where(s => !string.IsNullOrEmpty(s)));
-                                    
+
                                     <label id="shipping-address-select" class="address-select-radio">
+                                        <input id="shipToAddress" type="radio" data-id="@item.Id" data-suburb="@item.Suburb" data-city="@item.City" checked="@((Model.ErpShipToAddressId == item.Id) || (Model.ExistingErpShipToAddresses.Count() == 1) ? true : false)" asp-for="@Model.ErpShipToAddressId" value="@item.Id" />
                                         @(addressLine)
-                                        <input type="radio" data-suburb="@item.Suburb" data-city="@item.City" checked="@((Model.ErpShipToAddressId ==  item.Id) || (Model.ExistingErpShipToAddresses.Count() == 1) ? true : false)" asp-for="@Model.ErpShipToAddressId" value="@item.Id" />
                                         <span class="checkmark"></span>
-                                        @if (Model.AllowAddressEdit)
+                                        @* @if (Model.AllowAddressEdit)
                                         {
                                             <button class="edit-ship-to" onclick="loadB2BShipToAddress(@item.Id);return false;">Edit Address</button>
-                                        }
+                                        } *@
                                     </label>
                                     <br />
-
-                                    <br />
+                                }
+                                <br />
+                                @if (Model.AllowAddressEdit)
+                                {
+                                    <button class="edit-ship-to" onclick="editSelectedAddress(); return false;">Edit Address</button>
                                 }
                             </div>
                         </div>
@@ -112,7 +191,7 @@
                 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutShippingAddressMiddle, additionalData = Model })
                 <div class="section new-shipping-address" id="shippingaddress-new-form"></div>
                 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutShippingAddressBottom, additionalData = Model })
-                <div class="section select-delivery-date">
+                <div class="section select-delivery-date" id="select-delivery-date">
                     <div class="title delivery-date-title">
                         <strong>@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.ExpectedDeliveryDate")</strong>
                     </div>
