@@ -21,10 +21,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure
               pattern: $"{lang}/FavouritesDetails/{{id:min(0)}}",
               defaults: new { controller = "QuickOrder", action = "QuickOrderTemplateDetails" });
 
-            //endpointRouteBuilder.MapControllerRoute(name: "ClearCartErpUser",
-            //  pattern: $"{lang}/ClearCartErpUser",
-            //  defaults: new { controller = "QuickOrder", action = "ClearCart" });
-
             //logout
             endpointRouteBuilder.MapControllerRoute(name: "Logout",
                 pattern: $"{lang}/logout/",
@@ -49,11 +45,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure
             endpointRouteBuilder.MapControllerRoute(name: "ErpAccountCustomerRegistrationForm",
                 pattern: $"{lang}/ErpAccountCustomerRegistrationApplication/",
                 defaults: new { controller = "B2BB2CCustomer", action = "ErpAccountCustomerRegistrationForm" });
-
-            //login
-            //endpointRouteBuilder.MapControllerRoute(name: "Login",
-            //  pattern: $"{lang}/login/",
-            //  defaults: new { controller = "B2BB2CCustomer", action = "Login" });
 
             endpointRouteBuilder.MapControllerRoute(name: "ErpAccountInvoices",
                 pattern: $"{lang}/MyAccount/AccountTransactions",

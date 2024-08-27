@@ -125,14 +125,139 @@
     <None Remove="Content\scripts\jquery.dataTables.min.js" />
     <None Remove="Content\scripts\quickorder.js" />
     <None Remove="ResourceString\B2BB2CFeatures.Resources.en-us.xml" />
+    <None Remove="Themes\DefaultClean\Content\css\erpcheckoutstyles.css" />
     <None Remove="Themes\DefaultClean\Content\css\quicorderkstyles.css" />
+    <None Remove="Themes\DefaultClean\Views\Shared\Components\CheckoutProgress\Default.cshtml" />
     <None Remove="Themes\DefaultClean\Views\Shared\Components\QuickOrderHeaderLink\Default.cshtml" />
     <None Remove="Themes\DefaultClean\Views\_OldInternetExplorerWarning.cshtml" />
     <None Remove="Themes\DefaultClean\Views\_ViewImports.cshtml" />
+    <None Remove="Themes\FreshLand\Content\css\erpstyle.css" />
+    <None Remove="Themes\FreshLand\Content\css\freshLand.css" />
+    <None Remove="Themes\FreshLand\Content\css\freshLand.min.css" />
+    <None Remove="Themes\FreshLand\Content\css\freshLand.rtl.css" />
+    <None Remove="Themes\FreshLand\Content\css\print.css" />
+    <None Remove="Themes\FreshLand\Content\css\quickorderstyles.css" />
+    <None Remove="Themes\FreshLand\Content\css\scale.css" />
+    <None Remove="Themes\FreshLand\Content\css\styles.default-1.css" />
+    <None Remove="Themes\FreshLand\Content\css\swiper-bundle.min.css" />
+    <None Remove="Themes\FreshLand\Views\BackInStockSubscription\CustomerSubscriptions.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Blog\BlogPost.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Blog\Components\BlogMonths\Default.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Catalog\_CatalogProducts.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Catalog\_FilterPriceBox.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Checkout\BillingAddress.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Checkout\Completed.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Checkout\Confirm.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Checkout\PaymentInfo.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Checkout\PaymentMethod.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Checkout\ShippingAddress.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Checkout\ShippingMethod.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Common\PageNotFound.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Customer\Addresses.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Customer\Info.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Customer\Login.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Customer\Register.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Home\Index.cshtml" />
+    <None Remove="Themes\FreshLand\Views\News\NewsItem.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Order\Details.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Product\ProductTemplate.Grouped.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Product\ProductTemplate.Simple.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Product\_AddToCart.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Product\_AddToWishlist.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Product\_Availability.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Product\_CompareProductsButton.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Product\_ProductBreadcrumb.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Product\_ProductEmailAFriendButton.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\Components\CategoryNavigation\Default.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\Components\CheckoutProgress\Default.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\Components\FlyoutShoppingCart\Default.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\Components\Footer\Default.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\Components\HeaderLinks\Default.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\Components\HomepageProducts\Default.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\Components\NewsletterBox\Default.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\Components\OrderSummary\Default.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\Components\ProductsAlsoPurchased\Default.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\Components\RelatedProducts\Default.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\Components\SocialButtons\Default.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\Components\TopMenu\Default.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\Head.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\_ColumnsOne.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\_ColumnsTwo.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\_CreateOrUpdateAddress.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\_Header.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\_ProductBox.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\_Root.cshtml" />
+    <None Remove="Themes\FreshLand\Views\Shared\_Root.Head.cshtml" />
+    <None Remove="Themes\FreshLand\Views\ShoppingCart\Cart.cshtml" />
+    <None Remove="Themes\FreshLand\Views\ShoppingCart\Wishlist.cshtml" />
+    <None Remove="Themes\FreshLand\Views\_ViewImports.cshtml" />
+    <None Remove="Themes\Pavilion\Content\css\styles.css" />
+    <None Remove="Themes\Pavilion\Content\js\script.js" />
+    <None Remove="Themes\Pavilion\Views\_ViewImports.cshtml" />
+    <None Remove="Themes\Smart\Content\css\styles.css" />
+    <None Remove="Themes\Smart\Content\css\theme-custom.css" />
+    <None Remove="Themes\Smart\Content\img\logo.png" />
+    <None Remove="Themes\Smart\Views\Shared\Components\CheckoutProgress\Default.cshtml" />
+    <None Remove="Themes\Smart\Views\Shared\Components\HeaderLinks\Default.cshtml" />
+    <None Remove="Themes\Smart\Views\Shared\Components\Logo\Default.cshtml" />
+    <None Remove="Themes\Smart\Views\Shared\Components\OrderSummary\Default.cshtml" />
+    <None Remove="Themes\Smart\Views\Shared\_Header.cshtml" />
+    <None Remove="Themes\Smart\Views\_ViewImports.cshtml" />
+    <None Remove="Views\B2BB2CCustomer\B2BRegister.cshtml" />
+    <None Remove="Views\B2BB2CCustomer\B2CRegister.cshtml" />
     <None Remove="Views\B2BB2CCustomer\ErpAccountCustomerRegistrationForm.cshtml" />
+    <None Remove="Views\B2BB2CCustomer\Login.cshtml" />
+    <None Remove="Views\B2BB2CCustomer\_B2BB2CRegister.cshtml" />
     <None Remove="Views\B2BB2CCustomer\_CreateOrUpdateGMAddress.cshtml" />
     <None Remove="Views\B2BB2CCustomer\_CreateOrUpdateGMPTAddress.cshtml" />
+    <None Remove="Views\B2BB2CCustomer\_CustomerAttributes.cshtml" />
     <None Remove="Views\B2BB2CCustomer\_ErpAccountCustomerRegistrationForm.cshtml" />
+    <None Remove="Views\B2BB2CCustomer\_ExternalAuthentication.Errors.cshtml" />
+    <None Remove="Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml" />
+    <None Remove="Views\Checkout\Completed.cshtml" />
+    <None Remove="Views\Checkout\QuoteOrderCompleted.cshtml" />
+    <None Remove="Views\Checkout\_PickupPoints.cshtml" />
+    <None Remove="Views\CustomerImpersonate\List.cshtml" />
+    <None Remove="Views\CustomerImpersonate\List.Multibuyer.cshtml" />
+    <None Remove="Views\ErpAccountPublic\ErpAccountInfo.cshtml" />
+    <None Remove="Views\ErpAccountPublic\ErpAccountInvoices.cshtml" />
+    <None Remove="Views\ErpAccountPublic\ErpAccountOrders.cshtml" />
+    <None Remove="Views\ErpAccountPublic\ErpAccountQuoteOrders.cshtml" />
+    <None Remove="Views\ErpCheckout\BillingAddress.cshtml" />
+    <None Remove="Views\ErpCheckout\LoadErpShipToAddress.cshtml" />
+    <None Remove="Views\ErpCheckout\OnePageCheckout.cshtml" />
+    <None Remove="Views\ErpCheckout\OpcBillingAddress.cshtml" />
+    <None Remove="Views\ErpCheckout\OpcShippingAddress.cshtml" />
+    <None Remove="Views\ErpCheckout\ShippingAddress.cshtml" />
+    <None Remove="Views\ErpCheckout\_B2BShippingAddress.cshtml" />
+    <None Remove="Views\ErpCheckout\_B2CShippingAddress.cshtml" />
+    <None Remove="Views\ErpCheckout\_CreateOrUpdateErpBillingAddresses.cshtml" />
+    <None Remove="Views\ErpCheckout\_CreateOrUpdateErpShiptoAddresses.cshtml" />
+    <None Remove="Views\ErpCheckout\_OpcCreateOrUpdateErpShiptoAddresses.cshtml" />
+    <None Remove="Views\Order\Details.cshtml" />
+    <None Remove="Views\Order\ErpB2bOrderDetails.cshtml" />
+    <None Remove="Views\QuickOrder\CreateQuickOrder.cshtml" />
+    <None Remove="Views\QuickOrder\QuickOrderTemplateDetails.cshtml" />
+    <None Remove="Views\QuickOrder\QuickOrderTemplateList.cshtml" />
+    <None Remove="Views\QuickOrder\_ProductAttributes.cshtml" />
+    <None Remove="Views\QuickOrder\_ProductDetailsPictures.cshtml" />
+    <None Remove="Views\QuickOrder\_ProductDetailsVideos.cshtml" />
+    <None Remove="Views\QuickOrder\_ProductManufacturers.cshtml" />
+    <None Remove="Views\QuickOrder\_ProductTemplate.Simple.cshtml" />
+    <None Remove="Views\Shared\Alert.cshtml" />
+    <None Remove="Views\Shared\Components\HeaderLinks\Default.cshtml" />
+    <None Remove="Views\Shared\Components\OrderSummaryContentDeals\Default.cshtml" />
+    <None Remove="Views\Shared\Components\OrderSummary\Default.cshtml" />
+    <None Remove="Views\Shared\Components\PublicHeader\Default.cshtml" />
+    <None Remove="Views\Shared\Components\SalesRepHeader\Default.cshtml" />
+    <None Remove="Views\Shared\Table.cshtml" />
+    <None Remove="Views\Shared\_DatatableScripts.cshtml" />
+    <None Remove="Views\Shared\_GridLocalization.cshtml" />
+    <None Remove="Views\Shared\_Header.cshtml" />
+    <None Remove="Views\Shared\_Root.cshtml" />
+    <None Remove="Views\Shared\_Table.Definition.cshtml" />
+    <None Remove="Views\_ViewImports.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="NopStation.Plugin.Misc.Actions">
@@ -520,13 +645,247 @@
     <Content Include="Themes\DefaultClean\Content\css\quicorderkstyles.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Themes\DefaultClean\Views\Shared\Components\CheckoutProgress\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Themes\DefaultClean\Views\Shared\Components\QuickOrderHeaderLink\Default.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Themes\DefaultClean\Views\_ViewImports.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Themes\FreshLand\Content\css\erpstyle.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Content\css\freshLand.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Content\css\freshLand.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Content\css\freshLand.rtl.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Content\css\print.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Content\css\quickorderstyles.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Content\css\scale.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Content\css\styles.default-1.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Content\css\swiper-bundle.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\BackInStockSubscription\CustomerSubscriptions.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Blog\BlogPost.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Blog\Components\BlogMonths\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Catalog\_CatalogProducts.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Catalog\_FilterPriceBox.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Checkout\BillingAddress.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Checkout\Completed.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Checkout\Confirm.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Checkout\PaymentInfo.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Checkout\PaymentMethod.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Checkout\ShippingAddress.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Checkout\ShippingMethod.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Common\PageNotFound.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Customer\Addresses.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Customer\Info.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Customer\Login.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Customer\Register.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Home\Index.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\News\NewsItem.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Order\Details.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Product\ProductTemplate.Grouped.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Product\ProductTemplate.Simple.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Product\_AddToCart.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Product\_AddToWishlist.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Product\_Availability.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Product\_CompareProductsButton.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Product\_ProductBreadcrumb.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Product\_ProductEmailAFriendButton.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\Components\CategoryNavigation\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\Components\CheckoutProgress\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\Components\FlyoutShoppingCart\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\Components\Footer\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\Components\HeaderLinks\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\Components\HomepageProducts\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\Components\NewsletterBox\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\Components\OrderSummary\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\Components\ProductsAlsoPurchased\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\Components\RelatedProducts\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\Components\SocialButtons\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\Components\TopMenu\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\Head.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\_ColumnsOne.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\_ColumnsTwo.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\_CreateOrUpdateAddress.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\_Header.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\_ProductBox.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\_Root.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\Shared\_Root.Head.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\ShoppingCart\Cart.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\ShoppingCart\Wishlist.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\FreshLand\Views\_ViewImports.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\Pavilion\Content\css\styles.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\Pavilion\Content\js\script.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\Pavilion\Views\_ViewImports.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\Smart\Content\css\styles.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\Smart\Content\css\theme-custom.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\Smart\Content\img\logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\Smart\Views\Shared\Components\CheckoutProgress\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\Smart\Views\Shared\Components\HeaderLinks\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\Smart\Views\Shared\Components\Logo\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\Smart\Views\Shared\Components\OrderSummary\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\Smart\Views\Shared\_Header.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\Smart\Views\_ViewImports.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\B2BB2CCustomer\B2BRegister.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\B2BB2CCustomer\B2CRegister.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Views\B2BB2CCustomer\ErpAccountCustomerRegistrationForm.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\B2BB2CCustomer\Login.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\B2BB2CCustomer\_B2BB2CRegister.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\B2BB2CCustomer\_CreateOrUpdateGMAddress.cshtml">
@@ -535,7 +894,147 @@
     <Content Include="Views\B2BB2CCustomer\_CreateOrUpdateGMPTAddress.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\B2BB2CCustomer\_CustomerAttributes.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Views\B2BB2CCustomer\_ErpAccountCustomerRegistrationForm.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\B2BB2CCustomer\_ExternalAuthentication.Errors.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Checkout\Completed.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Checkout\QuoteOrderCompleted.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Checkout\_PickupPoints.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\CustomerImpersonate\List.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\CustomerImpersonate\List.Multibuyer.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ErpAccountPublic\ErpAccountInfo.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ErpAccountPublic\ErpAccountInvoices.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ErpAccountPublic\ErpAccountOrders.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ErpAccountPublic\ErpAccountQuoteOrders.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ErpCheckout\BillingAddress.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ErpCheckout\LoadErpShipToAddress.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ErpCheckout\OnePageCheckout.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ErpCheckout\OpcBillingAddress.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ErpCheckout\OpcShippingAddress.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ErpCheckout\ShippingAddress.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ErpCheckout\_B2BShippingAddress.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ErpCheckout\_B2CShippingAddress.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ErpCheckout\_CreateOrUpdateErpBillingAddresses.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ErpCheckout\_CreateOrUpdateErpShiptoAddresses.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ErpCheckout\_OpcCreateOrUpdateErpShiptoAddresses.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Order\Details.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Order\ErpB2bOrderDetails.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\QuickOrder\CreateQuickOrder.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\QuickOrder\QuickOrderTemplateDetails.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\QuickOrder\QuickOrderTemplateList.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\QuickOrder\_ProductAttributes.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\QuickOrder\_ProductDetailsPictures.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\QuickOrder\_ProductDetailsVideos.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\QuickOrder\_ProductManufacturers.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\QuickOrder\_ProductTemplate.Simple.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Shared\Alert.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Shared\Components\HeaderLinks\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Shared\Components\OrderSummaryContentDeals\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Shared\Components\OrderSummary\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Shared\Components\PublicHeader\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Shared\Components\SalesRepHeader\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Shared\Table.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Shared\_DatatableScripts.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Shared\_GridLocalization.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Shared\_Header.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Shared\_Root.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Shared\_Table.Definition.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\_ViewImports.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -549,183 +1048,6 @@
     </None>
     <None Update="plugin.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Themes\FreshLand\Content\css\erpstyle.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Themes\FreshLand\Content\css\quickorderstyles.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Themes\FreshLand\Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Themes\FreshLand\Views\Checkout\Completed.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Themes\FreshLand\Views\Order\Details.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Themes\FreshLand\Views\Shared\Components\HeaderLinks\Default.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Themes\FreshLand\Views\Shared\Components\OrderSummary\Default.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Themes\FreshLand\Views\Shared\_Header.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Themes\FreshLand\Views\Shared\_Root.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Themes\FreshLand\Views\_ViewImports.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\B2BB2CCustomer\B2BRegister.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\B2BB2CCustomer\B2CRegister.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\B2BB2CCustomer\Login.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\B2BB2CCustomer\_B2BB2CRegister.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\B2BB2CCustomer\_CustomerAttributes.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\B2BB2CCustomer\_ExternalAuthentication.Errors.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Checkout\Completed.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Checkout\QuoteOrderCompleted.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\CustomerImpersonate\List.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\CustomerImpersonate\List.Multibuyer.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\ErpAccountPublic\ErpAccountInfo.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\ErpAccountPublic\ErpAccountInvoices.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\ErpAccountPublic\ErpAccountOrders.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\ErpAccountPublic\ErpAccountQuoteOrders.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\ErpCheckout\BillingAddress.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\ErpCheckout\LoadErpShipToAddress.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\ErpCheckout\OnePageCheckout.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\ErpCheckout\OpcBillingAddress.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\ErpCheckout\OpcShippingAddress.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\ErpCheckout\ShippingAddress.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\ErpCheckout\_B2BShippingAddress.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\ErpCheckout\_B2CShippingAddress.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\ErpCheckout\_CreateOrUpdateErpBillingAddresses.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\ErpCheckout\_CreateOrUpdateErpShiptoAddresses.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\ErpCheckout\_OpcCreateOrUpdateErpShiptoAddresses.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Order\Details.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Order\ErpB2bOrderDetails.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\QuickOrder\CreateQuickOrder.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\QuickOrder\QuickOrderTemplateDetails.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\QuickOrder\QuickOrderTemplateList.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\QuickOrder\_ProductAttributes.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\QuickOrder\_ProductDetailsPictures.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\QuickOrder\_ProductDetailsVideos.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\QuickOrder\_ProductManufacturers.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\QuickOrder\_ProductTemplate.Simple.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Shared\Alert.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Shared\Components\HeaderLinks\Default.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Shared\Components\OrderSummaryContentDeals\Default.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Shared\Components\OrderSummary\Default.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Shared\Components\PublicHeader\Default.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Shared\Components\SalesRepHeader\Default.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Shared\Table.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Shared\_DatatableScripts.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Shared\_GridLocalization.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Shared\_Header.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Shared\_Root.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Shared\_Table.Definition.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\_ViewImports.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   

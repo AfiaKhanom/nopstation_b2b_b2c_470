@@ -191,12 +191,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
                             b2bProductData.PricingNotes = string.Empty;
                         }
 
-                        //if (b2BB2CFeaturesSettings.DisplayWeightInformation && !b2BCustomerConfiguration.IsHideWeightinfo)
-                        //{
-                        //    b2bProductData.Weight = product.Weight;
-                        //    b2bProductData.WeightValue = $"{product.Weight:F2} {baseWeight}";
-                        //}
-
                         productDataModels.Add(b2bProductData);
 
                     }
@@ -214,7 +208,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
 
             var currCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
 
-            var b2BAccount = _erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(currCustomer);
             var shoppingCartItemQuantity = currCustomer.HasShoppingCartItems ?
                             (await _shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.ShoppingCart, (await _storeContext.GetCurrentStoreAsync()).Id, product.Id))?.FirstOrDefault()?.Quantity ?? 0 : 0;
             return new ProductInCartQuantityModel
@@ -274,8 +267,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
 
             if (product == null)
                 return null;
-            var b2BB2CFeaturesSettings = _settingService.LoadSetting<B2BB2CFeaturesSettings>((await _storeContext.GetCurrentStoreAsync()).Id);
-            
+            //var b2BB2CFeaturesSettings = _settingService.LoadSetting<B2BB2CFeaturesSettings>((await _storeContext.GetCurrentStoreAsync()).Id);
             //var categoryIds = b2BB2CFeaturesSettings.SkipLiveStockCheckCategoryIds.Split(',').Select(int.Parse).ToList();
             //var productCategories = _catalogService.Cat product.ProductCategories;
             //foreach (var cat in productCategories)
@@ -301,21 +293,21 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
             var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
             if (currentCustomer.HasShoppingCartItems)
             {
-                var b2BB2CFeaturesSettings = _settingService.LoadSetting<B2BB2CFeaturesSettings>((await _storeContext.GetCurrentStoreAsync()).Id);
-
-                //var baseWeight = "";
-                //if (B2BB2CFeaturesSettings.DisplayWeightInformation)
-                //    baseWeight = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId)?.Name;
+                //var b2BB2CFeaturesSettings = _settingService.LoadSetting<B2BB2CFeaturesSettings>((await _storeContext.GetCurrentStoreAsync()).Id);
 
                 var shoppingCartItems = (await _shoppingCartService.GetShoppingCartAsync(currentCustomer))?.Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
 
                 var b2bAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(currentCustomer.Id);
+
+                if (b2bAccount == null)
+                    return new ErpOrderSummaryModel();
+
                 var isBackorderAllowed = b2bAccount.AllowAccountsBackOrdering;
 
                 foreach (var cartItemProduct in shoppingCartItems)
                 {
                     var product = await _productService.GetProductByIdAsync(cartItemProduct.ProductId);
-                    if (cartItemProduct == null || product == null)
+                    if (product == null)
                     {
                         continue;
                     }
