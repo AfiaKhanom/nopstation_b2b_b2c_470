@@ -352,13 +352,16 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Factories
 
             #region Erp
 
-            var isErpAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(customer.Id) != null;
-            var erpUser = await _erpNopUserService.GetErpNopUserByCustomerIdAsync(customer.Id);
-
-            if (isErpAccount && erpUser.ErpUserType == ErpUserType.B2CUser)
+            if (customer != null)
             {
-                //prepare model customer attributes
-                await PrepareCustomerAttributeModelsAsync(model.CustomerAttributes, customer);
+                var isErpAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(customer.Id) != null;
+                var erpUser = await _erpNopUserService.GetErpNopUserByCustomerIdAsync(customer.Id);
+
+                if (isErpAccount && erpUser.ErpUserType == ErpUserType.B2CUser)
+                {
+                    //prepare model customer attributes
+                    await PrepareCustomerAttributeModelsAsync(model.CustomerAttributes, customer);
+                }
             }
 
             #endregion            

@@ -8,7 +8,7 @@ using NopStation.Plugin.B2B.B2BB2CFeatures.Contexts;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Model;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
 
-namespace NopStation.Plugin.B2B.B2BB2CFeatures.Componenets;
+namespace NopStation.Plugin.B2B.B2BB2CFeatures.Components;
 
 public class OrderSummaryContentDealsViewComponent : NopViewComponent
 {

@@ -9,7 +9,7 @@ using NopStation.Plugin.B2B.B2BB2CFeatures.Model.Account;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
 
-namespace NopStation.Plugin.B2B.B2BB2CFeatures.Componenets
+namespace NopStation.Plugin.B2B.B2BB2CFeatures.Components
 {
     public class PublicHeaderViewComponent : NopViewComponent
     {

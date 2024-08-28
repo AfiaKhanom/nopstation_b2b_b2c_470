@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Nop.Web.Framework.Components;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Services.Customers;
 
-namespace NopStation.Plugin.B2B.B2BB2CFeatures.Componenets
+namespace NopStation.Plugin.B2B.B2BB2CFeatures.Components
 {
     public class SalesRepHeaderViewComponent : NopViewComponent
     {

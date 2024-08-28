@@ -22,7 +22,7 @@ using Nop.Services.Security;
 using Nop.Web.Framework.Infrastructure;
 using Nop.Web.Framework.Menu;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Components;
-using NopStation.Plugin.B2B.B2BB2CFeatures.Componenets;
+using NopStation.Plugin.B2B.B2BB2CFeatures.Components;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Infrastructure;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services;

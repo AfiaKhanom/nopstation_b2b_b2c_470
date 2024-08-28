@@ -192,11 +192,11 @@
                                                 @if (viewComponentSelector.SelectComponent("LazyLoadImage") != null)
                                                 {
                                                     @await Component.InvokeAsync("LazyLoadImage", new (string Key, string Value)[]
-                                                             {
-                                    ("src", item.Picture.ImageUrl),
-                                    ("alt", item.Picture.AlternateText),
-                                    ("title", item.Picture.Title)
-                                                             })
+                                                    {
+                                                        ("src", item.Picture.ImageUrl),
+                                                        ("alt", item.Picture.AlternateText),
+                                                        ("title", item.Picture.Title)
+                                                    })
                                                 }
                                                 else
                                                 {
@@ -432,8 +432,8 @@
                 }
                 <div class="totals">
                     @*<div class="title">
-                <strong>@T("Cart.Totals.Title")</strong>
-                </div>*@
+                        <strong>@T("Cart.Totals.Title")</strong>
+                    </div>*@
                     <div class="b2b-customer-savings"></div>
                     @await Component.InvokeAsync("OrderTotals", new { isEditable = Model.IsEditable })
                     @if (Model.IsEditable)
@@ -560,8 +560,8 @@
                         </div>
                     }
                     @*<div class="terms-and-conditions-massage">
-                @T("Order.Summary.TermsAndConditions.Message")
-                </div>*@
+                        @T("Order.Summary.TermsAndConditions.Message")
+                    </div>*@
                 </div>
             </div>
             @if (Model.IsEditable)
@@ -656,12 +656,12 @@
                         return;
                     }
                     else {
-        @*alert(response.message);
+                        @*alert(response.message);
                         var msg = '@T("Plugin.Misc.NopStation.B2BB2CFeatures.LivePriceSync.PriceUpdatedProductSku")';
                         msg = msg + response.data;
                         alert(msg);
                         location.reload();*@
-                            $("#priceUpdateNotificationMessage").text(response.message);
+                        $("#priceUpdateNotificationMessage").text(response.message);
                         $("#priceUpdateNotificationDialog").dialog({
                             modal: true,
                             draggable: false,

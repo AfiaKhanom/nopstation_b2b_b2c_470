@@ -5,6 +5,7 @@
 @inject IErpCustomerFunctionalityService b2BCustomerFunctionality
 @inject IWebHelper webHelper
 @using Nop.Core
+
 @{
     var storeLocation = webHelper.GetStoreLocation();
     var datePickerFormat = Html.GetJQueryDateFormat();//java-script format
@@ -43,12 +44,10 @@
 
                         <script asp-location="Footer">
                             function editSelectedAddress() {
-                                console.log('Got it');
+                                //console.log('Got it');
                                 var selectedAddress = $('input[type="radio"][data-id]:checked');
-
                                 var shipToId = selectedAddress.data('id');
-                                console.log('Current selected ship to address id: ' + shipToId);
-
+                                //console.log('Current selected ship to address id: ' + shipToId);
                                 loadB2BShipToAddress(shipToId);
                             }
 
@@ -66,13 +65,15 @@
                                         data: postData,
                                         success: function (response) {
                                             if (response.isSucceed) {
-                                                console.log(response.Data);
+                                                //console.log(response.Data);
                                                 $("#modal-body-content").html(response.Data);
                                                 $("#addressModal").show();
                                             }
                                         },
                                         error: function () {
-                                            console.log("Can Not load Ship To Address");
+                                            $("#modal-body-content").html('<h2>Could not load Shipping Address</h2>');
+                                            $("#addressModal").show();
+                                            console.log("Could not load Shipping Address");
                                         },
                                         complete: function () {
                                             displayAjaxLoading();
@@ -108,13 +109,13 @@
                                         @foreach (var item in Model.ExistingErpShipToAddresses)
                                         {
                                             var addressLine = string.Join(", ", new string[] {
-                                item.ShipToName,
-                                item.Address1,
-                                item.Address2,
-                                item.Suburb,
-                                item.City,
-                                item.StateProvinceName,
-                                item.ZipPostalCode
+                                                        item.ShipToName,
+                                                        item.Address1,
+                                                        item.Address2,
+                                                        item.Suburb,
+                                                        item.City,
+                                                        item.StateProvinceName,
+                                                        item.ZipPostalCode
                                                     }.Where(s => !string.IsNullOrEmpty(s)));
 
                                             <label id="shipping-address-select" class="address-select-radio">
@@ -129,9 +130,9 @@
                                                 <span class="checkmark"></span>
                                                 @(addressLine)
                                                 @* @if (Model.AllowAddressEdit)
-                                    {
-                                    <button class="edit-ship-to" onclick="loadB2BShipToAddress(@item.Id);return false;">Edit Address</button>
-                                    } *@
+                                                {
+                                                    <button class="edit-ship-to" onclick="loadB2BShipToAddress(@item.Id);return false;">Edit Address</button>
+                                                } *@
                                             </label>
                                             <br />
                                         }
@@ -196,23 +197,23 @@
 
                                 $('#deliver').on('change', function () {
                                     if ($(this).is(':checked')) {
-                                        $('#collect-header-text').text('');
                                         $('#shipping-addresses-form').show();
                                         $('#shippingaddress-new-form').show();
                                         $('#select-delivery-date').show();
                                         $('#pickup-points-form').hide();
                                         $('#collect').prop('checked', false);
+                                        $('#collect-header-text').text('');
                                     }
                                 });
 
                                 $('#collect').on('change', function () {
                                     if ($(this).is(':checked')) {
-                                        $('#collect-header-text').text('@T("Checkout.ShippingAddress.SelectCollectionPoint")');
                                         $('#shipping-addresses-form').hide();
                                         $('#shippingaddress-new-form').hide();
                                         $('#select-delivery-date').hide();
                                         $('#pickup-points-form').show();
                                         $('#deliver').prop('checked', false);
+                                        $('#collect-header-text').text('@T("Checkout.ShippingAddress.SelectCollectionPoint")');
                                     }
                                 });
                             });
@@ -254,6 +255,7 @@
                     <button id="shippingaddress-next-button" type="submit" name="nextstep" class="button-1 new-address-next-step-button">@(Model.IsQuoteOrder ? T("Checkout.ConfirmButton") : T("Checkout.NextButton"))</button>
                 </div>
             </div>
+
         </form>
 
         <style>
@@ -343,8 +345,8 @@
 
             var suburbData = $('input[name="ErpShipToAddressId"]:checked').attr("data-suburb");
             var cityData = $('input[name="ErpShipToAddressId"]:checked').attr("data-city");
-            console.log("suburb: " + suburbData);
-            console.log("city: " + cityData);
+            //console.log("suburb: " + suburbData);
+            //console.log("city: " + cityData);
 
             var selectedData = { suburb: suburbData, city: cityData };
             addAntiForgeryToken(selectedData);
@@ -393,7 +395,8 @@
                 error: function () {
                     $('#@Html.IdFor(model => model.DeliveryDateString)').prop('required', false);
                     $('#@Html.IdFor(model => model.ErpToDetermineDate)').val(false);
-                    console.log("Could Not Load Delivery Dates By Suburb");
+                    //console.log("Could Not Load Delivery Dates By Suburb");
+                    alert("Could Not Load Delivery Dates");
                 },
                 complete: function () {
                     $('#delivery-dates-loading-progress').hide();
