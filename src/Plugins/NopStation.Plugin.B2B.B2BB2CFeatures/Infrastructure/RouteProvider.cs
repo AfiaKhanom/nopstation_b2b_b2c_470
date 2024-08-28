@@ -102,6 +102,10 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure
                 pattern: $"{lang}/ERPOrders/History",
                 defaults: new { controller = "ErpAccountPublic", action = "ErpAccountOrders" });
 
+            endpointRouteBuilder.MapControllerRoute(name: "GetDeliveryDatesBySuburbOrCity",
+                pattern: $"{lang}/GetERPDeliveryDates/",
+                defaults: new { controller = "ErpCheckout", action = "GetERPDeliveryDates" });
+
             endpointRouteBuilder.MapControllerRoute(name: "GetCountryTwoLetterIsoCode",
                 pattern: $"GetCountryTwoLetterIsoCode/{{code?}}",
                 defaults: new { controller = "B2BB2CCustomer", action = "GetCountryTwoLetterIsoCode" },

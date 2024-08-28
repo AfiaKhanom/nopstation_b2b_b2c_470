@@ -102,29 +102,36 @@
                             {
                                 <div class="section select-shipping-address">
                                     <div class="title">
-                                        @* <strong>@T("Checkout.SelectShippingAddress")</strong> *@
+                                        <strong>@T("Checkout.SelectShippingAddress")</strong>
                                     </div>
                                     <div class="shipping-address-body" style="text-align:center;">
                                         @foreach (var item in Model.ExistingErpShipToAddresses)
                                         {
                                             var addressLine = string.Join(", ", new string[] {
-                                                        item.ShipToName,
-                                                        item.Address1,
-                                                        item.Address2,
-                                                        item.Suburb,
-                                                        item.City,
-                                                        item.StateProvinceName,
-                                                        item.ZipPostalCode
+                                item.ShipToName,
+                                item.Address1,
+                                item.Address2,
+                                item.Suburb,
+                                item.City,
+                                item.StateProvinceName,
+                                item.ZipPostalCode
                                                     }.Where(s => !string.IsNullOrEmpty(s)));
 
                                             <label id="shipping-address-select" class="address-select-radio">
-                                                <input id="shipToAddress" type="radio" data-id="@item.Id" data-suburb="@item.Suburb" data-city="@item.City" checked="@((Model.ErpShipToAddressId == item.Id) || (Model.ExistingErpShipToAddresses.Count() == 1) ? true : false)" asp-for="@Model.ErpShipToAddressId" value="@item.Id" />
-                                                @(addressLine)
+                                                <input id="shipToAddress"
+                                                       type="radio"
+                                                       data-id="@item.Id"
+                                                       data-suburb="@item.Suburb"
+                                                       data-city="@item.City"
+                                                       checked="@((Model.ErpShipToAddressId == item.Id) || (Model.ExistingErpShipToAddresses.Count() == 1) ? true : false)"
+                                                       asp-for="@Model.ErpShipToAddressId"
+                                                       value="@item.Id" />
                                                 <span class="checkmark"></span>
+                                                @(addressLine)
                                                 @* @if (Model.AllowAddressEdit)
-                                                {
-                                                    <button class="edit-ship-to" onclick="loadB2BShipToAddress(@item.Id);return false;">Edit Address</button>
-                                                } *@
+                                    {
+                                    <button class="edit-ship-to" onclick="loadB2BShipToAddress(@item.Id);return false;">Edit Address</button>
+                                    } *@
                                             </label>
                                             <br />
                                         }
@@ -162,7 +169,7 @@
                                 @if (Model.ErpToDetermineDate)
                                 {
                                     <div id="deliveryDateDropdown" class="inputs">
-                                        <label asp-for="DeliveryDateString" asp-postfix=":"></label>
+                                        @* <label asp-for="DeliveryDateString" asp-postfix=":"></label> *@
                                         <h3 class="FullLoadRequired-div FullLoadRequired-div-hide">@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.DeliveryDate.FullLoadRequired")</h3>
                                         <select asp-for="DeliveryDateString" asp-items="Model.AvailableDeliveryDates"></select>
                                         <span id="delivery-dates-loading-progress" style="display: none;" class="please-wait">@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.DeliveryDate.Loading")</span>
@@ -317,7 +324,7 @@
     <script asp-location="Footer">
         $(document).ready(function () {
             $('#@Html.IdFor(model => model.DeliveryDateString)').prop('required', true);
-            $('input[type=radio][name="B2BShipToAddress.Id"]').change(getDeliveryDates);
+            $('input[type=radio][name="ErpShipToAddress.Id"]').change(getDeliveryDates);
             getDeliveryDates();
         });
 
@@ -336,13 +343,16 @@
 
             var suburbData = $('input[name="ErpShipToAddressId"]:checked').attr("data-suburb");
             var cityData = $('input[name="ErpShipToAddressId"]:checked').attr("data-city");
-            //console.log("suburb: " + suburbData);
-            //console.log("city: " + cityData);
+            console.log("suburb: " + suburbData);
+            console.log("city: " + cityData);
+
+            var selectedData = { suburb: suburbData, city: cityData };
+            addAntiForgeryToken(selectedData);
 
             $.ajax({
                 cache: true,
                 url: "@Url.RouteUrl("GetDeliveryDatesBySuburbOrCity")",
-                data: { suburb: suburbData, city: cityData },
+                data: selectedData,
                 type: 'POST',
                 success: function (response) {
                     if (response.isSucceed) {
@@ -351,16 +361,19 @@
                             $('#@Html.IdFor(model => model.DeliveryDateString)').prop('required', true);
                             $(".FullLoadRequired-div").removeClass("FullLoadRequired-div-hide");
                             $(".FullLoadRequired-div").show();
-                            ddates.hide()
+                            ddates.hide();
                         }
                         else {
                             $('#@Html.IdFor(model => model.DeliveryDateString)').prop('required', true);
                             $('#@Html.IdFor(model => model.ErpToDetermineDate)').val(true);
                             ddates.html('');
-
-                            $.each(response.deliveydates, function (id, option) {
+                            //console.log("Delivery dates:", response);
+                            $.each(response.deliveyDates, function (id, option) {
                                 ddates.append($('<option></option>').val(option.Value).html(option.Text));
                             });
+                            ddates.show();
+                            //console.log(ddates);
+                            $(".FullLoadRequired-div").hide();
                         }
                     }
                     else {

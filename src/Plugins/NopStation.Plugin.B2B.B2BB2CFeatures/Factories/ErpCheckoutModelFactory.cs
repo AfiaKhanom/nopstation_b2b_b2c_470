@@ -862,8 +862,29 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
 
         #region Call By Suburb
 
+        var today = DateTime.Now.Date.AddDays(1);
+        var tomorrow = DateTime.Now.Date.AddDays(2);
+        var dayAfterTomorrow = DateTime.Now.Date.AddDays(3);
         // ToDo, will get delivery dates from ERP
-        var deliveryDateResponse = new ErpDeliveryDateResponseModel();
+        var deliveryDateResponse = new ErpDeliveryDateResponseModel()
+        {
+            IsFullLoadRequired = false,
+            DeliveryDates = new List<ERPIntegrationCore.Model.DeliveryDate>()
+            {
+                new ERPIntegrationCore.Model.DeliveryDate
+                {
+                    DelDate = $"{today.Day:D2}/{today.Month:D2}/{today.Year}"
+                },
+                new ERPIntegrationCore.Model.DeliveryDate
+                {
+                    DelDate = $"{tomorrow.Day:D2}/{tomorrow.Month:D2}/{tomorrow.Year}"
+                },
+                new ERPIntegrationCore.Model.DeliveryDate
+                {
+                    DelDate = $"{dayAfterTomorrow.Day:D2}/{dayAfterTomorrow.Month:D2}/{dayAfterTomorrow.Year}"
+                }
+            }
+        };
         if (deliveryDateResponse != null && deliveryDateResponse.IsFullLoadRequired)
             return (null, true);
 

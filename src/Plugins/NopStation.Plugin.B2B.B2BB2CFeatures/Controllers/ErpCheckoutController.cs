@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -797,7 +798,7 @@ public class ErpCheckoutController : CheckoutController
                 ModelState.AddModelError("DeliveryDate", "Please provide a valid delivery date");
         }
 
-        if (model.DeliveryDateString == null || !DateTime.TryParse(model.DeliveryDateString, out var selectedDeliveryDate))
+        if (model.DeliveryDateString == null || !DateTime.TryParseExact(model.DeliveryDateString, "dd/MM/yyyy", new CultureInfo("en-GB"), DateTimeStyles.None, out var selectedDeliveryDate))
             ModelState.AddModelError("DeliveryDate", "Please provide a valid delivery date");
 
         //getB2BId for validation
