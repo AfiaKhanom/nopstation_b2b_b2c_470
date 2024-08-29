@@ -38,6 +38,15 @@
                     <h1 id="delivery-header-text">@T("Checkout.ShippingAddress.SelectYourDeliveryAddress")</h1>
                     @if (Model.PickupPointsModel == null || !Model.PickupPointsModel.PickupInStoreOnly)
                     {
+                        <!-- Address Modal -->
+                        <div id="addressModal" class="modal">
+                            <div class="modal-content">
+                                <span class="close">&times;</span>
+                                <div id="modal-body-content">
+                                </div>
+                            </div>
+                        </div>
+
                         <script asp-location="Footer">
                             function editSelectedAddress() {
                                 //console.log('Got it');
