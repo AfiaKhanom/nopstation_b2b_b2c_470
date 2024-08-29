@@ -16,13 +16,13 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Model.ErpAccountPublic
 
         #endregion
 
-        [NopResourceDisplayName("Plugins.Payments.B2BCustomerAccount.B2BAccountInfo.Fields.SearchDocumentNumberOrName")]
+        [NopResourceDisplayName("NopStation.Plugin.B2B.B2BB2CFeatures.B2BAccountInfo.Fields.SearchDocumentNumberOrName")]
         public string SearchDocumentNumberOrName { get; set; }
 
-        [NopResourceDisplayName("Plugins.Payments.B2BCustomerAccount.B2BAccountInfo.Fields.SearchTransactionDate")]
+        [NopResourceDisplayName("NopStation.Plugin.B2B.B2BB2CFeatures.B2BAccountInfo.Fields.SearchTransactionDate")]
         public DateTime? SearchTransactionDate { get; set; }
 
-        [NopResourceDisplayName("Plugins.Payments.B2BCustomerAccount.B2BAccountInfo.Fields.SearchSortOption")]
+        [NopResourceDisplayName("NopStation.Plugin.B2B.B2BB2CFeatures.B2BAccountInfo.Fields.SearchSortOption")]
         public int SearchSortOptionId { get; set; }
 
         public IList<SelectListItem> AvailableSortOptions { get; set; }

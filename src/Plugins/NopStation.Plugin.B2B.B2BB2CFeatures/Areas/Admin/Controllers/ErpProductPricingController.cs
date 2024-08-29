@@ -484,7 +484,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
         //        var currentDate = DateTime.Now.ToString("g");
         //        return File(bytes, MimeTypes.TextXlsx, $"B2B_Price_Group_Product_Pricing_{currentDate}.xlsx");
         //    }
-        //    //_notificationService.ErrorNotification(await _localizationService.GetResourceAsync("Plugins.Payments.B2BCustomerAccount.Export.Error"));
+        //    //_notificationService.ErrorNotification(await _localizationService.GetResourceAsync("NopStation.Plugin.B2B.B2BB2CFeatures.Export.Error"));
         //    return RedirectToAction("AllProductList");
 
         //}
@@ -527,7 +527,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
         //            return RedirectToAction("AllProductList");
         //        }
 
-        //        //_notificationService.SuccessNotification(await _localizationService.GetResourceAsync("Plugins.Payments.B2BCustomerAccount.PriceGroupProductPricing.ImportFromExcel.Success"));
+        //        //_notificationService.SuccessNotification(await _localizationService.GetResourceAsync("NopStation.Plugin.B2B.B2BB2CFeatures.PriceGroupProductPricing.ImportFromExcel.Success"));
         //        return RedirectToAction("AllProductList");
         //    }
         //    catch (Exception exc)

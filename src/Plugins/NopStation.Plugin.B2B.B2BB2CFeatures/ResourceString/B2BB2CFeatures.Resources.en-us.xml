@@ -3620,11 +3620,11 @@
         <Value>No Data</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugins.Payments.B2BCustomerAccount.Reorder.Succeed">
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Reorder.Succeed">
         <Value>Re Order Successful</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugins.Payments.B2BCustomerAccount.Reorder.Error">
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Reorder.Error">
         <Value>Re Order Failed</Value>
     </LocaleResource>
 
@@ -4472,11 +4472,11 @@
         <Value>Percentage of stock allowed for this account</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugins.Payments.B2BCustomerAccount.Fields.SalesOrgCode">
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Fields.SalesOrgCode">
         <Value>Sales Organization Code</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugins.Payments.B2BCustomerAccount.Fields.SalesOrgCode.Hint">
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Fields.SalesOrgCode.Hint">
         <Value>Sales Organization Code</Value>
     </LocaleResource>
 
@@ -5371,11 +5371,11 @@
 
     <!-- Card:116 - 15-April-2024 -->
 
-    <LocaleResource Name="Plugins.Payments.B2BCustomerAccount.B2BAccountOrderDetails.DownloadInvoicePOD">
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.B2BAccountOrderDetails.DownloadInvoicePOD">
         <Value>Download Invoice POD</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugins.Payments.B2BCustomerAccount.B2BAccount.FinancialTransaction.Fields.DownloadInvoiceOrPod">
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.B2BAccount.FinancialTransaction.Fields.DownloadInvoiceOrPod">
         <Value>Download</Value>
     </LocaleResource>
 

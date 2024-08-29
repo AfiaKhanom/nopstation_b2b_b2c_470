@@ -364,7 +364,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
 
                 if (isCartActivityOn)
                 {
-                    _notificationService.WarningNotification(await _localizationService.GetResourceAsync("Plugins.Payments.B2BCustomerAccount.ShoppingCart.CartActivityOn"));
+                    _notificationService.WarningNotification(await _localizationService.GetResourceAsync("NopStation.Plugin.B2B.B2BB2CFeatures.ShoppingCart.CartActivityOn"));
                     return RedirectToRoute("ShoppingCart");
                 }
 
@@ -434,7 +434,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
                         if (warnnings.Any())
                         {
                             await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.IsCartActivityOn, false, store.Id);
-                            _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("Plugins.Payments.B2BCustomerAccount.Reorder.Error"));
+                            _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("NopStation.Plugin.B2B.B2BB2CFeatures.Reorder.Error"));
                             return RedirectToRoute("ShoppingCart");
                         }
                     }
@@ -447,13 +447,13 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
                         string.Format(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.ErpActivityLogs.ErpReOrder"),
                         order.Id, customer.Id), customer);
 
-                    _notificationService.SuccessNotification(await _localizationService.GetResourceAsync("Plugins.Payments.B2BCustomerAccount.Reorder.Succeed"));
+                    _notificationService.SuccessNotification(await _localizationService.GetResourceAsync("NopStation.Plugin.B2B.B2BB2CFeatures.Reorder.Succeed"));
                 }
                 catch (Exception ex)
                 {
-                    var msg = await _localizationService.GetResourceAsync("Plugins.Payments.B2BCustomerAccount.Reorder.Error");
+                    var msg = await _localizationService.GetResourceAsync("NopStation.Plugin.B2B.B2BB2CFeatures.Reorder.Error");
                     _logger.Error(msg + " " + ex.Message, ex);
-                    _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("Plugins.Payments.B2BCustomerAccount.Reorder.Error"));
+                    _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("NopStation.Plugin.B2B.B2BB2CFeatures.Reorder.Error"));
                     await _erpLogsService.ErrorAsync(msg, ErpSyncLevel.Order, ex, customer: customer);
                 }
                 finally

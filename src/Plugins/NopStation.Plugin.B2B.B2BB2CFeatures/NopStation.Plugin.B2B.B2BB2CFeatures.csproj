@@ -246,6 +246,7 @@
     <None Remove="Views\QuickOrder\_ProductManufacturers.cshtml" />
     <None Remove="Views\QuickOrder\_ProductTemplate.Simple.cshtml" />
     <None Remove="Views\Shared\Alert.cshtml" />
+    <None Remove="Views\Shared\Components\ErpShipToAddressSelector\Default.cshtml" />
     <None Remove="Views\Shared\Components\HeaderLinks\Default.cshtml" />
     <None Remove="Views\Shared\Components\OrderSummaryContentDeals\Default.cshtml" />
     <None Remove="Views\Shared\Components\OrderSummary\Default.cshtml" />
@@ -1005,6 +1006,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\Shared\Alert.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Shared\Components\ErpShipToAddressSelector\Default.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\Shared\Components\HeaderLinks\Default.cshtml">

@@ -13,7 +13,6 @@ using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
 
 namespace NopStation.Plugin.B2B.B2BB2CFeatures.Components
 {
-    [ViewComponent(Name = "ErpShipToAddressSelector")]
     public class ErpShipToAddressSelectorViewComponent : NopViewComponent
     {
         private readonly IErpShipToAddressService _erpShipToAddressService;
@@ -84,7 +83,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Components
                 var defaultShipToAddressErpAccountMapping = await _erpShipToAddressService.GetErpShipToAddressErpAccountMapByErpShipToAddressIdAsync(erpUser.ErpShipToAddressId);
                 var erpAccountOfDefaultShipToAddress = await _erpAccountService.GetErpAccountByIdAsync(defaultShipToAddressErpAccountMapping?.ErpAccountId ?? 0);
 
-                var nextDefaultShipToAddressErpAccountMapping = (await _erpShipToAddressService.GetErpShipToAddressErpAccountMapByErpShipToAddressIdAsync(model.NextDefaultErpShipToAddressId));
+                var nextDefaultShipToAddressErpAccountMapping = await _erpShipToAddressService.GetErpShipToAddressErpAccountMapByErpShipToAddressIdAsync(model.NextDefaultErpShipToAddressId);
                 var erpAccountOfNextDefaultShipToAddress = await _erpAccountService.GetErpAccountByIdAsync(nextDefaultShipToAddressErpAccountMapping?.ErpAccountId ?? 0);
 
                 model.IsSalesOrgDifferent = erpAccountOfDefaultShipToAddress?.ErpSalesOrgId != erpAccountOfNextDefaultShipToAddress?.ErpSalesOrgId;

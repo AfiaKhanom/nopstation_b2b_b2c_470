@@ -634,11 +634,11 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
         //        model.IsOverSpend = orderTotal > availableBlanace;
         //        if (model.HasB2BOrderAssistantRole || model.HasB2BQuoteAssistantRole)
         //        {
-        //            model.CreditWarningMessage = string.Format(_localizationService.GetResource("Plugins.Payments.B2BCustomerAccount.B2BQouteOrder.CreditLimitExceed"));
+        //            model.CreditWarningMessage = string.Format(_localizationService.GetResource("NopStation.Plugin.B2B.B2BB2CFeatures.B2BQouteOrder.CreditLimitExceed"));
         //        }
         //        else
         //        {
-        //            model.CreditWarningMessage = string.Format(_localizationService.GetResource("Plugins.Payments.B2BCustomerAccount.B2BQouteOrder.CreditLimitExceedWithValue"), model.AvailableCredit, model.CurrentOrderTotal);
+        //            model.CreditWarningMessage = string.Format(_localizationService.GetResource("NopStation.Plugin.B2B.B2BB2CFeatures.B2BQouteOrder.CreditLimitExceedWithValue"), model.AvailableCredit, model.CurrentOrderTotal);
         //        }
         //    }
         //    return model;
