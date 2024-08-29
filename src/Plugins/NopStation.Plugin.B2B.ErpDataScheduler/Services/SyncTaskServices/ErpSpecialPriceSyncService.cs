@@ -173,20 +173,20 @@ public class ErpSpecialPriceSyncService : IErpSpecialPriceSyncService
                             {
                                 oldSpecialPrice.ErpAccountId = erpAccount.Id;
                                 oldSpecialPrice.NopProductId = product.Id;
-                                oldSpecialPrice.Price = erpSpecialPrice.SpecialPrice;
-                                oldSpecialPrice.ListPrice = erpSpecialPrice.ListPrice;
+                                oldSpecialPrice.Price = erpSpecialPrice.SpecialPrice ?? 0;
+                                oldSpecialPrice.ListPrice = erpSpecialPrice.ListPrice ?? 0;
                                 oldSpecialPrice.PercentageOfAllocatedStock = 0;
                                 oldSpecialPrice.PercentageOfAllocatedStockResetTimeUtc = DateTime.MinValue;
                                 oldSpecialPrice.VolumeDiscount = true;
-                                oldSpecialPrice.DiscountPerc = erpSpecialPrice.DiscountPercentage;
+                                oldSpecialPrice.DiscountPerc = erpSpecialPrice.DiscountPercentage ?? 0;
                                 oldSpecialPrice.PricingNote = erpSpecialPrice.PricingNotes;
                                 await _erpSpecialPriceService.InsertErpSpecialPriceAsync(oldSpecialPrice);
                             }
                             else
                             {
-                                oldSpecialPrice.Price = erpSpecialPrice.SpecialPrice;
-                                oldSpecialPrice.ListPrice = erpSpecialPrice.ListPrice ;
-                                oldSpecialPrice.DiscountPerc = erpSpecialPrice.DiscountPercentage;
+                                oldSpecialPrice.Price = erpSpecialPrice.SpecialPrice ?? 0;
+                                oldSpecialPrice.ListPrice = erpSpecialPrice.ListPrice ?? 0;
+                                oldSpecialPrice.DiscountPerc = erpSpecialPrice.DiscountPercentage ?? 0;
                                 oldSpecialPrice.PricingNote = erpSpecialPrice.PricingNotes;
                                 await _erpSpecialPriceService.UpdateErpSpecialPriceAsync(oldSpecialPrice);
                             }

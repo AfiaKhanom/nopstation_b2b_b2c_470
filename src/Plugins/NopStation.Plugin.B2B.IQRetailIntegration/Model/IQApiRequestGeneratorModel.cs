@@ -225,7 +225,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.Model
                                             new JProperty("delivery_address_information", new JArray(
                                                 erpRequest.DeliveryInstruction ?? string.Empty
                                             )),
-                                            new JProperty("total_vat", Math.Max(erpRequest.OrderSubtotalInclTax - erpRequest.OrderSubtotalExclTax, 0),
+                                            new JProperty("total_vat", decimal.Max(erpRequest?.OrderSubtotalInclTax ?? 0 - erpRequest?.OrderSubtotalExclTax ?? 0, 0),
                                             new JProperty("email_address", erpRequest.CustomerEmail ?? string.Empty),
                                             new JProperty("vat_number", erpRequest.VatNumber ?? string.Empty),
                                             new JProperty("document_total", erpRequest.OrderSubtotalInclTax),
@@ -240,9 +240,9 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.Model
                                             new JProperty("sales_representative_number", SALES_REPRESENTATIVE_NUMBER),
                                             new JProperty("order_information", new JObject(
                                                 new JProperty("order_date", (erpRequest.OrderDate > DateTime.UtcNow.AddYears(-100)) ?
-                                                                            erpRequest.OrderDate.ToString("yyyy-MM-dd") : DateTime.UtcNow.AddYears(-100).ToString("yyyy-MM-dd")),
+                                                                            erpRequest.OrderDate?.ToString("yyyy-MM-dd") : DateTime.UtcNow.AddYears(-100).ToString("yyyy-MM-dd")),
                                                 new JProperty("expected_date", (erpRequest.DateRequired > DateTime.UtcNow.AddYears(-100)) ?
-                                                                            erpRequest.DateRequired.ToString("yyyy-MM-dd") : DateTime.UtcNow.AddYears(-100).ToString("yyyy-MM-dd")),
+                                                                            erpRequest.DateRequired?.ToString("yyyy-MM-dd") : DateTime.UtcNow.AddYears(-100).ToString("yyyy-MM-dd")),
                                                 new JProperty("credit_approver_number", CREDIT_APPROVER_NUMBER)
                                             ))
                                         )),

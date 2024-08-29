@@ -291,18 +291,18 @@ public class ErpProductSyncService : IErpProductSyncService
                             oldErpProduct.WarehouseId = allWarehouses.FirstOrDefault(x => x.Name.Equals(erpProduct.WarehouseNameOrCode))?.Id ?? 0;
                             oldErpProduct.VendorId = allVendors.Find(x => x.Name.Equals(erpProduct.VendorCode) || x.Name.Equals(erpProduct.VendorName))?.Id ?? 0;
 
-                            oldErpProduct.StockQuantity = Convert.ToInt32(Math.Min(Math.Max(Math.Round(erpProduct.StockQuantity), int.MinValue), int.MaxValue));
+                            oldErpProduct.StockQuantity = Convert.ToInt32(Math.Min(Math.Max(Math.Round(erpProduct.StockQuantity ?? 0), int.MinValue), int.MaxValue));
                             oldErpProduct.OrderMinimumQuantity = 1;
 
                             oldErpProduct.IsShipEnabled = true;
 
                             oldErpProduct.PreOrderAvailabilityStartDateTimeUtc = DateTime.UtcNow;
-                            oldErpProduct.Price = erpProduct.Price;
-                            oldErpProduct.OldPrice = erpProduct.Price;
+                            oldErpProduct.Price = erpProduct.Price ?? 0;
+                            oldErpProduct.OldPrice = erpProduct.Price ?? 0;
 
-                            oldErpProduct.Weight = erpProduct.Weight;
-                            oldErpProduct.Length = erpProduct.Length;
-                            oldErpProduct.Height = erpProduct.Height;
+                            oldErpProduct.Weight = erpProduct.Weight ?? 0;
+                            oldErpProduct.Length = erpProduct.Length ?? 0;
+                            oldErpProduct.Height = erpProduct.Height ?? 0;
                             oldErpProduct.AvailableStartDateTimeUtc = DateTime.UtcNow;
                             oldErpProduct.DisplayOrder = 1;
 
@@ -334,9 +334,9 @@ public class ErpProductSyncService : IErpProductSyncService
 
                             oldErpProduct.Name = string.IsNullOrEmpty(erpProduct.Name) ? erpProduct.Sku : erpProduct.Name;
                             oldErpProduct.AdminComment = $"Updated by {programName} (B2B) on {DateTime.UtcNow.ToString("u")}";
-                            oldErpProduct.Weight = erpProduct.Weight;
-                            oldErpProduct.Length = erpProduct.Length;
-                            oldErpProduct.Height = erpProduct.Height;
+                            oldErpProduct.Weight = erpProduct.Weight ?? 0;
+                            oldErpProduct.Length = erpProduct.Length ?? 0;
+                            oldErpProduct.Height = erpProduct.Height ?? 0;
 
                             oldErpProduct.UpdatedOnUtc = DateTime.UtcNow;
 

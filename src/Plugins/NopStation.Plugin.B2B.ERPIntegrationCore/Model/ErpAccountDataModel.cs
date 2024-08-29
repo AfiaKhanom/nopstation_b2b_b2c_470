@@ -11,10 +11,10 @@ public class ErpAccountDataModel
     public string BillingSuburb { get; set; }
     public string BillingName { get; set; }
     public string VatNumber { get; set; }
-    public decimal CreditLimit { get; set; }
-    public decimal CreditLimitUsed { get; set; }
-    public decimal CreditLimitAvailable { get; set; }
-    public decimal CurrentBalance { get; set; }
+    public decimal? CreditLimit { get; set; }
+    public decimal? CreditLimitUsed { get; set; }
+    public decimal? CreditLimitAvailable { get; set; }
+    public decimal? CurrentBalance { get; set; }
     public bool AllowOverspend { get; set; }
     public string PreFilterFacets { get; set; }
     public string PaymentTypeCode { get; set; }

@@ -174,7 +174,7 @@ public class ErpInvoiceSyncService : IErpInvoiceSyncService
                             if (oldErpInvoiceByThisAccount.Id <= 0)
                             {
                                 oldErpInvoiceByThisAccount.ShipmentDateUtc = erpInvoice.ShipmentDateUtc;
-                                oldErpInvoiceByThisAccount.PostingDateUtc = erpInvoice.PostingDateUtc;
+                                oldErpInvoiceByThisAccount.PostingDateUtc = erpInvoice.PostingDateUtc ?? DateTime.UtcNow;
                                 oldErpInvoiceByThisAccount.DocumentDateUtc = erpInvoice.DocumentDateUtc;
                                 oldErpInvoiceByThisAccount.ErpDocumentNumber = erpInvoice.ErpDocumentNumber;
                                 oldErpInvoiceByThisAccount.ErpOrderNumber = erpInvoice.ErpOrderNumber;

@@ -5928,4 +5928,35 @@
     <LocaleResource Name="B2B.BackOrderProducts.ProductHasBeenAddedToTheCart.Link">
         <Value><![CDATA[The product has been added to your <a href="{0}">shopping cart</a>]]></Value>
     </LocaleResource>
+    
+    <!-- Card:2804-Fix-checkout-steps-structure-on-top-of-standard-b2b-4.70  -  29-Aug-2024 -->
+    
+    <LocaleResource Name="Checkout.ShippingAddress.SelectDeliverOrCollect">
+        <Value>Select Deliver or Collect</Value>
+    </LocaleResource>
+
+    <LocaleResource Name="Checkout.ShippingAddress.SelectYourDeliveryAddress">
+        <Value>Select your delivery address</Value>
+    </LocaleResource>
+
+    <LocaleResource Name="Checkout.ShippingAddress.CouldNotLoadShippingAddress">
+        <Value>Could not load Shipping Address</Value>
+    </LocaleResource>
+
+    <LocaleResource Name="Checkout.ShippingAddress.SelectCollectionPoint">
+        <Value>Select collection point</Value>
+    </LocaleResource>
+
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.DeliveryDatesErpFailed.Notice">
+        <Value>Notice</Value>
+    </LocaleResource>
+    
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.DeliveryDatesErpFailed.Notice.Text">
+        <Value>We are unable to connect to the database at this moment in the time, by default the next available delivery date will be selected - please contact your macsteel sales clerk to select a new date once your order is placed.</Value>
+    </LocaleResource>
+    
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.DeliveryDatesErpFailedDialog.Close">
+        <Value>Close</Value>
+    </LocaleResource>
+    
 </Language>

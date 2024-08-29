@@ -71,9 +71,9 @@
                                             }
                                         },
                                         error: function () {
-                                            $("#modal-body-content").html('<h2>Could not load Shipping Address</h2>');
+                                            $("#modal-body-content").html('<h2>@T("Checkout.ShippingAddress.CouldNotLoadShippingAddress")</h2>');
                                             $("#addressModal").show();
-                                            console.log("Could not load Shipping Address");
+                                            //console.log("@T("Checkout.ShippingAddress.CouldNotLoadShippingAddress")");
                                         },
                                         complete: function () {
                                             displayAjaxLoading();
@@ -170,7 +170,7 @@
                                 @if (Model.ErpToDetermineDate)
                                 {
                                     <div id="deliveryDateDropdown" class="inputs">
-                                        @* <label asp-for="DeliveryDateString" asp-postfix=":"></label> *@
+                                        <label asp-for="DeliveryDateString" asp-postfix=":"></label>
                                         <h3 class="FullLoadRequired-div FullLoadRequired-div-hide">@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.DeliveryDate.FullLoadRequired")</h3>
                                         <select asp-for="DeliveryDateString" asp-items="Model.AvailableDeliveryDates"></select>
                                         <span id="delivery-dates-loading-progress" style="display: none;" class="please-wait">@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.DeliveryDate.Loading")</span>

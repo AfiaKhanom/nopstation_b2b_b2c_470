@@ -556,15 +556,15 @@ public class ErpOrderSyncService : IErpOrderSyncService
                     nopOrderItem.ProductId = product.Id;
                     nopOrderItem.Quantity = Convert.ToInt16(item.Quantity);
                     nopOrderItem.PriceInclTax = Convert.ToInt16(item.PriceInclTax);
-                    nopOrderItem.UnitPriceInclTax = item.UnitPriceInclTax;
-                    nopOrderItem.UnitPriceExclTax = item.UnitPriceExclTax;
+                    nopOrderItem.UnitPriceInclTax = item.UnitPriceInclTax ?? 0;
+                    nopOrderItem.UnitPriceExclTax = item.UnitPriceExclTax ?? 0;
 
                     await _orderService.InsertOrderItemAsync(nopOrderItem);
                 }
                 else
                 {
-                    nopOrderItem.UnitPriceInclTax = item.UnitPriceInclTax;
-                    nopOrderItem.UnitPriceExclTax = item.UnitPriceExclTax;
+                    nopOrderItem.UnitPriceInclTax = item.UnitPriceInclTax ?? 0;
+                    nopOrderItem.UnitPriceExclTax = item.UnitPriceExclTax ?? 0;
                     nopOrderItem.Quantity = Convert.ToInt16(item.Quantity);
 
                     await _orderService.UpdateOrderItemAsync(nopOrderItem);

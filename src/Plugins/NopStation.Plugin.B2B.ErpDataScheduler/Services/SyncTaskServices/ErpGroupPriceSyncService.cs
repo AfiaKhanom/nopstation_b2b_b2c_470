@@ -159,7 +159,7 @@ public class ErpGroupPriceSyncService : IErpGroupPriceSyncService
 
                             if (oldErpGroupPrice.Id > 0)
                             {
-                                oldErpGroupPrice.Price = erpGroupPrice.Price;
+                                oldErpGroupPrice.Price = erpGroupPrice.Price ?? 0;
                                 oldErpGroupPrice.UpdatedById = oldErpGroupPriceCode.UpdatedById;
                                 oldErpGroupPrice.UpdatedOnUtc = DateTime.UtcNow;
                                 await _erpGroupPriceService.UpdateErpGroupPriceAsync(oldErpGroupPrice);
@@ -168,7 +168,7 @@ public class ErpGroupPriceSyncService : IErpGroupPriceSyncService
                             {
                                 oldErpGroupPrice.ErpNopGroupPriceCodeId = oldErpGroupPriceCode.Id;
                                 oldErpGroupPrice.NopProductId = product.Id;
-                                oldErpGroupPrice.Price = erpGroupPrice.Price;
+                                oldErpGroupPrice.Price = erpGroupPrice.Price ?? 0;
                                 oldErpGroupPrice.CreatedById = oldErpGroupPriceCode.CreatedById;
                                 oldErpGroupPrice.CreatedOnUtc = DateTime.UtcNow;
                                 oldErpGroupPrice.UpdatedById = oldErpGroupPriceCode.UpdatedById;

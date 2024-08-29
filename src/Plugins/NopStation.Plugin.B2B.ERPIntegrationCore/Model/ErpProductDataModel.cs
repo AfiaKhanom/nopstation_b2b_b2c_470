@@ -10,12 +10,12 @@ public class ErpProductDataModel
     public string ManufacturerPartNumber { get; set; }
     public string ShortDescription { get; set; }
     public string FullDescription { get; set; }
-    public decimal Height { get; set; }
-    public decimal Width { get; set; }
-    public decimal Length { get; set; }
-    public decimal Weight { get; set; }
-    public decimal Price { get; set; }
-    public decimal StockQuantity { get; set; }
+    public decimal? Height { get; set; }
+    public decimal? Width { get; set; }
+    public decimal? Length { get; set; }
+    public decimal? Weight { get; set; }
+    public decimal? Price { get; set; }
+    public decimal? StockQuantity { get; set; }
     public IEnumerable<ErpCategoryDataModel> ProductCategories { get; set; } = new List<ErpCategoryDataModel>();
     public List<KeyValuePair<string, string>> ProductAttributes { get; set; } = new List<KeyValuePair<string, string>>();
     public int TaxCategoryId { get; set; }

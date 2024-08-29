@@ -33,12 +33,12 @@ public class ErpPlaceOrderDataModel
     public string VatNumber { get; set; }
     public string OrderType { get; set; }
     public string QuoteNumber { get; set; }
-    public decimal OrderTax { get; set; }
-    public decimal OrderSubtotalExclTax { get; set; }
-    public decimal OrderSubtotalInclTax { get; set; }
+    public decimal? OrderTax { get; set; }
+    public decimal? OrderSubtotalExclTax { get; set; }
+    public decimal? OrderSubtotalInclTax { get; set; }
     public string CustomerCurrencyCode { get; set; }
-    public DateTime OrderDate { get; set; }
+    public DateTime? OrderDate { get; set; }
     public DateTime? DeliveryDate { get; set; }
-    public DateTime DateRequired { get; set; }
+    public DateTime? DateRequired { get; set; }
     public IList<ErpPlaceOrderItemDataModel> ErpPlaceOrderItemDatas { get; set; }
 }

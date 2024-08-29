@@ -222,9 +222,9 @@ public class ErpAccountSyncService : IErpAccountSyncService
                             oldErpAccount.AllowAccountsAddressEditOnCheckout = b2BB2CFeaturesSettings.AllowAddressEditOnCheckoutForAll;
                             oldErpAccount.B2BPriceGroupCodeId = (await _erpGroupPriceCodeService.GetErpGroupPriceCodeByCodedAsync(erpAccount.PriceGroupCode)).Id;
 
-                            oldErpAccount.CreditLimitAvailable = erpAccount.CreditLimitAvailable;
-                            oldErpAccount.CreditLimit = erpAccount.CreditLimit;
-                            oldErpAccount.CurrentBalance = erpAccount.CurrentBalance;                       
+                            oldErpAccount.CreditLimitAvailable = erpAccount.CreditLimitAvailable ?? 0;
+                            oldErpAccount.CreditLimit = erpAccount.CreditLimit ?? 0;
+                            oldErpAccount.CurrentBalance = erpAccount.CurrentBalance ?? 0;
 
                             var hideStockValues = erpAccount.ErpAccountAttributes?.Exists(kvp =>
                                     HIDE_STOCK_VALUES.Equals(kvp.Key, StringComparison.InvariantCultureIgnoreCase) 
@@ -273,9 +273,9 @@ public class ErpAccountSyncService : IErpAccountSyncService
                             oldErpAccount.AllowAccountsAddressEditOnCheckout = b2BB2CFeaturesSettings.AllowAddressEditOnCheckoutForAll;
                             oldErpAccount.B2BPriceGroupCodeId = _erpGroupPriceCodeService.GetErpGroupPriceCodeByCodedAsync(erpAccount.PriceGroupCode).Id;
 
-                            oldErpAccount.CreditLimitAvailable = erpAccount.CreditLimitAvailable;
-                            oldErpAccount.CreditLimit = erpAccount.CreditLimit;
-                            oldErpAccount.CurrentBalance = erpAccount.CurrentBalance;
+                            oldErpAccount.CreditLimitAvailable = erpAccount.CreditLimitAvailable ?? 0;
+                            oldErpAccount.CreditLimit = erpAccount.CreditLimit ?? 0;
+                            oldErpAccount.CurrentBalance = erpAccount.CurrentBalance ?? 0;
                             
 
                             var hideStockValues = erpAccount.ErpAccountAttributes?.Any(kvp =>
