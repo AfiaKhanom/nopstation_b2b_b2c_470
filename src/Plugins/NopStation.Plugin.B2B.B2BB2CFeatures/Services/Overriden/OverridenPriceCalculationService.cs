@@ -108,60 +108,49 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Overriden
 
         #region Utilities
 
+        private async Task<(decimal, decimal)> GetGroupPriceAsync(ErpAccount erpAccount, int productId)
+        {
+            var priceGroupProductPricing = await _erpGroupPriceService
+                .GetB2BPriceGroupProductPricingByErpPriceGroupCodeAndProductId(erpAccount.B2BPriceGroupCodeId ?? 0, productId);
+
+            if (priceGroupProductPricing != null && priceGroupProductPricing.Id > 0)
+            {
+                return (priceGroupProductPricing.Price, decimal.Zero);
+            }
+
+            return (decimal.Zero, decimal.Zero);
+        }
+
+        private async Task<(decimal, decimal)> GetSpecialPriceAsync(ErpAccount erpAccount, int productId)
+        {
+            var productSpecialPricing = await _erpSpecialPriceService
+                .GetErpSpecialPricesByErpAccountIdAndNopProductIdAsync(erpAccount.Id, productId);
+
+            if (productSpecialPricing != null && productSpecialPricing.Id > 0)
+            {
+                return (productSpecialPricing.Price, productSpecialPricing.DiscountPerc);
+            }
+
+            return (decimal.Zero, decimal.Zero);
+        }
+
         public async Task<(decimal, decimal)> GetErpProductPriceAndDiscountPercByErpAccountAndProduct(ErpAccount erpAccount, int productId, B2BB2CFeaturesSettings b2BB2CFeaturesSettings)
         {
-            var cacheKey = _staticCacheManager.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpProductPricingCommonCacheKey, erpAccount.Id, b2BB2CFeaturesSettings.UseProductGroupPrice, erpAccount.B2BPriceGroupCodeId, productId);
-
-            return await _staticCacheManager.GetAsync(cacheKey, async () =>
+            if (b2BB2CFeaturesSettings.UseProductCombinedPrice)
             {
-                if (b2BB2CFeaturesSettings.UseProductCombinedPrice)
-                {
-                    var productSpecialPricing = await _erpSpecialPriceService.GetErpSpecialPricesByErpAccountIdAndNopProductIdAsync(erpAccount.Id, productId);
-                    if (productSpecialPricing != null && productSpecialPricing.Id > 0)
-                    {
-                        return (productSpecialPricing.Price, productSpecialPricing.DiscountPerc);
-                    }
-                    else
-                    {
-                        var priceGroupProductPricing = await _erpGroupPriceService.GetB2BPriceGroupProductPricingByErpPriceGroupCodeAndProductId(erpAccount.B2BPriceGroupCodeId ?? 0, productId);
-                        if (priceGroupProductPricing != null && priceGroupProductPricing.Id > 0)
-                        {
-                            return (priceGroupProductPricing.Price, decimal.Zero);
-                        }
-                        else
-                        {
-                            // if there is no price regarding b2b account and this product then price should be zero
-                            return (decimal.Zero, decimal.Zero);
-                        }
-                    }
-                }
-                else if (b2BB2CFeaturesSettings.UseProductGroupPrice)
-                {
-                    var priceGroupProductPricing = await _erpGroupPriceService.GetB2BPriceGroupProductPricingByErpPriceGroupCodeAndProductId(erpAccount.B2BPriceGroupCodeId ?? 0, productId);
-                    if (priceGroupProductPricing != null && priceGroupProductPricing.Id > 0)
-                    {
-                        return (priceGroupProductPricing.Price, decimal.Zero);
-                    }
-                    else
-                    {
-                        // if there is no price regarding price group code of this b2b account and this product then price should be zero
-                        return (decimal.Zero, decimal.Zero);
-                    }
-                }
-                else
-                {
-                    var productSpecialPricing = await _erpSpecialPriceService.GetErpSpecialPricesByErpAccountIdAndNopProductIdAsync(erpAccount.Id, productId);
-                    if (productSpecialPricing != null && productSpecialPricing.Id > 0)
-                    {
-                        return (productSpecialPricing.Price, productSpecialPricing.DiscountPerc);
-                    }
-                    else
-                    {
-                        // if there is no price regarding b2b account and this product then price should be zero
-                        return (decimal.Zero, decimal.Zero);
-                    }
-                }
-            });
+                var specialPrice = await GetSpecialPriceAsync(erpAccount, productId);
+                if (specialPrice.Item1 > 0)
+                    return specialPrice;
+
+                return await GetGroupPriceAsync(erpAccount, productId);
+            }
+
+            if (b2BB2CFeaturesSettings.UseProductGroupPrice)
+            {
+                return await GetGroupPriceAsync(erpAccount, productId);
+            }
+
+            return await GetSpecialPriceAsync(erpAccount, productId);
         }
 
         #endregion
@@ -216,7 +205,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Overriden
                     var currStore = await _storeContext.GetCurrentStoreAsync();
 
                     var b2bOrderId = await _genericAttributeService.GetAttributeAsync<int>(currCustomer, B2BB2CFeaturesDefaults.B2BConvertedQuoteB2BOrderId, currStore.Id);
-
                     var b2COrderId = await _genericAttributeService.GetAttributeAsync<int>(currCustomer, B2BB2CFeaturesDefaults.B2CConvertedQuoteB2COrderId, currStore.Id);
 
                     if (b2bOrderId > 0)
@@ -275,24 +263,23 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Overriden
                         var discountPerc = decimal.Zero;
                         (price, discountPerc) = await GetErpProductPriceAndDiscountPercByErpAccountAndProduct(erpAccount, product.Id, b2BB2CFeaturesSettings);
                     }
-
-                    //tier prices
-                    var tierPrice = await _productService.GetPreferredTierPriceAsync(product, customer, store, quantity);
-
-                    if (tierPrice != null)
-                        price = tierPrice.Price;
-
-                    //additional charge
-                    price += additionalCharge;
-
-                    //rental products
-                    if (product.IsRental)
-                        if (rentalStartDate.HasValue && rentalEndDate.HasValue)
-                            price *= _productService.GetRentalPeriods(product, rentalStartDate.Value, rentalEndDate.Value);
-
                 }
 
                 #endregion
+
+                //tier prices
+                var tierPrice = await _productService.GetPreferredTierPriceAsync(product, customer, store, quantity);
+
+                if (tierPrice != null)
+                    price = tierPrice.Price;
+
+                //additional charge
+                price += additionalCharge;
+
+                //rental products
+                if (product.IsRental)
+                    if (rentalStartDate.HasValue && rentalEndDate.HasValue)
+                        price *= _productService.GetRentalPeriods(product, rentalStartDate.Value, rentalEndDate.Value);
 
                 var priceWithoutDiscount = price;
 

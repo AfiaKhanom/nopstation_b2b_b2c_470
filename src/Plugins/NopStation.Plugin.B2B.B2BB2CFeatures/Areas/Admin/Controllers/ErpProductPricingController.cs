@@ -264,9 +264,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 erpProductPricing.VolumeDiscount = model.VolumeDiscount;
                 await _erpSpecialPriceService.UpdateErpSpecialPriceAsync(erpProductPricing);
 
-                await _staticCacheManager.RemoveByPrefixAsync(ERPIntegrationCoreDefaults.ErpProductPricingCommonPrefix);
-                await _staticCacheManager.RemoveAsync(_staticCacheManager.PrepareKeyForDefaultCache(NopEntityCacheDefaults<ErpSpecialPrice>.ByIdCacheKey, erpProductPricing.Id));
-
                 ViewBag.RefreshPage = true;
 
                 var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSpecialPrice.ActivityLog.Update");
