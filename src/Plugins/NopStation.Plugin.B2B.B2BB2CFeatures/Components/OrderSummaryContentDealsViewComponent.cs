@@ -42,8 +42,8 @@ public class OrderSummaryContentDealsViewComponent : NopViewComponent
         if (erpAccount == null)
             return Content("");
 
-        var storeScope = await _storeContext.GetActiveStoreScopeConfigurationAsync();
-        var settings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);
+        var store = await _storeContext.GetCurrentStoreAsync();
+        var settings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(store.Id);
         var accountPaymentEnabled = settings.EnableAccountPayment;
 
         if (!accountPaymentEnabled)

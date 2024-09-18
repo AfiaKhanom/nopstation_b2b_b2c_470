@@ -166,7 +166,9 @@ public class B2BB2CFeaturesController : NopStationAdminController
 
         var model = new ConfigurationModel();
 
-        var settings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>();
+        //load settings for a chosen store scope
+        var storeScope = await _storeContext.GetActiveStoreScopeConfigurationAsync();
+        var settings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);
         if (settings != null)
             model = settings.ToSettingsModel<ConfigurationModel>();
 

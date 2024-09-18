@@ -23,16 +23,51 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore
         public static string ErpNopUserAccountMapInsert => "ErpNopUserAccountMapInserted";
         public static string ErpPriceGroupProductPricingCacheKey => "ErpPriceGroupProductPricingCacheKey";
         public static CacheKey ErpProductSpecificationAttributeList => new CacheKey("NopB2bB2cFeaturesAdminProductSpecificationAttributeForB2b");
-
-        public static string ErpAccountByCustomerCacheKey => "ERP.Account.customer-{0}-{1}";
+        
         public static string ERPIntegrationPluginGroupName => "Nopstation_ErpIntegration";
-
         public static CacheKey SalesRepOrgCacheKey => new("Nop.salesrep.salesreporgs.{0}-{1}", SalesRepOrgBySalesRepPrefix, SalesRepOrgPrefix);
         public static CacheKey ShipToAddressCacheKey => new("Nop.Account.ShiptoAddress.{0}-{1}", ErpAccountPrefix, ShiptoAddressesByAccountrPrefix);
         public static string ErpAccountPrefix => "B2B.ErpAccount."; 
         public static string ShiptoAddressesByAccountrPrefix => "Nop.account.shiptoaddresses.{0}";
 
-        #region Product Pricing
+        #region ERP Nop user Cache key
+
+        /// <summary>
+        /// Gets a key for caching
+        /// </summary>
+        /// <remarks>
+        /// {0} : Customer ID
+        /// </remarks>
+        public static CacheKey ErpNopUserByCustomerCacheKey => new("Erp.nopuser.customer.{0}", ErpNopUserPrefixCacheKey);
+
+        public static CacheKey ErpNopUserByCustomerAndErpAccountCacheKey => new("Erp.nopuser.customer.erpaccount.{0}-{1}", ErpNopUserPrefixCacheKey);
+
+        /// <summary>
+        /// Gets a key pattern to clear cache
+        /// </summary>
+        public static string ErpNopUserPrefixCacheKey => "Erp.nopuser.customer.";
+
+        #endregion
+
+        #region ERP Account Cache key
+
+        /// <summary>
+        /// Gets a key for caching
+        /// </summary>
+        /// <remarks>
+        /// {0} : Customer ID
+        /// {1} : roles of the current customer
+        /// </remarks>
+        public static CacheKey ErpAccountByCustomerCacheKey => new("Erp.account.customer.{0}-{1}", ErpAccountPrefixCacheKey);
+
+        /// <summary>
+        /// Gets a key pattern to clear cache
+        /// </summary>
+        public static string ErpAccountPrefixCacheKey => "Erp.account.customer.";
+
+        #endregion
+
+        #region Product Pricing Cache Key
 
         /// <summary>
         /// Gets a key for ERP product Special Price

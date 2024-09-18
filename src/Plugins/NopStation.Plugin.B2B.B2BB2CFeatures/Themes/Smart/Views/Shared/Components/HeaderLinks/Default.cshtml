@@ -15,8 +15,8 @@
 @{
     var customer = await workContext.GetCurrentCustomerAsync();
     var erpCustomer = await b2BB2CWorkContext.GetCurrentERPCustomerAsync();
-    var storeScope = await _storeContext.GetActiveStoreScopeConfigurationAsync();
-    var settings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);      
+    var store = await _storeContext.GetCurrentStoreAsync();
+    var settings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(store.Id);
 }
 
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderLinksBefore, additionalData = Model })

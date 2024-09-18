@@ -234,8 +234,8 @@ public class ErpAccountPublicController : BasePluginController
 
     public async Task<IActionResult> DownloadInvoiceFromFtp(string id)
     {
-        var storeScope = await _storeContext.GetActiveStoreScopeConfigurationAsync();
-        var b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);
+        var store = await _storeContext.GetCurrentStoreAsync();
+        var b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(store.Id);
 
         var baseUrl = b2BB2CFeaturesSettings.DownloadInvoicesPath + "/";
         //var baseUrl = "ftp://89.116.28.135/RenamedInvoiceTest/";

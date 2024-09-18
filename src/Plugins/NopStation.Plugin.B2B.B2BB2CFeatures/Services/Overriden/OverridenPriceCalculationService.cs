@@ -18,6 +18,7 @@ using Nop.Services.Directory;
 using Nop.Services.Discounts;
 using Nop.Services.Orders;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure;
+using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality;
 using NopStation.Plugin.B2B.ERPIntegrationCore;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
@@ -40,7 +41,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Overriden
         private readonly IProductService _productService;
         private readonly IStaticCacheManager _staticCacheManager;
         private readonly IOrderService _orderService;
-        private readonly IErpAccountService _erpAccountService;
+        private readonly IErpCustomerFunctionalityService _erpCustomerFunctionality;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly IWorkContext _workContext;
         private readonly IStoreContext _storeContext;
@@ -64,7 +65,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Overriden
             IProductService productService,
             IStaticCacheManager staticCacheManager,
             IOrderService orderService,
-            IErpAccountService erpAccountService,
+            IErpCustomerFunctionalityService erpCustomerFunctionality,
             IGenericAttributeService genericAttributeService,
             IWorkContext workContext,
             IStoreContext storeContext,
@@ -94,7 +95,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Overriden
             _productService = productService;
             _staticCacheManager = staticCacheManager;
             _orderService = orderService;
-            _erpAccountService = erpAccountService;
+            _erpCustomerFunctionality = erpCustomerFunctionality;
             _genericAttributeService = genericAttributeService;
             _workContext = workContext;
             _storeContext = storeContext;
@@ -195,17 +196,14 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Overriden
                 #region ERP B2B
 
                 var priceTakenFromQuoteOrderItem = false;
-                var storeScope = await _storeContext.GetActiveStoreScopeConfigurationAsync();
-                var b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);
-                var erpAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(customer.Id);
+
+                var b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(store.Id);
+                var erpAccount = await _erpCustomerFunctionality.GetActiveErpAccountByCustomerAsync(customer);
 
                 if (erpAccount != null)
                 {
-                    var currCustomer = await _workContext.GetCurrentCustomerAsync();
-                    var currStore = await _storeContext.GetCurrentStoreAsync();
-
-                    var b2bOrderId = await _genericAttributeService.GetAttributeAsync<int>(currCustomer, B2BB2CFeaturesDefaults.B2BConvertedQuoteB2BOrderId, currStore.Id);
-                    var b2COrderId = await _genericAttributeService.GetAttributeAsync<int>(currCustomer, B2BB2CFeaturesDefaults.B2CConvertedQuoteB2COrderId, currStore.Id);
+                    var b2bOrderId = await _genericAttributeService.GetAttributeAsync<int>(customer, B2BB2CFeaturesDefaults.B2BConvertedQuoteB2BOrderId, store.Id);
+                    var b2COrderId = await _genericAttributeService.GetAttributeAsync<int>(customer, B2BB2CFeaturesDefaults.B2CConvertedQuoteB2COrderId, store.Id);
 
                     if (b2bOrderId > 0)
                     {

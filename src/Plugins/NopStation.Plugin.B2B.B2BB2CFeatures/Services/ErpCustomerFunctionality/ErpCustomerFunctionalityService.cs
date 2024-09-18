@@ -142,6 +142,37 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
             return await _customerService.IsInCustomerRoleAsync(customer, B2BB2CFeaturesDefaults.B2BQuoteAssistantRoleSystemName);
         }
 
+        public async Task<ErpAccount> GetActiveErpAccountOfCurrentCustomer()
+        {
+            return await GetActiveErpAccountByCustomerAsync(await _workContext.GetCurrentCustomerAsync());
+        }
+
+        public async Task<ErpAccount> GetActiveErpAccountByCustomerIdAsync(int customerId)
+        {
+            var customer = await _customerService.GetCustomerByIdAsync(customerId);
+            if (customer == null)
+                return null;
+
+            return await GetActiveErpAccountByCustomerAsync(customer);
+        }
+
+        public async Task<ErpAccount> GetActiveErpAccountByCustomerAsync(Customer customer)
+        {
+            var key = _staticCacheManager.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpAccountByCustomerCacheKey, customer.Id, string.Join(",", await _customerService.GetCustomerRoleIdsAsync(customer)));
+
+            return await _staticCacheManager.Get(key, async () =>
+            {
+                var erpNopUser = await GetActiveErpNopUserByCustomerAsync(customer);
+                if (erpNopUser != null && !erpNopUser.IsDeleted && erpNopUser.IsActive)
+                {
+                    var erpAccount = await _erpAccountService.GetErpAccountByIdWithActiveAsync(erpNopUser.ErpAccountId);
+                    if (erpAccount != null)
+                        return erpAccount;
+                }
+                return null;
+            });
+        }
+
         public async Task<bool> IsErpAccountBlockSalesOrderAsync(Customer customer)
         {
             if (await IsCustomerInB2BCustomerRole(customer))
@@ -160,8 +191,11 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
                 return null;
 
             var erpNopUser = await _erpNopUserService.GetErpNopUserByCustomerIdAsync(customer.Id);
-
-            return erpNopUser;
+            if (erpNopUser != null && !erpNopUser.IsDeleted && erpNopUser.IsActive)
+            {
+                return erpNopUser;
+            }
+            return null;
         }
 
         public async Task<bool> IsConsideredAsB2BOrderByB2BUserInformation(ErpNopUser b2BUser)

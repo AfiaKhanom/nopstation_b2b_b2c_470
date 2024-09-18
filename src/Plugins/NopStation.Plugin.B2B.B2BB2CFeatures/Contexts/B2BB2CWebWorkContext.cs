@@ -585,6 +585,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Contexts
 
             return _cachedERPCustomer;
         }
+
         public virtual async Task SetCurrentERPCustomerAsync(Customer customer = null, int erpAccountId = 0)
         {
             if (customer == null)

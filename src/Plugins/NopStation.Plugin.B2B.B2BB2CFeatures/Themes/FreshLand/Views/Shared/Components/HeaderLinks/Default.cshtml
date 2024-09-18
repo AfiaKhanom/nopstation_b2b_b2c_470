@@ -11,8 +11,8 @@
     var erpCustomer = await b2BB2CWorkContext.GetCurrentERPCustomerAsync();
     NopHtml.AppendCssFileParts("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Content/css/erpstyle.css");
 
-    var storeScope = await storeContext.GetActiveStoreScopeConfigurationAsync();
-    var settings = await settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);
+    var store = await storeContext.GetCurrentStoreAsync();
+    var settings = await settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(store.Id);
 
     var returnUrl = Context.Request.Query.TryGetValue("returnUrl", out var url) && !StringValues.IsNullOrEmpty(url)
                 ? url.ToString()

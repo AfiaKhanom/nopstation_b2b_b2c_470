@@ -19,6 +19,9 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
         Task<bool> IsCustomerInB2BQuoteAssistantRole(Customer customer);
         Task<bool> IsConsideredAsB2BOrderByB2BUserInformation(ErpNopUser b2BUser);
         Task<bool> IsConsideredAsB2COrderByB2CUser(ErpNopUser b2CUser);
+
+        Task<ErpAccount> GetActiveErpAccountByCustomerAsync(Customer customer);
+
         Task<bool> IsSalesOrderInvalidForCurrentCustomerAsync();
         Task<bool> IsCurrentCustomerInErpSalesRepRoleAsync();
         Task<bool> IsCustomerInB2BSalesRepRoleAsync(Customer customer);

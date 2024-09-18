@@ -229,8 +229,8 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
 
             if (!model.IsB2BUser)
             {
-                var storeScope = await _storeContext.GetActiveStoreScopeConfigurationAsync();
-                var b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);
+                var store = await _storeContext.GetCurrentStoreAsync();
+                var b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(store.Id);
                 if (b2BB2CFeaturesSettings.DefaultB2CErpAccountId > 0)
                 {
                     var erpAccountInfo = await _erpAccountService.GetErpAccountByIdAsync(b2BB2CFeaturesSettings.DefaultB2CErpAccountId);
