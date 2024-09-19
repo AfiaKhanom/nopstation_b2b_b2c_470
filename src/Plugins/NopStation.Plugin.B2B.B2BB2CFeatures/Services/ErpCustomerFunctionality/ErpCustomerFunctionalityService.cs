@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Nop.Core;
@@ -28,7 +29,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly IWorkContext _workContext;
         private readonly IStoreContext _storeContext;
-        private readonly IShoppingCartService _shoppingCartService;
         private readonly IOrderService _orderService;
         private readonly IErpNopUserService _erpNopUserService;
         private readonly IStaticCacheManager _staticCacheManager;
@@ -45,7 +45,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
             IGenericAttributeService genericAttributeService,
             IWorkContext workContext,
             IStoreContext storeContext,
-            IShoppingCartService shoppingCartService,
             IOrderService orderService,
             IErpNopUserService erpNopUserService,
             IStaticCacheManager staticCacheManager,
@@ -58,7 +57,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
             _genericAttributeService = genericAttributeService;
             _workContext = workContext;
             _storeContext = storeContext;
-            _shoppingCartService = shoppingCartService;
             _orderService = orderService;
             _erpNopUserService = erpNopUserService;
             _staticCacheManager = staticCacheManager;
@@ -81,11 +79,11 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
             await _genericAttributeService.SaveAttributeAsync<int?>(await _workContext.GetCurrentCustomerAsync(), B2BB2CFeaturesDefaults.B2CConvertedQuoteB2COrderId, null, currStore.Id);
         }
 
-        public async Task<bool> CheckAndUpdateGenericAttributeOfB2BQuoteOrder(int erpOrderId)
+        public async Task<bool> CheckAndUpdateGenericAttributeOfB2BQuoteOrder(int erpOrderId, IList<ShoppingCartItem> currentShoppingCartItems)
         {
             var b2BOrderPerAccount = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(erpOrderId);
 
-            return await CheckAndUpdateGenericAttributeOfB2BQuoteOrder(b2BOrderPerAccount);
+            return await CheckAndUpdateGenericAttributeOfB2BQuoteOrder(b2BOrderPerAccount, currentShoppingCartItems);
         }
 
         public async Task<bool> CheckAndUpdateGenericAttributeOfB2CQuoteOrder(int erpOrderId)
@@ -94,7 +92,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
             return await CheckAndUpdateGenericAttributeOfB2CQuoteOrder(b2COrderPerUser.Id);
         }
 
-        public async Task<bool> CheckAndUpdateGenericAttributeOfB2BQuoteOrder(ErpOrderAdditionalData b2BOrderPerAccount)
+        public async Task<bool> CheckAndUpdateGenericAttributeOfB2BQuoteOrder(ErpOrderAdditionalData b2BOrderPerAccount, IList<ShoppingCartItem> shoppingCartItems)
         {
             if (!await _erpOrderAdditionalDataService.CheckQuoteOrderStatusAsync(b2BOrderPerAccount))
             {
@@ -103,7 +101,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
             }
 
             var currCustomer = await _workContext.GetCurrentCustomerAsync();
-            var shoppingCartItems = await _shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.ShoppingCart);
             if (shoppingCartItems == null || !shoppingCartItems.Any())
             {
                 ClearGenericAttributeOfB2BQuoteOrder();

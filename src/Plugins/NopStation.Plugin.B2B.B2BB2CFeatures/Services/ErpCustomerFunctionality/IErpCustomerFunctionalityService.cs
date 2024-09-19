@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Nop.Core.Domain.Customers;
+using Nop.Core.Domain.Orders;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
 
 namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
@@ -9,8 +11,8 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
     {
         void ClearGenericAttributeOfB2BQuoteOrder();
         void ClearGenericAttributeOfB2CQuoteOrder();
-        Task<bool> CheckAndUpdateGenericAttributeOfB2BQuoteOrder(int erpOrderId);
-        Task<bool> CheckAndUpdateGenericAttributeOfB2BQuoteOrder(ErpOrderAdditionalData b2BOrderPerAccount);
+        Task<bool> CheckAndUpdateGenericAttributeOfB2BQuoteOrder(int erpOrderId, IList<ShoppingCartItem> currentShoppingCartItems);
+        Task<bool> CheckAndUpdateGenericAttributeOfB2BQuoteOrder(ErpOrderAdditionalData b2BOrderPerAccount, IList<ShoppingCartItem> shoppingCartItems);
         Task<bool> CheckAndUpdateGenericAttributeOfB2CQuoteOrder(int erpOrderId);
         Task<bool> IsCustomerInB2BCustomerRole(Customer customer);
         Task<bool> IsErpAccountBlockSalesOrderAsync(Customer customer);
