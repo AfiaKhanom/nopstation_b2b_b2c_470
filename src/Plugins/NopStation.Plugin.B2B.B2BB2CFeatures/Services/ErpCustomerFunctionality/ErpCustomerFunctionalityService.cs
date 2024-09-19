@@ -155,7 +155,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
 
         public async Task<ErpAccount> GetActiveErpAccountByCustomerAsync(Customer customer)
         {
-            var key = _staticCacheManager.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpAccountByCustomerCacheKey, customer.Id, string.Join(",", await _customerService.GetCustomerRoleIdsAsync(customer)));
+            var key = _staticCacheManager.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpAccountByCustomerAndRolesCacheKey, customer.Id, string.Join(",", await _customerService.GetCustomerRoleIdsAsync(customer)));
 
             return await _staticCacheManager.Get(key, async () =>
             {
