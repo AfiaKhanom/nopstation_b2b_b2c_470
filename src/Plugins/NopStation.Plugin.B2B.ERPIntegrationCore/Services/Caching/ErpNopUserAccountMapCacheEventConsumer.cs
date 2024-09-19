@@ -11,8 +11,8 @@ internal class ErpNopUserAccountMapCacheEventConsumer : CacheEventConsumer<ErpNo
 {
     protected override async Task ClearCacheAsync(ErpNopUserAccountMap entity, EntityEventType entityEventType)
     {
-        await RemoveAsync(ERPIntegrationCoreDefaults.ErpNopUserAccountMapByErpUserIdCacheKey, entity.ErpUserId);
-        await RemoveAsync(ERPIntegrationCoreDefaults.ErpNopUserAccountMapByErpAccountIdCacheKey, entity.ErpAccountId);
+        await RemoveAsync(ERPIntegrationCoreDefaults.ErpNopUserAccountMapByErpUserCacheKey, entity.ErpUserId);
+        await RemoveAsync(ERPIntegrationCoreDefaults.ErpNopUserAccountMapByErpAccountCacheKey, entity.ErpAccountId);
         await RemoveAsync(ERPIntegrationCoreDefaults.ErpNopUserAccountMapByErpAccountAndErpUserCacheKey, entity.ErpAccountId, entity.ErpUserId);
     }
 }

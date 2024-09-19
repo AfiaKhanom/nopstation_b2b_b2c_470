@@ -1,4 +1,6 @@
 ﻿using Nop.Core.Caching;
+using Nop.Core.Domain.Catalog;
+using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
 
 namespace NopStation.Plugin.B2B.ERPIntegrationCore
 {
@@ -38,21 +40,21 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore
         /// <remarks>
         /// {0} : Customer ID
         /// </remarks>
-        public static CacheKey ErpNopUserByCustomerCacheKey => new("Erp.nopuser.customer.{0}", ErpNopUserPrefixCacheKey);
+        public static CacheKey ErpNopUserByCustomerCacheKey => new("Nop.erpnopuser.bycustomer.{0}", ErpNopUserByCustomerPrefixCacheKey);
 
         /// <summary>
         /// Gets a key for caching
         /// </summary>
         /// <remarks>
         /// {0} : Customer ID
-        /// {0} : Erp Account Id
+        /// {1} : Erp Account Id
         /// </remarks>
-        public static CacheKey ErpNopUserByCustomerAndErpAccountCacheKey => new("Erp.nopuser.customer.erpaccount.{0}-{1}", ErpNopUserPrefixCacheKey);
+        public static CacheKey ErpNopUserByCustomerAndErpAccountCacheKey => new("Nop.erpnopuser.bycustomer.{0}-{1}", ErpNopUserByCustomerPrefixCacheKey);
 
         /// <summary>
         /// Gets a key pattern to clear cache
         /// </summary>
-        public static string ErpNopUserPrefixCacheKey => "Erp.nopuser.";
+        public static string ErpNopUserByCustomerPrefixCacheKey => "Nop.erpnopuser.bycustomer.";
 
         #endregion
 
@@ -64,15 +66,15 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore
         /// <remarks>
         /// {0} : ErpUserId
         /// </remarks>
-        public static CacheKey ErpNopUserAccountMapByErpUserIdCacheKey => new("Erp.nopuseraccountmap.erpuser.{0}", ErpNopUserPrefixCacheKey);
+        public static CacheKey ErpNopUserAccountMapByErpUserCacheKey => new("Nop.erpnopuseraccountmap.byerpuser.{0}");
 
         /// <summary>
         /// Gets a key for caching
         /// </summary>
         /// <remarks>
-        /// {0} : ErpUserId
+        /// {0} : Erp Account
         /// </remarks>
-        public static CacheKey ErpNopUserAccountMapByErpAccountIdCacheKey => new("Erp.nopuseraccountmap.erpaccount.{0}", ErpNopUserPrefixCacheKey);
+        public static CacheKey ErpNopUserAccountMapByErpAccountCacheKey => new("Nop.erpnopuseraccountmap.byerpaccount.{0}", NopEntityCacheDefaults<ErpNopUserAccountMap>.Prefix);
 
         /// <summary>
         /// Gets a key for caching
@@ -81,12 +83,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore
         /// {0} : Erp Account Id
         /// {0} : erp user
         /// </remarks>
-        public static CacheKey ErpNopUserAccountMapByErpAccountAndErpUserCacheKey => new("Erp.nopuseraccountmap.erpaccount.erpuser.{0}-{1}", ErpNopUserPrefixCacheKey);
-
-        /// <summary>
-        /// Gets a key pattern to clear cache
-        /// </summary>
-        public static string ErpNopUserAccountMapPrefixCacheKey => "Erp.nopuseraccountmap.";
+        public static CacheKey ErpNopUserAccountMapByErpAccountAndErpUserCacheKey => new("Nop.erpnopuseraccountmap.byerpaccount.{0}-{1}", NopEntityCacheDefaults<ErpNopUserAccountMap>.Prefix);
 
         #endregion
 
@@ -99,12 +96,12 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore
         /// {0} : Customer ID
         /// {1} : roles of the current customer
         /// </remarks>
-        public static CacheKey ErpAccountByCustomerAndRolesCacheKey => new("Erp.account.customer.roles.{0}-{1}", ErpAccountPrefixCacheKey);
+        public static CacheKey ErpAccountByCustomerCacheKey => new("Nop.erpaccount.bycustomer.{0}-{1}", ErpAccountByCustomerPrefixCacheKey);
 
         /// <summary>
         /// Gets a key pattern to clear cache
         /// </summary>
-        public static string ErpAccountPrefixCacheKey => "Erp.account.";
+        public static string ErpAccountByCustomerPrefixCacheKey => "Nop.erpaccount.bycustomer.{0}";
 
         #endregion
 
@@ -116,7 +113,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore
         /// <remarks>
         /// {0} : product id
         /// </remarks>
-        public static CacheKey ErpProductPricingSpecialPriceByProductIdCacheKey => new("Erp.Product.Pricing.SpecialPrice.product.{0}", ErpProductPricingPrefix);
+        public static CacheKey ErpProductPricingSpecialPriceByProductCacheKey => new("Nop.totals.erpproductpricing.specialprice.byproduct.{0}", ErpProductPricingPrefix);
 
         /// <summary>
         /// Gets a key for ERP product Special Price
@@ -125,7 +122,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore
         /// {0} : product id
         /// {1} : account id
         /// </remarks>
-        public static CacheKey ErpProductPricingSpecialPriceByProductIdAndAccountIdCacheKey => new("Erp.product.pricing.specialprice.product.account.{0}-{1}", ErpProductPricingPrefix);
+        public static CacheKey ErpProductPricingSpecialPriceByProductIdAndAccountCacheKey => new("Nop.totals.erpproductpricing.specialprice.byproduct.{0}-{1}", ErpProductPricingPrefix);
 
         /// <summary>
         /// Gets a key for ERP product Group Price
@@ -133,7 +130,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore
         /// <remarks>
         /// {0} : product id
         /// </remarks>
-        public static CacheKey ErpProductPricingGroupPriceByProductIdCacheKey => new("Erp.product.pricing.groupprice.product.{0}", ErpProductPricingPrefix);
+        public static CacheKey ErpProductPricingGroupPriceByProductIdCacheKey => new("Nop.totals.erpproductpricing.groupprice.byproduct.{0}", ErpProductPricingPrefix);
 
         /// <summary>
         /// Gets a key for ERP product Group Price
@@ -142,12 +139,12 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore
         /// {0} : product id
         /// {1} : price group id
         /// </remarks>
-        public static CacheKey ErpProductPricingGroupPriceByProductIdAndPriceGroupIdCacheKey => new("Erp.product.pricing.groupprice.product.pricegroup.{0}-{1}", ErpProductPricingPrefix);
+        public static CacheKey ErpProductPricingGroupPriceByProductIdAndPriceGroupIdCacheKey => new("Nop.totals.erpproductpricing.groupprice.byproduct.{0}-{1}", ErpProductPricingPrefix);
         
         /// <summary>
         /// Gets a key pattern to clear cache
         /// </summary>
-        public static string ErpProductPricingPrefix => "Erp.product.pricing.";
+        public static string ErpProductPricingPrefix => "Nop.totals.erpproductpricing.";
 
         #endregion
 

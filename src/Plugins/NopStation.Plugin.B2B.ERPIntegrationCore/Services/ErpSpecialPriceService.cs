@@ -119,7 +119,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
                        where sp.NopProductId == nopProductId
                        orderby sp.Id descending
                        select sp;
-            }, cache => cache.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpProductPricingSpecialPriceByProductIdCacheKey, nopProductId));
+            }, cache => cache.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpProductPricingSpecialPriceByProductCacheKey, nopProductId));
 
             return erpSpecialPrices;
         }
@@ -129,7 +129,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
             if (accountId == 0 || nopProductId == 0)
                 return null;
 
-            var key = _staticCacheManager.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpProductPricingSpecialPriceByProductIdAndAccountIdCacheKey, nopProductId, accountId);
+            var key = _staticCacheManager.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpProductPricingSpecialPriceByProductIdAndAccountCacheKey, nopProductId, accountId);
 
             var query = _erpSpecialPriceRepository.Table.Where(b => b.ErpAccountId == accountId && b.NopProductId == nopProductId);
 

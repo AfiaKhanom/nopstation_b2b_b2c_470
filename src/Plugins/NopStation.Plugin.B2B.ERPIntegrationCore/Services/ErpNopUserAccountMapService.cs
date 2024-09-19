@@ -120,7 +120,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
                        where eam.ErpUserId == userId
                        orderby eam.ErpAccountId
                        select eam;
-            }, cache => cache.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpNopUserAccountMapByErpUserIdCacheKey, userId));
+            }, cache => cache.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpNopUserAccountMapByErpUserCacheKey, userId));
 
             return erpNopUserAccountMaps;
         }
@@ -136,7 +136,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
                        where eam.ErpAccountId == accountId
                        orderby eam.ErpAccountId
                        select eam;
-            }, cache => cache.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpNopUserAccountMapByErpAccountIdCacheKey, accountId));
+            }, cache => cache.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpNopUserAccountMapByErpAccountCacheKey, accountId));
 
             return erpNopUserAccountMaps;
         }
