@@ -81,43 +81,55 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
 
         public async Task<bool> CheckAndUpdateGenericAttributeOfB2BQuoteOrder(int erpOrderId, IList<ShoppingCartItem> currentShoppingCartItems)
         {
-            var b2BOrderPerAccount = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(erpOrderId);
+            var erpOrderAdditionalData = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(erpOrderId);
 
-            return await CheckAndUpdateGenericAttributeOfB2BQuoteOrder(b2BOrderPerAccount, currentShoppingCartItems);
+            if (await CheckAndUpdateGenericAttributeOfERPQuoteOrder(erpOrderAdditionalData, currentShoppingCartItems))
+            {
+                return true;
+            }
+            else
+            {
+                ClearGenericAttributeOfB2BQuoteOrder();
+                return false;
+            }
         }
 
-        public async Task<bool> CheckAndUpdateGenericAttributeOfB2CQuoteOrder(int erpOrderId)
+        public async Task<bool> CheckAndUpdateGenericAttributeOfB2CQuoteOrder(int erpOrderId, IList<ShoppingCartItem> currentShoppingCartItems)
         {
-            var b2COrderPerUser = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(erpOrderId);
-            return await CheckAndUpdateGenericAttributeOfB2CQuoteOrder(b2COrderPerUser.Id);
+            var erpOrderAdditionalData = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(erpOrderId);
+            if (await CheckAndUpdateGenericAttributeOfERPQuoteOrder(erpOrderAdditionalData, currentShoppingCartItems))
+            {
+                return true;
+            }
+            else
+            {
+                ClearGenericAttributeOfB2CQuoteOrder();
+                return false;
+            }
         }
 
-        public async Task<bool> CheckAndUpdateGenericAttributeOfB2BQuoteOrder(ErpOrderAdditionalData b2BOrderPerAccount, IList<ShoppingCartItem> shoppingCartItems)
+        public async Task<bool> CheckAndUpdateGenericAttributeOfERPQuoteOrder(ErpOrderAdditionalData b2BOrderPerAccount, IList<ShoppingCartItem> shoppingCartItems)
         {
             if (!await _erpOrderAdditionalDataService.CheckQuoteOrderStatusAsync(b2BOrderPerAccount))
             {
-                ClearGenericAttributeOfB2BQuoteOrder();
                 return false;
             }
 
             var currCustomer = await _workContext.GetCurrentCustomerAsync();
             if (shoppingCartItems == null || !shoppingCartItems.Any())
             {
-                ClearGenericAttributeOfB2BQuoteOrder();
                 return false;
             }
 
             var orderItems = await _orderService.GetOrderItemsAsync(b2BOrderPerAccount.NopOrderId);
             if (orderItems == null || !orderItems.Any())
             {
-                ClearGenericAttributeOfB2BQuoteOrder();
                 return false;
             }
 
             var isQuoteItemExist = shoppingCartItems.Any(s => orderItems.Any(o => o.ProductId == s.ProductId));
             if (!isQuoteItemExist)
             {
-                ClearGenericAttributeOfB2BQuoteOrder();
                 return false;
             }
 

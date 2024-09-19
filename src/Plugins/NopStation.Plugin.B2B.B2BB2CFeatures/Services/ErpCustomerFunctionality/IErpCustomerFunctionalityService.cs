@@ -12,8 +12,8 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
         void ClearGenericAttributeOfB2BQuoteOrder();
         void ClearGenericAttributeOfB2CQuoteOrder();
         Task<bool> CheckAndUpdateGenericAttributeOfB2BQuoteOrder(int erpOrderId, IList<ShoppingCartItem> currentShoppingCartItems);
-        Task<bool> CheckAndUpdateGenericAttributeOfB2BQuoteOrder(ErpOrderAdditionalData b2BOrderPerAccount, IList<ShoppingCartItem> shoppingCartItems);
-        Task<bool> CheckAndUpdateGenericAttributeOfB2CQuoteOrder(int erpOrderId);
+        Task<bool> CheckAndUpdateGenericAttributeOfERPQuoteOrder(ErpOrderAdditionalData b2BOrderPerAccount, IList<ShoppingCartItem> shoppingCartItems);
+        Task<bool> CheckAndUpdateGenericAttributeOfB2CQuoteOrder(int erpOrderId, IList<ShoppingCartItem> currentShoppingCartItems);
         Task<bool> IsCustomerInB2BCustomerRole(Customer customer);
         Task<bool> IsErpAccountBlockSalesOrderAsync(Customer customer);
         Task<ErpNopUser> GetActiveErpNopUserByCustomerAsync(Customer customer);

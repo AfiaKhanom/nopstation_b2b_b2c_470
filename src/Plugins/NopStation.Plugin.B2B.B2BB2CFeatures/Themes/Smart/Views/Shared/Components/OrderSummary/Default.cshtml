@@ -19,8 +19,7 @@
 @inject IWorkContext workContext
 @inject OrderSettings orderSettings
 @inject B2BB2CFeaturesSettings b2BCustomerAccountSettings
-@inject IErpAccountService erpAccountService
-@inject IErpNopUserService erpNopUserService
+@inject IShoppingCartService shoppingCartService
 @inject IErpCustomerFunctionalityService erpCustomerFunctionalityService
 @inject IErpPriceSyncFunctionalityService erpPriceSyncFunctionalityService
 @inject IPermissionService permissionService
@@ -33,6 +32,7 @@
 @{
     var currCustomer = await workContext.GetCurrentCustomerAsync();
     var currStore = await storeContext.GetCurrentStoreAsync();
+    var shoppingCartItems = await shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.ShoppingCart);
     var b2bOrderId = await genericAttributeService.GetAttributeAsync<int>(currCustomer, B2BB2CFeaturesDefaults.B2BConvertedQuoteB2BOrderId, currStore.Id);
     var b2COrderId = await genericAttributeService.GetAttributeAsync<int>(currCustomer, B2BB2CFeaturesDefaults.B2CConvertedQuoteB2COrderId, currStore.Id);
     bool isB2BSalesOrderInValid = false;
@@ -42,13 +42,13 @@
 
     if (b2bOrderId > 0)
     {
-        isConvertedQuoteToOrder = await erpCustomerFunctionalityService.CheckAndUpdateGenericAttributeOfB2BQuoteOrder(b2bOrderId);
+        isConvertedQuoteToOrder = await erpCustomerFunctionalityService.CheckAndUpdateGenericAttributeOfB2BQuoteOrder(b2bOrderId, shoppingCartItems);
     }
     else if (b2COrderId > 0)
     {
-        isConvertedQuoteToOrder = await erpCustomerFunctionalityService.CheckAndUpdateGenericAttributeOfB2CQuoteOrder(b2COrderId);
+        isConvertedQuoteToOrder = await erpCustomerFunctionalityService.CheckAndUpdateGenericAttributeOfB2CQuoteOrder(b2COrderId, shoppingCartItems);
     }
-    var erpNopUser = await erpNopUserService.GetErpNopUserByCustomerIdAsync(currCustomer.Id);
+    var erpNopUser = await erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(currCustomer);
     var isB2BCustomer = erpNopUser != null ? erpNopUser.ErpUserType == NopStation.Plugin.B2B.ERPIntegrationCore.Enums.ErpUserType.B2BUser : false;
 
     var isAllowedToPlaceQuote = await permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BOrder);
