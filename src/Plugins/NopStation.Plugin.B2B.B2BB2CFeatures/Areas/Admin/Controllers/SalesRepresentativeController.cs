@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Nop.Core;
 using Nop.Core.Caching;
 using Nop.Core.Domain.Customers;
 using Nop.Services.Customers;
@@ -32,7 +33,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
         private readonly INotificationService _notificationService;
         private readonly ILocalizationService _localizationService;
         private readonly ICustomerService _customerService;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
+        private readonly IWorkContext _workContext;
         private readonly IPermissionService _permissionService;
         private readonly IErpSalesRepSalesOrgMapService _erpSalesRepSalesOrgMapService;
         private readonly IErpSalesRepModelFactory _erpSalesRepModelFactory;
@@ -49,25 +50,25 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             INotificationService notificationService,
             ILocalizationService localizationService,
             ICustomerService customerService,
-            IB2BB2CWorkContext b2BB2CWorkContext,
             IPermissionService permissionService,
             IErpSalesRepSalesOrgMapService erpSalesRepSalesOrgMapService,
             IErpSalesRepModelFactory erpSalesRepModelFactory,
             IStaticCacheManager staticCacheManager,
             IErpLogsService erpLogsService,
-            IErpActivityLogsService erpActivityLogsService)
+            IErpActivityLogsService erpActivityLogsService,
+            IWorkContext workContext)
         {
             _erpSalesRepService = erpSalesRepService;
             _notificationService = notificationService;
             _localizationService = localizationService;
             _customerService = customerService;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
             _permissionService = permissionService;
             _erpSalesRepSalesOrgMapService = erpSalesRepSalesOrgMapService;
             _erpSalesRepModelFactory = erpSalesRepModelFactory;
             _staticCacheManager = staticCacheManager;
             _erpLogsService = erpLogsService;
             _erpActivityLogsService = erpActivityLogsService;
+            _workContext = workContext;
         }
 
         #endregion
@@ -191,7 +192,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+                var currentCustomer = await _workContext.GetCurrentCustomerAsync();
 
                 var existingErpSalesRep = (await _erpSalesRepService.GetErpSalesRepsByNopCustomerIdAsync(model.NopCustomerId, true)).Any();
                 var salesRep = model.ToEntity<ErpSalesRep>();
@@ -270,7 +271,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+                var currentCustomer = await _workContext.GetCurrentCustomerAsync();
 
                 salesRep.NopCustomerId = model.NopCustomerId;
                 salesRep.SalesRepTypeId = model.SalesRepTypeId;
@@ -321,7 +322,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             if (salesRep == null)
                 return RedirectToAction("List");
 
-            var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var currentCustomer = await _workContext.GetCurrentCustomerAsync();
 
             try
             {
@@ -368,7 +369,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             if (selectedIds == null || selectedIds.Count == 0)
                 return NoContent();
 
-            var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var currentCustomer = await _workContext.GetCurrentCustomerAsync();
 
             try
             {

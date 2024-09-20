@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Nop.Core;
 using Nop.Core.Domain.Common;
 using Nop.Services.Common;
 using Nop.Services.Localization;
@@ -31,7 +32,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
         private readonly IErpShipToAddressModelFactory _erpShipToAddressModelFactory;
         private readonly IErpShipToAddressService _erpShipToAddressService;
         private readonly IAddressService _addressService;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
+        private readonly IWorkContext _workContext;
         private readonly IErpLogsService _erpLogsService;
         private readonly IErpAccountService _accountService;
         private readonly IErpActivityLogsService _erpActivityLogsService;
@@ -47,10 +48,11 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             IErpShipToAddressModelFactory erpShipToAddressModelFactory,
             IErpShipToAddressService erpShipToAddressService,
             IAddressService addressService,
-            IB2BB2CWorkContext b2BB2CWorkContext,
             IErpActivityLogsService erpActivityLogsService,
             IErpLogsService erpLogsService,
-            IErpAccountService erpAccountService)
+            IErpAccountService erpAccountService,
+            IWorkContext workContext
+            )
         {
             _localizationService = localizationService;
             _notificationService = notificationService;
@@ -58,10 +60,10 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             _erpShipToAddressModelFactory = erpShipToAddressModelFactory;
             _erpShipToAddressService = erpShipToAddressService;
             _addressService = addressService;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
             _erpLogsService = erpLogsService;
             _erpActivityLogsService = erpActivityLogsService;
             _accountService = erpAccountService;
+            _workContext = workContext;
         }
 
         #endregion
@@ -116,7 +118,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+                var currentCustomer = await _workContext.GetCurrentCustomerAsync();
 
                 var address = model.AddressModel.ToEntity<Address>();
                 await _addressService.InsertAddressAsync(address);
@@ -181,7 +183,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+                var currentCustomer = await _workContext.GetCurrentCustomerAsync();
                 var address = model.AddressModel.ToEntity<Address>();
                 await _addressService.UpdateAddressAsync(address);
 
@@ -241,7 +243,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             var successMsg = await _localizationService.GetResourceAsync("Admin.ErpShipToAddresss.Deleted");
             _notificationService.SuccessNotification(successMsg);
 
-            await _erpLogsService.InformationAsync($"{successMsg}. Erp Ship to Address Id: {erpShipToAddress.Id}. Erp Account Id: {shipToAddressErpAccountMap.ErpAccountId}", ErpSyncLevel.ShipToAddress, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+            await _erpLogsService.InformationAsync($"{successMsg}. Erp Ship to Address Id: {erpShipToAddress.Id}. Erp Account Id: {shipToAddressErpAccountMap.ErpAccountId}", ErpSyncLevel.ShipToAddress, customer: await _workContext.GetCurrentCustomerAsync());
 
             //erp activity log
             await _erpActivityLogsService.InsertErpActivityAsync("Erp_DeleteErpShipToAddress",
