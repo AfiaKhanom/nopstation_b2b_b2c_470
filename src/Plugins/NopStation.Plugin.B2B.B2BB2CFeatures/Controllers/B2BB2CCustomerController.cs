@@ -1090,9 +1090,8 @@ public class B2BB2CCustomerController : CustomerController
         //check whether registration is allowed
         if (_customerSettings.UserRegistrationType == UserRegistrationType.Disabled || !await B2BUserRegisterAllowedAsync())
             return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Disabled, returnUrl });
-        var erpCustomer = await _b2BB2CWorkContext.GetCurrentERPCustomerAsync();
-
-        return await SaveNopCustomerAsync(model, returnUrl, captchaValid, form, erpCustomer.Customer);
+        
+        return await SaveNopCustomerAsync(model, returnUrl, captchaValid, form, await _workContext.GetCurrentCustomerAsync());
     }
 
     #endregion
@@ -1125,9 +1124,8 @@ public class B2BB2CCustomerController : CustomerController
         //check whether registration is allowed
         if (_customerSettings.UserRegistrationType == UserRegistrationType.Disabled || !await B2CUserRegisterAllowedAsync())
             return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Disabled, returnUrl });
-        var erpCustomer = await _b2BB2CWorkContext.GetCurrentERPCustomerAsync();
 
-        return await SaveNopCustomerAsync(model, returnUrl, captchaValid, form, erpCustomer.Customer);
+        return await SaveNopCustomerAsync(model, returnUrl, captchaValid, form, await _workContext.GetCurrentCustomerAsync());
     }
 
     #endregion

@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Nop.Core;
 using Nop.Services.Customers;
-using NopStation.Plugin.B2B.B2BB2CFeatures.Contexts;
 using NopStation.Plugin.B2B.ERPIntegrationCore;
 
 namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Customers
@@ -11,17 +11,17 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Customers
         #region Fields
 
         private readonly ICustomerService _customerService;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
+        private readonly IWorkContext _workContext;
 
         #endregion
 
         #region Ctor
 
         public CommonHelperService(ICustomerService customerService,
-            IB2BB2CWorkContext b2BB2CWorkContext)
+            IWorkContext workContext)
         {
             _customerService = customerService;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
+            _workContext = workContext;
         }
 
         #endregion
@@ -30,7 +30,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Customers
 
         public async Task<bool> HasB2BSalesRepRoleAsync()
         {
-            var salesRepRoles = await _customerService.GetCustomerRolesAsync((await _b2BB2CWorkContext.GetCurrentERPCustomerAsync()).Customer);
+            var salesRepRoles = await _customerService.GetCustomerRolesAsync(await _workContext.GetCurrentCustomerAsync());
             if (!salesRepRoles.Any())
             {
                 return false;

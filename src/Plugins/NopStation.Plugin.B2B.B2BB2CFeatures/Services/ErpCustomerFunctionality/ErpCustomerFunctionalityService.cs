@@ -10,7 +10,6 @@ using Nop.Services.Common;
 using Nop.Services.Customers;
 using Nop.Services.Orders;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Contexts;
-using NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure;
 using NopStation.Plugin.B2B.ERPIntegrationCore;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
@@ -23,7 +22,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
         #region Fields
 
         private readonly ICustomerService _customerService;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
         private readonly IErpAccountService _erpAccountService;
         private readonly IErpOrderAdditionalDataService _erpOrderAdditionalDataService;
         private readonly IGenericAttributeService _genericAttributeService;
@@ -39,7 +37,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
         #region Ctor
 
         public ErpCustomerFunctionalityService(ICustomerService customerService,
-            IB2BB2CWorkContext b2BB2CWorkContext,
             IErpAccountService erpAccountService,
             IErpOrderAdditionalDataService erpOrderAdditionalDataService,
             IGenericAttributeService genericAttributeService,
@@ -51,7 +48,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
             B2BB2CFeaturesSettings b2BB2CFeaturesSettings)
         {
             _customerService = customerService;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
             _erpAccountService = erpAccountService;
             _erpOrderAdditionalDataService = erpOrderAdditionalDataService;
             _genericAttributeService = genericAttributeService;
@@ -66,6 +62,8 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
         #endregion
 
         #region Methods
+
+        #region Generic Attribute
 
         public async void ClearGenericAttributeOfB2BQuoteOrder()
         {
@@ -136,6 +134,10 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
             return true;
         }
 
+        #endregion
+
+        #region Roles
+
         public async Task<bool> IsCustomerInB2BCustomerRole(Customer customer)
         {
             return await _customerService.IsInCustomerRoleAsync(customer, B2BB2CFeaturesDefaults.B2BCustomerRoleSystemName);
@@ -150,6 +152,30 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
         {
             return await _customerService.IsInCustomerRoleAsync(customer, B2BB2CFeaturesDefaults.B2BQuoteAssistantRoleSystemName);
         }
+
+        public async Task<bool> IsCurrentCustomerInErpSalesRepRoleAsync()
+        {
+            return await IsCustomerInB2BSalesRepRoleAsync(await _workContext.GetCurrentCustomerAsync());
+        }
+
+        public async Task<bool> IsCustomerInB2BSalesRepRoleAsync(Customer customer)
+        {
+            return await _customerService.IsInCustomerRoleAsync(customer, ERPIntegrationCoreDefaults.B2BSalesRepRoleSystemName);
+        }
+
+        public async Task<bool> IsCurrentCustomerInAdministratorRoleAsync()
+        {
+            return await IsCurrentCustomerInAdministratorRoleAsync(await _workContext.GetCurrentCustomerAsync());
+        }
+
+        public async Task<bool> IsCurrentCustomerInAdministratorRoleAsync(Customer customer)
+        {
+            return await _customerService.IsAdminAsync(customer);
+        }
+
+        #endregion
+
+        #region Erp Account
 
         public async Task<ErpAccount> GetActiveErpAccountOfCurrentCustomer()
         {
@@ -194,6 +220,24 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
             return false;
         }
 
+        #endregion
+
+        #region ERP Nop user
+
+        public async Task<ErpNopUser> GetActiveErpNopUserOfCurrentCustomer()
+        {
+            return await GetActiveErpNopUserByCustomerAsync(await _workContext.GetCurrentCustomerAsync());
+        }
+
+        public async Task<ErpNopUser> GetActiveErpNopUserByCustomerIdAsync(int customerId)
+        {
+            var customer = await _customerService.GetCustomerByIdAsync(customerId);
+            if (customer == null)
+                return null;
+
+            return await GetActiveErpNopUserByCustomerAsync(customer);
+        }
+
         public async Task<ErpNopUser> GetActiveErpNopUserByCustomerAsync(Customer customer)
         {
             if (customer == null)
@@ -206,6 +250,43 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
             }
             return null;
         }
+
+        #endregion
+
+        #region Erp Account And Erp NopUser
+
+        public async Task<(ErpNopUser, ErpAccount)> GetActiveErpNopUserAndAccount()
+        {
+            return await GetActiveErpNopUserAndAccount(await _workContext.GetCurrentCustomerAsync());
+        }
+
+        public async Task<(ErpNopUser, ErpAccount)> GetActiveErpNopUserAndAccount(int customerId)
+        {
+            var customer = await _customerService.GetCustomerByIdAsync(customerId);
+            if (customer == null)
+                return (null, null);
+
+            return await GetActiveErpNopUserAndAccount(customer);
+        }
+
+        public async Task<(ErpNopUser, ErpAccount)> GetActiveErpNopUserAndAccount(Customer customer)
+        {
+            var key = _staticCacheManager.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpAccountByCustomerCacheKey, customer.Id, string.Join(",", await _customerService.GetCustomerRoleIdsAsync(customer)));
+
+            return await _staticCacheManager.Get(key, async () =>
+            {
+                var erpNopUser = await GetActiveErpNopUserByCustomerAsync(customer);
+                if (erpNopUser != null && !erpNopUser.IsDeleted && erpNopUser.IsActive)
+                {
+                    var erpAccount = await _erpAccountService.GetErpAccountByIdWithActiveAsync(erpNopUser.ErpAccountId);
+                    if (erpAccount != null)
+                        return (erpNopUser,erpAccount);
+                }
+                return (null, null);
+            });
+        }
+
+        #endregion
 
         public async Task<bool> IsConsideredAsB2BOrderByB2BUserInformation(ErpNopUser b2BUser)
         {
@@ -237,7 +318,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
         public async Task<bool> IsSalesOrderInvalidForCurrentCustomerAsync()
         {
             bool isQuoteOrder;
-            var currCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var currCustomer = await _workContext.GetCurrentCustomerAsync();
             var store = await _storeContext.GetCurrentStoreAsync();
             var nopUser = await GetActiveErpNopUserByCustomerAsync(currCustomer);
             var b2bUser = nopUser?.ErpUserType == ErpUserType.B2BUser ? nopUser : null;
@@ -259,26 +340,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
             return await IsErpAccountBlockSalesOrderAsync(currCustomer);
         }
 
-        public async Task<bool> IsCurrentCustomerInErpSalesRepRoleAsync()
-        {
-            return await IsCustomerInB2BSalesRepRoleAsync(await _b2BB2CWorkContext.GetCurrentCustomerAsync());
-        }
-
-        public async Task<bool> IsCustomerInB2BSalesRepRoleAsync(Customer customer)
-        {
-            return await _customerService.IsInCustomerRoleAsync(customer, ERPIntegrationCoreDefaults.B2BSalesRepRoleSystemName);
-        }
-
-        public async Task<bool> IsCurrentCustomerInAdministratorRoleAsync()
-        {
-            return await IsCurrentCustomerInAdministratorRoleAsync(await _b2BB2CWorkContext.GetCurrentCustomerAsync());
-        }
-
-        public async Task<bool> IsCurrentCustomerInAdministratorRoleAsync(Customer customer)
-        {
-            return await _customerService.IsAdminAsync(customer);
-        }
-
         public async Task<bool> CheckQuoteOrderStatusAsync(ErpOrderAdditionalData erpOrder)
         {
             if (erpOrder == null || erpOrder.ErpOrderType == ErpOrderType.B2BSalesOrder)
@@ -294,7 +355,9 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
             if (erpOrder.QuoteSalesOrderId.HasValue && erpOrder.QuoteSalesOrderId.Value > 0)
                 return false;
 
-            return (erpOrder.ERPOrderStatus == B2BB2CFeaturesDefaults.ErpOrderStatusApproved || erpOrder.ERPOrderStatus == B2BB2CFeaturesDefaults.ErpOrderStatusPendingApproval) ? true : false;
+            return (erpOrder.ERPOrderStatus == B2BB2CFeaturesDefaults.ErpOrderStatusApproved
+                || erpOrder.ERPOrderStatus == B2BB2CFeaturesDefaults.ErpOrderStatusPendingApproval
+                || erpOrder.ERPOrderStatus == nameof(OrderStatus.Complete));
         }
 
         public async Task<bool> CheckAllowAddressEdit(ErpAccount b2BAccount)

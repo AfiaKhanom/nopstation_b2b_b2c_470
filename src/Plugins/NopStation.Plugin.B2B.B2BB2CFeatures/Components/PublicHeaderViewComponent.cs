@@ -2,10 +2,11 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Nop.Core;
 using Nop.Services.Localization;
 using Nop.Web.Framework.Components;
-using NopStation.Plugin.B2B.B2BB2CFeatures.Contexts;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Model.Account;
+using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
 
@@ -13,20 +14,23 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Components
 {
     public class PublicHeaderViewComponent : NopViewComponent
     {
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
+        private readonly IWorkContext _workContext;
         private readonly IErpNopUserAccountMapService _erpNopUserAccountMapService;
+        private readonly IErpCustomerFunctionalityService _erpCustomerFunctionalityService;
         private readonly ILocalizationService _localizationService;
         private readonly IErpAccountService _erpAccountService;
         private readonly IErpSalesRepService _erpSalesRepService;
 
-        public PublicHeaderViewComponent(IB2BB2CWorkContext b2BB2CWorkContext,
+        public PublicHeaderViewComponent(IWorkContext workContext,
             IErpNopUserAccountMapService erpNopUserAccountMapService,
+            IErpCustomerFunctionalityService erpCustomerFunctionalityService,
             ILocalizationService localizationService,
             IErpAccountService erpAccountService,
             IErpSalesRepService erpSalesRepService)
         {
-            _b2BB2CWorkContext = b2BB2CWorkContext;
+            _workContext = workContext;
             _erpNopUserAccountMapService = erpNopUserAccountMapService;
+            _erpCustomerFunctionalityService = erpCustomerFunctionalityService;
             _localizationService = localizationService;
             _erpAccountService = erpAccountService;
             _erpSalesRepService = erpSalesRepService;
@@ -35,14 +39,15 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Components
         public async Task<IViewComponentResult> InvokeAsync(string widgetZone, object additionalData)
         {
             var model = new AccountSwitchModel();
-            var erpCustomer = await _b2BB2CWorkContext.GetCurrentERPCustomerAsync();
-            if (erpCustomer.ErpNopUser != null && erpCustomer.ErpAccount != null)
+            var customer = await _workContext.GetCurrentCustomerAsync();
+            var (erpNopUser, erpAccount) = await _erpCustomerFunctionalityService.GetActiveErpNopUserAndAccount(customer);
+            if (erpNopUser != null &&  erpAccount != null)
             {
-                var mappedAccounts = await _erpNopUserAccountMapService.GetAllErpNopUserAccountMapsByUserIdAsync(erpCustomer.ErpNopUser.Id);
+                var mappedAccounts = await _erpNopUserAccountMapService.GetAllErpNopUserAccountMapsByUserIdAsync(erpNopUser.Id);
 
                 #region Check Sales Rep Erp account
 
-                var salesRep = (await _erpSalesRepService.GetErpSalesRepsByNopCustomerIdAsync(erpCustomer.OriginalCustomer.Id)).FirstOrDefault();
+                var salesRep = (await _erpSalesRepService.GetErpSalesRepsByNopCustomerIdAsync(_workContext.OriginalCustomerIfImpersonated.Id)).FirstOrDefault();
                 if (salesRep != null && salesRep.IsActive && !salesRep.IsDeleted && salesRep.SalesRepTypeId == (int)SalesRepType.MultiBuyers)
                 {
                     var erpAccountIdMaps = await _erpAccountService.GetAllErpAccountsBySalesRepIdAsync(salesRep.Id.ToString());
@@ -51,8 +56,8 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Components
 
                 #endregion
 
-                model.CustomerId = erpCustomer.Customer.Id;
-                model.ErpAccountId = erpCustomer.ErpAccount.Id;
+                model.CustomerId = customer.Id;
+                model.ErpAccountId = erpAccount.Id;
                 model.RedirectUrl = Request.Path + Request.QueryString;
                 model.AvailableErpAccounts.Add(new SelectListItem
                 {
@@ -69,7 +74,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Components
                         {
                             Text = account.AccountName ?? "",
                             Value = account.Id.ToString(),
-                            Selected = (erpCustomer.ErpAccount.Id == account.Id)
+                            Selected = (erpAccount.Id == account.Id)
                         });
                     }
                 }

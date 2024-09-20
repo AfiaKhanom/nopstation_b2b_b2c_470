@@ -12,6 +12,7 @@ using Nop.Services.Seo;
 using Nop.Web.Controllers;
 using Nop.Web.Framework.Mvc.Routing;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Contexts;
+using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ExportManager;
 
 namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
@@ -26,6 +27,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
         private readonly IWorkContext _workContext;
         private readonly IStoreContext _storeContext;
         private readonly INotificationService _notificationService;
+        private readonly IErpCustomerFunctionalityService _erpCustomerFunctionalityService;
         private readonly ICategoryProductsExportManager _categoryProductsExportManager;
         private readonly IUrlRecordService _urlRecordService;
         private readonly ILocalizationService _localizationService;
@@ -42,6 +44,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
             IStoreContext storeContext,
             ICurrencyService currencyService,
             INotificationService notificationService,
+            IErpCustomerFunctionalityService erpCustomerFunctionalityService,
             ICategoryProductsExportManager categoryExportManager,
             IUrlRecordService urlRecordService,
             ILanguageService languageService,
@@ -54,6 +57,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
             _workContext = workContext;
             _storeContext = storeContext;
             _notificationService = notificationService;
+            _erpCustomerFunctionalityService = erpCustomerFunctionalityService;
             _categoryProductsExportManager = categoryExportManager;
             _urlRecordService = urlRecordService;
             _localizationService = localizationService;
@@ -67,7 +71,10 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
         public async Task<IActionResult> ExportProductsByCategory(int categoryId)
         {
 
-            var erpCustomer = await _iB2BB2CWorkContext.GetCurrentERPCustomerAsync();
+            var erpAccount = await _erpCustomerFunctionalityService.GetActiveErpAccountOfCurrentCustomer();
+            if (erpAccount == null)
+                return AccessDeniedView();
+
             var language = await _workContext.GetWorkingLanguageAsync();
             var category = await _categoryService.GetCategoryByIdAsync(categoryId);
             if (category == null)
@@ -77,8 +84,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
 
             var sename = await _urlRecordService.GetSeNameAsync(category, language.Id);
             var returnUrl = Url.RouteUrl<Category>(new { SeName = sename });
-            if (erpCustomer.ErpAccount == null)
-                return AccessDeniedView();
 
             var categoryIds = new List<int>();
             var categories = await _categoryService.GetAllCategoriesAsync();
@@ -116,14 +121,13 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
 
         public async Task<IActionResult> ExportProductsByCategoryId(int categoryId)
         {
+            var erpAccount = await _erpCustomerFunctionalityService.GetActiveErpAccountOfCurrentCustomer();
+            if (erpAccount == null)
+                return AccessDeniedView();
 
             var category = await _categoryService.GetCategoryByIdAsync(categoryId);
-            var erpCustomer = await _iB2BB2CWorkContext.GetCurrentERPCustomerAsync();
             if (category == null)
                 throw new ArgumentNullException(nameof(category));
-
-            if (erpCustomer.ErpAccount == null)
-                return AccessDeniedView();
 
             var currentStore = await _storeContext.GetCurrentStoreAsync();
             var categoryIds = new List<int> { category.Id };

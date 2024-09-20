@@ -5,6 +5,7 @@ using Nop.Services.Catalog;
 using Nop.Services.Configuration;
 using Nop.Web.Framework.Components;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Contexts;
+using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Model;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
 
@@ -12,19 +13,19 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Components;
 
 public class OrderSummaryContentDealsViewComponent : NopViewComponent
 {
-    private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
+    private readonly IErpCustomerFunctionalityService _erpCustomerFunctionalityService;
     private readonly IStoreContext _storeContext;
     private readonly ISettingService _settingService;
     private readonly IErpAccountService _erpAccountService;
     private readonly IPriceFormatter _priceFormatter;
 
-    public OrderSummaryContentDealsViewComponent(IB2BB2CWorkContext b2BB2CWorkContext,
+    public OrderSummaryContentDealsViewComponent(IErpCustomerFunctionalityService erpCustomerFunctionalityService,
         IStoreContext storeContext,
         ISettingService settingService,
         IErpAccountService erpAccountService,
         IPriceFormatter priceFormatter)
     {
-        _b2BB2CWorkContext = b2BB2CWorkContext;
+        _erpCustomerFunctionalityService = erpCustomerFunctionalityService;
         _storeContext = storeContext;
         _settingService = settingService;
         _erpAccountService = erpAccountService;
@@ -33,11 +34,7 @@ public class OrderSummaryContentDealsViewComponent : NopViewComponent
 
     public async Task<IViewComponentResult> InvokeAsync(string widgetZone, object additionalData)
     {
-        var erpCustomer = await _b2BB2CWorkContext.GetCurrentERPCustomerAsync();
-        if (erpCustomer == null)
-            return Content("");
-
-        var erpAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(erpCustomer.Customer.Id);
+        var erpAccount = await _erpCustomerFunctionalityService.GetActiveErpAccountOfCurrentCustomer();
 
         if (erpAccount == null)
             return Content("");

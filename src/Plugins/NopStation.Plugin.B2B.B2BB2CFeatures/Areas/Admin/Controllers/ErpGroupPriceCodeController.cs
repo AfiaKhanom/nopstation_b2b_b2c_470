@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Nop.Core;
 using Nop.Services.Localization;
 using Nop.Services.Messages;
 using Nop.Services.Security;
@@ -26,7 +27,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
         private readonly INotificationService _notificationService;
         private readonly ILocalizationService _localizationService;
         private readonly IErpGroupPriceCodeModelFactory _erpGroupPriceCodeModelFactory;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
+        private readonly IWorkContext _workContext;
         private readonly IErpLogsService _erpLogsService;
         private readonly IErpActivityLogsService _erpActivityLogsService;
 
@@ -40,7 +41,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             INotificationService notificationService,
             ILocalizationService localizationService,
             IErpGroupPriceCodeModelFactory erpGroupPriceCodeModelFactory,
-            IB2BB2CWorkContext b2BB2CWorkContext,
+            IWorkContext workContext,
             IErpLogsService erpLogsService,
             IErpActivityLogsService erpActivityLogsService)
         {
@@ -49,7 +50,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             _notificationService = notificationService;
             _localizationService = localizationService;
             _erpGroupPriceCodeModelFactory = erpGroupPriceCodeModelFactory;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
+            _workContext = workContext;
             _erpLogsService = erpLogsService;
             _erpActivityLogsService = erpActivityLogsService;
         }
@@ -109,7 +110,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+                var currentCustomer = await _workContext.GetCurrentCustomerAsync();
                 var erpGroupPriceCode = new ErpGroupPriceCode
                 {
                     Code = model.GroupPriceCode,
@@ -170,7 +171,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             {
                 try
                 {
-                    var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+                    var currentCustomer = await _workContext.GetCurrentCustomerAsync();
 
                     if (erpGroupPriceCode.Code != model.GroupPriceCode && (await _erpGroupPriceCodeService.CheckAnyErpGroupPriceCodeExistByCode(model.GroupPriceCode)))
                     {
@@ -207,7 +208,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 catch (Exception ex)
                 {
                     _notificationService.ErrorNotification(ex.Message);
-                    await _erpLogsService.ErrorAsync(ex.Message + " Code Id: " + erpGroupPriceCode.Id, ErpSyncLevel.GroupPrice, ex, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+                    await _erpLogsService.ErrorAsync(ex.Message + " Code Id: " + erpGroupPriceCode.Id, ErpSyncLevel.GroupPrice, ex, customer: await _workContext.GetCurrentCustomerAsync());
                 }
             }
 
@@ -230,7 +231,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
 
             await _erpGroupPriceCodeService.DeleteErpGroupPriceCodeByIdAsync(erpPriceGroupCode.Id);
 
-            var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var currentCustomer = await _workContext.GetCurrentCustomerAsync();
             var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPriceCode.Deleted");
             _notificationService.SuccessNotification(successMsg);
             

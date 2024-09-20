@@ -39,7 +39,6 @@ public class B2BB2CFeaturesController : NopStationAdminController
     private readonly INotificationService _notificationService;
     private readonly IBaseAdminModelFactory _baseAdminModelFactory;
     private readonly ISpecificationAttributeService _specificationAttributeService;
-    private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
     private readonly IErpLogsService _erpLogsService;
     private readonly IErpSalesOrgService _erpSalesOrgService;
     private readonly IErpActivityLogsService _erpActivityLogsService;
@@ -60,7 +59,6 @@ public class B2BB2CFeaturesController : NopStationAdminController
         INotificationService notificationService,
         IBaseAdminModelFactory baseAdminModelFactory,
         ISpecificationAttributeService specificationAttributeService,
-        IB2BB2CWorkContext b2BB2CWorkContext,
         IErpLogsService erpLogsService,
         IErpSalesOrgService erpSalesOrgService,
         IErpActivityLogsService erpActivityLogsService)
@@ -76,7 +74,6 @@ public class B2BB2CFeaturesController : NopStationAdminController
         _notificationService = notificationService;
         _baseAdminModelFactory = baseAdminModelFactory;
         _specificationAttributeService = specificationAttributeService;
-        _b2BB2CWorkContext = b2BB2CWorkContext;
         _erpLogsService = erpLogsService;
         _erpSalesOrgService = erpSalesOrgService;
         _erpActivityLogsService = erpActivityLogsService;
@@ -277,7 +274,7 @@ public class B2BB2CFeaturesController : NopStationAdminController
             var successMsg = await _localizationService.GetResourceAsync("B2BB2CFeatures.Configuration.Updated");
             _notificationService.SuccessNotification(successMsg);
 
-            await _erpLogsService.InformationAsync(successMsg, ErpSyncLevel.Account, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+            await _erpLogsService.InformationAsync(successMsg, ErpSyncLevel.Account, customer: await _workContext.GetCurrentCustomerAsync());
 
             //erp activity log
             await _erpActivityLogsService.InsertErpActivityAsync("Erp_EditSettings", await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.ErpActivityLogs.EditConfigurations"));

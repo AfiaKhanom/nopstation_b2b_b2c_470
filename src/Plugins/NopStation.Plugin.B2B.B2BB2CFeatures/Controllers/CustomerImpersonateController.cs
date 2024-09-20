@@ -42,7 +42,6 @@ public class CustomerImpersonateController : BasePublicController
     private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
     private readonly IErpLogsService _erpLogsService;
     private readonly IErpActivityLogsService _erpActivityLogsService;
-    private const string ADMININSTRATOR_ROLE_SYSTEM_NAME = "Administrators";
 
     #endregion
 
@@ -85,14 +84,14 @@ public class CustomerImpersonateController : BasePublicController
 
     protected async Task<bool> HasB2BSalesRepRoleAsync()
     {
-        var salesRepRoles = await _customerService.GetCustomerRolesAsync((await _b2BB2CWorkContext.GetCurrentERPCustomerAsync()).Customer);
+        var salesRepRoles = await _customerService.GetCustomerRolesAsync(await _workContext.GetCurrentCustomerAsync());
         if (!salesRepRoles.Any())
         {
             return false;
         }
         var salesRepRole = salesRepRoles.Where(r => r.SystemName == ERPIntegrationCoreDefaults.B2BSalesRepRoleSystemName).FirstOrDefault();
 
-        if (salesRepRole == null && !salesRepRoles.Any(r => r.SystemName == ADMININSTRATOR_ROLE_SYSTEM_NAME))
+        if (salesRepRole == null && !salesRepRoles.Any(r => r.SystemName == NopCustomerDefaults.AdministratorsRoleName))
             return false;            
 
         return true;

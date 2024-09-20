@@ -46,7 +46,8 @@ public class ErpAccountController : NopStationAdminController
     private readonly IErpActivityLogsService _erpActivityLogsService;
     private readonly IErpIntegrationPluginManager _erpIntegrationPluginManager;
     private readonly IErpShipToAddressModelFactory _erpShipToAddressModelFactory;
-    private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
+    private readonly IWorkContext _workContext;
+    private readonly IPictureService _pictureService;
 
     #endregion
 
@@ -69,7 +70,8 @@ public class ErpAccountController : NopStationAdminController
         IErpActivityLogsService erpActivityLogsService,
         IErpIntegrationPluginManager erpIntegrationPluginManager,
         IErpShipToAddressModelFactory erpShipToAddressModelFactory,
-        IB2BB2CWorkContext b2BB2CWorkContext)
+        IWorkContext workContext,
+        IPictureService pictureService)
     {
         _storeContext = storeContext;
         _addressService = addressService;
@@ -87,7 +89,8 @@ public class ErpAccountController : NopStationAdminController
         _erpActivityLogsService = erpActivityLogsService;
         _erpIntegrationPluginManager = erpIntegrationPluginManager;
         _erpShipToAddressModelFactory = erpShipToAddressModelFactory;
-        _b2BB2CWorkContext = b2BB2CWorkContext;
+        _workContext = workContext;
+        _pictureService = pictureService;
     }
 
     #endregion
@@ -153,7 +156,7 @@ public class ErpAccountController : NopStationAdminController
 
         if (ModelState.IsValid)
         {
-            var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var currentCustomer = await _workContext.GetCurrentCustomerAsync();
             var stateProvidence = await _stateProvinceService.GetStateProvinceByIdAsync(model.BillingAddress.StateProvinceId ?? 0);
             var country = await _countryService.GetCountryByIdAsync(model.BillingAddress.CountryId ?? 0);
 
@@ -302,7 +305,7 @@ public class ErpAccountController : NopStationAdminController
                 erpAccount.B2BPriceGroupCodeId = model.B2BPriceGroupCodeId;
                 erpAccount.LastPriceRefresh = model.LastPriceRefresh;
                 erpAccount.UpdatedOnUtc = DateTime.UtcNow;
-                erpAccount.UpdatedById = (await _b2BB2CWorkContext.GetCurrentCustomerAsync()).Id;
+                erpAccount.UpdatedById = (await _workContext.GetCurrentCustomerAsync()).Id;
 
                 await _erpAccountService.UpdateErpAccountAsync(erpAccount);
 
@@ -340,8 +343,8 @@ public class ErpAccountController : NopStationAdminController
 
                 var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Updated");
                 _notificationService.SuccessNotification(successMsg);
-
-                await _erpLogsService.InformationAsync($"{successMsg}. Erp Account Id: {erpAccount.Id}", ErpSyncLevel.Account, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+                    
+                await _erpLogsService.InformationAsync($"{successMsg}. Erp Account Id: {erpAccount.Id}", ErpSyncLevel.Account, customer: await _workContext.GetCurrentCustomerAsync());
 
                 //erp activity log
                 await _erpActivityLogsService.InsertErpActivityAsync("Erp_EditErpAccount",
@@ -384,7 +387,7 @@ public class ErpAccountController : NopStationAdminController
         var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Deleted");
         _notificationService.SuccessNotification(successMsg);
 
-        await _erpLogsService.InformationAsync($"{successMsg}. Erp Account Id: {erpAccount.Id}", ErpSyncLevel.Account, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+        await _erpLogsService.InformationAsync($"{successMsg}. Erp Account Id: {erpAccount.Id}", ErpSyncLevel.Account, customer: await _workContext.GetCurrentCustomerAsync());
 
         //erp activity log
         await _erpActivityLogsService.InsertErpActivityAsync("Erp_DeleteErpAccount",

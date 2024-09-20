@@ -38,13 +38,11 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
         private readonly ICustomerService _customerService;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IGenericAttributeService _genericAttributeService;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
         private readonly IPermissionService _permissionService;
         private readonly IErpLogsService _erpLogsService;
         private readonly IErpAccountModelFactory _erpAccountModelFactory;
         private readonly IErpAccountService _erpAccountService;
         private readonly IErpActivityLogsService _erpActivityLogsService;
-        private const string ADMINISTRATOR_SYSTEM_NAME = "Administrators";
 
         #endregion
 
@@ -59,7 +57,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             ICustomerService customerService,
             ICustomerActivityService customerActivityService,
             IGenericAttributeService genericAttributeService,
-            IB2BB2CWorkContext b2BB2CWorkContext,
             IPermissionService permissionService,
             IErpLogsService erpLogsService,
             IErpAccountModelFactory erpAccountModelFactory,
@@ -75,7 +72,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             _customerService = customerService;
             _customerActivityService = customerActivityService;
             _genericAttributeService = genericAttributeService;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
             _permissionService = permissionService;
             _erpLogsService = erpLogsService;
             _erpAccountModelFactory = erpAccountModelFactory;
@@ -89,7 +85,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
 
         protected async Task<bool> HasB2BSalesRepRoleAsync()
         {
-            var salesRepRoles = await _customerService.GetCustomerRolesAsync((await _b2BB2CWorkContext.GetCurrentERPCustomerAsync()).Customer);
+            var salesRepRoles = await _customerService.GetCustomerRolesAsync((await _workContext.GetCurrentCustomerAsync()));
             if (!salesRepRoles.Any())
             {
                 return false;
@@ -98,7 +94,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
 
             if (salesRepRole == null)
             {
-                if (!salesRepRoles.Any(r => r.SystemName == ADMINISTRATOR_SYSTEM_NAME))
+                if (!salesRepRoles.Any(r => r.SystemName == NopCustomerDefaults.AdministratorsRoleName))
                     return false;
             }
 
@@ -281,7 +277,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             await _genericAttributeService.SaveAttributeAsync<int?>(currentCustomer, NopCustomerDefaults.ImpersonatedCustomerIdAttribute, customer.Id);
 
             var successMsg = await _localizationService.GetResourceAsync("ActivityLog.Impersonation.Started.Customer");
-            await _erpLogsService.InformationAsync($"{successMsg}. Impersonated Customer Id: {customer.Id}. Original Customer Id: {currentCustomer.Id}", ErpSyncLevel.SalesOrg, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+            await _erpLogsService.InformationAsync($"{successMsg}. Impersonated Customer Id: {customer.Id}. Original Customer Id: {_workContext.OriginalCustomerIfImpersonated?.Id}", ErpSyncLevel.SalesOrg, customer: _workContext.OriginalCustomerIfImpersonated);
 
             //erp activity log
             await _erpActivityLogsService.InsertErpActivityAsync(customer, "Erp_CustomerImpersonationStart",
