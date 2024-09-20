@@ -65,6 +65,8 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure
             services.AddScoped<IOverriddenOrderProcessingService, OverriddenOrderProcessingService>();
             services.AddScoped<IOrderProcessingService, OverriddenOrderProcessingService>();
             services.AddScoped<IAddressService, OverridenAddressService>();
+            services.AddScoped<IB2BB2CWorkContext, B2BB2CWebWorkContext>();
+
 
             //register factories
             services.AddScoped<IB2BRegisterModelFactory, B2BRegisterModelFactory>();

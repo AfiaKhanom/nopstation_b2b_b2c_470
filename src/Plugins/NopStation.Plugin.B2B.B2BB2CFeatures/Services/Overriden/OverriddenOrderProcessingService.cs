@@ -59,7 +59,6 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
     private readonly IErpAccountService _erpAccountService;
     private readonly IErpNopUserService _erpNopUserService;
     private readonly IErpLogsService _erpLogsService;
-    private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
     private readonly IErpSpecificationAttributeService _erpSpecificationAttributeService;
     private readonly IErpWorkflowMessageService _erpWorkflowMessageService;
     private readonly IErpActivityLogsService _erpActivityLogsService;
@@ -130,7 +129,6 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
         IErpAccountService erpAccountService,
         IErpNopUserService erpNopUserService,
         IErpLogsService erpLogsService,
-        IB2BB2CWorkContext b2BB2CWorkContext,
         IErpIntegrationPluginManager erpIntegrationPluginManager,
         IErpSpecificationAttributeService erpSpecificationAttributeService,
         IErpWorkflowMessageService erpWorkflowMessageService,
@@ -197,7 +195,6 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
         _erpAccountService = erpAccountService;
         _erpNopUserService = erpNopUserService;
         _erpLogsService = erpLogsService;
-        _b2BB2CWorkContext = b2BB2CWorkContext;
         _erpIntegrationPluginManager = erpIntegrationPluginManager;
         _erpSpecificationAttributeService = erpSpecificationAttributeService;
         _erpWorkflowMessageService = erpWorkflowMessageService;
