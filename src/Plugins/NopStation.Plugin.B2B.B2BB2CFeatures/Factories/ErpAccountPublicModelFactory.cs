@@ -48,7 +48,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
         private readonly IErpWarehouseAdditionalDataService _erpWarehouseAdditionalDataService;
         private readonly IErpWarehouseSalesOrgMapService _erpWarehouseSalesOrgMapService;
         private readonly IErpCustomerFunctionalityService _erpCustomerFunctionalityService;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
         private readonly IErpNopUserService _erpNopUserService;
 
         #endregion
@@ -74,8 +73,8 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
             IErpWarehouseAdditionalDataService erpWarehouseAdditionalDataService,
             IErpWarehouseSalesOrgMapService erpWarehouseSalesOrgMapService,
             IErpCustomerFunctionalityService erpCustomerFunctionalityService,
-            IB2BB2CWorkContext b2BB2CWorkContext,
-            IErpNopUserService erpNopUserService
+            IErpNopUserService erpNopUserService,
+            IPictureService pictureService
             )
         {
             _workContext = workContext;
@@ -97,7 +96,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
             _erpWarehouseAdditionalDataService = erpWarehouseAdditionalDataService;
             _erpWarehouseSalesOrgMapService = erpWarehouseSalesOrgMapService;
             _erpCustomerFunctionalityService = erpCustomerFunctionalityService;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
             _erpNopUserService = erpNopUserService;
         }
 
@@ -416,7 +414,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
 
         public async Task<ErpAccountOrderListModel> PrepareErpOrderListModelAsync(ErpAccountOrderSearchModel searchModel)
         {
-            var currCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var currCustomer = await _workContext.GetCurrentCustomerAsync();
             var store = await _storeContext.GetCurrentStoreAsync();
 
             var orderPlacedOnDateFrom = searchModel.SearchOrderDateFrom;
@@ -511,7 +509,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
 
         public async Task<ErpQuoteOrderListModel> PrepareErpQuoteOrderListModelAsync(ErpAccountQuoteOrderSearchModel searchModel)
         {
-            var currCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var currCustomer = await _workContext.GetCurrentCustomerAsync();
             var store = await _storeContext.GetCurrentStoreAsync();
 
             var orderPlacedOnDateFrom = searchModel.SearchOrderDateFrom;

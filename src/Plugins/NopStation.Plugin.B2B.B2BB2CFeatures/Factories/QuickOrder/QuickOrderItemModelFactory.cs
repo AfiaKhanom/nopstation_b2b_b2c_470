@@ -55,7 +55,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories.QuickOrder
         private readonly IPermissionService _permissionService;
         private readonly ShoppingCartSettings _shoppingCartSettings;
         private readonly IErpAccountService _erpAccountService;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
         private readonly IErpSpecificationAttributeService _erpSpecificationAttributeService;
         private readonly ILanguageService _languageService;
         private readonly CatalogSettings _catelogSettings;
@@ -90,7 +89,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories.QuickOrder
             ShoppingCartSettings shoppingCartSettings,
             IEventPublisher eventPublisher,
             IErpAccountService erpAccountService,
-            IB2BB2CWorkContext b2BB2CWorkContext,
             IErpSpecialPriceService erpSpecialPriceService,
             IOverriddenOrderProcessingService overriddenOrderProcessingService,
             IErpSpecificationAttributeService erpSpecificationAttributeService,
@@ -117,7 +115,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories.QuickOrder
             _permissionService = permissionService;
             _shoppingCartSettings = shoppingCartSettings;
             _erpAccountService = erpAccountService;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
             _erpSpecificationAttributeService = erpSpecificationAttributeService;
             _productAttributeService = productAttributeService;
             _quickOrderTemplateService = quickOrderTemplateService;
@@ -236,7 +233,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories.QuickOrder
 
                     switch (typeOfExportedAttribute)
                     {
-                        case ExportedAttributeType.ProductAttribute : 
+                        case ExportedAttributeType.ProductAttribute:
                             productAttributeManager.ReadDefaultFromXlsx(defaultWorksheet, endRow, ExportProductAttribute.ProductAttributeCellOffset);
 
                             if (int.TryParse((defaultWorksheet.Row(endRow).Cell(attributeIdCellNum).Value).ToString(), out var aid))
@@ -313,7 +310,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories.QuickOrder
 
             var proudcts = new List<Product>();
             var store = await _storeContext.GetCurrentStoreAsync();
-            var erpCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var erpCustomer = await _workContext.GetCurrentCustomerAsync();
             var erpAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(erpCustomer.Id);
             var b2Bb2CCustomerAccountSettings = _settingService.LoadSetting<B2BB2CFeaturesSettings>(store.Id);
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Nop.Core;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Common;
 using Nop.Core.Domain.Customers;
@@ -39,7 +40,6 @@ public class ErpOrderDetailsModelFactory : IErpOrderDetailsModelFactory
     private readonly B2BB2CFeaturesSettings _b2BB2CFeaturesSettings;
     private readonly ILocalizationService _localizationService;
     private readonly IProductService _productService;
-    private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
     private readonly IErpAccountService _erpAccountService;
     private readonly IMeasureService _measureService;
     private readonly MeasureSettings _measureSettings;
@@ -65,6 +65,8 @@ public class ErpOrderDetailsModelFactory : IErpOrderDetailsModelFactory
     private readonly ICountryService _countryService;
     private readonly IProductAttributeFormatter _productAttributeFormatter;
     private readonly IUrlRecordService _urlRecordService;
+    private readonly IWorkContext _workContext;
+
 
     #endregion
 
@@ -74,7 +76,6 @@ public class ErpOrderDetailsModelFactory : IErpOrderDetailsModelFactory
         IErpOrderAdditionalDataService erpOrderAdditionalDataService,
         B2BB2CFeaturesSettings b2BB2CFeaturesSettings,
         ILocalizationService localizationService,
-        IB2BB2CWorkContext b2BB2CWorkContext,
         IErpAccountService erpAccountService,
         IMeasureService measureService,
         MeasureSettings measureSettings,
@@ -100,14 +101,15 @@ public class ErpOrderDetailsModelFactory : IErpOrderDetailsModelFactory
         IErpSalesOrgService erpSalesOrgService,
         ICountryService countryService,
         IProductAttributeFormatter productAttributeFormatter,
-        IUrlRecordService urlRecordService)
+        IUrlRecordService urlRecordService,
+        IWorkContext workContext
+        )
     {
         _orderService = orderService;
         _erpOrderItemAdditionalDataService = erpOrderItemAdditionalDataService;
         _erpOrderAdditionalDataService = erpOrderAdditionalDataService;
         _b2BB2CFeaturesSettings = b2BB2CFeaturesSettings;
         _localizationService = localizationService;
-        _b2BB2CWorkContext = b2BB2CWorkContext;
         _erpAccountService = erpAccountService;
         _measureService = measureService;
         _measureSettings = measureSettings;
@@ -134,6 +136,7 @@ public class ErpOrderDetailsModelFactory : IErpOrderDetailsModelFactory
         _countryService = countryService;
         _productAttributeFormatter = productAttributeFormatter;
         _urlRecordService = urlRecordService;
+        _workContext = workContext;
     }
 
     #endregion
@@ -157,7 +160,7 @@ public class ErpOrderDetailsModelFactory : IErpOrderDetailsModelFactory
                 model.PhoneNumber = address.PhoneNumber;
                 model.FaxNumber = address.FaxNumber;
                 model.City = address.City;
-                model.StateProvince = (await _stateProvinceService.GetStateProvinceByIdAsync(address.StateProvinceId ?? 0))?.Name ?? string.Empty;                    
+                model.StateProvince = (await _stateProvinceService.GetStateProvinceByIdAsync(address.StateProvinceId ?? 0))?.Name ?? string.Empty;
             }
 
             model.Suburb = erpShipToAddress.Suburb;
@@ -181,7 +184,7 @@ public class ErpOrderDetailsModelFactory : IErpOrderDetailsModelFactory
     public async Task<ErpOrderDetailsModel> PrepareErpOrderDetailsModelFactoryAsync(ErpOrderAdditionalData erpOrderPerAccount)
     {
         var order = await _orderService.GetOrderByIdAsync(erpOrderPerAccount.NopOrderId);
-        var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+        var currentCustomer = await _workContext.GetCurrentCustomerAsync();
         var b2BOrderDetailsModel = new ErpOrderDetailsModel();
         var b2BAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(currentCustomer.Id);
         var erpOrder = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByNopOrderIdAsync(erpOrderPerAccount.NopOrderId);
@@ -189,7 +192,7 @@ public class ErpOrderDetailsModelFactory : IErpOrderDetailsModelFactory
         var baseWeight = "";
         var totalPriceWithOutSavingsExcTax = decimal.Zero;
         var b2BOnlineOrderDiscountExcTax = decimal.Zero;
-        var language = await _b2BB2CWorkContext.GetWorkingLanguageAsync();
+        var language = await _workContext.GetWorkingLanguageAsync();
         var languageId = language.Id;
         var erpBillingAddress = await _addressService.GetAddressByIdAsync(b2BAccount.BillingAddressId ?? 0);
         var salesOrg = await _erpSalesOrgService.GetErpSalesOrgByIdAsync(b2BAccount.ErpSalesOrgId);

@@ -67,7 +67,6 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
     private readonly ISettingService _settingService;
     private readonly IShippingService _shippingService;
     private readonly IErpCustomerFunctionalityService _erpCustomerFunctionalityService;
-    private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
     private readonly IShoppingCartService _shoppingCartService;
     private readonly IErpShipToAddressService _erpShipToAddressService;
     private readonly ShippingSettings _shippingSettings;
@@ -122,7 +121,6 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
         IErpWarehouseAdditionalDataService erpWarehouseAdditionalDataService,
         IErpWarehouseSalesOrgMapService erpWarehouseSalesOrgMapService,
         IErpCustomerFunctionalityService erpCustomerFunctionalityService,
-        IB2BB2CWorkContext b2BB2CWorkContext,
         IErpNopUserService erpNopUserService,
         IUrlRecordService urlRecordService,
         IErpSpecialPriceService erpSpecialPriceService,
@@ -156,7 +154,6 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
         _settingService = settingService;
         _shippingService = shippingService;
         _erpCustomerFunctionalityService = erpCustomerFunctionalityService;
-        _b2BB2CWorkContext = b2BB2CWorkContext;
         _shoppingCartService = shoppingCartService;
         _erpShipToAddressService = erpShipToAddressService;
         _shippingSettings = shippingSettings;
@@ -175,8 +172,12 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
     {
         if (b2BShipToAddress != null)
         {
-            var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var currentCustomer = await _workContext.GetCurrentCustomerAsync();
             var shipToAddressAccountMap = await _erpShipToAddressService.GetErpShipToAddressErpAccountMapByErpShipToAddressIdAsync(b2BShipToAddress.Id);
+
+            if (shipToAddressAccountMap == null)
+                return;
+
             var erpAccount = await _erpAccountService.GetErpAccountByIdAsync(shipToAddressAccountMap.ErpAccountId);
             b2BShipToAddressModel = b2BShipToAddressModel ?? new ErpShipToAddressModelForCheckout();
             b2BShipToAddressModel.Id = b2BShipToAddress.Id;
@@ -317,7 +318,7 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
         bool loadAvailableSuburbs = false, bool loadCountriesAndStates = false)
     {
         var erpAccount = await _erpAccountService.GetErpAccountByErpShipToAddressAsync(b2cShipToAddress);
-        var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+        var currentCustomer = await _workContext.GetCurrentCustomerAsync();
         b2BShipToAddressModel = b2BShipToAddressModel ?? new ErpShipToAddressModelForCheckout();
         b2BShipToAddressModel.Id = b2cShipToAddress.Id;
         b2BShipToAddressModel.ShipToCode = b2cShipToAddress.ShipToCode;
@@ -455,7 +456,7 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
 
     public async Task<CheckoutErpBillingAddressModel> PrepareCheckoutErpBillingAddressModelAsync(IList<ShoppingCartItem> cart, ErpAccount b2BAccount)
     {
-        var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+        var currentCustomer = await _workContext.GetCurrentCustomerAsync();
         var model = new CheckoutErpBillingAddressModel
         {
             ShipToSameAddressAllowed = _shippingSettings.ShipToSameAddress && await _shoppingCartService.ShoppingCartRequiresShippingAsync(cart),
@@ -502,13 +503,13 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
             AllowPickupInStore = _shippingSettings.AllowPickupInStore
         };
 
-        var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+        var currentCustomer = await _workContext.GetCurrentCustomerAsync();
         var b2BSalesOrg = await _erpSalesOrgService.GetErpSalesOrgByIdAsync(b2BAccount.ErpSalesOrgId);
         model.IsB2BUser = true;
         model.ThemeName = _settingService.LoadSetting<StoreInformationSettings>((await _storeContext.GetCurrentStoreAsync()).Id).DefaultStoreTheme;
         model.SpecialInstructions = await _genericAttributeService.GetAttributeAsync<string>(currentCustomer, B2BB2CFeaturesDefaults.ProvidedB2BSpecialInstructions, (await _storeContext.GetCurrentStoreAsync()).Id);
         model.DisplayPickupInStore = _orderSettings.DisplayPickupInStoreOnShippingMethodPage;
-        var languageId = (await _b2BB2CWorkContext.GetWorkingLanguageAsync()).Id;
+        var languageId = (await _workContext.GetWorkingLanguageAsync()).Id;
 
         if (model.PickupPointsModel.AllowPickupInStore)
         {
@@ -713,7 +714,7 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
     public virtual async Task<ErpCheckoutShippingAddressModel> PrepareShippingAddressModelAsync(ErpNopUser erpUser, ErpAccount b2BAccount, int? selectedCountryId = null,
         bool prePopulateNewAddressWithCustomerFields = false, string overrideAttributesXml = "")
     {
-        var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+        var currentCustomer = await _workContext.GetCurrentCustomerAsync();
         var model = new ErpCheckoutShippingAddressModel
         {
             AllowPickupInStore = _shippingSettings.AllowPickupInStore
@@ -812,7 +813,7 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
             DisableBillingAddressCheckoutStep = _orderSettings.DisableBillingAddressCheckoutStep && b2BAccount?.BillingAddressId != null,
             CheckoutErpBillingAddress = await PrepareCheckoutErpBillingAddressModelAsync(cart, b2BAccount),
             CheckoutErpShipToAddress = await PrepareCheckoutB2BShippingAddressModelAsync(cart, b2BUser, b2BAccount),
-            IsQuoteOrder = await _genericAttributeService.GetAttributeAsync<bool>(await _b2BB2CWorkContext.GetWorkingCurrencyAsync(), B2BB2CFeaturesDefaults.B2BQouteOrderAttribute, (await _storeContext.GetCurrentStoreAsync()).Id),
+            IsQuoteOrder = await _genericAttributeService.GetAttributeAsync<bool>(await _workContext.GetWorkingCurrencyAsync(), B2BB2CFeaturesDefaults.B2BQouteOrderAttribute, (await _storeContext.GetCurrentStoreAsync()).Id),
             DisplayCaptcha = await _customerService.IsGuestAsync(await _customerService.GetShoppingCartCustomerAsync(cart))
                 && _captchaSettings.Enabled && _captchaSettings.ShowOnCheckoutPageForGuests,
             IsReCaptchaV3 = _captchaSettings.CaptchaType == CaptchaType.ReCaptchaV3,
@@ -840,7 +841,7 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
             DisableBillingAddressCheckoutStep = _orderSettings.DisableBillingAddressCheckoutStep && b2BAccount?.BillingAddressId != null,
             CheckoutErpBillingAddress = await PrepareCheckoutErpBillingAddressModelAsync(cart, b2BAccount),
             CheckoutErpShipToAddress = await PrepareCheckoutB2CShippingAddressModelAsync(cart, b2CUser, b2BAccount),
-            IsQuoteOrder = await _genericAttributeService.GetAttributeAsync<bool>(await _b2BB2CWorkContext.GetCurrentCustomerAsync(), B2BB2CFeaturesDefaults.B2CQouteOrderAttribute, (await _storeContext.GetCurrentStoreAsync()).Id),
+            IsQuoteOrder = await _genericAttributeService.GetAttributeAsync<bool>(await _workContext.GetCurrentCustomerAsync(), B2BB2CFeaturesDefaults.B2CQouteOrderAttribute, (await _storeContext.GetCurrentStoreAsync()).Id),
             DisplayCaptcha = await _customerService.IsGuestAsync(await _customerService.GetShoppingCartCustomerAsync(cart))
                 && _captchaSettings.Enabled && _captchaSettings.ShowOnCheckoutPageForGuests,
             IsReCaptchaV3 = _captchaSettings.CaptchaType == CaptchaType.ReCaptchaV3,
@@ -858,7 +859,7 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
         if (!b2BB2CFeaturesSettings.ERPToDetermineDate)
             return (null, false);
 
-        var b2bAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync((await _b2BB2CWorkContext.GetCurrentCustomerAsync()).Id);
+        var b2bAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync((await _workContext.GetCurrentCustomerAsync()).Id);
 
         #region Call By Suburb
 
@@ -933,7 +934,7 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
         if (!b2BB2CFeaturesSettings.ERPToDetermineDate)
             return (null, false);
 
-        var b2bAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync((await _b2BB2CWorkContext.GetCurrentCustomerAsync()).Id);
+        var b2bAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync((await _workContext.GetCurrentCustomerAsync()).Id);
 
         #region Call By Suburb
 
@@ -986,13 +987,13 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
             AllowPickupInStore = _shippingSettings.AllowPickupInStore
         };
 
-        var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+        var currentCustomer = await _workContext.GetCurrentCustomerAsync();
         var b2BSalesOrg = await _erpSalesOrgService.GetErpSalesOrgByIdAsync(b2BAccount.ErpSalesOrgId);
         model.IsB2BUser = false;
         model.ThemeName = _settingService.LoadSetting<StoreInformationSettings>((await _storeContext.GetCurrentStoreAsync()).Id).DefaultStoreTheme;
         model.SpecialInstructions = await _genericAttributeService.GetAttributeAsync<string>(currentCustomer, B2BB2CFeaturesDefaults.B2CSpecialInstructions, (await _storeContext.GetCurrentStoreAsync()).Id);
         model.DisplayPickupInStore = _orderSettings.DisplayPickupInStoreOnShippingMethodPage;
-        var languageId = (await _b2BB2CWorkContext.GetWorkingLanguageAsync()).Id;
+        var languageId = (await _workContext.GetWorkingLanguageAsync()).Id;
 
         if (model.PickupPointsModel.AllowPickupInStore)
         {

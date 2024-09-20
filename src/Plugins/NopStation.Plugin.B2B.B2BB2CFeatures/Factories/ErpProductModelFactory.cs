@@ -40,11 +40,12 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
         private readonly ISettingService _settingService;
         private readonly IPermissionService _permissionService;
         private readonly IErpCustomerFunctionalityService _erpCustomerFunctionalityService;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
         private readonly IUrlRecordService _urlRecordService;
         private readonly IErpSpecialPriceService _erpSpecialPriceService;
         private readonly IShoppingCartService _shoppingCartService;
         private readonly IPriceCalculationService _priceCalculationService;
+        private readonly IWorkContext _workContext;
+
 
         #endregion
 
@@ -59,11 +60,12 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
             ISettingService settingService,
             IPermissionService permissionService,
             IErpCustomerFunctionalityService erpCustomerFunctionalityService,
-            IB2BB2CWorkContext b2BB2CWorkContext,
             IUrlRecordService urlRecordService,
             IErpSpecialPriceService erpSpecialPriceService,
             IShoppingCartService shoppingCartService,
-            IPriceCalculationService priceCalculationService)
+            IPriceCalculationService priceCalculationService,
+            IWorkContext workContext
+            )
         {
             _baseAdminModelFactory = baseAdminModelFactory;
             _priceFormatter = priceFormatter;
@@ -74,11 +76,11 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
             _settingService = settingService;
             _permissionService = permissionService;
             _erpCustomerFunctionalityService = erpCustomerFunctionalityService;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
             _urlRecordService = urlRecordService;
             _erpSpecialPriceService = erpSpecialPriceService;
             _shoppingCartService = shoppingCartService;
             _priceCalculationService = priceCalculationService;
+            _workContext = workContext;
         }
 
         #endregion
@@ -153,8 +155,8 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
                             productPricing = await _erpSpecialPriceService.GetErpSpecialPricesByErpAccountIdAndNopProductIdAsync(erpAccount.Id, productId);
                         }
 
-                        var shoppingCartItemQuantity = (await _b2BB2CWorkContext.GetCurrentCustomerAsync()).HasShoppingCartItems ?
-                            (await _shoppingCartService.GetShoppingCartAsync(await _b2BB2CWorkContext.GetCurrentCustomerAsync(), ShoppingCartType.ShoppingCart, (await _storeContext.GetCurrentStoreAsync()).Id, productId))?.FirstOrDefault()?.Quantity ?? 0 : 0;
+                        var shoppingCartItemQuantity = (await _workContext.GetCurrentCustomerAsync()).HasShoppingCartItems ?
+                            (await _shoppingCartService.GetShoppingCartAsync(await _workContext.GetCurrentCustomerAsync(), ShoppingCartType.ShoppingCart, (await _storeContext.GetCurrentStoreAsync()).Id, productId))?.FirstOrDefault()?.Quantity ?? 0 : 0;
                         var displayBackInStockSubscription = false;
                         if (await _permissionService.AuthorizeAsync(ErpPermissionProvider.DisplayB2BStock) &&
                             product.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
@@ -206,7 +208,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
             if (product == null)
                 return new ProductInCartQuantityModel();
 
-            var currCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var currCustomer = await _workContext.GetCurrentCustomerAsync();
 
             var shoppingCartItemQuantity = currCustomer.HasShoppingCartItems ?
                             (await _shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.ShoppingCart, (await _storeContext.GetCurrentStoreAsync()).Id, product.Id))?.FirstOrDefault()?.Quantity ?? 0 : 0;
@@ -226,7 +228,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
                 if (product == null)
                     return decimal.Zero;
 
-                (decimal priceWithoutDiscounts, decimal finalPrice, decimal appliedDiscountAmount, List<Discount> appliedDiscounts) = await _priceCalculationService.GetFinalPriceAsync(product, await _b2BB2CWorkContext.GetCurrentCustomerAsync(), await _storeContext.GetCurrentStoreAsync(), includeDiscounts: true);
+                (decimal priceWithoutDiscounts, decimal finalPrice, decimal appliedDiscountAmount, List<Discount> appliedDiscounts) = await _priceCalculationService.GetFinalPriceAsync(product, await _workContext.GetCurrentCustomerAsync(), await _storeContext.GetCurrentStoreAsync(), includeDiscounts: true);
                 return finalPrice;
             });
         }
@@ -247,7 +249,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
                         {
                             continue;
                         }
-                        var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+                        var currentCustomer = await _workContext.GetCurrentCustomerAsync();
                         var shoppingCartItemQuantity = currentCustomer.HasShoppingCartItems ?
                             (await _shoppingCartService.GetShoppingCartAsync(currentCustomer, ShoppingCartType.ShoppingCart, (await _storeContext.GetCurrentStoreAsync()).Id, productId))?.FirstOrDefault()?.Quantity ?? 0 : 0;
                         productInCartQuantityModels.Add(new ProductInCartQuantityModel
@@ -290,7 +292,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
             var orderSummeryModel = new ErpOrderSummaryModel();
             var totalPriceWithOutSavings = decimal.Zero;
             var b2bOnlineOrderDiscount = decimal.Zero;
-            var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var currentCustomer = await _workContext.GetCurrentCustomerAsync();
             if (currentCustomer.HasShoppingCartItems)
             {
                 //var b2BB2CFeaturesSettings = _settingService.LoadSetting<B2BB2CFeaturesSettings>((await _storeContext.GetCurrentStoreAsync()).Id);
