@@ -32,7 +32,6 @@ public class ErpAccountPublicController : BasePluginController
 
     private readonly ICustomerService _customerService;
     private readonly IWorkContext _workContext;
-    private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
     private readonly IErpAccountService _erpAccountService;
     private readonly IErpNopUserService _erpNopUserService;
     private readonly IPermissionService _permissionService;
@@ -53,7 +52,6 @@ public class ErpAccountPublicController : BasePluginController
     public ErpAccountPublicController(
         ICustomerService customerService,
         IWorkContext workContext,
-        IB2BB2CWorkContext b2BB2CWorkContext,
         IErpAccountService erpAccountService,
         IErpNopUserService erpNopUserService,
         IPermissionService permissionService,
@@ -69,7 +67,6 @@ public class ErpAccountPublicController : BasePluginController
     {
         _customerService = customerService;
         _workContext = workContext;
-        _b2BB2CWorkContext = b2BB2CWorkContext;
         _erpAccountService = erpAccountService;
         _erpNopUserService = erpNopUserService;
         _permissionService = permissionService;
@@ -419,7 +416,7 @@ public class ErpAccountPublicController : BasePluginController
 
     public async Task<IActionResult> ErpAccountQuoteOrders()
     {
-        var customer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+        var customer = await _workContext.GetCurrentCustomerAsync();
         if (!await _customerService.IsRegisteredAsync(customer))
             return Challenge();
 
@@ -438,7 +435,7 @@ public class ErpAccountPublicController : BasePluginController
     [HttpPost]
     public async Task<IActionResult> LoadErpQuoteOrderList(ErpAccountQuoteOrderSearchModel searchModel)
     {
-        var customer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+        var customer = await _workContext.GetCurrentCustomerAsync();
         (var erpAccount, var erpNopUser) = await GetErpAccountAndUserOfCurrentCustomerAsync(customer.Id);
         if (erpAccount == null && erpNopUser == null)
             return await AccessDeniedDataTablesJson();

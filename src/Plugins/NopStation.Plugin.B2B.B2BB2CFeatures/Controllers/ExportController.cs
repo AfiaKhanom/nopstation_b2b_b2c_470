@@ -31,7 +31,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
         private readonly ICategoryProductsExportManager _categoryProductsExportManager;
         private readonly IUrlRecordService _urlRecordService;
         private readonly ILocalizationService _localizationService;
-        private readonly IB2BB2CWorkContext _iB2BB2CWorkContext;
 
         #endregion
 
@@ -48,8 +47,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
             ICategoryProductsExportManager categoryExportManager,
             IUrlRecordService urlRecordService,
             ILanguageService languageService,
-            ILocalizationService localizationService,
-            IB2BB2CWorkContext iB2BB2CWorkContext)
+            ILocalizationService localizationService)
         {
             _categoryService = categoryService;
             _catalogSettings = catalogSettings;
@@ -61,7 +59,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
             _categoryProductsExportManager = categoryExportManager;
             _urlRecordService = urlRecordService;
             _localizationService = localizationService;
-            _iB2BB2CWorkContext = iB2BB2CWorkContext;
         }
 
         #endregion

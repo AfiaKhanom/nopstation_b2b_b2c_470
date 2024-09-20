@@ -147,7 +147,8 @@ public class B2BB2CCustomerController : CustomerController
         IErpAccountCustomerRegistrationPremisesService erpAccountCustomerRegistrationPremisesService,
         IErpAccountCustomerRegistrationPhysicalTradingAddressService erpAccountCustomerRegistrationPhysicalTradingAddressService,
         IErpAccountCustomerRegistrationTradeReferencesService erpAccountCustomerRegistrationTradeReferencesService,
-        IErpWorkflowMessageService erpWorkflowMessageService) :  base(addressSettings,
+        IErpWorkflowMessageService erpWorkflowMessageService,
+        IShoppingCartService shoppingCartService) : base(addressSettings,
              captchaSettings,
              customerSettings,
              dateTimeSettings,
@@ -194,7 +195,7 @@ public class B2BB2CCustomerController : CustomerController
              storeInformationSettings,
              taxSettings)
     {
-        
+
         _b2BB2CWorkContext = b2BB2CWorkContext;
         _b2BRegisterModelFactory = b2BRegisterModelFactory;
         _erpAccountService = erpAccountService;
@@ -1090,7 +1091,7 @@ public class B2BB2CCustomerController : CustomerController
         //check whether registration is allowed
         if (_customerSettings.UserRegistrationType == UserRegistrationType.Disabled || !await B2BUserRegisterAllowedAsync())
             return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Disabled, returnUrl });
-        
+
         return await SaveNopCustomerAsync(model, returnUrl, captchaValid, form, await _workContext.GetCurrentCustomerAsync());
     }
 
@@ -1295,7 +1296,7 @@ public class B2BB2CCustomerController : CustomerController
     [HttpPost]
     public async Task<IActionResult> SetErpAccount(AccountSwitchModel model)
     {
-        var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+        var currentCustomer = await _workContext.GetCurrentCustomerAsync();
 
         try
         {

@@ -39,7 +39,6 @@ public class CustomerImpersonateController : BasePublicController
     private readonly IAuthenticationService _authenticationService;
     private readonly IEventPublisher _eventPublisher;
     private readonly StoreInformationSettings _storeInformationSettings;
-    private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
     private readonly IErpLogsService _erpLogsService;
     private readonly IErpActivityLogsService _erpActivityLogsService;
 
@@ -58,7 +57,6 @@ public class CustomerImpersonateController : BasePublicController
         IAuthenticationService authenticationService,
         IEventPublisher eventPublisher,
         StoreInformationSettings storeInformationSettings,
-        IB2BB2CWorkContext b2BB2CWorkContext,
         IErpLogsService erpLogsService,
         IErpActivityLogsService erpActivityLogsService)
     {
@@ -73,7 +71,6 @@ public class CustomerImpersonateController : BasePublicController
         _authenticationService = authenticationService;
         _eventPublisher = eventPublisher;
         _storeInformationSettings = storeInformationSettings;
-        _b2BB2CWorkContext = b2BB2CWorkContext;
         _erpLogsService = erpLogsService;
         _erpActivityLogsService = erpActivityLogsService;
     }
@@ -92,7 +89,7 @@ public class CustomerImpersonateController : BasePublicController
         var salesRepRole = salesRepRoles.Where(r => r.SystemName == ERPIntegrationCoreDefaults.B2BSalesRepRoleSystemName).FirstOrDefault();
 
         if (salesRepRole == null && !salesRepRoles.Any(r => r.SystemName == NopCustomerDefaults.AdministratorsRoleName))
-            return false;            
+            return false;
 
         return true;
     }
