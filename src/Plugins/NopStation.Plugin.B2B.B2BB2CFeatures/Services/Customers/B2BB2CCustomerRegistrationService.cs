@@ -26,28 +26,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Customers
     {
         #region Fields
 
-        private readonly CustomerSettings _customerSettings;
-        private readonly IActionContextAccessor _actionContextAccessor;
-        private readonly IAuthenticationService _authenticationService;
-        private readonly ICustomerActivityService _customerActivityService;
-        private readonly ICustomerService _customerService;
-        private readonly IEncryptionService _encryptionService;
-        private readonly IEventPublisher _eventPublisher;
-        private readonly IGenericAttributeService _genericAttributeService;
-        private readonly ILocalizationService _localizationService;
-        private readonly IMultiFactorAuthenticationPluginManager _multiFactorAuthenticationPluginManager;
-        private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
-        private readonly INotificationService _notificationService;
-        private readonly IPermissionService _permissionService;
-        private readonly IRewardPointService _rewardPointService;
-        private readonly IShoppingCartService _shoppingCartService;
-        private readonly IStoreContext _storeContext;
-        private readonly IStoreService _storeService;
-        private readonly IUrlHelperFactory _urlHelperFactory;
-        private readonly IWorkContext _workContext;
-        private readonly IWorkflowMessageService _workflowMessageService;
-        private readonly RewardPointsSettings _rewardPointsSettings;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
+
         private readonly IErpActivityLogsService _erpActivityLogsService;
         private readonly IErpLogsService _erpLogsService;
 
@@ -76,7 +55,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Customers
             IWorkContext workContext,
             IWorkflowMessageService workflowMessageService,
             RewardPointsSettings rewardPointsSettings,
-            IB2BB2CWorkContext b2BB2CWorkContext,
             IErpActivityLogsService erpActivityLogsService,
             IErpLogsService erpLogsService) :
             base(
@@ -103,28 +81,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Customers
                  rewardPointsSettings
                 )
         {
-            _customerSettings = customerSettings;
-            _actionContextAccessor = actionContextAccessor;
-            _authenticationService = authenticationService;
-            _customerActivityService = customerActivityService;
-            _customerService = customerService;
-            _encryptionService = encryptionService;
-            _eventPublisher = eventPublisher;
-            _genericAttributeService = genericAttributeService;
-            _localizationService = localizationService;
-            _multiFactorAuthenticationPluginManager = multiFactorAuthenticationPluginManager;
-            _newsLetterSubscriptionService = newsLetterSubscriptionService;
-            _notificationService = notificationService;
-            _permissionService = permissionService;
-            _rewardPointService = rewardPointService;
-            _shoppingCartService = shoppingCartService;
-            _storeContext = storeContext;
-            _storeService = storeService;
-            _urlHelperFactory = urlHelperFactory;
-            _workContext = workContext;
-            _workflowMessageService = workflowMessageService;
-            _rewardPointsSettings = rewardPointsSettings;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
             _erpActivityLogsService = erpActivityLogsService;
             _erpLogsService = erpLogsService;
         }
@@ -135,13 +91,13 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Customers
 
         public override async Task<IActionResult> SignInCustomerAsync(Customer customer, string returnUrl, bool isPersist = false)
         {
-            var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var currentCustomer = await _workContext.GetCurrentCustomerAsync();
             if (currentCustomer?.Id != customer.Id)
             {
                 //migrate shopping cart
                 await _shoppingCartService.MigrateShoppingCartAsync(currentCustomer, customer, true);
 
-                await _b2BB2CWorkContext.SetCurrentCustomerAsync(customer);
+                await _workContext.SetCurrentCustomerAsync(customer);
             }
 
             if (customer.Active)

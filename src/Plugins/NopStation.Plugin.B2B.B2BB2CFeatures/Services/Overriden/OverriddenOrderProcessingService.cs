@@ -46,57 +46,11 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Overriden;
 public class OverriddenOrderProcessingService : OrderProcessingService, IOverriddenOrderProcessingService
 {
     #region Fields
-
-    private readonly CurrencySettings _currencySettings;
-    private readonly IAddressService _addressService;
-    private readonly IAffiliateService _affiliateService;
-    private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter;
-    private readonly ICountryService _countryService;
-    private readonly ICurrencyService _currencyService;
-    private readonly ICustomerActivityService _customerActivityService;
-    private readonly ICustomerService _customerService;
-    private readonly ICustomNumberFormatter _customNumberFormatter;
-    private readonly IDiscountService _discountService;
-    private readonly IEncryptionService _encryptionService;
-    private readonly IEventPublisher _eventPublisher;
-    private readonly IGenericAttributeService _genericAttributeService;
-    private readonly IGiftCardService _giftCardService;
-    private readonly ILanguageService _languageService;
-    private readonly ILocalizationService _localizationService;
-    private readonly ILogger _logger;
     private readonly INotificationService _notificationService;
-    private readonly IOrderService _orderService;
-    private readonly IOrderTotalCalculationService _orderTotalCalculationService;
-    private readonly IPaymentPluginManager _paymentPluginManager;
-    private readonly IPaymentService _paymentService;
-    private readonly IPdfService _pdfService;
-    private readonly IPriceCalculationService _priceCalculationService;
-    private readonly IPriceFormatter _priceFormatter;
-    private readonly IProductAttributeFormatter _productAttributeFormatter;
-    private readonly IProductAttributeParser _productAttributeParser;
-    private readonly IProductService _productService;
-    private readonly IRewardPointService _rewardPointService;
-    private readonly IShipmentService _shipmentService;
     private readonly IShippingPluginManager _shippingPluginManager;
-    private readonly IShippingService _shippingService;
-    private readonly IShoppingCartService _shoppingCartService;
-    private readonly IStateProvinceService _stateProvinceService;
     private readonly IStoreContext _storeContext;
-    private readonly ITaxService _taxService;
-    private readonly IVendorService _vendorService;
-    private readonly IWebHelper _webHelper;
-    private readonly IWorkContext _workContext;
-    private readonly IWorkflowMessageService _workflowMessageService;
-    private readonly LocalizationSettings _localizationSettings;
-    private readonly OrderSettings _orderSettings;
-    private readonly PaymentSettings _paymentSettings;
-    private readonly RewardPointsSettings _rewardPointsSettings;
-    private readonly ShippingSettings _shippingSettings;
     private readonly ISettingService _settingService;
-    private readonly TaxSettings _taxSettings;
     private readonly IAttributeParser<CheckoutAttribute, CheckoutAttributeValue> _checkoutAttributeParser;
-    private readonly IReturnRequestService _returnRequestService;
-    private readonly IStoreService _storeService;
     private readonly IErpCustomerFunctionalityService _erpCustomerFunctionalityService;
     private readonly IErpSalesOrgService _erpSalesOrgService;
     private readonly IErpOrderAdditionalDataService _erpOrderAdditionalDataService;
@@ -110,7 +64,6 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
     private readonly IErpWorkflowMessageService _erpWorkflowMessageService;
     private readonly IErpActivityLogsService _erpActivityLogsService;
     private readonly IErpIntegrationPluginManager _erpIntegrationPluginManager;
-    private readonly IStoreMappingService _storeMappingService;
     private const string DELIVERY_METHOD_COLLECT = "COLLECT";
     private const string DELIVERY_METHOD_DELIVERY = "DELIVERY";
 
@@ -232,56 +185,10 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
         taxSettings
         )
     {
-        _currencySettings = currencySettings;
-        _addressService = addressService;
-        _affiliateService = affiliateService;
-        _checkoutAttributeFormatter = checkoutAttributeFormatter;
-        _countryService = countryService;
-        _currencyService = currencyService;
-        _customerActivityService = customerActivityService;
-        _customerService = customerService;
-        _customNumberFormatter = customNumberFormatter;
-        _discountService = discountService;
-        _encryptionService = encryptionService;
-        _eventPublisher = eventPublisher;
-        _genericAttributeService = genericAttributeService;
-        _giftCardService = giftCardService;
-        _languageService = languageService;
-        _localizationService = localizationService;
-        _logger = logger;
         _notificationService = notificationService;
-        _orderService = orderService;
-        _orderTotalCalculationService = orderTotalCalculationService;
-        _paymentPluginManager = paymentPluginManager;
-        _paymentService = paymentService;
-        _pdfService = pdfService;
-        _priceCalculationService = priceCalculationService;
-        _priceFormatter = priceFormatter;
-        _productAttributeFormatter = productAttributeFormatter;
-        _productAttributeParser = productAttributeParser;
-        _productService = productService;
-        _rewardPointService = rewardPointService;
-        _shipmentService = shipmentService;
-        _shippingPluginManager = shippingPluginManager;
-        _shippingService = shippingService;
-        _shoppingCartService = shoppingCartService;
-        _stateProvinceService = stateProvinceService;
         _storeContext = storeContext;
-        _taxService = taxService;
-        _vendorService = vendorService;
-        _webHelper = webHelper;
-        _workContext = workContext;
-        _workflowMessageService = workflowMessageService;
-        _localizationSettings = localizationSettings;
-        _orderSettings = orderSettings;
-        _paymentSettings = paymentSettings;
-        _rewardPointsSettings = rewardPointsSettings;
-        _shippingSettings = shippingSettings;
-        _taxSettings = taxSettings;
         _checkoutAttributeParser = checkoutAttributeParser;
         _settingService = settingService;
-        _returnRequestService = returnRequestService;
-        _storeService = storeService;
         _erpCustomerFunctionalityService = erpCustomerFunctionalityService;
         _erpSalesOrgService = erpSalesOrgService;
         _erpOrderAdditionalDataService = erpOrderAdditionalDataService;
@@ -295,7 +202,6 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
         _erpSpecificationAttributeService = erpSpecificationAttributeService;
         _erpWorkflowMessageService = erpWorkflowMessageService;
         _erpActivityLogsService = erpActivityLogsService;
-        _storeMappingService = storeMappingService;
     }
 
     #endregion
@@ -970,7 +876,7 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
             await _erpLogsService.WarningAsync(ex.Message, ErpSyncLevel.Order, ex, await _workContext.GetCurrentCustomerAsync());
         }
     }
-    
+
     #endregion
 
     #region Utilities
