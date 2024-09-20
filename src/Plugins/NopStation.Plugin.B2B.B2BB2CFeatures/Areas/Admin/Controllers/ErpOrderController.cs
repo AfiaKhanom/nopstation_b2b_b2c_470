@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Nop.Core;
 using Nop.Services.Localization;
 using Nop.Services.Messages;
 using Nop.Services.Security;
@@ -26,7 +27,7 @@ public class ErpOrderController : NopStationAdminController
     private readonly IOverriddenOrderProcessingService _overriddenOrderProcessingService;
     private readonly B2BB2CFeaturesSettings _b2BB2CFeaturesSettings;
     private readonly IErpLogsService _erpLogsService;
-    private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
+    private readonly IWorkContext _workContext;
     private readonly IErpActivityLogsService _erpActivityLogsService;
 
     #endregion
@@ -42,7 +43,7 @@ public class ErpOrderController : NopStationAdminController
         IOverriddenOrderProcessingService overriddenOrderProcessingService,
         B2BB2CFeaturesSettings b2BB2CFeaturesSettings,
         IErpLogsService erpLogsService,
-        IB2BB2CWorkContext b2BB2CWorkContext,
+        IWorkContext workContext,
         IErpActivityLogsService erpActivityLogsService)
     {
         _localizationService = localizationService;
@@ -53,8 +54,8 @@ public class ErpOrderController : NopStationAdminController
         _overriddenOrderProcessingService = overriddenOrderProcessingService;
         _b2BB2CFeaturesSettings = b2BB2CFeaturesSettings;
         _erpLogsService = erpLogsService;
-        _b2BB2CWorkContext = b2BB2CWorkContext;
         _erpActivityLogsService = erpActivityLogsService;
+        _workContext = workContext;
     }
 
     #endregion
@@ -109,7 +110,7 @@ public class ErpOrderController : NopStationAdminController
         if (erpOrder == null)
             return RedirectToAction("List");
 
-        var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+        var currentCustomer = await _workContext.GetCurrentCustomerAsync();
         if (erpOrder.IntegrationStatusType == IntegrationStatusType.Confirmed)
         {
             var msg = await _localizationService.GetResourceAsync("NopStation.Plugin.NopStation.B2BB2CFeatures.Order.AlreadyConfirmed");
@@ -159,7 +160,7 @@ public class ErpOrderController : NopStationAdminController
         if (erpOrder == null)
             return RedirectToAction("List");
 
-        var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+        var currentCustomer = await _workContext.GetCurrentCustomerAsync();
         if (erpOrder.IntegrationStatusType == IntegrationStatusType.Confirmed)
         {
             var msg = await _localizationService.GetResourceAsync("NopStation.Plugin.NopStation.B2BB2CFeatures.Order.AlreadyConfirmed");

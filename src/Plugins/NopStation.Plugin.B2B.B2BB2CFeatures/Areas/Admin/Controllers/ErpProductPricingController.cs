@@ -32,16 +32,13 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
         private readonly IProductAttributeService _productAttributeService;
         private readonly IPermissionService _permissionService;
         private readonly IProductModelFactory _productModelFactory;
-        private readonly INotificationService _notificationService;
         private readonly ILocalizationService _localizationService;
-        private readonly ICustomerActivityService _customerActivityService;
         private readonly IWorkContext _workContext;
         private readonly IErpPriceGroupProductPricingModelFactory _erpPriceGroupProductPricingModelFactory;
         private readonly IErpGroupPriceService _erpGroupPriceService;
         private readonly IErpGroupPriceCodeService _erpGroupPriceCodeService;
         private readonly IErpSpecialPriceService _erpSpecialPriceService;
         private readonly IErpSpecialPriceModelFactory _erpSpecialPriceModelFactory;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
         private readonly IErpLogsService _erpLogsService;
         private readonly IStaticCacheManager _staticCacheManager;
         private readonly B2BB2CFeaturesSettings _b2BB2CFeaturesSettings;
@@ -55,16 +52,13 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             IProductAttributeService productAttributeService,
             IPermissionService permissionService,
             IProductModelFactory productModelFactory,
-            INotificationService notificationService,
             ILocalizationService localizationService,
-            ICustomerActivityService customerActivityService,
             IWorkContext workContext,
             IErpPriceGroupProductPricingModelFactory erpPriceGroupProductPricingModelFactory,
             IErpGroupPriceService erpGroupPriceService,
             IErpGroupPriceCodeService erpGroupPriceCodeService,
             IErpSpecialPriceService erpSpecialPriceService,
             IErpSpecialPriceModelFactory erpSpecialPriceModelFactory,
-            IB2BB2CWorkContext b2BB2CWorkContext,
             IErpLogsService erpLogsService,
             IStaticCacheManager staticCacheManager,
             B2BB2CFeaturesSettings b2BB2CFeaturesSettings,
@@ -74,16 +68,13 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             _productAttributeService = productAttributeService;
             _permissionService = permissionService;
             _productModelFactory = productModelFactory;
-            _notificationService = notificationService;
             _localizationService = localizationService;
-            _customerActivityService = customerActivityService;
             _workContext = workContext;
             _erpPriceGroupProductPricingModelFactory = erpPriceGroupProductPricingModelFactory;
             _erpGroupPriceService = erpGroupPriceService;
             _erpGroupPriceCodeService = erpGroupPriceCodeService;
             _erpSpecialPriceService = erpSpecialPriceService;
             _erpSpecialPriceModelFactory = erpSpecialPriceModelFactory;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
             _erpLogsService = erpLogsService;
             _staticCacheManager = staticCacheManager;
             _b2BB2CFeaturesSettings = b2BB2CFeaturesSettings;
@@ -209,7 +200,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSpecialPrice.ActivityLog.Insert");
                 //_notificationService.SuccessNotification(successMsg);
 
-                await _erpLogsService.InformationAsync($"{successMsg}. Erp Account Id: {erpProductPricing.ErpAccountId}. Product Id: {erpProductPricing.NopProductId}. Erp Special Price Id: {erpProductPricing.Id}", ErpSyncLevel.Product, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+                await _erpLogsService.InformationAsync($"{successMsg}. Erp Account Id: {erpProductPricing.ErpAccountId}. Product Id: {erpProductPricing.NopProductId}. Erp Special Price Id: {erpProductPricing.Id}", ErpSyncLevel.Product, customer: await _workContext.GetCurrentCustomerAsync());
 
                 //erp activity log
                 await _erpActivityLogsService.InsertErpActivityAsync("Erp_AddNewSpecialPrice",
@@ -269,7 +260,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSpecialPrice.ActivityLog.Update");
                 //_notificationService.SuccessNotification(successMsg);
 
-                await _erpLogsService.InformationAsync($"{successMsg}. Erp Account Id: {erpProductPricing.ErpAccountId}. Product Id: {erpProductPricing.NopProductId}. Erp Special Price Id: {erpProductPricing.Id}", ErpSyncLevel.Product, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+                await _erpLogsService.InformationAsync($"{successMsg}. Erp Account Id: {erpProductPricing.ErpAccountId}. Product Id: {erpProductPricing.NopProductId}. Erp Special Price Id: {erpProductPricing.Id}", ErpSyncLevel.Product, customer: await _workContext.GetCurrentCustomerAsync());
 
                 //erp activity log
                 await _erpActivityLogsService.InsertErpActivityAsync("Erp_EditSpecialPrice",
@@ -299,7 +290,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSpecialPrice.ActivityLog.Delete");
             //_notificationService.SuccessNotification(successMsg);
 
-            await _erpLogsService.InformationAsync($"{successMsg}. Erp Special Price Id: {erpProductPricing.Id}", ErpSyncLevel.Product, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+            await _erpLogsService.InformationAsync($"{successMsg}. Erp Special Price Id: {erpProductPricing.Id}", ErpSyncLevel.Product, customer: await _workContext.GetCurrentCustomerAsync());
 
             //erp activity log
             await _erpActivityLogsService.InsertErpActivityAsync("Erp_DeleteSpecialPrice",
@@ -351,7 +342,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var customer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+                var customer = await _workContext.GetCurrentCustomerAsync();
                 var erpGroupPriceCode = await _erpGroupPriceCodeService.GetErpGroupPriceCodeByIdAsync(model.ErpGroupPriceCodeId);
                 var erpProductPricing = new ErpGroupPrice
                 {
@@ -406,13 +397,16 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             if (erpProductPricing == null)
                 return RedirectToAction("ProductPricingByProduct", new { id = model.ProductId });
 
+            ModelState.Remove(nameof(model.ErpGroupPriceCode));
+            ModelState.Remove(nameof(model.ErpGroupPriceCodeId));
+
             if (!ModelState.IsValid)
             {
                 return ErrorJson(ModelState.SerializeErrors());
             }
             erpProductPricing.Price = model.Price;
             erpProductPricing.UpdatedOnUtc = DateTime.UtcNow;
-            erpProductPricing.UpdatedById = (await _b2BB2CWorkContext.GetCurrentCustomerAsync()).Id;
+            erpProductPricing.UpdatedById = (await _workContext.GetCurrentCustomerAsync()).Id;
 
             await _erpGroupPriceService.UpdateErpGroupPriceAsync(erpProductPricing);
 
@@ -421,7 +415,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPrice.ActivityLog.ErpPriceGroupProductPricing.Update");
             //_notificationService.SuccessNotification(successMsg);
 
-            await _erpLogsService.InformationAsync($"{successMsg}. Group Price Code Id: {erpProductPricing.ErpNopGroupPriceCodeId}. Product Id: {erpProductPricing.NopProductId}. Group Price Id: {erpProductPricing.Id}", ErpSyncLevel.Product, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+            await _erpLogsService.InformationAsync($"{successMsg}. Group Price Code Id: {erpProductPricing.ErpNopGroupPriceCodeId}. Product Id: {erpProductPricing.NopProductId}. Group Price Id: {erpProductPricing.Id}", ErpSyncLevel.Product, customer: await _workContext.GetCurrentCustomerAsync());
 
             //erp activity log
             await _erpActivityLogsService.InsertErpActivityAsync("Erp_EditErpGroupPrice",
@@ -431,6 +425,58 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
 
 
             return new NullJsonResult();
+        }
+
+        public async Task<IActionResult> GroupPriceEditPopUp(int id)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.AccessAdminPanel))
+                return AccessDeniedView();
+
+            var erpProductPricing = await _erpGroupPriceService.GetErpGroupPriceByIdWithActiveAsync(id);
+            if (erpProductPricing == null)
+                return RedirectToAction("AllProductList");
+
+            var model = await _erpPriceGroupProductPricingModelFactory.PrepareErpProductPricingModel(null, erpProductPricing);
+            return View("_GroupPriceEditPopUp", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GroupPriceEditPopUp(ErpPriceGroupProductPricingModel model)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.AccessAdminPanel))
+                return AccessDeniedView();
+
+            var erpProductPricing = await _erpGroupPriceService.GetErpGroupPriceByIdWithActiveAsync(model.Id);
+
+            if (erpProductPricing == null)
+                return RedirectToAction("ProductPricingByProduct", new { id = model.ProductId });
+
+            ModelState.Remove(nameof(model.ErpGroupPriceCode));
+            ModelState.Remove(nameof(model.ErpGroupPriceCodeId));
+
+            if (ModelState.IsValid)
+            {
+                erpProductPricing.Price = model.Price;
+                erpProductPricing.UpdatedOnUtc = DateTime.UtcNow;
+                erpProductPricing.UpdatedById = (await _workContext.GetCurrentCustomerAsync()).Id;
+                await _erpGroupPriceService.UpdateErpGroupPriceAsync(erpProductPricing);
+
+                ViewBag.RefreshPage = true;
+
+                var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPrice.ActivityLog.ErpPriceGroupProductPricing.Update");
+
+                await _erpLogsService.InformationAsync($"{successMsg}. Group Price Code Id: {erpProductPricing.ErpNopGroupPriceCodeId}. Product Id: {erpProductPricing.NopProductId}. Group Price Id: {erpProductPricing.Id}", ErpSyncLevel.Product, customer: await _workContext.GetCurrentCustomerAsync());
+
+                //erp activity log
+                await _erpActivityLogsService.InsertErpActivityAsync("Erp_EditErpGroupPrice",
+                    string.Format(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.ErpActivityLogs.EditErpGroupPrice"),
+                    erpProductPricing.Id, erpProductPricing.ErpNopGroupPriceCodeId, erpProductPricing.NopProductId),
+                    erpProductPricing);
+
+                return View("_GroupPriceEditPopUp", model);
+            }
+
+            return View("_GroupPriceEditPopUp", model);
         }
 
         [HttpPost]
@@ -450,7 +496,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPrice.ActivityLog.ErpPriceGroupProductPricing.Delete");
             //_notificationService.SuccessNotification(successMsg);
 
-            await _erpLogsService.InformationAsync($"{successMsg}. Group Price Code Id: {erpProductPricing.ErpNopGroupPriceCodeId}. Product Id: {erpProductPricing.NopProductId}. Group Price Id: {erpProductPricing.Id}", ErpSyncLevel.Product, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+            await _erpLogsService.InformationAsync($"{successMsg}. Group Price Code Id: {erpProductPricing.ErpNopGroupPriceCodeId}. Product Id: {erpProductPricing.NopProductId}. Group Price Id: {erpProductPricing.Id}", ErpSyncLevel.Product, customer: await _workContext.GetCurrentCustomerAsync());
 
             //erp activity log
             await _erpActivityLogsService.InsertErpActivityAsync("Erp_DeleteErpGroupPrice",
