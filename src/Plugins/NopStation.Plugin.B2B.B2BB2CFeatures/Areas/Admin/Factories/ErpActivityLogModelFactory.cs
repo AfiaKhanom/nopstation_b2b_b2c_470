@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Nop.Core;
 using Nop.Core.Caching;
 using Nop.Services;
 using Nop.Services.Customers;
@@ -28,7 +29,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Factories
         private readonly ICustomerService _customerService;
         private readonly ILocalizationService _localizationService;
         private readonly IStaticCacheManager _staticCacheManager;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
+        private readonly IWorkContext _workContext;
         private readonly IErpLogsService _erpLogsService;
         private readonly IHtmlFormatter _htmlFormatter;
 
@@ -41,18 +42,18 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Factories
             IDateTimeHelper dateTimeHelper,
             ICustomerService customerService,
             IStaticCacheManager staticCacheManager,
-            IB2BB2CWorkContext b2BB2CWorkContext,
             IErpLogsService erpLogsService,
-            IHtmlFormatter htmlFormatter
+            IHtmlFormatter htmlFormatter,
+            IWorkContext workContext
             )
         {
             _localizationService = localizationService;
             _dateTimeHelper = dateTimeHelper;
             _customerService = customerService;
             _staticCacheManager = staticCacheManager;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
             _erpLogsService = erpLogsService;
             _htmlFormatter = htmlFormatter;
+            _workContext = workContext;
         }
 
         #endregion
@@ -158,7 +159,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Factories
         {
             if (searchModel == null)
                 throw new ArgumentNullException(nameof(searchModel));
-            var currCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var currCustomer = await _workContext.GetCurrentCustomerAsync();
             var createdFrom = !searchModel.CreatedFrom.HasValue ? null
                 : (DateTime?)_dateTimeHelper.ConvertToUtcTime(searchModel.CreatedFrom.Value, await _dateTimeHelper.GetCustomerTimeZoneAsync(currCustomer));
             var createdTo = !searchModel.CreatedTo.HasValue ? null
