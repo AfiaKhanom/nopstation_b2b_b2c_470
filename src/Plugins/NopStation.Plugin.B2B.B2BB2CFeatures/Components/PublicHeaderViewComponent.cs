@@ -40,8 +40,9 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Components
         {
             var model = new AccountSwitchModel();
             var customer = await _workContext.GetCurrentCustomerAsync();
-            var (erpNopUser, erpAccount) = await _erpCustomerFunctionalityService.GetActiveErpNopUserAndAccount(customer);
-            if (erpNopUser != null &&  erpAccount != null)
+            var erpNopUser = await _erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(customer);
+            var erpAccount = await _erpCustomerFunctionalityService.GetActiveErpAccountByCustomerAsync(customer);
+            if (erpNopUser != null && erpAccount != null)
             {
                 var mappedAccounts = await _erpNopUserAccountMapService.GetAllErpNopUserAccountMapsByUserIdAsync(erpNopUser.Id);
 

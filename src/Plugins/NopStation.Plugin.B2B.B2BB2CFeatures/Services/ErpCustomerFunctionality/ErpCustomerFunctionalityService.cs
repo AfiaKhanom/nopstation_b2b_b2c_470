@@ -255,36 +255,49 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
 
         #region Erp Account And Erp NopUser
 
-        public async Task<(ErpNopUser, ErpAccount)> GetActiveErpNopUserAndAccount()
-        {
-            return await GetActiveErpNopUserAndAccount(await _workContext.GetCurrentCustomerAsync());
-        }
+        //public async Task<(ErpNopUser, ErpAccount)> GetActiveErpNopUserAndAccount()
+        //{
+        //    return await GetActiveErpNopUserAndAccount(await _workContext.GetCurrentCustomerAsync());
+        //}
 
-        public async Task<(ErpNopUser, ErpAccount)> GetActiveErpNopUserAndAccount(int customerId)
-        {
-            var customer = await _customerService.GetCustomerByIdAsync(customerId);
-            if (customer == null)
-                return (null, null);
+        //public async Task<(ErpNopUser, ErpAccount)> GetActiveErpNopUserAndAccount(int customerId)
+        //{
+        //    var customer = await _customerService.GetCustomerByIdAsync(customerId);
+        //    if (customer == null)
+        //        return (null, null);
 
-            return await GetActiveErpNopUserAndAccount(customer);
-        }
+        //    return await GetActiveErpNopUserAndAccount(customer);
+        //}
 
-        public async Task<(ErpNopUser, ErpAccount)> GetActiveErpNopUserAndAccount(Customer customer)
-        {
-            var key = _staticCacheManager.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpAccountByCustomerCacheKey, customer.Id, string.Join(",", await _customerService.GetCustomerRoleIdsAsync(customer)));
+        //public async Task<(ErpNopUser, ErpAccount)> GetActiveErpNopUserAndAccount(Customer customer)
+        //{
+        //    var key = _staticCacheManager.PrepareKeyForDefaultCache(
+        //        ERPIntegrationCoreDefaults.ErpAccountByCustomerCacheKey,
+        //        customer.Id, string.Join(",", await _customerService.GetCustomerRoleIdsAsync(customer))
+        //        );
 
-            return await _staticCacheManager.Get(key, async () =>
-            {
-                var erpNopUser = await GetActiveErpNopUserByCustomerAsync(customer);
-                if (erpNopUser != null && !erpNopUser.IsDeleted && erpNopUser.IsActive)
-                {
-                    var erpAccount = await _erpAccountService.GetErpAccountByIdWithActiveAsync(erpNopUser.ErpAccountId);
-                    if (erpAccount != null)
-                        return (erpNopUser,erpAccount);
-                }
-                return (null, null);
-            });
-        }
+        //    //var erpNopUser = await GetActiveErpNopUserByCustomerAsync(customer);
+        //    //if (erpNopUser != null && !erpNopUser.IsDeleted && erpNopUser.IsActive)
+        //    //{
+        //    //    var erpAccount = await _erpAccountService.GetErpAccountByIdWithActiveAsync(erpNopUser.ErpAccountId);
+        //    //    if (erpAccount != null)
+        //    //        return (erpNopUser, erpAccount);
+        //    //}
+        //    Func<(ErpNopUser, ErpAccount)> value = async () =>
+        //                {
+        //                    var erpNopUser = await GetActiveErpNopUserByCustomerAsync(customer);
+        //                    if (erpNopUser != null && !erpNopUser.IsDeleted && erpNopUser.IsActive)
+        //                    {
+        //                        var erpAccount = await _erpAccountService.GetErpAccountByIdWithActiveAsync(erpNopUser.ErpAccountId);
+        //                        if (erpAccount != null)
+        //                            return (erpNopUser, erpAccount);
+        //                    }
+        //                    return (null, null);
+        //                };
+        //    return await _staticCacheManager.Get(key, value);
+
+        //    return (null, null);
+        //}
 
         #endregion
 

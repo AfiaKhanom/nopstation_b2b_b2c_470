@@ -15,14 +15,14 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
         Task<bool> CheckAndUpdateGenericAttributeOfERPQuoteOrder(ErpOrderAdditionalData b2BOrderPerAccount, IList<ShoppingCartItem> shoppingCartItems);
         Task<bool> CheckAndUpdateGenericAttributeOfB2CQuoteOrder(int erpOrderId, IList<ShoppingCartItem> currentShoppingCartItems);
         Task<bool> IsCustomerInB2BCustomerRole(Customer customer);
-        
+
         Task<bool> IsCurrentCustomerInB2BQuoteAssistantRole();
         Task<bool> IsCustomerInB2BQuoteAssistantRole(Customer customer);
         Task<bool> IsConsideredAsB2BOrderByB2BUserInformation(ErpNopUser b2BUser);
         Task<bool> IsConsideredAsB2COrderByB2CUser(ErpNopUser b2CUser);
 
         #region Erp Account
-        
+
         Task<ErpAccount> GetActiveErpAccountOfCurrentCustomer();
         Task<ErpAccount> GetActiveErpAccountByCustomerIdAsync(int customerId);
         Task<ErpAccount> GetActiveErpAccountByCustomerAsync(Customer customer);
@@ -38,13 +38,13 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
 
         #endregion
 
-        #region Erp Account And Erp NopUser
+        //#region Erp Account And Erp NopUser
 
-        Task<(ErpNopUser, ErpAccount)> GetActiveErpNopUserAndAccount();
-        Task<(ErpNopUser, ErpAccount)> GetActiveErpNopUserAndAccount(int customerId);
-        Task<(ErpNopUser, ErpAccount)> GetActiveErpNopUserAndAccount(Customer customer);
+        //Task<(ErpNopUser, ErpAccount)> GetActiveErpNopUserAndAccount();
+        //Task<(ErpNopUser, ErpAccount)> GetActiveErpNopUserAndAccount(int customerId);
+        //Task<(ErpNopUser, ErpAccount)> GetActiveErpNopUserAndAccount(Customer customer);
 
-        #endregion
+        //#endregion
 
         Task<bool> IsSalesOrderInvalidForCurrentCustomerAsync();
         Task<bool> IsCurrentCustomerInErpSalesRepRoleAsync();
