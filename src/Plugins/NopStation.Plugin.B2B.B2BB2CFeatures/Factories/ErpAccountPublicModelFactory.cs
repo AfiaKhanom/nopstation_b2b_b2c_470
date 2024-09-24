@@ -10,6 +10,7 @@ using Nop.Services.Customers;
 using Nop.Services.Directory;
 using Nop.Services.Helpers;
 using Nop.Services.Localization;
+using Nop.Services.Media;
 using Nop.Services.Orders;
 using Nop.Services.Shipping;
 using Nop.Web.Areas.Admin.Factories;
@@ -73,8 +74,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
             IErpWarehouseAdditionalDataService erpWarehouseAdditionalDataService,
             IErpWarehouseSalesOrgMapService erpWarehouseSalesOrgMapService,
             IErpCustomerFunctionalityService erpCustomerFunctionalityService,
-            IErpNopUserService erpNopUserService,
-            IPictureService pictureService
+            IErpNopUserService erpNopUserService
             )
         {
             _workContext = workContext;
@@ -422,12 +422,12 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
 
             if (searchModel.SearchOrderDateFrom.HasValue)
             {
-                orderPlacedOnDateFrom = searchModel.SearchOrderDateFrom.Value; 
+                orderPlacedOnDateFrom = searchModel.SearchOrderDateFrom.Value;
             }
 
             if (searchModel.SearchOrderDateTo.HasValue)
             {
-                orderPlacedOnDateTo = searchModel.SearchOrderDateTo.Value.AddHours(23).AddMinutes(59).AddSeconds(59);  
+                orderPlacedOnDateTo = searchModel.SearchOrderDateTo.Value.AddHours(23).AddMinutes(59).AddSeconds(59);
             }
 
             var erpNopUser = await _erpNopUserService.GetErpNopUserByCustomerIdAsync(currCustomer.Id);
