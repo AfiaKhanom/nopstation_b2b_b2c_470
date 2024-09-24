@@ -9,6 +9,7 @@ using Nop.Services.Common;
 using Nop.Services.Configuration;
 using Nop.Services.Directory;
 using Nop.Services.Localization;
+using Nop.Services.Media;
 using Nop.Services.Messages;
 using Nop.Services.Security;
 using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
@@ -343,7 +344,7 @@ public class ErpAccountController : NopStationAdminController
 
                 var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Updated");
                 _notificationService.SuccessNotification(successMsg);
-                    
+
                 await _erpLogsService.InformationAsync($"{successMsg}. Erp Account Id: {erpAccount.Id}", ErpSyncLevel.Account, customer: await _workContext.GetCurrentCustomerAsync());
 
                 //erp activity log
