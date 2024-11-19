@@ -36,6 +36,7 @@ build_live:
   tags:
     - nopstation-live-server
   script:
+    - cd src
     - dotnet clean --configuration Release
     - dotnet restore
     - dotnet build --no-restore -c Release
@@ -52,6 +53,7 @@ publish_live:
     - nopstation-live-server
   environment: production
   script:
+    - cd src
     - dotnet restore
     - cd "Presentation\Nop.Web"
     - dotnet publish "Nop.Web.csproj" -c Release -o $PUBLISH_DIR /p:CopyRefAssembliesToPublishDirectory=true
