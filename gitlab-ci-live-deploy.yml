@@ -1,0 +1,105 @@
+# List of stages for jobs, and their order of execution
+stages:
+  - checkout
+  # - stop_website
+  - build
+  - publish
+  # - deploy
+  # - start_website
+
+variables:
+  PLUGINS_DIR_LIVE : "C:\\Users\\nopapp\\Desktop\\gitlab-ci-cd\\artifacts\\Plugins"
+  PUBLISH_DIR : "C:\\Users\\nopapp\\Desktop\\gitlab-ci-cd\\artifacts"
+  DEPLOY_DIR: "....\\wwwroot\\Plugins"
+  ROOT_DIR_LIVE: "C:\\Users\\nopsupport\\Desktop\\gitlab-ci-cd"
+  SCRIPT_DIR_LIVE: "C:\\Users\\nopsupport\\Desktop\\gitlab-ci-cd\\scripts"
+  CACHE_DIR_LIVE: "....\\0\\nop-station\\comalytics-nopstation-b2b-nop-470\\src\\Presentation\\Nop.Web\\Plugins"
+  BACKUP_DIR: "C:\\Users\\nopsupport\\Desktop\\gitlab-ci-cd\\backup\\groceryexpress"
+  LIVE_SITE_NAME: "b2b.nop-station.com"
+  BRANCH_LIVE: "develop"
+
+checkout_live:
+  stage: checkout
+  tags:
+    - nopstation-live-server
+  script:
+    # - git config --system core.longpaths true
+    # - git config --global advice.nameTooLong false
+    # - git config --global safe.directory '*'
+    - git checkout $BRANCH_LIVE
+    - git pull
+  only:
+    - develop
+
+build_live:
+  stage: build
+  tags:
+    - nopstation-live-server
+  script:
+    - dotnet clean --configuration Release
+    - dotnet restore
+    - dotnet build --no-restore -c Release
+  only:
+    - develop
+  cache:
+    key: build-cache
+    paths:
+      - $CACHE_DIR_LIVE
+
+publish_live:
+  stage: publish
+  tags:
+    - nopstation-live-server
+  environment: production
+  script:
+    - dotnet restore
+    - cd "Presentation\Nop.Web"
+    - dotnet publish "Nop.Web.csproj" -c Release -o $PUBLISH_DIR /p:CopyRefAssembliesToPublishDirectory=true
+  only:
+    - develop
+  cache:
+    key: build-cache
+    paths:
+      - $CACHE_DIR_LIVE
+
+
+# stop-website_live:
+#   stage: stop_website
+#   tags:
+#     - nopstation-live-server
+#   script:
+#     - Stop-Website $LIVE_SITE1_NAME
+#     - Stop-WebAppPool -Name $LIVE_SITE1_NAME 
+#     - Stop-Website $LIVE_SITE2_NAME
+#     - Stop-WebAppPool -Name $LIVE_SITE2_NAME 
+#   only:
+#     - develop
+
+
+# deploy_live:
+#   stage: deploy
+#   tags:
+#     - nopstation-live-server
+#   script:
+#     - xcopy $DEPLOY_DIR_SITE1_LIVE $BACKUP_DIR_SITE1_LIVE /y /c /h /e /r /s
+#     - xcopy $DEPLOY_DIR_SITE2_LIVE $BACKUP_DIR_SITE2_LIVE /y /c /h /e /r /s
+#     - xcopy $PLUGINS_DIR_LIVE $DEPLOY_DIR_SITE1_LIVE /y /c /h /e /r /s
+#     - xcopy $PLUGINS_DIR_LIVE $DEPLOY_DIR_SITE2_LIVE /y /c /h /e /r /s
+
+#   only:
+#     - develop
+#   retry: 2   
+
+
+# start-website_live:
+#   stage: start_website
+#   tags:
+#     - nopstation-live-server
+#   script:
+#     - Start-WebAppPool -Name $LIVE_SITE1_NAME
+#     - Start-WebAppPool -Name $LIVE_SITE2_NAME
+#     - Start-Website $LIVE_SITE1_NAME
+#     - Start-Website $LIVE_SITE2_NAME
+#   only:
+#     - develop
+#   when: always 
