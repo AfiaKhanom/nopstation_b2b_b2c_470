@@ -39,6 +39,7 @@ build_live:
     - cd src
     - dotnet clean --configuration Release
     - dotnet restore
+    - dotnet build "Plugins\NopStation.Plugin.Misc.Actions\NopStation.Plugin.Misc.Actions.csproj" --configuration Release
     - dotnet build --no-restore -c Release
   only:
     - develop
