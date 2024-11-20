@@ -129,14 +129,16 @@ lsif:
   tags:
     - nopstation-live-server
   script:
-    - dotnet tool install -g Microsoft.Lsif.DotnetTool
-    - export PATH="$PATH:~/.dotnet/tools"
-    - lsif-dotnet -p src/Nop.Web
-    - test -f lsif-output.lsif
-    - curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file lsif-output.lsif "$CI_SERVER_URL/api/v4/projects/$CI_PROJECT_ID/uploads"
+    - |
+      dotnet tool install -g Microsoft.Lsif.DotnetTool
+      export PATH="$PATH:~/.dotnet/tools"
+      lsif-dotnet -p src/Nop.Web
+      test -f lsif-output.lsif
+      curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file lsif-output.lsif "$CI_SERVER_URL/api/v4/projects/$CI_PROJECT_ID/uploads"
   artifacts:
     paths:
       - lsif-output.lsif
     expire_in: 1 week
   only:
     - develop
+
