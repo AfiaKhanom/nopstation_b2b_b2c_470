@@ -77,8 +77,8 @@ stop-website:
     - Stop-WebAppPool -Name $LIVE_SITE_NAME
     - echo "Waiting for 2 minutes to ensure file locks are released..."
     - powershell -Command "Start-Sleep -Seconds 120"
-  only:
-    - develop
+  # only:
+  #   - develop
 
 
 deploy:
