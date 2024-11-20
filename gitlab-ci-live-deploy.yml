@@ -12,9 +12,9 @@ variables:
   PLUGINS_DIR_LIVE: "C:\\Users\\nopapp\\Desktop\\gitlab-ci-cd\\artifacts\\Plugins"
   PUBLISH_DIR: "C:\\Users\\nopapp\\Desktop\\gitlab-ci-cd\\artifacts"
   DEPLOY_DIR: "C:\\inetpub\\wwwroot\\b2b.nop-station.com\\Plugins"
-  ROOT_DIR: "C:\\Users\\nopsupport\\Desktop\\gitlab-ci-cd"
+  ROOT_DIR: "C:\\Users\\nopapp\\Desktop\\gitlab-ci-cd"
   CACHE_DIR_LIVE: "C:\\GitLab-Runner\\builds\\t3_xK_vHT\\0\\nop-station\\nopstation_b2b_b2c_erp_470\\src\\Presentation\\Nop.Web\\Plugins"
-  BACKUP_DIR: "C:\\Users\\nopsupport\\Desktop\\gitlab-ci-cd\\backup\\b2b.nop-station.com"
+  BACKUP_DIR: "C:\\Users\\nopapp\\Desktop\\gitlab-ci-cd\\backup\\b2b.nop-station.com"
   LIVE_SITE_NAME: "b2b.nop-station.com"
   BRANCH_LIVE: "develop"
 
@@ -49,7 +49,9 @@ publish:
   stage: publish
   tags:
     - nopstation-live-server
-  environment: production
+  environment:
+    name: production
+    url: http://b2b.nop-station.com
   script:
     - cd src
     - dotnet restore
@@ -67,6 +69,9 @@ stop-website:
   stage: stop_website
   tags:
     - nopstation-live-server
+  environment:
+    name: production
+    action: stop
   script:
     - Stop-Website $LIVE_SITE_NAME
     - Stop-WebAppPool -Name $LIVE_SITE_NAME
@@ -80,6 +85,9 @@ deploy:
   stage: deploy
   tags:
     - nopstation-live-server
+  environment:
+    name: production
+    url: http://b2b.nop-station.com
   script:
     - xcopy $DEPLOY_DIR $BACKUP_DIR /y /c /h /e /r /s
     - xcopy $PLUGINS_DIR_LIVE $DEPLOY_DIR /y /c /h /e /r /s
@@ -104,6 +112,10 @@ start-website:
   stage: start_website
   tags:
     - nopstation-live-server
+  environment:
+    name: production
+    action: start
+    url: http://b2b.nop-station.com
   script:
     - Start-WebAppPool -Name $LIVE_SITE_NAME
     - Start-Website $LIVE_SITE_NAME
