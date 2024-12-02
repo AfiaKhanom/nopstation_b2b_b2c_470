@@ -216,7 +216,6 @@
     <None Remove="Views\B2BB2CCustomer\_ExternalAuthentication.Errors.cshtml" />
     <None Remove="Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml" />
     <None Remove="Views\Checkout\Completed.cshtml" />
-    <None Remove="Views\Checkout\QuoteOrderCompleted.cshtml" />
     <None Remove="Views\Checkout\_PickupPoints.cshtml" />
     <None Remove="Views\CustomerImpersonate\List.cshtml" />
     <None Remove="Views\CustomerImpersonate\List.Multibuyer.cshtml" />

@@ -48,7 +48,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Components
 
                 #region Check Sales Rep Erp account
 
-                var salesRep = (await _erpSalesRepService.GetErpSalesRepsByNopCustomerIdAsync(_workContext.OriginalCustomerIfImpersonated.Id)).FirstOrDefault();
+                var salesRep = (await _erpSalesRepService.GetErpSalesRepsByNopCustomerIdAsync(erpNopUser.NopCustomerId)).FirstOrDefault();
                 if (salesRep != null && salesRep.IsActive && !salesRep.IsDeleted && salesRep.SalesRepTypeId == (int)SalesRepType.MultiBuyers)
                 {
                     var erpAccountIdMaps = await _erpAccountService.GetAllErpAccountsBySalesRepIdAsync(salesRep.Id.ToString());
