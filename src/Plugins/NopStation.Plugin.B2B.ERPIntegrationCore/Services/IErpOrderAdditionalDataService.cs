@@ -27,6 +27,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
         Task<IDictionary<string, string>> GetAllCustomerReferencesByERPOrderNumbersAsync(IList<string> erpOrderNumbers);
 
         Task<Order> GetNopOrderByErpOrderNumberAsync(string erpOrderNumber);
+        Task<IList<ErpOrderAdditionalData>> GetAllFailedOrProcessingOrQueuedErpOrders(int maxIntegrationRetries = 0);
     }
 }
 

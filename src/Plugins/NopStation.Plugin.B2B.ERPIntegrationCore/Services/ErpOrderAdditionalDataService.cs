@@ -200,6 +200,25 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
             return await query.ToDictionaryAsync(t => t.ErpOrderNumber, t => t.CustomerReference);
         }
 
+        public async Task<IList<ErpOrderAdditionalData>> GetAllFailedOrProcessingOrQueuedErpOrders(int maxIntegrationRetries = 0)
+        {
+            var erpOrderAdditionalData = await _erpOrderAdditionalDataRepository.GetAllPagedAsync(query =>
+            {
+                query = query.Where(x => x.IntegrationStatusTypeId == (int)IntegrationStatusType.Failed
+                                || x.IntegrationStatusTypeId == (int)IntegrationStatusType.Processing
+                                || x.IntegrationStatusTypeId == (int)IntegrationStatusType.Queued);
+
+                query = query.Where(x => x.IntegrationRetries < maxIntegrationRetries);
+
+                query = query.OrderByDescending(ei => ei.Id);
+
+                return query;
+            });
+
+            return erpOrderAdditionalData;
+        }
+
+
         #endregion
 
         #endregion
