@@ -117,10 +117,32 @@ namespace NopStation.Plugin.Payments.B2B.Account
             return false;
         }
 
-        public Task PostProcessPaymentAsync(PostProcessPaymentRequest postProcessPaymentRequest)
+        public  Task PostProcessPaymentAsync(PostProcessPaymentRequest postProcessPaymentRequest)
         {
+            var warnings = new List<string>();
+
+            var store =  _storeContext.GetCurrentStoreAsync();
+            var customer =  _workContext.GetCurrentCustomerAsync();
+            if (customer == null)
+                warnings.Add("No customer found");
+
+            var nopErpUser =  _erpNopUserService.GetErpNopUserByCustomerIdAsync(customer.Id).Result;
+            if (nopErpUser == null)
+            {
+                warnings.Add("No Erp User found");
+                if (nopErpUser.ErpUserType != ErpUserType.B2BUser)
+                {
+                    warnings.Add("Only for B2B User");
+                }
+            }
+            var erpAccount =  _erpAccountService.GetErpAccountByIdAsync(nopErpUser.ErpAccountId).Result;
+            if (erpAccount == null)
+            {
+                warnings.Add("No found erp account");
+            }
+            erpAccount.CurrentBalance += postProcessPaymentRequest.Order.OrderTotal;
             //nothing
-            return Task.CompletedTask;
+            return  Task.CompletedTask;
         }
 
         public Task<ProcessPaymentResult> ProcessPaymentAsync(ProcessPaymentRequest processPaymentRequest)
@@ -166,7 +188,7 @@ namespace NopStation.Plugin.Payments.B2B.Account
             //total
             var (shoppingCartTotalBase, orderTotalDiscountAmountBase, _, appliedGiftCards, redeemedRewardPoints, redeemedRewardPointsAmount) = await _orderTotalCalculationService.GetShoppingCartTotalAsync(sci);
 
-            if (shoppingCartTotalBase > erpAccount.CurrentBalance && !erpAccount.AllowOverspend)
+            if (shoppingCartTotalBase > erpAccount.CreditLimitAvailable && !erpAccount.AllowOverspend)
             {
                 warnings.Add("Insufficient ERP Account Balance");
             }
