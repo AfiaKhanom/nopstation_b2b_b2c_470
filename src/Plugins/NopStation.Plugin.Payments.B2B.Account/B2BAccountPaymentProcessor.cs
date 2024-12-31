@@ -121,8 +121,8 @@ namespace NopStation.Plugin.Payments.B2B.Account
         {
             var warnings = new List<string>();
 
-            var store =  _storeContext.GetCurrentStoreAsync();
-            var customer =  _workContext.GetCurrentCustomerAsync();
+            var store =  _storeContext.GetCurrentStoreAsync().Result;
+            var customer =  _workContext.GetCurrentCustomerAsync().Result;
             if (customer == null)
                 warnings.Add("No customer found");
 
@@ -141,6 +141,7 @@ namespace NopStation.Plugin.Payments.B2B.Account
                 warnings.Add("No found erp account");
             }
             erpAccount.CurrentBalance += postProcessPaymentRequest.Order.OrderTotal;
+            _erpAccountService.UpdateErpAccountAsync(erpAccount);
             //nothing
             return  Task.CompletedTask;
         }

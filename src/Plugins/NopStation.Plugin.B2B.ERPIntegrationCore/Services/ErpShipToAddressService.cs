@@ -102,7 +102,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
             if (id == 0)
                 return null;
 
-            var erpShipToAddress = await _erpShipToAddressRepository.GetByIdAsync(id, cache => default);
+            var erpShipToAddress = await _erpShipToAddressRepository.GetByIdAsync(id);
 
             if (erpShipToAddress == null || !erpShipToAddress.IsActive || erpShipToAddress.IsDeleted)
                 return null;

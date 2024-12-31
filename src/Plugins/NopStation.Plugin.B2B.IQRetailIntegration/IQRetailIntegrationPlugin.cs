@@ -268,9 +268,9 @@ public class IQRetailIntegrationPlugin : BasePlugin, IAdminMenuPlugin, IErpInteg
         return await _erpIntegrationProductService.GetProductSpecialPricesFromErpAsync(erpRequest);
     }
 
-    public  Task ProductListLiveStockDataAsync(ErpAccount erpAccount, IList<Product> products, IProductService productService)
+    public async  Task ProductListLiveStockDataAsync(ErpAccount erpAccount, IList<Product> products, IProductService productService)
     {
-        return null;
+        var erpRequest = new ErpGetRequestModel() { AccountNumber = erpAccount.AccountNumber };
     }
 
     #endregion
