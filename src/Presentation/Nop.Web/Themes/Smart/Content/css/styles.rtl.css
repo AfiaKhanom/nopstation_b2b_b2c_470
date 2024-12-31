@@ -1,0 +1,290 @@
+﻿
+body {
+    direction: rtl;
+}
+
+.category-description ul,
+.manufacturer-description ul,
+.full-description ul,
+.topic-block ul, .topic-page ul,
+.post-body ul, .custom-tab ul {
+    padding: 0 36px 0 0;
+}
+.category-description ol,
+.manufacturer-description ol,
+.full-description ol,
+.topic-block ol, .topic-page ol,
+.post-body ol, .custom-tab ol {
+    padding: 0 36px 0 0;
+}
+#goToTop {
+    left: 20px;
+    right: auto;
+}
+.inputs .option-list li {
+    float: right;
+}
+.inputs .option-list label {
+    margin: 0 0 0 10px;
+}
+.required {
+    margin: 0 0 0 -6px;
+}
+.cart th:first-child,
+.data-table th:first-child,
+.forums-table-section th:first-child {
+    border-right: 1px solid #ddd;
+    border-left: none;
+}
+.cart th:last-child,
+.data-table th:last-child,
+.forums-table-section th:last-child {
+    border-left: 1px solid #ddd;
+    border-right: none;
+}
+.cart td, .data-table td,
+.compare-products-table td,
+.forums-table-section td {
+    border-width: 1px 0 0 1px;
+}
+.cart td:first-child,
+.data-table td:first-child,
+.compare-products-table td:first-child,
+.forums-table-section td:first-child {
+    border-width: 1px 1px 0 1px;
+}
+.cart th:first-child,
+.data-table th:first-child,
+.compare-products-table tr:first-child td:first-child,
+.forums-table-section th:first-child {
+    border-radius: 0 8px 0 0;
+}
+.cart th:last-child,
+.data-table th:last-child,
+.compare-products-table tr:first-child td:last-child,
+.forums-table-section th:last-child {
+    border-radius: 8px 0 0 0;
+}
+.cart tr:last-child td:first-child,
+.data-table tr:last-child td:first-child,
+.compare-products-table tr:last-child td:first-child,
+.forums-table-section tr:last-child td:first-child {
+    border-radius: 0 0 8px 0;
+}
+.cart tr:last-child td:last-child,
+.data-table tr:last-child td:last-child,
+.compare-products-table tr:last-child td:last-child,
+.forums-table-section tr:last-child td:last-child {
+    border-radius: 0 0 0 8px;
+}
+.footable-row-detail {
+    text-align: right;
+}
+.footable-row-detail-cell {
+    text-align: right !important;
+}
+.bar-notification {
+    right: 0;
+    left: auto;
+    padding: 10px 10px 10px 25px;
+}
+.bar-notification .content {
+    float: right;
+    margin: 0 0 0 10px;
+}
+.bar-notification .close {
+    left: 0;
+    right: auto;
+}
+.ui-dialog-titlebar {
+    padding: 12px 12px 12px 40px;
+}
+.ui-dialog-titlebar button {
+    left: 0;
+    right: auto;
+}
+.admin-header-links {
+    right: 0;
+    left: auto;
+}
+.header-links span.qty {
+    right: 25px;
+    left: auto;
+}
+.new_select {
+    text-align: right;
+}
+.new_select > span {
+    padding: 0 8px 0 32px;
+}
+.new_select > span:after {
+    left: 4px;
+    right: auto;
+}
+.new_select > div {
+    padding: 12px 4px 4px 4px;
+}
+.header .search-box input.search-box-text {
+    float: right;
+}
+.header .search-box .search-box-button {
+    float: right;
+}
+.ui-autocomplete {
+    text-align: right;
+}
+.ui-autocomplete img {
+    margin-left: 5px;
+    margin-right: 0;
+}
+.contacts {
+    text-align: right;
+}
+.contacts li span:before {
+    margin: 0 0 0 10px;
+}
+.newsletter-email input[type="email"] {
+    float: right;
+}
+.newsletter .newsletter-email button {
+    float: right;
+}
+.footlist a:before {
+    margin: 0 0 0 10px;
+}
+.theme-selector:after {
+    left: 4px;
+    right: auto;
+}
+.block .list a, .block .year strong {
+    padding: 10px 20px 10px 0;
+}
+.block .list a:before,
+.block .year strong:before {
+    right: 0;
+}
+.block .tags li a,
+.product-tags-all-page li a {
+    float: right;
+}
+.item-box .rating,
+.item-box .rating div {
+    background-position: right center;
+}
+.item-box .old-price {
+    margin: 0 0 0 5px;
+}
+.product-review-box .rating,
+.product-review-box .rating div {
+	background-position: right;
+}
+.ui-datepicker-header a.ui-datepicker-prev {
+    right: 0;
+    left: auto;
+}
+.ui-datepicker-header a.ui-datepicker-next {
+    left: 0;
+    right: auto;
+}
+.overview .add-to-cart-panel > *,
+.variant-overview .add-to-cart-panel > * {
+    float: right;
+}
+.overview .qty-label,
+.variant-overview .qty-label {
+    right: -35px;
+    left: auto;
+}
+.overview .qty-input,
+.variant-overview .qty-input,
+.overview .qty-dropdown,
+.variant-overview .qty-dropdown {
+    margin: 0 0 0 -10px;
+}
+.product-estimate-shipping i {
+	margin: 0 10px 3px 0;
+}
+.product-estimate-shipping .shipping-price {
+	margin: 0 5px 0 0;
+}
+.product-tags-list li.separator {
+    margin: 0 3px 0 5px;
+}
+.mfp-container .address-item + div {
+	padding: 0 15px 0 0;
+}
+.mfp-container .address-item .required {
+	left: -3px;
+    right: auto;
+}
+.mfp-container .shipping-item {
+    border-left: 1px solid #ddd;
+    border-right: none;
+}
+.product-review-helpfulness .question {
+    margin: 0 0 0 5px;
+}
+.product-review-helpfulness .result {
+    margin: 0 10px 0 0;
+}
+.enter-password-form input {
+    float: right !important;
+}
+.enter-password-form button {
+    float: right !important;
+    padding: 0 15px 0 20px !important;
+}
+.registration-page select + select,
+.account-page select + select {
+    margin: 0 10px 0 0;
+}
+.login-page .inputs.reversed label + span {
+    margin-right: 8px;
+    margin-left: 0;
+}
+.return-request-page .qq-upload-button {
+    text-align: right;
+}
+.multi-factor-authentication-config-page table {
+	text-align: right;
+}
+.cart-collaterals .coupon-code input {
+    float: right;
+    margin: 0 0 0 -1px;
+}
+.cart-collaterals .coupon-code button {
+    float: right;
+}
+.opc .step-title {
+    text-align: right;
+}
+.opc .step-title .number {
+    margin: 0 0 0 8px;
+}
+.search-input input + label {
+    margin: 0 2px 0 0;
+}
+.advanced-search .price-range {
+    margin: 0 -30px 0 0;
+}
+.sitemap-page li {
+    margin: 0 0 0 20px;
+}
+.sitemap-page li:after {
+    left: -15px;
+    right: auto;
+}
+.year .sublist {
+    text-align: right;
+}
+.blog-page .tags li.separator,
+.blogpost-page .tags li.separator {
+    margin: 0 3px 0 5px;
+}
+.blog-page .post .buttons {
+    text-align: right;
+}
+.blog-page .post .buttons a {
+    margin-left: 10px;
+    margin-right: 0;
+}

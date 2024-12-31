@@ -32,10 +32,10 @@ public class ProcessFailedErpOrdersTask : IScheduleTask
 
     public async Task ExecuteAsync()
     {
-        var retryErpOrders = await _erpOrderAdditionalDataService.GetAllFailedOrProcessingOrQueuedErpOrders(_b2BB2CFeaturesSettings.MaxERPIntegrationOrderPlaceReties);
+        var retryErpOrders = await _erpOrderAdditionalDataService.GetAllFailedOrProcessingOrQueuedErpOrders(_b2BB2CFeaturesSettings.MaxErpIntegrationOrderPlaceRetries);
 
         foreach (var erpOrders in retryErpOrders)
-            await _overridenOrderProcessingService.RetryPlaceERPOrderAtERPAsync(erpOrders, _b2BB2CFeaturesSettings);
+            await _overridenOrderProcessingService.RetryPlaceErpOrderAtErpAsync(erpOrders, _b2BB2CFeaturesSettings);
     }
 
     #endregion

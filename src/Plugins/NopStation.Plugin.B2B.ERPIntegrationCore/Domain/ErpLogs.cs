@@ -29,9 +29,9 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Domain
             get => (ErpLogLevel)ErpLogLevelId;
             set => ErpLogLevelId = (int)value;
         }
-        public ErpSyncLavel ErpSyncLavel
+        public ErpSyncLevel ErpSyncLevel
         {
-            get => (ErpSyncLavel)ErpSyncLavelId;
+            get => (ErpSyncLevel)ErpSyncLavelId;
             set => ErpSyncLavelId = (int)value;
         }
     }

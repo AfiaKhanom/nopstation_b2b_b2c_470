@@ -1,0 +1,864 @@
+@model ShoppingCartModel
+
+@using Nop.Core
+@using Nop.Core.Domain.Catalog
+@using Nop.Core.Domain.Orders
+@using Nop.Core.Domain.Tax
+@using Microsoft.AspNetCore.Mvc.ViewComponents
+@using NopStation.Plugin.B2B.B2BB2CFeatures
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Services.Customers
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality;
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpPriceSyncFunctionality;
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
+@using Nop.Services.Security;
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Infrastructure;
+@using Nop.Core.Domain.Media
+
+@inject IWebHelper webHelper
+@inject IWorkContext workContext
+@inject OrderSettings orderSettings
+@inject B2BB2CFeaturesSettings b2BCustomerAccountSettings
+@inject IShoppingCartService shoppingCartService
+@inject IErpCustomerFunctionalityService erpCustomerFunctionalityService
+@inject IErpPriceSyncFunctionalityService erpPriceSyncFunctionalityService
+@inject IPermissionService permissionService
+@inject IStoreContext storeContext
+@inject IViewComponentSelector viewComponentSelector
+@inject IWebHelper webHelper
+@inject OrderSettings orderSettings
+@inject MediaSettings mediaSettings
+
+@{
+    var currCustomer = await workContext.GetCurrentCustomerAsync();
+    var currStore = await storeContext.GetCurrentStoreAsync();
+    var shoppingCartItems = await shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.ShoppingCart);
+    var b2bOrderId = await genericAttributeService.GetAttributeAsync<int>(currCustomer, B2BB2CFeaturesDefaults.B2BConvertedQuoteB2BOrderId, currStore.Id);
+    var b2COrderId = await genericAttributeService.GetAttributeAsync<int>(currCustomer, B2BB2CFeaturesDefaults.B2CConvertedQuoteB2COrderId, currStore.Id);
+    bool isB2BSalesOrderInValid = false;
+    bool isConvertedQuoteToOrder = false;
+    var isCartItemPriceRefreshEnable = b2BCustomerAccountSettings.EnableLivePriceChecks;
+    var isCartItemPriceRefreshRequired = false;
+
+    if (b2bOrderId > 0)
+    {
+        isConvertedQuoteToOrder = await erpCustomerFunctionalityService.CheckAndUpdateGenericAttributeOfB2BQuoteOrder(b2bOrderId, shoppingCartItems);
+    }
+    else if (b2COrderId > 0)
+    {
+        isConvertedQuoteToOrder = await erpCustomerFunctionalityService.CheckAndUpdateGenericAttributeOfB2CQuoteOrder(b2COrderId, shoppingCartItems);
+    }
+    var erpNopUser = await erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(currCustomer);
+    var isB2BCustomer = erpNopUser != null ? erpNopUser.ErpUserType == NopStation.Plugin.B2B.ERPIntegrationCore.Enums.ErpUserType.B2BUser : false;
+
+    var isAllowedToPlaceQuote = await permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BOrder);
+    var isAllowedToPlaceOrder = await permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BOrder);
+    var isAllowedToAddQuickOrder = await permissionService.AuthorizeAsync(B2BB2CPermissionProvider.EnableQuickOrder);
+
+    if (isB2BCustomer)
+    {
+        isB2BSalesOrderInValid = await erpCustomerFunctionalityService.IsErpAccountBlockSalesOrderAsync(currCustomer);
+        NopHtml.AddCssFileParts("https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
+
+        if (isCartItemPriceRefreshEnable)
+        {
+            isCartItemPriceRefreshRequired = await erpPriceSyncFunctionalityService.IsB2BPriceSyncRequiredAsync();
+
+            if (isCartItemPriceRefreshRequired)
+            {
+                await genericAttributeService.SaveAttributeAsync<bool>(currCustomer, B2BB2CFeaturesDefaults.CartItemsLivePriceSyncProcessing, true, currStore.Id);
+            }
+            else
+            {
+                await genericAttributeService.SaveAttributeAsync<bool>(currCustomer, B2BB2CFeaturesDefaults.CartItemsLivePriceSyncProcessing, false, currStore.Id);
+            }
+        }
+    }
+
+    NopHtml.AddCssFileParts("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Content/css/quickorderstyles.css");
+    NopHtml.AppendPageCssClassParts("html-b2b-b2c-feature");
+}
+<style>
+    #add-to-favourite {
+        background-color: #4ab2f1
+    }
+
+    .header-overlap .header-menu {
+        z-index: 5 !important;
+    }
+
+    .header-overlap .header {
+        z-index: 10 !important;
+    }
+</style>
+
+
+<div class="order-summary-content">
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderSummaryContentBefore, additionalData = Model })
+    @await Html.PartialAsync("_OrderReviewData", Model.OrderReviewData)
+
+    @if (Model.Items.Count > 0)
+    {
+        if (Model.Warnings.Count > 0)
+        {
+            <div class="message-error">
+                <ul>
+                    @foreach (var warning in Model.Warnings)
+                    {
+                        <li>@warning</li>
+                    }
+                </ul>
+            </div>
+        }
+        @*we add enctype = "multipart/form-data" because "File upload" attribute control type requires it*@
+        <form asp-route="ShoppingCart" method="post" enctype="multipart/form-data" id="shopping-cart-form">
+            <div class="table-wrapper">
+                <div class="table-container">
+                    <table class="cart">
+                        <colgroup>
+                            @if (Model.ShowSku)
+                            {
+                                <col width="1" />
+                            }
+                            @if (Model.ShowProductImages)
+                            {
+                                <col width="1" />
+                            }
+                            <col width="1" />
+
+                            <col width="1" />
+                            @if (Model.ShowVendorName)
+                            {
+                                <col width="1" />
+                            }
+                            <col width="1" />
+                            <col width="1" />
+                            <col width="1" />
+                            <col width="1" />
+                            <col width="1" />
+                            @if (Model.IsEditable)
+                            {
+                                <col width="1" />
+                            }
+                        </colgroup>
+                        <thead>
+                            <tr class="cart-header-row">
+                                @if (Model.ShowSku)
+                                {
+                                    <th class="sku" data-hide="w410, w480">@T("ShoppingCart.SKU")</th>
+                                }
+                                @if (Model.ShowProductImages)
+                                {
+                                    <th class="product-picture">@T("ShoppingCart.Image")</th>
+                                }
+                                <th class="product" data-hide="w410, w480, w580, w768">@T("ShoppingCart.Product(s)")</th>
+
+                                @if (Model.ShowVendorName)
+                                {
+                                    <th class="vendor" data-hide="w410, w480, w580, w768">@T("ShoppingCart.VendorName")</th>
+                                }
+                                @*
+                            <th class="unit-price wrap-text" data-hide="w410, w480">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).UnitPriceWithOutDiscount")</th>
+                            *@
+                                <th class="stock">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).Stock")</th>
+                                <th class="unit-price discounted-price wrap-text" data-hide="w410, w480">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).UnitPriceWithDiscount")</th>
+                                <th class="uom">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).UOM")</th>
+                                <th class="quantity">@T("ShoppingCart.Quantity")</th>
+                                <th class="subtotal wrap-text">@T("ShoppingCart.ItemTotal")</th>
+                                @if (Model.IsEditable)
+                                {
+                                    <th class="remove-from-cart">
+                                        @T("ShoppingCart.Remove")
+                                    </th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    @if (Model.ShowSku)
+                                    {
+                                        <td class="sku">
+                                            <label class="td-title">@T("ShoppingCart.SKU"):</label>
+                                            <span class="sku-number">@item.Sku</span>
+                                        </td>
+                                    }
+                                    @if (Model.ShowProductImages)
+                                    {
+                                        <td class="product-picture">
+                                            <a href="@(Url.RouteUrl<Product>(new { SeName = item.ProductSeName }))">
+                                                @if (viewComponentSelector.SelectComponent("LazyLoadImage") != null)
+                                                {
+                                                    @await Component.InvokeAsync("LazyLoadImage", new (string Key, string Value)[]
+                                                    {
+                                                        ("src", item.Picture.ImageUrl),
+                                                        ("alt", item.Picture.AlternateText),
+                                                        ("title", item.Picture.Title)
+                                                    })
+                                                }
+                                                else
+                                                {
+                                                    <img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" width="@mediaSettings.DefaultImageQuality" />
+                                                }
+                                            </a>
+                                        </td>
+                                    }
+                                    <td class="product">
+                                        <a href="@(Url.RouteUrl<Product>(new { SeName = item.ProductSeName }))" class="product-name">@item.ProductName</a>
+                                        @if (!string.IsNullOrEmpty(item.AttributeInfo))
+                                        {
+                                            <div class="attributes">
+                                                @Html.Raw(item.AttributeInfo)
+                                            </div>
+                                        }
+                                        @if (!string.IsNullOrEmpty(item.RecurringInfo))
+                                        {
+                                            <div class="recurring-info">
+                                                @Html.Raw(item.RecurringInfo)
+                                            </div>
+                                        }
+                                        @if (!string.IsNullOrEmpty(item.RentalInfo))
+                                        {
+                                            <div class="rental-info">
+                                                @Html.Raw(item.RentalInfo)
+                                            </div>
+                                        }
+                                        @if (Model.IsEditable && item.AllowItemEditing)
+                                        {
+                                            var editCartItemUrl = Url.RouteUrl<Product>(new { SeName = item.ProductSeName }, webHelper.GetCurrentRequestProtocol());
+                                            editCartItemUrl = webHelper.ModifyQueryString(editCartItemUrl, "updatecartitemid", item.Id.ToString());
+                                            <div class="edit-item">
+                                                <a href="@editCartItemUrl">@T("Common.Edit")</a>
+                                            </div>
+                                        }
+                                        @if (item.Warnings.Count > 0)
+                                        {
+                                            <div class="message-error">
+                                                <ul>
+                                                    @foreach (var warning in item.Warnings)
+                                                    {
+                                                        <li>@Html.Raw(warning)</li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        }
+                                    </td>
+
+                                    <td class="stock" id="productStok_@item.ProductId">
+                                        <label class="td-title">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).Stock"):</label>
+                                        <span class="product-stock"></span>
+                                    </td>
+
+                                    @if (Model.ShowVendorName)
+                                    {
+                                        <td class="vendor">
+                                            <label class="td-title">@T("ShoppingCart.VendorName"):</label>
+                                            <span class="vendor-name">@item.VendorName</span>
+                                        </td>
+                                    }
+                                    <td class="unit-price" id="unitPriceWithOutDiscount_@item.ProductId">
+                                        <label class="td-title">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).UnitPriceWithOutDiscount"):</label>
+                                        <span class="product-unitPriceWithOutDiscount"></span>
+                                    </td>
+                                    <td class="unit-price">
+                                        <label class="td-title">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).UnitPriceWithDiscount"):</label>
+                                        <span class="product-unit-price">@item.UnitPrice</span>
+                                    </td>
+
+                                    <td class="quantity">
+                                        <label class="td-title" for="itemquantity@(item.Id)">@T("ShoppingCart.Quantity"):</label>
+                                        @if (Model.IsEditable)
+                                        {
+                                            if (item.AllowedQuantities.Count > 0)
+                                            {
+                                                <select name="itemquantity@(item.Id)" id="itemquantity@(item.Id)" class="qty-dropdown">
+                                                    @foreach (var qty in item.AllowedQuantities)
+                                                    {
+                                                        <option selected="@qty.Selected" value="@qty.Value">@qty.Value</option>
+                                                    }
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                <div class="product-quantity">
+                                                    <div class="quantity up" id="quantity-up-@(item.Id)"></div>
+                                                    <input name="itemquantity@(item.Id)" id="itemquantity@(item.Id)" data-id="@item.Id" type="text" value="@(item.Quantity)" class="qty-input b2bProductQty b2bProductQty_@item.ProductId" data-productid="@item.ProductId" onchange="$('#updatecart').trigger('click');" />
+                                                    <div class="quantity down" id="quantity-down-@(item.Id)"></div>
+                                                </div>
+                                                <script asp-location="Footer">
+                                                    $(function () {
+                                                        $('#quantity-up-@(item.Id)').on('click',
+                                                            function (e) {
+                                                                var input = $(document).find('#itemquantity@(item.Id)');
+                                                                var oldValue = parseInt(input.val());
+                                                                var newVal = oldValue + 1;
+                                                                input.val(newVal.toString());
+                                                                input.trigger("change");
+                                                            });
+
+                                                        $('#quantity-down-@(item.Id)').on('click',
+                                                            function (e) {
+                                                                var input = $(document).find('#itemquantity@(item.Id)');
+                                                                var oldValue = parseInt(input.val());
+                                                                var newVal = oldValue - 1;
+                                                                input.val(newVal.toString());
+                                                                input.trigger("change");
+                                                            });
+                                                    });
+                                                </script>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="product-quantity">@item.Quantity</span>
+                                        }
+                                    </td>
+                                    <td class="subtotal">
+                                        <label class="td-title">@T("ShoppingCart.ItemTotal"):</label>
+                                        <span class="product-subtotal">@item.SubTotal</span>
+                                        @if (!string.IsNullOrEmpty(item.Discount))
+                                        {
+                                            <div class="discount">
+                                                @T("ShoppingCart.ItemYouSave", item.Discount)
+                                            </div>
+                                            if (item.MaximumDiscountedQty.HasValue)
+                                            {
+                                                <div class="discount-additional-info">
+                                                    @T("ShoppingCart.MaximumDiscountedQty", item.MaximumDiscountedQty.Value)
+                                                </div>
+                                            }
+                                        }
+                                    </td>
+                                    @if (Model.IsEditable)
+                                    {
+                                        <td class="remove-from-cart">
+                                            @if (item.DisableRemoval)
+                                            {
+                                                <text>&nbsp;</text>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" name="removefromcart" id="removefromcart@(item.Id)" value="@(item.Id)" aria-label="@T("ShoppingCart.Remove")" />
+                                                <button type="button" name="updatecart" class="remove-btn" onclick="$('#removefromcart@(item.Id)').attr('checked', true); $('#update-shoppingcart').click();"></button>
+                                            }
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                @if (Model.IsEditable && Model.Items.Count > 0 && Model.DisplayTaxShippingInfo)
+                {
+                    var inclTax = await workContext.GetTaxDisplayTypeAsync() == TaxDisplayType.IncludingTax;
+                    //tax info is already included in the price (incl/excl tax). that's why we display only shipping info here
+                    //of course, you can modify appropriate locales to include VAT info there
+                    <div class="tax-shipping-info">
+                        @T(inclTax ? "ShoppingCart.TaxShipping.InclTax" : "ShoppingCart.TaxShipping.ExclTax", Url.RouteTopicUrl("shippinginfo"))
+                    </div>
+                }
+                <div class="cart-options">
+                    @if (Model.IsEditable)
+                    {
+                        <div class="common-buttons">
+                            <button type="submit" name="updatecart" id="updatecart" class="button-2 update-cart-button">@T("ShoppingCart.UpdateCart")</button>
+                            <button id="update-shoppingcart" type="submit" name="updatecart" style="display:none;" value="@T("ShoppingCart.UpdateCart")" class="button-2 update-cart-button"><span>@T("ShoppingCart.UpdateCart")</span></button>
+                            @*<button type="button" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.Cart.Button.ClearCart")" class="button-2 clear-cart-button"><span>@T("Plugin.Misc.NopStation.B2BB2CFeatures.Cart.Button.ClearCart")</span></button>*@
+                            <button type="submit" name="continueshopping" value="@T("ShoppingCart.ContinueShopping")" class="button-2 continue-shopping-button">@T("ShoppingCart.ContinueShopping")</button>
+                            @if (isAllowedToAddQuickOrder && b2BCustomerAccountSettings.DisplayAddToQuickListFavouriteButton)
+                            {
+                                <button id="quickListFavouriteButton" name="quickListFavouriteButton" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.AddToQuickListFavourite.Button")" class="button-2 add-quick-list-favourite-button"><span>@T("Plugin.Misc.NopStation.B2BB2CFeatures.AddToQuickListFavourite.Button")</span></button>
+                                <div id="quickListFavouriteDialog" class="modal" title="@T("Plugin.Misc.NopStation.B2BB2CFeatures.AddToQuickListFavourite.Title")">
+                                    <div class="modal-content">
+                                        <span id="closeQuickListFavouriteButton" style="top:0px;" class="close">&times;</span>
+                                        <div class="form-horizontal">
+                                            <div class="row" style="display:flex;">
+                                                <div class="col-md-4">
+                                                    <div class="label-wrapper">
+                                                        <label class="control-label" style="font-size:15px;padding:5px;">
+                                                            @T("Plugin.Misc.NopStation.B2BB2CFeatures.AddToQuickListFavouriteButton.Name")
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <input type="text" id="templateName" name="templateName" class="form-control" />
+                                                    <button type="submit" class="btn btn-primary" id="add-to-favourite" onclick="return false;">
+                                                        @T("Plugin.Misc.NopStation.B2BB2CFeatures.AddToQuickListFavouriteButton.Save")
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            }
+                            @await Component.InvokeAsync(typeof(ShoppingCartEstimateShippingViewComponent))
+                        </div>
+                        @await Html.PartialAsync("_CheckoutAttributes", Model)
+                    }
+                    @await Component.InvokeAsync(typeof(SelectedCheckoutAttributesViewComponent))
+
+                </div>
+
+            </div>
+
+            <div class="cart-footer">
+                @await Component.InvokeAsync("Widget", new { widgetZone = PublicWidgetZones.OrderSummaryCartFooter })
+                @if (Model.IsEditable)
+                {
+                    <div class="cart-collaterals">
+                        @if (Model.DiscountBox.Display || Model.GiftCardBox.Display)
+                        {
+                            <div class="cart-collaterals">
+                                <div class="deals">
+                                    @await Html.PartialAsync("_DiscountBox", Model.DiscountBox)
+                                    @await Html.PartialAsync("_GiftCardBox", Model.GiftCardBox)
+                                    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderSummaryContentDeals, additionalData = Model })
+                                </div>
+                            </div>
+                        }
+                        @*@await Component.InvokeAsync(typeof(ShoppingCartEstimateShippingViewComponent))*@
+                    </div>
+                }
+                else
+                {
+                    <div class="cart-collaterals">
+                        <div class="deals">
+                            @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderSummaryContentDeals, additionalData = Model })
+                        </div>
+                    </div>
+                }
+                <div class="totals">
+                    @*<div class="title">
+                        <strong>@T("Cart.Totals.Title")</strong>
+                    </div>*@
+                    <div class="b2b-customer-savings"></div>
+                    @await Component.InvokeAsync("OrderTotals", new { isEditable = Model.IsEditable })
+                    @if (Model.IsEditable)
+                    {
+                        if (!string.IsNullOrEmpty(Model.MinOrderSubtotalWarning))
+                        {
+                            <div class="min-amount-warning">
+                                @Model.MinOrderSubtotalWarning
+                            </div>
+                        }
+                        @if (isAllowedToPlaceQuote && b2BCustomerAccountSettings.EnableQuoteFunctionality)
+                        {
+                            <div id="change-qty-of-quote-warning-box" title="@T("B2B.Quote.Order.QuantityChangeWarning")" style="display: none;">
+                                <div>
+                                    <p style="text-align:center !important;">
+                                        @T("B2B.Quote.Order.QuantityChangeWarning.Message")
+                                    </p>
+                                </div>
+                                <br />
+                                <div style="text-align: center !important; display: flex; justify-content: space-between;">
+                                    <button type="button" class="button-1" id="cancel-btn">
+                                        <span>@T("B2B.Quote.Order.QuantityChangeWarning.Cancel")</span>
+                                    </button>
+                                    <button type="button" class="button-1" id="continue-btn">
+                                        <span>@T("B2B.Quote.Order.QuantityChangeWarning.Continue")</span>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                        if (Model.TermsOfServiceOnShoppingCartPage)
+                        {
+                            <div id="terms-of-service-warning-box" title="@T("Checkout.TermsOfService")" style="display: none;">
+                                <p>@T("Checkout.TermsOfService.PleaseAccept")</p>
+                            </div>
+                            <div class="terms-of-service">
+                                <input id="termsofservice" type="checkbox" name="termsofservice" />
+                                <label for="termsofservice">@T("Checkout.TermsOfService.IAccept")</label>
+                                @if (Model.TermsOfServicePopup)
+                                {
+                                    <a class="read" id="read-terms">@T("Checkout.TermsOfService.Read")</a>
+                                    <script type="text/javascript" asp-location="Footer">
+                                        $(document).ready(function () {
+                                            $('#read-terms').on('click',
+                                                function (e) {
+                                                    e.preventDefault();
+                                                    displayPopupContentFromUrl(
+                                                        '@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofuse" })',
+                                                        '@T("Checkout.TermsOfService")');
+                                                });
+                                        });
+                                    </script>
+                                }
+                                else
+                                {
+                                    <a class="read" id="read-terms" href="@Url.RouteTopicUrl("conditionsofuse")">@T("Checkout.TermsOfService.Read")</a>
+                                }
+                            </div>
+                        }
+                        @if (!isCartItemPriceRefreshRequired)
+                        {
+                            <div class="checkout-buttons hide-checkout-btn" style="text-align:center;">
+                                @if (string.IsNullOrEmpty(Model.MinOrderSubtotalWarning) && !Model.HideCheckoutButton)
+                                {
+                                    <script type="text/javascript" asp-location="Footer">
+                                        $(document).ready(function () {
+                                            $('#checkout').on('click', function () {
+                                                //terms of service
+                                                var termOfServiceOk = true;
+                                                if ($('#termsofservice').length > 0) {
+                                                    //terms of service element exists
+                                                    if (!$('#termsofservice').is(':checked')) {
+                                                        $("#terms-of-service-warning-box").dialog();
+                                                        termOfServiceOk = false;
+                                                    } else {
+                                                        termOfServiceOk = true;
+                                                    }
+                                                }
+                                                return termOfServiceOk;
+                                            });
+                                        });
+                                    </script>
+                                    @if (!isConvertedQuoteToOrder)
+                                    {
+                                        @if (isAllowedToPlaceQuote && b2BCustomerAccountSettings.EnableQuoteFunctionality)
+                                        {
+                                            <button type="submit" id="quote" name="quote" value="quote" formaction='@Url.Action("Cart", "OverridenShoppingCart")' class="button-1 checkout-button">
+                                                @T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpOrder.Button.QuoteOrder")
+                                            </button>
+                                        }
+                                        @if (isAllowedToPlaceOrder && !isB2BSalesOrderInValid)
+                                        {
+                                            <button type="submit" id="checkout" name="checkout" value="checkout" class="button-1 checkout-button">
+                                                @T("Checkout.Button")
+                                            </button>
+                                        }
+                                    }
+                                    else if (isAllowedToPlaceOrder && !isB2BSalesOrderInValid)
+                                    {
+                                        <button type="submit" id="checkpricechange" name="checkpricechange" value="checkpricechange" class="button-1 checkout-button convert-to-order">
+                                            @T("NopStation.Plugin.NopStation.B2BB2CFeatures.Quote.Order.ConvertQuoteToOrder")
+                                        </button>
+                                        <button hidden type="submit" id="checkout" name="checkout" value="checkout" class="convert-to-order">
+                                            @T("NopStation.Plugin.NopStation.B2BB2CFeatures.Quote.Order.ConvertQuoteToOrder")
+                                        </button>
+                                        <script type="text/javascript" asp-location="Footer">
+                                            $(document).ready(function () {
+                                                $('#checkpricechange').on('click', function () {
+                                                    event.preventDefault();
+                                                    CheckCartItemQuotePriceChangeWarning();
+                                                    return false;
+                                                });
+                                            });
+                                        </script>
+                                    }
+                                }
+                            </div>
+                        }
+                        <div class="addon-buttons">
+                            @*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express)*@
+                            @foreach (var pm in Model.ButtonPaymentMethodViewComponents)
+                            {
+                                @await Component.InvokeAsync(pm)
+                            }
+                        </div>
+                    }
+                    @*<div class="terms-and-conditions-massage">
+                        @T("Order.Summary.TermsAndConditions.Message")
+                    </div>*@
+                </div>
+            </div>
+            @if (Model.IsEditable)
+            {
+                @await Component.InvokeAsync(typeof(CrossSellProductsViewComponent))
+            }
+        </form>
+    }
+    else
+    {
+        <div class="no-data">
+            @T("ShoppingCart.CartIsEmpty")
+        </div>
+    }
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderSummaryContentAfter, additionalData = Model })
+</div>
+
+<script asp-location="Footer">
+    $("#checkout").click(function (event) {
+        var isCartItemsLivePriceSyncProcessing = checkIsCartItemsLivePriceSyncProcessing(event)
+        //event.preventDefault();
+        if (isCartItemsLivePriceSyncProcessing) {
+            event.preventDefault();
+        }
+    });
+
+    $("#quote").click(function (event) {
+        var isCartItemsLivePriceSyncProcessing = checkIsCartItemsLivePriceSyncProcessing(event)
+        //console.log(isCartItemsLivePriceSyncProcessing)
+        if (isCartItemsLivePriceSyncProcessing) {
+            event.preventDefault();
+        }
+    });
+
+    function checkIsCartItemsLivePriceSyncProcessing(e) {
+        var ajaxResponse = $.ajax({
+            cache: true,
+            url: '@Url.RouteUrl("IsCartItemsLivePriceSyncProcessing")',
+            type: 'GET',
+            async: false,
+            dataType: "json",
+            success: function (response) {
+                var isCartItemsLivePriceSyncProcessing = response.IsCartItemsLivePriceSyncProcessing;
+                if (isCartItemsLivePriceSyncProcessing) {
+                    alert('@T("Plugin.Misc.NopStation.B2BB2CFeatures.LivePriceSync.CartItemsLivePriceSyncPrecessing")')
+                }
+            },
+            error: function () {
+                console.log("Live Price Check failed");
+            }
+        });
+        console.log("IsCartItemsLivePriceSyncProcessing: " + ajaxResponse.responseJSON.data)
+        return ajaxResponse.responseJSON.data;
+    }
+</script>
+
+@if (isCartItemPriceRefreshRequired)
+{
+    <div id="priceUpdateNotificationDialog" title="@T("Plugin.Misc.NopStation.B2BB2CFeatures.LivePriceSync.Title")" style="display: none;">
+        <form asp-controller="OverridenOrder" asp-action="ReOrder" class="quote-order-confirm-accept-form" method="post" enctype="multipart/form-data">
+            <div>
+                <h2 id="priceUpdateNotificationMessage"></h2>
+            </div>
+            <br />
+            <div class="price-update-popup-buttons">
+                <input type="button" name="accept" onclick="closePopup()" value="@T("common.ok")" class="button-1 bg-green" />
+            </div>
+
+            <script asp-location="Footer">
+                function closePopup() {
+                    location.reload();
+                }
+            </script>
+        </form>
+    </div>
+    <script asp-location="Footer">
+        $(document).ready(function () {
+            CurrentCartItemsLivePriceCheck()
+        });
+
+        function CurrentCartItemsLivePriceCheck() {
+            $.ajax({
+                cache: true,
+                url: "@Url.RouteUrl("CurrentCartItemsLivePriceCheck")",
+                type: 'GET',
+                dataType: "json",
+                success: function (response) {
+                    var isInvalidResponse = isNullorEmpty(response.data.trim())
+
+                    if (isInvalidResponse) {
+                        location.reload();
+                        return;
+                    }
+                    else {
+                        @*alert(response.message);
+                        var msg = '@T("Plugin.Misc.NopStation.B2BB2CFeatures.LivePriceSync.PriceUpdatedProductSku")';
+                        msg = msg + response.data;
+                        alert(msg);
+                        location.reload();*@
+                        $("#priceUpdateNotificationMessage").text(response.message);
+                        $("#priceUpdateNotificationDialog").dialog({
+                            modal: true,
+                            draggable: false,
+                            closeOnEscape: false,
+                            clickClose: false,
+                            showClose: false
+                        });
+                    }
+
+                },
+                error: function () {
+                    console.log("Live Price Check failed");
+                }
+            });
+        }
+    </script>
+}
+
+@if (Model.IsEditable)
+{
+    <script asp-location="Footer">
+
+        function isNullorEmpty(str) {
+            return (!str || str.length === 0);
+        }
+
+        $("#quickListFavouriteButton").click(function (event) {
+            event.preventDefault();
+            $("#quickListFavouriteDialog").css("display", "block");
+        });
+
+        $(document).ready(function () {
+            ajaxB2BOrderSummeryDataLoad.loadCurrentCartItemsLiveStockCheck();
+            ajaxB2BOrderSummeryDataLoad.loadOrderSummeryItemB2BData();
+
+            //loadB2BAccountInfoFromErpAjax();
+        });
+
+        var ajaxB2BOrderSummeryDataLoad = {
+            loadCurrentCartItemsLiveStockCheck: function () {
+                $.ajax({
+                    cache: true,
+                    url: "@Url.RouteUrl("CurrentCartItemsLiveStockCheck")",
+                    type: 'GET',
+                    dataType: "json",
+                    error: function () {
+                        console.log("Live Stock Check failed");
+                    }
+                });
+            },
+
+            loadOrderSummeryItemB2BData: function () {
+                $.ajax({
+                    cache: true,
+                    url: "@Url.RouteUrl("LoadB2BCartItemData")",
+                    type: 'GET',
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.Data) {
+                            for (var i = 0; i < response.Data.Items.length; i++) {
+                                var itemId = response.Data.Items[i].Id;
+                                $('#weight_' + itemId).html("<label class='td-title'>Weight:</label> <span class='product-itemweight'>" + response.Data.Items[i].WeightValue + "</span >");
+                                $('#unitPriceWithOutDiscount_' + itemId).html("<label class='td-title'>UnitPriceWithOutDiscount:</label> <span class='product-unitPriceWithOutDiscount'>" + response.Data.Items[i].UnitPriceWithOutDiscount + "</span >");
+                                $('#uom_' + itemId).html("<label class='td-title'>UOM:</label> <span class='product-uom'>" + response.Data.Items[i].Uom + "</span >");
+                                $('#productStok_' + itemId).html("<label class='td-title'>Stock:</label> <span class='product-stock'>" + response.Data.Items[i].StockAvailability + "</span >");
+                                if (response.Data.Items[i].IsBackOrder) {
+                                    $('#backorderWarning_' + itemId).html("@T("B2B.OrderSummery.CartItem.BackorderWarning")");
+                                }
+                            }
+                        }
+                    },
+                    error: function () {
+                        console.log("Can Not Load B2B Data");
+                    }
+                });
+            }
+        };
+
+        function removeFromCart(id) {
+            if ($('#removechackbox-' + id).is(":checked")) {
+                $("#update-shoppingcart").click();
+            }
+        }
+
+        function delay(fn, ms) {
+            let timer = 0
+            return function (args) {
+                clearTimeout(timer)
+                timer = setTimeout(fn.bind(this, args), ms || 0)
+            }
+        }
+
+        $('.b2bProductQty').on('change', delay(function (e) {
+            $("#update-shoppingcart").click();
+        }, 100));
+
+        function loadB2BAccountInfoFromErpAjax() {
+            $.ajax({
+                cache: true,
+                type: "GET",
+                url: "@Url.Action("GetCustomerAccountSavingsForthisYear", "B2BAccountPublic")",
+                dataType: "json",
+                success: function (data, textStatus, jqXHR) {
+                    if (data.success) {
+                        $('.b2b-customer-savings').html('<h3>@T("B2B.B2BAccountPublic.Cart.CustomerAccountSavings") ' + data.totalSavings + '</h3>');
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("customer savings data sync failed");
+                }
+            });
+        }
+
+        function CheckCartItemQuotePriceChangeWarning() {
+            $.ajax({
+                cache: true,
+                url: "@Url.RouteUrl("CheckCartItemQuotePriceChangeWarning")",
+                type: 'GET',
+                dataType: "json",
+                success: function (response) {
+                    if (response.Data) {
+                        //before checking terms and service, check price change and show warning
+                        $("#change-qty-of-quote-warning-box").dialog({
+                            modal: true,
+                            draggable: false,
+                            closeOnEscape: true
+                        });
+
+                        // Handle the click event of the "Cancel" button
+                        $("#change-qty-of-quote-warning-box #cancel-btn").on("click", function () {
+                            $("#change-qty-of-quote-warning-box").dialog("close");
+                        });
+
+                        // Handle the click event of the "Continue" button
+                        $("#change-qty-of-quote-warning-box #continue-btn").on("click", function () {
+                            $("#change-qty-of-quote-warning-box").dialog("close");
+                            // Trigger form submission
+                            $("#checkout").click();
+                        });
+                    } else {
+                        $("#checkout").click();
+                    }
+                },
+                error: function () {
+                    console.log("Can Not Load Price Change Data");
+                }
+            });
+        }
+    </script>
+}
+
+
+
+<script asp-location="Footer">
+    $("#closeQuickListFavouriteButton").click(function (event) {
+        $("#quickListFavouriteDialog").css("display", "none");
+    });
+    $("#quickListFavouriteButton").click(function (event) {
+        event.preventDefault();
+        $("#quickListFavouriteDialog").css("display", "block");
+
+    });
+
+    $("#add-to-favourite").click(function (event) {
+        var url = "/QuickOrder/CreateUsingCart";
+        var templateNameValue = $("#templateName").val();
+        var postData = {
+            templateName: templateNameValue
+        };
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: addAntiForgeryToken(postData),
+            success: function (response) {
+                location.reload();
+            },
+            error: function (error) {
+                alert("Error:", error);
+            }
+        });
+    });
+
+
+    $(document).ready(function () {
+        $('.header').on('mouseenter', '#topcartlink', function () {
+            $('body').addClass('header-overlap');
+        });
+        $('.header').on('mouseleave', '#topcartlink', function () {
+            $('body').removeClass('header-overlap');
+        });
+        $('.header').on('mouseenter', '#flyout-cart', function () {
+            $('body').addClass('header-overlap');
+        });
+        $('.header').on('mouseleave', '#flyout-cart', function () {
+            $('body').removeClass('header-overlap');
+        });
+    });
+
+</script>

@@ -5,18 +5,13 @@ using Nop.Services.Payments;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
 
-namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Overriden
+namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Overriden;
+
+public interface IOverriddenOrderProcessingService
 {
-    public interface IOverriddenOrderProcessingService
-    {
-        Task<PlaceOrderResult> PlaceQuoteOrderAsync(ProcessPaymentRequest processPaymentRequest);
+    Task<PlaceOrderResult> PlaceQuoteOrderAsync(ProcessPaymentRequest processPaymentRequest);
 
-        Task PlaceERPOrderAtNopAsync(Order order, ErpOrderType erpOrderType);
+    Task PlaceErpOrderAtNopAsync(Order order, ErpOrderType erpOrderType);
 
-        Task<(bool, string)> RetryPlaceERPOrderAtERPAsync(ErpOrderAdditionalData orderAdditionalData, B2BB2CFeaturesSettings b2BB2CFeaturesSettings);
-
-        //Task PlaceB2COrderAtNopAsync(Order order, ErpOrderType erpOrderType);
-
-        //Task<(bool, string)> RetryPlaceB2COrderAtERPAsync(ErpOrderAdditionalData orderPerUser);
-    }
+    Task<(bool, string)> RetryPlaceErpOrderAtErpAsync(ErpOrderAdditionalData erpOrderAdditionalData, B2BB2CFeaturesSettings b2BB2CFeaturesSettings);
 }

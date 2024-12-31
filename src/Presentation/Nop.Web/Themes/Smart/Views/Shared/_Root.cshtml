@@ -1,0 +1,82 @@
+﻿@{
+    Layout = "_Root.Head";
+}
+@await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.BodyStartHtmlTagAfter })
+@{ await Html.RenderPartialAsync("_Notifications"); }
+@{ await Html.RenderPartialAsync("_JavaScriptDisabledWarning"); }
+
+@await Component.InvokeAsync(typeof(AdminHeaderLinksViewComponent))
+
+@{
+    var homePageCss = String.Empty;
+    var missingHomePageSlider = String.Empty;
+    var homePageMainSliderHtml = String.Empty;
+
+    var controllerName = Url.ActionContext.RouteData.Values["controller"].ToString();
+    var isHomePage = controllerName.Equals("home", StringComparison.InvariantCultureIgnoreCase);
+    if (isHomePage)
+    {
+        homePageCss = "fullscreen";
+        var homePageMainSlider = await Component.InvokeAsync("Widget", new { widgetZone = "home_page_main_slider" });
+        homePageMainSliderHtml = await homePageMainSlider.RenderHtmlContentAsync();
+
+        if (String.IsNullOrEmpty(homePageMainSliderHtml))
+        {
+            missingHomePageSlider = "no-slider";
+        }
+    }
+}
+
+<div class="master-wrapper-page @homePageCss @missingHomePageSlider">
+    <script asp-location="Footer">
+        var localized_data = {
+            AjaxCartFailure: "@T("AjaxCart.Failure")"
+        };
+        AjaxCart.init(false, '.header-links .cart-qty', '.header-links .wishlist-qty', '#flyout-cart', localized_data);
+    </script>
+    <div class="overlayOffCanvas"></div>
+    @{ await Html.RenderPartialAsync("_Header"); }
+    <div class="responsive-nav-wrapper-parent">
+        <div class="responsive-nav-wrapper">
+            <div class="menu-title">
+                <span>@T("SevenSpikes.Themes.Common.MenuTitle")</span>
+            </div>
+            <div class="filters-button">
+                <span>@T("SevenSpikes.Themes.Common.Filters")</span>
+            </div>
+        </div>
+    </div>
+    <div class="justAFixingDivBefore"></div>
+    <div class="header-menu">
+        <div class="close-menu">
+            <span>@T("SevenSpikes.Themes.Common.CloseMenu")</span>
+        </div>
+        @{
+            var menu = await Component.InvokeAsync("Widget", new { widgetZone = "theme_header_menu" });
+        }
+        @if (String.IsNullOrEmpty(await menu.RenderHtmlContentAsync()))
+        {
+            @await Component.InvokeAsync(typeof(TopMenuViewComponent))
+        }
+        else
+        {
+            @menu
+        }
+    </div>
+    <div class="master-wrapper-content" id="main" role="main">
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ContentBefore })
+        @*ajax loading window*@
+        <div class="ajax-loading-block-window" style="display: none">
+            <div class="loading-image">
+            </div>
+        </div>
+        @Html.Raw(homePageMainSliderHtml)
+        <div class="master-column-wrapper">
+            @RenderBody()
+        </div>
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ContentAfter })
+    </div>
+    @await Component.InvokeAsync(typeof(FooterViewComponent))
+</div>
+@await Component.InvokeAsync(typeof(EuCookieLawViewComponent))
+@await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.BodyEndHtmlTagBefore })

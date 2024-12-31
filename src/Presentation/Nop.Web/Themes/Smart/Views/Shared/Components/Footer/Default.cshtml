@@ -1,0 +1,119 @@
+﻿@using Nop.Core
+@using Nop.Core.Domain.Tax
+@using Nop.Core.Domain.Topics
+@using Nop.Services.Configuration
+
+@inject IStoreContext storeContext
+@inject IWorkContext workContext
+@inject ISettingService settingService
+
+@model FooterModel
+
+@{
+    var storeId = (await storeContext.GetCurrentStoreAsync()).Id;
+    var removeCopyright = await settingService.GetSettingByKeyAsync("smartthemesettings.removecopyright", false, storeId, true);
+    var removeDesignedBy = await settingService.GetSettingByKeyAsync("smartthemesettings.removedesignedby", false, storeId, true);
+}
+
+<div class="footer">
+    <div class="footer-upper">
+        <div class="center">
+            <div class="footbox">
+                <h3 class="title">@T("SevenSpikes.Themes.Smart.Common.AboutUs.Title")</h3>
+                @await Component.InvokeAsync("TopicBlock", new { systemName = "AboutUs" })
+            </div>
+            <div class="footbox">
+                <h3 class="title">@T("SevenSpikes.Themes.Smart.Common.ContactUs")</h3>
+                <ul class="contacts">
+                    <li class="phone"><span>@T("SevenSpikes.Themes.Smart.Common.Phone")</span></li>
+                    <li class="mobile"><span>@T("SevenSpikes.Themes.Smart.Common.Mobile")</span></li>
+                    <li class="email"><span><a href="javascript:sevenSpikesCore.AntiSpam('@T("SevenSpikes.Themes.Smart.Common.EmailName")', '@T("SevenSpikes.Themes.Smart.Common.EmailDomain")')">@T("SevenSpikes.Themes.Smart.Common.EmailName")@T("SevenSpikes.Themes.Smart.Common.EmailAt")@T("SevenSpikes.Themes.Smart.Common.EmailDomain")</a></span></li>
+                    @*<li class="skype"><span>@T("SevenSpikes.Themes.Smart.Common.Skype")</span></li>*@
+                </ul>
+            </div>
+            <div class="footbox">
+                <h3 class="title">@T("Footer.FollowUs")</h3>
+                @await Component.InvokeAsync(typeof(SocialButtonsViewComponent))
+            </div>
+            <div class="footbox">
+                <h3 class="title">@T("Newsletter.Title")</h3>
+                @await Component.InvokeAsync(typeof(NewsletterBoxViewComponent))
+            </div>
+        </div>
+    </div>
+    <div class="footer-middle">
+        <div class="center">
+            <div class="footlist">
+                <h3 class="title">@T("SevenSpikes.Themes.Smart.Common.LegalInformation")</h3>
+                <ul>
+                    @foreach (var topic in Model.Topics.Where(x => x.IncludeInFooterColumn1).ToList())
+                    {
+                        <li><a href="@(Url.RouteUrl<Topic>(new { SeName = topic.SeName }))">@topic.Name</a></li>
+                    }
+                </ul>
+            </div>
+            <div class="footlist">
+                <h3 class="title">@T("SevenSpikes.Themes.Smart.Common.ShippingReturns")</h3>
+                <ul>
+                    @foreach (var topic in Model.Topics.Where(x => x.IncludeInFooterColumn2).ToList())
+                    {
+                        <li><a href="@(Url.RouteUrl<Topic>(new { SeName = topic.SeName }))">@topic.Name</a></li>
+                    }
+                </ul>
+            </div>
+            <div class="footlist">
+                <h3 class="title">@T("SevenSpikes.Themes.Smart.Common.AffiliateExtras")</h3>
+                <ul>
+                    @foreach (var topic in Model.Topics.Where(x => x.IncludeInFooterColumn3).ToList())
+                    {
+                        <li><a href="@(Url.RouteUrl<Topic>(new { SeName = topic.SeName }))">@topic.Name</a></li>
+                    }
+                </ul>
+            </div>
+            <div class="footlist">
+                <h3 class="title">@T("SevenSpikes.Themes.Smart.Common.ServiceSupport")</h3>
+                <ul>
+                    <li><a href="@Url.RouteTopicUrl("customerassistance")">@T("SevenSpikes.Themes.Smart.Common.CustomerAssistance")</a></li>
+                    <li><a href="@Url.RouteTopicUrl("faq")">@T("SevenSpikes.Themes.Smart.Common.FAQ")</a></li>
+                    @if (Model.DisplayContactUsFooterItem)
+                    {
+                        <li><a href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a></li>
+                    }
+                    @if (Model.AllowCustomersToApplyForVendorAccount && Model.DisplayApplyVendorAccountFooterItem)
+                    {
+                        <li><a href="@Url.RouteUrl("ApplyVendorAccount")">@T("Vendors.ApplyAccount")</a></li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="footer-lower">
+        <div class="center">
+            <div class="footer-disclaimer">
+                @T("Content.CopyrightNotice", DateTime.Now.Year.ToString(), Model.StoreName)
+            </div>
+
+            @if (!removeCopyright)
+            {
+                <div class="footer-powered-by">
+                    Powered by <a href="@(OfficialSite.Main)" target="_blank" @(Model.IsHomePage ? string.Empty : "rel=nofollow")>nopCommerce</a>
+                </div>
+            }
+            @if (!removeDesignedBy)
+            {
+                <div class="footer-designed-by">
+                    Designed by <a href="https://www.nop-templates.com/" target="_blank">Nop-Templates.com</a>
+                </div>
+            }
+            @await Component.InvokeAsync("StoreThemeSelector")
+            @if (Model.DisplayTaxShippingInfoFooter)
+            {
+                var inclTax = await workContext.GetTaxDisplayTypeAsync() == TaxDisplayType.IncludingTax;
+                <div class="footer-tax-shipping">
+                    @T(inclTax ? "Footer.TaxShipping.InclTax" : "Footer.TaxShipping.ExclTax", Url.RouteTopicUrl("shippinginfo"))
+                </div>
+            }
+        </div>
+    </div>
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.Footer, additionalData = Model })
+</div>

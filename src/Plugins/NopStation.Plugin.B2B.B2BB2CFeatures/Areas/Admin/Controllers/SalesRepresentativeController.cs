@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Nop.Core;
 using Nop.Core.Caching;
 using Nop.Core.Domain.Customers;
 using Nop.Services.Customers;
@@ -32,7 +33,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
         private readonly INotificationService _notificationService;
         private readonly ILocalizationService _localizationService;
         private readonly ICustomerService _customerService;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
+        private readonly IWorkContext _workContext;
         private readonly IPermissionService _permissionService;
         private readonly IErpSalesRepSalesOrgMapService _erpSalesRepSalesOrgMapService;
         private readonly IErpSalesRepModelFactory _erpSalesRepModelFactory;
@@ -49,25 +50,25 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             INotificationService notificationService,
             ILocalizationService localizationService,
             ICustomerService customerService,
-            IB2BB2CWorkContext b2BB2CWorkContext,
             IPermissionService permissionService,
             IErpSalesRepSalesOrgMapService erpSalesRepSalesOrgMapService,
             IErpSalesRepModelFactory erpSalesRepModelFactory,
             IStaticCacheManager staticCacheManager,
             IErpLogsService erpLogsService,
-            IErpActivityLogsService erpActivityLogsService)
+            IErpActivityLogsService erpActivityLogsService,
+            IWorkContext workContext)
         {
             _erpSalesRepService = erpSalesRepService;
             _notificationService = notificationService;
             _localizationService = localizationService;
             _customerService = customerService;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
             _permissionService = permissionService;
             _erpSalesRepSalesOrgMapService = erpSalesRepSalesOrgMapService;
             _erpSalesRepModelFactory = erpSalesRepModelFactory;
             _staticCacheManager = staticCacheManager;
             _erpLogsService = erpLogsService;
             _erpActivityLogsService = erpActivityLogsService;
+            _workContext = workContext;
         }
 
         #endregion
@@ -191,7 +192,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+                var currentCustomer = await _workContext.GetCurrentCustomerAsync();
 
                 var existingErpSalesRep = (await _erpSalesRepService.GetErpSalesRepsByNopCustomerIdAsync(model.NopCustomerId, true)).Any();
                 var salesRep = model.ToEntity<ErpSalesRep>();
@@ -213,7 +214,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                     var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesRepSalesOrgMap.ActivityLog.Updated");
                     _notificationService.SuccessNotification(successMsg);
 
-                    await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLavel.SalesRep, customer: currentCustomer);
+                    await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLevel.SalesRep, customer: currentCustomer);
 
                     //erp activity log
                     await _erpActivityLogsService.InsertErpActivityAsync("Erp_AddNewErpSalesRep",
@@ -224,7 +225,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 catch (Exception ex)
                 {
                     _notificationService.ErrorNotification(ex.Message);
-                    await _erpLogsService.ErrorAsync($"{ex.Message}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLavel.SalesRep, ex, customer: currentCustomer);
+                    await _erpLogsService.ErrorAsync($"{ex.Message}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLevel.SalesRep, ex, customer: currentCustomer);
                 }
 
                 if (!continueEditing)
@@ -270,7 +271,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+                var currentCustomer = await _workContext.GetCurrentCustomerAsync();
 
                 salesRep.NopCustomerId = model.NopCustomerId;
                 salesRep.SalesRepTypeId = model.SalesRepTypeId;
@@ -287,7 +288,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                     var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesRep.Updated");
                     _notificationService.SuccessNotification(successMsg);
 
-                    await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLavel.SalesRep, customer: currentCustomer);
+                    await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLevel.SalesRep, customer: currentCustomer);
 
                     //erp activity log
                     await _erpActivityLogsService.InsertErpActivityAsync("Erp_EditErpSalesRep",
@@ -321,7 +322,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             if (salesRep == null)
                 return RedirectToAction("List");
 
-            var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var currentCustomer = await _workContext.GetCurrentCustomerAsync();
 
             try
             {
@@ -341,7 +342,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesRep.Deleted");
                 _notificationService.SuccessNotification(successMsg);
 
-                await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLavel.SalesRep, customer: currentCustomer);
+                await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLevel.SalesRep, customer: currentCustomer);
 
                 //erp activity log
                 await _erpActivityLogsService.InsertErpActivityAsync("Erp_DeleteErpSalesRep",
@@ -354,7 +355,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             catch (Exception exc)
             {
                 _notificationService.ErrorNotification(exc.Message);
-                await _erpLogsService.ErrorAsync($"{exc.Message}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLavel.SalesRep, exc, customer: currentCustomer);
+                await _erpLogsService.ErrorAsync($"{exc.Message}. Erp Sales Rep Id: {salesRep.Id}", ErpSyncLevel.SalesRep, exc, customer: currentCustomer);
                 return RedirectToAction("Edit", new { id = salesRep.Id });
             }
         }
@@ -368,7 +369,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             if (selectedIds == null || selectedIds.Count == 0)
                 return NoContent();
 
-            var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var currentCustomer = await _workContext.GetCurrentCustomerAsync();
 
             try
             {
@@ -379,7 +380,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesRep.Deleted");
                 _notificationService.SuccessNotification(successMsg);
 
-                await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Rep Ids: {string.Join(",", selectedIds)}", ErpSyncLavel.SalesRep, customer: currentCustomer);
+                await _erpLogsService.InformationAsync($"{successMsg}. Erp Sales Rep Ids: {string.Join(",", selectedIds)}", ErpSyncLevel.SalesRep, customer: currentCustomer);
 
                 //erp activity log
                 await _erpActivityLogsService.InsertErpActivityAsync("Erp_DeleteErpSalesRep",
@@ -392,7 +393,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             catch (Exception exc)
             {
                 _notificationService.ErrorNotification(exc.Message);
-                await _erpLogsService.ErrorAsync($"{exc.Message}. Erp Sales Rep Ids: {string.Join(",", selectedIds)}", ErpSyncLavel.SalesRep, exc, customer: currentCustomer);
+                await _erpLogsService.ErrorAsync($"{exc.Message}. Erp Sales Rep Ids: {string.Join(",", selectedIds)}", ErpSyncLevel.SalesRep, exc, customer: currentCustomer);
             }
             return Json(new { Result = false });
         }

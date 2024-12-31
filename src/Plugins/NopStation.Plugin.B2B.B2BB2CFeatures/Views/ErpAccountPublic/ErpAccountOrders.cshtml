@@ -247,7 +247,7 @@
 
                     gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpAccountOrderDetailsModel.NopOrderId))
                     {
-                       Title = T("Plugins.Payments.B2BCustomerAccount.B2BAccountOrderDetails.DownloadInvoicePOD").Text,
+                       Title = T("NopStation.Plugin.B2B.B2BB2CFeatures.B2BAccountOrderDetails.DownloadInvoicePOD").Text,
                        Width = "200",
                        Render = new RenderCustom("renderColumnDownloadInvoicePOd"),
                        ClassName = NopColumnClassDefaults.Button
@@ -259,7 +259,7 @@
     </div>
     <script>
         function renderColumnDownloadInvoicePOd(data, type, row, meta) {
-            return row.IsInvoiceOrPodAvailable > 0 ? '<button type="button" style="background: #0270d3 !important;" onclick="downloadInvoicePOd(' + data + ' )" class="btn btn-primary btn-invoicepod-download">@T("Plugins.Payments.B2BCustomerAccount.B2BAccount.FinancialTransaction.Fields.DownloadInvoiceOrPod")</button>' : '<button type="button" class="btn btn-primary btn-invoice-download-disabled" disabled>@T("Plugins.Payments.B2BCustomerAccount.B2BAccount.FinancialTransaction.Fields.DownloadInvoiceOrPod")</button>';
+            return row.IsInvoiceOrPodAvailable > 0 ? '<button type="button" style="background: #0270d3 !important;" onclick="downloadInvoicePOd(' + data + ' )" class="btn btn-primary btn-invoicepod-download">@T("NopStation.Plugin.B2B.B2BB2CFeatures.B2BAccount.FinancialTransaction.Fields.DownloadInvoiceOrPod")</button>' : '<button type="button" class="btn btn-primary btn-invoice-download-disabled" disabled>@T("NopStation.Plugin.B2B.B2BB2CFeatures.B2BAccount.FinancialTransaction.Fields.DownloadInvoiceOrPod")</button>';
         }
 
         function renderColumnViewOrder(data, type, row, meta) {

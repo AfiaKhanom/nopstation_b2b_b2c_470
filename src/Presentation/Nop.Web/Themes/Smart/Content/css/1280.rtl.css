@@ -1,0 +1,8 @@
+
+@media all and (min-width: 1280px) {
+
+    .shopping-cart-page .common-buttons button,
+    .shopping-cart-page .common-buttons a {
+        margin: 0 15px 0 0;
+    }
+}

@@ -34,26 +34,26 @@
             <li>
             <button type="submit" name="b2bPerAccountProductPricing-exportexcel-all" id="PerAccountProductPricing-all">
             <i class="fa fa-file-code-o"></i>
-            @T("Plugins.Payments.B2BCustomerAccount.PerAccountProductPricing.All")
+            @T("NopStation.Plugin.B2B.B2BB2CFeatures.PerAccountProductPricing.All")
             </button>
             </li>
             <li>
             <button type="button" id="PerAccountProductPricing-selected">
             <i class="fa fa-file-code-o"></i>
-            @T("Plugins.Payments.B2BCustomerAccount.PerAccountProductPricing.Selected")
+            @T("NopStation.Plugin.B2B.B2BB2CFeatures.PerAccountProductPricing.Selected")
             </button>
             </li>
             <li class="divider"></li>
             <li>
             <button type="submit" name="b2bPriceGroupProductPricing-exportexcel-all"  id="PriceGroupProductPricing-all">
             <i class="fa fa-file-excel-o"></i>
-            @T("Plugins.Payments.B2BCustomerAccount.PriceGroupProductPricing.All")
+            @T("NopStation.Plugin.B2B.B2BB2CFeatures.PriceGroupProductPricing.All")
             </button>
             </li>
             <li>
             <button type="button" id="PriceGroupProductPricing-selected">
             <i class="fa fa-file-excel-o"></i>
-            @T("Plugins.Payments.B2BCustomerAccount.PriceGroupProductPricing.Selected")
+            @T("NopStation.Plugin.B2B.B2BB2CFeatures.PriceGroupProductPricing.Selected")
             </button>
             </li>
             </ul>
@@ -63,12 +63,12 @@
             //a vendor cannot import products
             <button type="button" name="importexcel-PerAccountProductPricing" class="btn bg-olive" data-toggle="modal" data-target="#importexcel-window-PerAccountProductPricing">
             <i class="fa fa-upload"></i>
-            @T("Plugins.Payments.B2BCustomerAccount.PerAccountProductPricing.Import")
+            @T("NopStation.Plugin.B2B.B2BB2CFeatures.PerAccountProductPricing.Import")
             </button>
 
             <button type="button" name="importexcel-PriceGroupProductPricing" class="btn bg-olive" data-toggle="modal" data-target="#importexcel-window-PriceGroupProductPricing">
             <i class="fa fa-upload"></i>
-            @T("Plugins.Payments.B2BCustomerAccount.PriceGroupProductPricing.Import")
+            @T("NopStation.Plugin.B2B.B2BB2CFeatures.PriceGroupProductPricing.Import")
             </button>
             }
             @await Component.InvokeAsync("AdminWidget", new { widgetZone = AdminWidgetZones.ProductListButtons })*@

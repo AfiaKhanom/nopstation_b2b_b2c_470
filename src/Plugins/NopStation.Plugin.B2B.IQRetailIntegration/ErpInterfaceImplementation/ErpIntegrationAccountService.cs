@@ -48,10 +48,10 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.ErpInterfaceImplementation
 
             try
             {
-                if (erpCreateAccountModel.ErpAccountNumber.Length > IQRetailIntegrationDefaults.AccountNoLengthLimit)
+                if (erpCreateAccountModel.AccountNumber.Length > IQRetailIntegrationDefaults.AccountNoLengthLimit)
                 {
                     erpResponseModel.IsError = true;
-                    erpResponseModel.ErrorShortMessage = $"The Account Number {erpCreateAccountModel.ErpAccountNumber}, exceeds the account number maximum length limit {IQRetailIntegrationDefaults.AccountNoLengthLimit}.";
+                    erpResponseModel.ErrorShortMessage = $"The Account Number {erpCreateAccountModel.AccountNumber}, exceeds the account number maximum length limit {IQRetailIntegrationDefaults.AccountNoLengthLimit}.";
                     return erpResponseModel;
                 }
 
@@ -64,7 +64,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.ErpInterfaceImplementation
 
                 var serialized = new IQApiRequestGeneratorModel(_retailIntegrationSettings).CreateNewAccountPayload(erpCreateAccountModel).ToString();
 
-                var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiSubmitDebtor, serialized, ErpSyncLavel.Account);
+                var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiSubmitDebtor, serialized, ErpSyncLevel.Account);
                 if (!response.IsSuccessStatusCode)
                 {
                     erpResponseModel.IsError = true;
@@ -83,7 +83,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.ErpInterfaceImplementation
                 }
                 else
                 {
-                    erpResponseModel.AccountNumber = erpCreateAccountModel.ErpAccountNumber;
+                    erpResponseModel.AccountNumber = erpCreateAccountModel.AccountNumber;
                 }
             }
             catch (Exception ex)
@@ -123,7 +123,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.ErpInterfaceImplementation
                     return erpResponseData;
                 }
 
-                var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestDebtor, serialized, ErpSyncLavel.Account);
+                var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestDebtor, serialized, ErpSyncLevel.Account);
                 if (!response.IsSuccessStatusCode)
                 {
                     erpResponseData.ErpResponseModel.IsError = true;
@@ -180,7 +180,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.ErpInterfaceImplementation
                     return erpResponseData;
                 }
 
-                var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestDebtor, serialized, ErpSyncLavel.Account);
+                var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestDebtor, serialized, ErpSyncLevel.Account);
                 if (!response.IsSuccessStatusCode)
                 {
                     erpResponseData.ErpResponseModel.IsError = true;
@@ -247,7 +247,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.ErpInterfaceImplementation
                     return erpResponseData;
                 }
 
-                var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestGenericSQL, serialized, ErpSyncLavel.Invoice);
+                var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestGenericSQL, serialized, ErpSyncLevel.Invoice);
                 if (!response.IsSuccessStatusCode)
                 {
                     erpResponseData.ErpResponseModel.IsError = true;
@@ -286,7 +286,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.ErpInterfaceImplementation
                                            recordOffset: int.Parse(erpRequest.Start),
                                            sqlText: "").ToString();
 
-                response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestDocumentInvoice, serialized, ErpSyncLavel.Invoice);
+                response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestDocumentInvoice, serialized, ErpSyncLevel.Invoice);
                 if (!response.IsSuccessStatusCode)
                 {
                     erpResponseData.ErpResponseModel.IsError = true;
@@ -351,7 +351,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.ErpInterfaceImplementation
                     return erpResponseData;
                 }
 
-                var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestDocumentInvoice, serialized, ErpSyncLavel.Invoice);
+                var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestDocumentInvoice, serialized, ErpSyncLevel.Invoice);
                 if (!response.IsSuccessStatusCode)
                 {
                     erpResponseData.ErpResponseModel.IsError = true;
@@ -415,7 +415,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.ErpInterfaceImplementation
                     return erpResponseData;
                 }
 
-                var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestDebtor, serialized, ErpSyncLavel.ShipToAddress);
+                var response = await _iQRetailHttpClient.HttpCall(IQRetailIntegrationDefaults.IQApiRequestDebtor, serialized, ErpSyncLevel.ShipToAddress);
                 if (!response.IsSuccessStatusCode)
                 {
                     erpResponseData.ErpResponseModel.IsError = true;

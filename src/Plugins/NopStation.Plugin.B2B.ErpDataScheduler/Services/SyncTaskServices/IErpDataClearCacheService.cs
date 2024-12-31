@@ -1,9 +1,8 @@
 ﻿using Nop.Core;
 
-namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices
+namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices;
+
+public interface IErpDataClearCacheService
 {
-    public interface IErpDataClearCacheService
-    {
-        Task ClearCacheOfEntity<T>(T entity, int id) where T : BaseEntity;
-    }
+    Task ClearCacheOfEntity<T>(T entity, int id) where T : BaseEntity;
 }

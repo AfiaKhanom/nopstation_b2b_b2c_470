@@ -27,6 +27,8 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
             int salesOrgId = 0, 
             int erpShipToAddressId = 0);
 
+        Task<ErpNopUser> GetErpNopUserByCustomerIdAsync(int customerId);
+
         Task<ErpNopUser> GetErpNopUserByCustomerIdAsync(int customerId, int erpAccountId = 0);
 
         Task<IList<ErpNopUser>> GetAllErpNopUserByAccountIdAsync(int accountId, bool showHidden = false);

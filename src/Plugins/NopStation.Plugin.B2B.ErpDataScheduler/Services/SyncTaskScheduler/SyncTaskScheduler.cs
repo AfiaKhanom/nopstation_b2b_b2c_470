@@ -112,39 +112,39 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskScheduler
             return true;
         }
 
-        private (ErpSyncLavel syncTaskLevel, string syncTaskName) GetSyncTaskType(string taskType)
+        private (ErpSyncLevel syncTaskLevel, string syncTaskName) GetSyncTaskType(string taskType)
         {
             if (taskType == ErpDataSchedulerDefaults.ErpAccountSyncTask)
             {
-                return (ErpSyncLavel.Account, ErpDataSchedulerDefaults.ErpAccountSyncTaskName);
+                return (ErpSyncLevel.Account, ErpDataSchedulerDefaults.ErpAccountSyncTaskName);
             }
             else if (taskType == ErpDataSchedulerDefaults.ErpInvoiceSyncTask)
             {
-                return (ErpSyncLavel.Invoice, ErpDataSchedulerDefaults.ErpInvoiceSyncTaskName);
+                return (ErpSyncLevel.Invoice, ErpDataSchedulerDefaults.ErpInvoiceSyncTaskName);
             }
             else if (taskType == ErpDataSchedulerDefaults.ErpProductSyncTask)
             {
-                return (ErpSyncLavel.Product, ErpDataSchedulerDefaults.ErpProductSyncTaskName);
+                return (ErpSyncLevel.Product, ErpDataSchedulerDefaults.ErpProductSyncTaskName);
             }
             else if (taskType == ErpDataSchedulerDefaults.ErpGroupPriceSyncTask)
             {
-                return (ErpSyncLavel.GroupPrice, ErpDataSchedulerDefaults.ErpGroupPriceSyncTaskName);
+                return (ErpSyncLevel.GroupPrice, ErpDataSchedulerDefaults.ErpGroupPriceSyncTaskName);
             }
             else if (taskType == ErpDataSchedulerDefaults.ErpSpecialPriceSyncTask)
             {
-                return (ErpSyncLavel.SpecialPrice, ErpDataSchedulerDefaults.ErpSpecialPriceSyncTaskName);
+                return (ErpSyncLevel.SpecialPrice, ErpDataSchedulerDefaults.ErpSpecialPriceSyncTaskName);
             }
             else if (taskType == ErpDataSchedulerDefaults.ErpStockSyncTask)
             {
-                return ((ErpSyncLavel.Stock, ErpDataSchedulerDefaults.ErpStockSyncTaskName));
+                return ((ErpSyncLevel.Stock, ErpDataSchedulerDefaults.ErpStockSyncTaskName));
             }
             else if (taskType == ErpDataSchedulerDefaults.ErpShipToAddressSyncTask)
             {
-                return (ErpSyncLavel.ShipToAddress, ErpDataSchedulerDefaults.ErpShipToAddressSyncTaskName);
+                return (ErpSyncLevel.ShipToAddress, ErpDataSchedulerDefaults.ErpShipToAddressSyncTaskName);
             }
             else if (taskType == ErpDataSchedulerDefaults.ErpOrderSyncTask)
             {
-                return (ErpSyncLavel.Order, ErpDataSchedulerDefaults.ErpOrderSyncTaskName);
+                return (ErpSyncLevel.Order, ErpDataSchedulerDefaults.ErpOrderSyncTaskName);
             }
             return (0, string.Empty);
         }

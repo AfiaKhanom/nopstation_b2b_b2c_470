@@ -1,0 +1,28 @@
+﻿@using Nop.Core
+@using Nop.Services.Localization
+@using Nop.Web.Framework.Themes
+
+@model LogoModel
+
+@inject IThemeContext themeContext
+@inject IStoreContext storeContext
+@inject ILocalizationService localizationService
+
+@{
+    var logoPath = $"~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Themes/Smart/Content/img/logo.png";
+    var themeLogo = await Component.InvokeAsync("Widget", new { widgetZone = "smart_theme_logo" });
+
+    NopHtml.AppendCssFileParts("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Themes/Smart/Content/css/styles.css");
+    NopHtml.AppendCssFileParts("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Themes/Smart/Content/css/theme-custom.css");
+}
+<a href="@Url.RouteUrl("Homepage")" class="logo">
+    @if (!String.IsNullOrEmpty(await themeLogo.RenderHtmlContentAsync()))
+    {
+        @themeLogo
+    }
+    else
+    {
+        string storeName = await localizationService.GetLocalizedAsync(await storeContext.GetCurrentStoreAsync(), x => x.Name);
+        <img title="" alt="@storeName" src="@Url.Content(logoPath)">
+    }
+</a>

@@ -2,7 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Nop.Core;
+using Nop.Core.Caching;
 using Nop.Data;
+using Nop.Services.Catalog;
+using Nop.Services.Directory;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
 
 namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
@@ -12,14 +15,17 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
         #region Fields
 
         private readonly IRepository<ErpSpecialPrice> _erpSpecialPriceRepository;
+        private readonly IStaticCacheManager _staticCacheManager;
 
         #endregion
 
         #region ctor
 
-        public ErpSpecialPriceService(IRepository<ErpSpecialPrice> erpSpecialPriceRepository)
+        public ErpSpecialPriceService(IRepository<ErpSpecialPrice> erpSpecialPriceRepository,
+            IStaticCacheManager staticCacheManager)
         {
             _erpSpecialPriceRepository = erpSpecialPriceRepository;
+            _staticCacheManager = staticCacheManager;
         }
 
         #endregion
@@ -72,10 +78,10 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
         {
             var erpSpecialPrice = await _erpSpecialPriceRepository.GetAllPagedAsync(query =>
             {
-                if(productId > 0)
+                if (productId > 0)
                     query = query.Where(ei => ei.NopProductId == productId);
 
-                if(accountId > 0)
+                if (accountId > 0)
                     query = query.Where(ei => ei.ErpAccountId == accountId);
 
                 query = query.OrderBy(ei => ei.Id);
@@ -109,11 +115,11 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
 
             var erpSpecialPrices = await _erpSpecialPriceRepository.GetAllAsync(query =>
             {
-                query = query.Where(ei => ei.NopProductId == nopProductId);
-                query = query.OrderBy(ei => ei.Id);
-                return query;
-
-            });
+                return from sp in query
+                       where sp.NopProductId == nopProductId
+                       orderby sp.Id descending
+                       select sp;
+            }, cache => cache.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpProductPricingSpecialPriceByProductCacheKey, nopProductId));
 
             return erpSpecialPrices;
         }
@@ -123,14 +129,11 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
             if (accountId == 0 || nopProductId == 0)
                 return null;
 
-            var erpSpecialPrices = await _erpSpecialPriceRepository.GetAllAsync(query =>
-            {
-                query = query.Where(ei => ei.ErpAccountId == accountId && ei.NopProductId == nopProductId);
-                query = query.OrderByDescending(ei => ei.Id);
-                return query;
-            });
+            var key = _staticCacheManager.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpProductPricingSpecialPriceByProductIdAndAccountCacheKey, nopProductId, accountId);
 
-            return erpSpecialPrices.FirstOrDefault();
+            var query = _erpSpecialPriceRepository.Table.Where(b => b.ErpAccountId == accountId && b.NopProductId == nopProductId);
+
+            return await _staticCacheManager.GetAsync(key, async () => await query.FirstOrDefaultAsync());
         }
 
         public async Task<bool> CheckAnySpecialPriceExistWithAccountIdAndProductId(int accountId, int productId)
@@ -138,10 +141,9 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
             if (accountId == 0 || productId == 0)
                 return false;
 
-            var query = _erpSpecialPriceRepository.Table;
-
-            return query.Any(b => b.ErpAccountId == accountId && b.NopProductId == productId);
+            return await GetErpSpecialPricesByErpAccountIdAndNopProductIdAsync(accountId, productId) != null;
         }
+
         #endregion
 
         #endregion

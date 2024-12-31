@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Spreadsheet;
 using LinqToDB;
+using Microsoft.Identity.Client;
 using Nop.Core;
+using Nop.Core.Caching;
 using Nop.Data;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
 
@@ -15,14 +18,17 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
         #region Fields
 
         private readonly IRepository<ErpNopUserAccountMap> _erpNopUserAccountMapRepository;
+        private readonly IStaticCacheManager _staticCacheManager;
 
         #endregion
 
         #region ctor
 
-        public ErpNopUserAccountMapService(IRepository<ErpNopUserAccountMap> erpNopUserAccountMapRepository)
+        public ErpNopUserAccountMapService(IRepository<ErpNopUserAccountMap> erpNopUserAccountMapRepository,
+            IStaticCacheManager staticCacheManager)
         {
             _erpNopUserAccountMapRepository = erpNopUserAccountMapRepository;
+            _staticCacheManager = staticCacheManager;
         }
 
         #endregion
@@ -85,31 +91,52 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
 
         public async Task<ErpNopUserAccountMap> GetErpNopUserAccountMapByAccountAndUserIdAsync(int accountId, int userId)
         {
-            var erpNopUserAccountMaps = _erpNopUserAccountMapRepository.Table.Where(e => e.ErpAccountId == accountId && e.ErpUserId == userId).FirstOrDefault();
+            if (accountId == 0 || userId == 0)
+                return null;
 
-            return erpNopUserAccountMaps;
+            return (await GetAllErpNopUserAccountMapByAccountAndUserIdAsync(accountId, userId)).FirstOrDefault();
+        }
+
+        public async Task<IList<ErpNopUserAccountMap>> GetAllErpNopUserAccountMapByAccountAndUserIdAsync(int accountId, int userId)
+        {
+            if (accountId == 0 || userId == 0)
+                return null;
+
+            var key = _staticCacheManager.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpNopUserAccountMapByErpAccountAndErpUserCacheKey, accountId, userId);
+            
+            var query = _erpNopUserAccountMapRepository.Table.Where(e => e.ErpAccountId == accountId && e.ErpUserId == userId);
+
+            return await _staticCacheManager.GetAsync(key, async () => await query.ToListAsync());
         }
 
         public async Task<IList<ErpNopUserAccountMap>> GetAllErpNopUserAccountMapsByUserIdAsync(int userId)
         {
+            if (userId == 0)
+                return null;
+
             var erpNopUserAccountMaps = await _erpNopUserAccountMapRepository.GetAllAsync(query =>
             {
-                query = query.Where(eam => eam.ErpUserId == userId);
-                query = query.OrderBy(eam => eam.ErpAccountId);
-                return query;
-            });
+                return from eam in query
+                       where eam.ErpUserId == userId
+                       orderby eam.ErpAccountId
+                       select eam;
+            }, cache => cache.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpNopUserAccountMapByErpUserCacheKey, userId));
 
             return erpNopUserAccountMaps;
         }
 
         public async Task<IList<ErpNopUserAccountMap>> GetAllErpNopUserAccountMapsByAccountIdAsync(int accountId)
         {
+            if (accountId == 0)
+                return null;
+
             var erpNopUserAccountMaps = await _erpNopUserAccountMapRepository.GetAllAsync(query =>
             {
-                query = query.Where(eam => eam.ErpAccountId == accountId);
-                query = query.OrderBy(eam => eam.ErpAccountId);
-                return query;
-            });
+                return from eam in query
+                       where eam.ErpAccountId == accountId
+                       orderby eam.ErpAccountId
+                       select eam;
+            }, cache => cache.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpNopUserAccountMapByErpAccountCacheKey, accountId));
 
             return erpNopUserAccountMaps;
         }
@@ -119,13 +146,12 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
             var listOferpNopUserRoleIds = new List<int>();
-            var erpNopUserRoleIdss = _erpNopUserAccountMapRepository.Table.Where(w => w.ErpUserId == user.Id && w.ErpAccountId == user.ErpAccountId).ToList();
-            var erpNopUserRoleIdsString = "";
 
-            if (erpNopUserRoleIdss.Any())
-                erpNopUserRoleIdsString = erpNopUserRoleIdss.FirstOrDefault().CustomerRolesIds;
+            var erpNopUserAccountMap = await GetErpNopUserAccountMapByAccountAndUserIdAsync(user.ErpAccountId, user.Id);
+            if (erpNopUserAccountMap == null)
+                return listOferpNopUserRoleIds;
 
-            var erpNopUserRoleIds = erpNopUserRoleIdsString.Split(",");
+            var erpNopUserRoleIds = erpNopUserAccountMap.CustomerRolesIds.Split(",");
 
             foreach (var roleId in erpNopUserRoleIds)
             {
@@ -135,14 +161,13 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
 
             return listOferpNopUserRoleIds;
         }
+
         public async Task<bool> CheckAnyErpNopUserAccountMapExistWithAccountIdAndUserIdAsync(int erpAccountId, int erpUserId)
         {
             if (erpAccountId == 0 || erpUserId == 0)
                 return false;
 
-            var query = _erpNopUserAccountMapRepository.Table;
-
-            return query.Any(b => b.ErpAccountId == erpAccountId && b.ErpUserId == erpUserId);
+            return await GetErpNopUserAccountMapByAccountAndUserIdAsync(erpAccountId, erpUserId) != null;
         }
 
         #endregion

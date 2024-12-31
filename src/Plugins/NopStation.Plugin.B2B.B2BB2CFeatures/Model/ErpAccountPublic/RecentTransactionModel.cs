@@ -27,12 +27,12 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Model.ErpAccountPublic
         [NopResourceDisplayName("Plugins.Payment.B2BCustomerAccount.B2BAccount.FinancialTransaction.Fields.AmountExVat")]
         public string AmountExVat { get; set; }
 
-        [NopResourceDisplayName("Plugins.Payments.B2BCustomerAccount.B2BAccount.FinancialTransaction.Fields.CustomerOrder")]
+        [NopResourceDisplayName("NopStation.Plugin.B2B.B2BB2CFeatures.B2BAccount.FinancialTransaction.Fields.CustomerOrder")]
         public string CustomerOrder { get; set; }
 
         public int NopOrderId { get; set; }
 
-        [NopResourceDisplayName("Plugins.Payments.B2BCustomerAccount.B2BAccount.FinancialTransaction.Fields.ERPOrderNumber")]
+        [NopResourceDisplayName("NopStation.Plugin.B2B.B2BB2CFeatures.B2BAccount.FinancialTransaction.Fields.ERPOrderNumber")]
         public string ERPOrderNumber { get; set; }
 
         public bool IsDocumentTypeInvoice { get; set; }

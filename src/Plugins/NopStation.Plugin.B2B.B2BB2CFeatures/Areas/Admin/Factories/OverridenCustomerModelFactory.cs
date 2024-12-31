@@ -43,7 +43,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Factories
         private readonly GdprSettings _gdprSettings;
         private readonly ForumSettings _forumSettings;
         private readonly IAclSupportedModelFactory _aclSupportedModelFactory;
-        private readonly IAttributeFormatter<AddressAttribute,AddressAttributeValue> _addressAttributeFormatter;
+        private readonly IAttributeFormatter<AddressAttribute, AddressAttributeValue> _addressAttributeFormatter;
         private readonly IAddressModelFactory _addressModelFactory;
         private readonly IAffiliateService _affiliateService;
         private readonly IAuthenticationPluginManager _authenticationPluginManager;
@@ -345,23 +345,31 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Factories
                 model.Active = true;
                 model.DisplayVatNumber = false;
             }
+            else if (customer.Id > 0)
+            {
+
+
+                #region Erp
+
+
+                var isErpAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(customer.Id) != null;
+                var erpUser = await _erpNopUserService.GetErpNopUserByCustomerIdAsync(customer.Id);
+
+                if (isErpAccount && erpUser?.ErpUserType == ErpUserType.B2CUser)
+                {
+                    //prepare model customer attributes
+                    await PrepareCustomerAttributeModelsAsync(model.CustomerAttributes, customer);
+                }
+
+
+                #endregion
+            }
 
             //prepare available vendors
             await _baseAdminModelFactory.PrepareVendorsAsync(model.AvailableVendors,
-                defaultItemText: await _localizationService.GetResourceAsync("Admin.Customers.Customers.Fields.Vendor.None"));
+            defaultItemText: await _localizationService.GetResourceAsync("Admin.Customers.Customers.Fields.Vendor.None"));
 
-            #region Erp
 
-            var isErpAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(customer.Id) != null;
-            var erpUser = await _erpNopUserService.GetErpNopUserByCustomerIdAsync(customer.Id);
-
-            if (isErpAccount && erpUser.ErpUserType == ErpUserType.B2CUser)
-            {
-                //prepare model customer attributes
-                await PrepareCustomerAttributeModelsAsync(model.CustomerAttributes, customer);
-            }
-
-            #endregion            
 
             //prepare model stores for newsletter subscriptions
             model.AvailableNewsletterSubscriptionStores = (await _storeService.GetAllStoresAsync()).Select(store => new SelectListItem

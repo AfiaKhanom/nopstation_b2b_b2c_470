@@ -5,182 +5,297 @@
 @inject IErpCustomerFunctionalityService b2BCustomerFunctionality
 @inject IWebHelper webHelper
 @using Nop.Core
+
 @{
     var storeLocation = webHelper.GetStoreLocation();
     var datePickerFormat = Html.GetJQueryDateFormat();//java-script format
 }
 
 <div class="page checkout-page shipping-address-page">
-    @await Component.InvokeAsync(typeof(CheckoutProgressViewComponent), new { step = CheckoutProgressStep.Address })
+    @await Component.InvokeAsync(typeof(CheckoutProgressViewComponent), new { step = CheckoutProgressStep.Shipping })
     <div class="page-title">
-        <h1>@T("Checkout.ShippingAddress")</h1>
+        <h1>@T("Checkout.ShippingAddress.SelectDeliverOrCollect")</h1>
     </div>
     <div class="page-body checkout-data">
         <form id="ErpShiptoAddressForm" asp-controller="ErpCheckout" asp-action="ErpShippingAddress" method="post">
-
-            @if (Model.DisplayPickupInStore && Model.PickupPointsModel.AllowPickupInStore)
-            {
-                @await Html.PartialAsync("~/Views/Checkout/_PickupPoints.cshtml", Model.PickupPointsModel)
-                <script asp-location="Footer">
-                    $(document).ready(function () {
-                        $(document).unbind('checkout_toggle_pickup_in_store');
-                        $(document).on('checkout_toggle_pickup_in_store', function (e) {
-                            if (e.checked) {
-                                $('#shipping-addresses-form').hide();
-                                $('#shippingaddress-new-form').hide();
-                            }
-                            else {
-                                $('#shipping-addresses-form').show();
-                                $('#shippingaddress-new-form').show();
-                            }
-                        });
-                    });
-                </script>
+            @{
+                var groupedItems = Model.B2CShoppingCartItemModels.GroupBy(x => x.WarehouseCode);
             }
-            @if (Model.PickupPointsModel == null || !Model.PickupPointsModel.PickupInStoreOnly)
-            {
-                <script asp-location="Footer">
-                    function loadB2BShipToAddress(shipToId) {
-                        displayAjaxLoading(true);
-                        var postData = {
-                            shipToId: shipToId
-                        };
-                        addAntiForgeryToken(postData);
-                        if (shipToId > 0) {
-                            $.ajax({
-                                cache: true,
-                                type: 'POST',
-                                url: '@(Url.Action("LoadB2BShipToAddressById", "ErpCheckout"))',
-                                data: postData,
-                                success: function (response) {
-                                    if (response.isSucceed) {
-                                        console.log(response.Data);
-                                        $("#shippingaddress-new-form").html(response.Data);
-                                    }
-                                },
-                                error: function () {
-                                    console.log("Can Not load Ship To Address");
-                                },
-                                complete: function () {
-                                    displayAjaxLoading();
-                                    $(".new-shipping-address").css("top", 10);
-                                    window.scrollTo(0, 10);
-                                }
-                            });
-                        }
-                    }
-                </script>
-                <div class="shipping-addresses" id="shipping-addresses-form">
-                    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutShippingAddressTop, additionalData = Model })
-                    @if (Model.ExistingErpShipToAddresses.Count > 0)
+            <div class="checkout-shipping-tab checkout-left-section" id="checkoutShippingTabs">
+                <ul class="tab-links">
+                    <li class="tab-item deliver">
+                        <label for="deliver"><input type="radio" name="shippingTab" id="deliver" checked>@T("B2B.Shipping.Deliver")</label>
+                    </li>
+                    <li class="tab-item collect">
+                        <label for="collect"><input type="radio" name="shippingTab" id="collect">@T("B2B.Shipping.Collect")</label>
+                    </li>
+                </ul>
+
+                <input hidden asp-for="ErpToDetermineDate" value="@Model.ErpToDetermineDate" />
+                <input hidden asp-for="ErpAccountId" value="@Model.ErpAccountId" />
+
+                <div id="shippingTabDeliver" class="tab-content deliver">
+                    <h1 id="delivery-header-text">@T("Checkout.ShippingAddress.SelectYourDeliveryAddress")</h1>
+                    @if (Model.PickupPointsModel == null || !Model.PickupPointsModel.PickupInStoreOnly)
                     {
-                        <div class="section select-shipping-address">
-                            <div class="title">
-                                <strong>@T("Checkout.SelectShippingAddress")</strong>
-                            </div>
-                            <div class="shipping-address-body" style="text-align:center;">
-                                @foreach (var item in Model.ExistingErpShipToAddresses)
-                                {
-                                    var addressLine = string.Join(", ", new string[] {
-                                        item.ShipToName,
-                                        //item.ShipToCode,
-                                        item.Address1,
-                                        item.Address2,
-                                        item.Suburb,
-                                        item.City,
-                                        item.StateProvinceName,
-                                        item.ZipPostalCode
-                                    }.Where(s => !string.IsNullOrEmpty(s)));
-
-                                    <label id="shipping-address-select" class="address-select-radio">
-                                        @(addressLine)
-                                        <input type="radio" data-suburb="@item.Suburb" data-city="@item.City" checked="@((Model.ErpShipToAddressId ==  item.Id) || (Model.ExistingErpShipToAddresses.Count() == 1) ? true : false)" asp-for="@Model.ErpShipToAddressId" value="@item.Id" />
-                                        <span class="checkmark"></span>
-                                        @if (Model.AllowAddressEdit)
-                                        {
-                                            <button class="edit-ship-to" onclick="loadB2BShipToAddress(@item.Id);return false;">Edit Address</button>
-                                        }
-                                    </label>
-                                    <br />
-
-                                    <br />
-                                }
+                        <!-- Address Modal -->
+                        <div id="addressModal" class="modal">
+                            <div class="modal-content">
+                                <span class="close">&times;</span>
+                                <div id="modal-body-content">
+                                </div>
                             </div>
                         </div>
-                    }
-                </div>
-                @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutShippingAddressMiddle, additionalData = Model })
-                <div class="section new-shipping-address" id="shippingaddress-new-form"></div>
-                @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutShippingAddressBottom, additionalData = Model })
-                <div class="section select-delivery-date">
-                    <div class="title delivery-date-title">
-                        <strong>@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.ExpectedDeliveryDate")</strong>
-                    </div>
-                    <input asp-for="AllowAddressEdit" type="hidden" />
-                    <input type="hidden" asp-for="IsFullLoadRequired" />
-                    <input asp-for="ErpToDetermineDate" type="hidden" />
-                    <div class="delivery-date-body">
-                        <div id="deliveryDatePicker" class="inputs" style="@(Model.ErpToDetermineDate == true ? "display: none; text-align: center;" : "display: block; text-align: center;")">
-                            <input asp-for="DeliveryDate" type="text" />
-                            <span asp-validation-for="DeliveryDate"></span>
-                        </div>
+
                         <script asp-location="Footer">
-                            $('#DeliveryDate').datepicker({
-                                dateFormat: '@datePickerFormat',
-                                minDate: new Date('@Model.MinDeliveryDate'),
-                                maxDate: new Date('@Model.MaxDeliveryDate')
+                            function editSelectedAddress() {
+                                //console.log('Got it');
+                                var selectedAddress = $('input[type="radio"][data-id]:checked');
+                                var shipToId = selectedAddress.data('id');
+                                //console.log('Current selected ship to address id: ' + shipToId);
+                                loadB2BShipToAddress(shipToId);
+                            }
+
+                            function loadB2BShipToAddress(shipToId) {
+                                displayAjaxLoading(true);
+                                var postData = {
+                                    shipToId: shipToId
+                                };
+                                addAntiForgeryToken(postData);
+                                if (shipToId > 0) {
+                                    $.ajax({
+                                        cache: true,
+                                        type: 'POST',
+                                        url: '@(Url.Action("LoadB2BShipToAddressById", "ErpCheckout"))',
+                                        data: postData,
+                                        success: function (response) {
+                                            if (response.isSucceed) {
+                                                //console.log(response.Data);
+                                                $("#modal-body-content").html(response.Data);
+                                                $("#addressModal").show();
+                                            }
+                                        },
+                                        error: function () {
+                                            $("#modal-body-content").html('<h2>@T("Checkout.ShippingAddress.CouldNotLoadShippingAddress")</h2>');
+                                            $("#addressModal").show();
+                                            //console.log("@T("Checkout.ShippingAddress.CouldNotLoadShippingAddress")");
+                                        },
+                                        complete: function () {
+                                            displayAjaxLoading();
+                                            //$(".new-shipping-address").css("top", 10);
+                                            //window.scrollTo(0, 10);
+                                        }
+                                    });
+                                }
+                            }
+
+                            $(document).ready(function () {
+                                $(".close").on('click', function () {
+                                    $("#addressModal").hide();
+                                });
+
+                                // Close the modal when clicking outside of it
+                                $(window).on('click', function (event) {
+                                    if (event.target == $("#addressModal")[0]) {
+                                        $("#addressModal").hide();
+                                    }
+                                });
                             });
                         </script>
-                        @if (Model.ErpToDetermineDate)
-                        {
-                            <div id="deliveryDateDropdown" class="inputs">
-                                <label asp-for="DeliveryDateString" asp-postfix=":"></label>
-                                <h3 class="FullLoadRequired-div FullLoadRequired-div-hide">@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.DeliveryDate.FullLoadRequired")</h3>
-                                <select asp-for="DeliveryDateString" asp-items="Model.AvailableDeliveryDates"></select>
-                                <span id="delivery-dates-loading-progress" style="display: none;" class="please-wait">@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.DeliveryDate.Loading")</span>
-                                <span asp-validation-for="DeliveryDate"></span>
+                        <div class="shipping-addresses" id="shipping-addresses-form">
+                            @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutShippingAddressTop, additionalData = Model })
+                            @if (Model.ExistingErpShipToAddresses.Count > 0)
+                            {
+                                <div class="section select-shipping-address">
+                                    <div class="title">
+                                        <strong>@T("Checkout.SelectShippingAddress")</strong>
+                                    </div>
+                                    <div class="shipping-address-body" style="text-align:center;">
+                                        @foreach (var item in Model.ExistingErpShipToAddresses)
+                                        {
+                                            var addressLine = string.Join(", ", new string[] {
+                                                        item.ShipToName,
+                                                        item.Address1,
+                                                        item.Address2,
+                                                        item.Suburb,
+                                                        item.City,
+                                                        item.StateProvinceName,
+                                                        item.ZipPostalCode
+                                                    }.Where(s => !string.IsNullOrEmpty(s)));
+
+                                            <label id="shipping-address-select" class="address-select-radio">
+                                                <input id="shipToAddress"
+                                                       type="radio"
+                                                       data-id="@item.Id"
+                                                       data-suburb="@item.Suburb"
+                                                       data-city="@item.City"
+                                                       checked="@((Model.ErpShipToAddressId == item.Id) || (Model.ExistingErpShipToAddresses.Count() == 1) ? true : false)"
+                                                       asp-for="@Model.ErpShipToAddressId"
+                                                       value="@item.Id" />
+                                                <span class="checkmark"></span>
+                                                @(addressLine)
+                                                @* @if (Model.AllowAddressEdit)
+                                                {
+                                                    <button class="edit-ship-to" onclick="loadB2BShipToAddress(@item.Id);return false;">Edit Address</button>
+                                                } *@
+                                            </label>
+                                            <br />
+                                        }
+                                        <br />
+                                        @if (Model.AllowAddressEdit)
+                                        {
+                                            <button class="edit-ship-to" onclick="editSelectedAddress(); return false;">Edit Address</button>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutShippingAddressMiddle, additionalData = Model })
+                        <div class="section new-shipping-address" id="shippingaddress-new-form"></div>
+                        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutShippingAddressBottom, additionalData = Model })
+                        <div class="section select-delivery-date" id="select-delivery-date">
+                            <div class="title delivery-date-title">
+                                <strong>@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.ExpectedDeliveryDate")</strong>
                             </div>
-                        }
+                            <input asp-for="AllowAddressEdit" type="hidden" />
+                            <input asp-for="IsFullLoadRequired" type="hidden" />
+                            <input asp-for="ErpToDetermineDate" type="hidden" />
+                            <div class="delivery-date-body">
+                                <div id="deliveryDatePicker" class="inputs" style="@(Model.ErpToDetermineDate == true ? "display: none; text-align: center;" : "display: block; text-align: center;")">
+                                    <input asp-for="DeliveryDate" type="text" />
+                                    <span asp-validation-for="DeliveryDate"></span>
+                                </div>
+                                <script asp-location="Footer">
+                                    $('#DeliveryDate').datepicker({
+                                        dateFormat: '@datePickerFormat',
+                                        minDate: new Date('@Model.MinDeliveryDate'),
+                                        maxDate: new Date('@Model.MaxDeliveryDate')
+                                    });
+                                </script>
+                                @if (Model.ErpToDetermineDate)
+                                {
+                                    <div id="deliveryDateDropdown" class="inputs">
+                                        <label asp-for="DeliveryDateString" asp-postfix=":"></label>
+                                        <h3 class="FullLoadRequired-div FullLoadRequired-div-hide">@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.DeliveryDate.FullLoadRequired")</h3>
+                                        <select asp-for="DeliveryDateString" asp-items="Model.AvailableDeliveryDates"></select>
+                                        <span id="delivery-dates-loading-progress" style="display: none;" class="please-wait">@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.DeliveryDate.Loading")</span>
+                                        <span asp-validation-for="DeliveryDate"></span>
+                                    </div>
+                                }
 
-                    </div>
+                            </div>
+                        </div>
+                    }
                 </div>
-            }
+                <div id="shippingTabCollect" class="tab-content collect">
+                    <h1 id="collect-header-text"></h1>
 
-            <!---Customer reference added for Quote Order -->
-            @if (Model.IsQuoteOrder)
-            {
-                <div class="section quote-customer-reference">
-                    <div class="title quote-customer-reference-title">
-                        <strong>@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.CustomerReference")</strong>
+                    @if (Model.DisplayPickupInStore && Model.PickupPointsModel.AllowPickupInStore)
+                    {
+                        @await Html.PartialAsync("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/Checkout/_PickupPoints.cshtml", Model.PickupPointsModel)
+
+                        <script asp-location="Footer">
+                            $(document).ready(function () {
+                                $('#pickup-points-form').hide();
+                                $('.pickup-in-store .selector').hide();
+                                $('.pickup-in-store .description').hide();
+
+                                $('#deliver').on('change', function () {
+                                    if ($(this).is(':checked')) {
+                                        $('#shipping-addresses-form').show();
+                                        $('#shippingaddress-new-form').show();
+                                        $('#select-delivery-date').show();
+                                        $('#pickup-points-form').hide();
+                                        $('#collect').prop('checked', false);
+                                        $('#collect-header-text').text('');
+                                    }
+                                });
+
+                                $('#collect').on('change', function () {
+                                    if ($(this).is(':checked')) {
+                                        $('#shipping-addresses-form').hide();
+                                        $('#shippingaddress-new-form').hide();
+                                        $('#select-delivery-date').hide();
+                                        $('#pickup-points-form').show();
+                                        $('#deliver').prop('checked', false);
+                                        $('#collect-header-text').text('@T("Checkout.ShippingAddress.SelectCollectionPoint")');
+                                    }
+                                });
+                            });
+                        </script>
+                    }
+
+                </div>
+
+                <!---Customer reference added for Quote Order -->
+                @if (Model.IsQuoteOrder)
+                {
+                    <div class="section quote-customer-reference">
+                        <div class="title quote-customer-reference-title">
+                            <strong>@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.CustomerReference")</strong>
+                        </div>
+                        <div class="quote-customer-reference-body">
+                            <div class="inputs" style="text-align: center;">
+                                <input asp-for="CustomerReference" class="quote-customer-reference-input" placeholder="@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.CustomerReference.Hint")" />
+                                <span class="shipping-address-error" asp-validation-for="CustomerReference"></span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="quote-customer-reference-body">
-                        <div class="inputs" style="text-align: center;">
-                            <input asp-for="CustomerReference" class="quote-customer-reference-input" placeholder="@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.CustomerReference.Hint")" />
-                            <span class="shipping-address-error" asp-validation-for="CustomerReference"></span>
+                }
+
+                <div class="section special-instructions">
+                    <div class="title special-instructions-title">
+                        <strong>@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.SpecialInstructions")</strong>
+                    </div>
+                    <div class="special-instructions-body">
+                        <div id="specialInstructionsTextarea" class="inputs" style="text-align: center;">
+                            @*<label asp-for="SpecialInstructions" asp-postfix=":"></label>*@
+                            <textarea asp-for="SpecialInstructions" placeholder="@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.SpecialInstructions.Hint")" class="special-instructions-textarea"></textarea>
+                            <span class="shipping-address-error" asp-validation-for="SpecialInstructions"></span>
                         </div>
                     </div>
                 </div>
-            }
 
-            <div class="section special-instructions">
-                <div class="title special-instructions-title">
-                    <strong>@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.SpecialInstructions")</strong>
-                </div>
-                <div class="special-instructions-body">
-                    <div id="specialInstructionsTextarea" class="inputs" style="text-align: center;">
-                        @*<label asp-for="SpecialInstructions" asp-postfix=":"></label>*@
-                        <textarea asp-for="SpecialInstructions" placeholder="@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.SpecialInstructions.Hint")" class="special-instructions-textarea"></textarea>
-                        <span class="shipping-address-error" asp-validation-for="SpecialInstructions"></span>
-                    </div>
+                <div class="buttons">
+                    <button id="shippingaddress-next-button" type="submit" name="nextstep" class="button-1 new-address-next-step-button">@(Model.IsQuoteOrder ? T("Checkout.ConfirmButton") : T("Checkout.NextButton"))</button>
                 </div>
             </div>
 
-            <div class="buttons">
-                <button id="shippingaddress-next-button" type="submit" name="nextstep" class="button-1 new-address-next-step-button">@(Model.IsQuoteOrder ? T("Checkout.ConfirmButton") : T("Checkout.NextButton"))</button>
-            </div>
         </form>
 
+        <style>
+            .tab-links {
+                display: flex;
+                list-style: none;
+                padding: 0;
+            }
+
+            .tab-item {
+                margin-right: 20px;
+            }
+
+                .tab-item input[type="radio"] {
+                    display: inline;
+                    margin-right: 5px;
+                }
+        </style>
+
         <script asp-location="Footer">
+            $(document).ready(function () {
+                document.querySelectorAll('input[name="shippingTab"]').forEach((input) => {
+                    input.addEventListener('change', () => {
+                        // Hide all tab contents
+                        document.querySelectorAll('.tab-content').forEach((content) => {
+                            content.style.display = 'none';
+                        });
+
+                        // Show the corresponding tab content based on the selected radio button
+                        const selectedTabId = input.id === 'deliver' ? 'shippingTabDeliver' : 'shippingTabCollect';
+                        document.getElementById(selectedTabId).style.display = 'block';
+                    });
+                });
+
+            });
             CheckoutShipping.init('#ErpShiptoAddressForm');
             $('#edit-shipping-address-button').show();
             $('#delete-shipping-address-button').show();
@@ -194,14 +309,14 @@
         </div>
     </div>
 </div>
-<div id="DeliveryDatesErpFailedDialog" title="@T("Plugins.Payments.B2BCustomerAccount.DeliveryDatesErpFailed.Notice")" style="display: none;">
+<div id="DeliveryDatesErpFailedDialog" title="@T("NopStation.Plugin.B2B.B2BB2CFeatures.DeliveryDatesErpFailed.Notice")" style="display: none;">
     <div>
-        <p>@T("Plugins.Payments.B2BCustomerAccount.DeliveryDatesErpFailed.Notice.Text")</p>
+        <p>@T("NopStation.Plugin.B2B.B2BB2CFeatures.DeliveryDatesErpFailed.Notice.Text")</p>
     </div>
     <br />
     <div class="address-delete-popup-cancel-button">
         <button type="button" class="button-1" onclick="CloseDeliveryDatesErpFailedDialog()">
-            <span>@T("Plugins.Payments.B2BCustomerAccount.DeliveryDatesErpFailedDialog.Close")</span>
+            <span>@T("NopStation.Plugin.B2B.B2BB2CFeatures.DeliveryDatesErpFailedDialog.Close")</span>
         </button>
     </div>
     <script asp-location="Footer">
@@ -216,7 +331,7 @@
     <script asp-location="Footer">
         $(document).ready(function () {
             $('#@Html.IdFor(model => model.DeliveryDateString)').prop('required', true);
-            $('input[type=radio][name="B2BShipToAddress.Id"]').change(getDeliveryDates);
+            $('input[type=radio][name="ErpShipToAddress.Id"]').change(getDeliveryDates);
             getDeliveryDates();
         });
 
@@ -238,10 +353,13 @@
             //console.log("suburb: " + suburbData);
             //console.log("city: " + cityData);
 
+            var selectedData = { suburb: suburbData, city: cityData };
+            addAntiForgeryToken(selectedData);
+
             $.ajax({
                 cache: true,
                 url: "@Url.RouteUrl("GetDeliveryDatesBySuburbOrCity")",
-                data: { suburb: suburbData, city: cityData },
+                data: selectedData,
                 type: 'POST',
                 success: function (response) {
                     if (response.isSucceed) {
@@ -250,16 +368,19 @@
                             $('#@Html.IdFor(model => model.DeliveryDateString)').prop('required', true);
                             $(".FullLoadRequired-div").removeClass("FullLoadRequired-div-hide");
                             $(".FullLoadRequired-div").show();
-                            ddates.hide()
+                            ddates.hide();
                         }
                         else {
                             $('#@Html.IdFor(model => model.DeliveryDateString)').prop('required', true);
                             $('#@Html.IdFor(model => model.ErpToDetermineDate)').val(true);
                             ddates.html('');
-
-                            $.each(response.deliveydates, function (id, option) {
+                            //console.log("Delivery dates:", response);
+                            $.each(response.deliveyDates, function (id, option) {
                                 ddates.append($('<option></option>').val(option.Value).html(option.Text));
                             });
+                            ddates.show();
+                            //console.log(ddates);
+                            $(".FullLoadRequired-div").hide();
                         }
                     }
                     else {
@@ -279,7 +400,8 @@
                 error: function () {
                     $('#@Html.IdFor(model => model.DeliveryDateString)').prop('required', false);
                     $('#@Html.IdFor(model => model.ErpToDetermineDate)').val(false);
-                    console.log("Could Not Load Delivery Dates By Suburb");
+                    //console.log("Could Not Load Delivery Dates By Suburb");
+                    alert("Could Not Load Delivery Dates");
                 },
                 complete: function () {
                     $('#delivery-dates-loading-progress').hide();
@@ -341,6 +463,5 @@
             }
         });
     });
-
 
 </script>

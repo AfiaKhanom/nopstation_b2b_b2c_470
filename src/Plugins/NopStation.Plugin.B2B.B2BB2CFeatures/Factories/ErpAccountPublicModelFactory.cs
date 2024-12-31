@@ -10,6 +10,7 @@ using Nop.Services.Customers;
 using Nop.Services.Directory;
 using Nop.Services.Helpers;
 using Nop.Services.Localization;
+using Nop.Services.Media;
 using Nop.Services.Orders;
 using Nop.Services.Shipping;
 using Nop.Web.Areas.Admin.Factories;
@@ -48,7 +49,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
         private readonly IErpWarehouseAdditionalDataService _erpWarehouseAdditionalDataService;
         private readonly IErpWarehouseSalesOrgMapService _erpWarehouseSalesOrgMapService;
         private readonly IErpCustomerFunctionalityService _erpCustomerFunctionalityService;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
         private readonly IErpNopUserService _erpNopUserService;
 
         #endregion
@@ -74,7 +74,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
             IErpWarehouseAdditionalDataService erpWarehouseAdditionalDataService,
             IErpWarehouseSalesOrgMapService erpWarehouseSalesOrgMapService,
             IErpCustomerFunctionalityService erpCustomerFunctionalityService,
-            IB2BB2CWorkContext b2BB2CWorkContext,
             IErpNopUserService erpNopUserService
             )
         {
@@ -97,7 +96,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
             _erpWarehouseAdditionalDataService = erpWarehouseAdditionalDataService;
             _erpWarehouseSalesOrgMapService = erpWarehouseSalesOrgMapService;
             _erpCustomerFunctionalityService = erpCustomerFunctionalityService;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
             _erpNopUserService = erpNopUserService;
         }
 
@@ -416,7 +414,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
 
         public async Task<ErpAccountOrderListModel> PrepareErpOrderListModelAsync(ErpAccountOrderSearchModel searchModel)
         {
-            var currCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var currCustomer = await _workContext.GetCurrentCustomerAsync();
             var store = await _storeContext.GetCurrentStoreAsync();
 
             var orderPlacedOnDateFrom = searchModel.SearchOrderDateFrom;
@@ -424,12 +422,12 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
 
             if (searchModel.SearchOrderDateFrom.HasValue)
             {
-                orderPlacedOnDateFrom = searchModel.SearchOrderDateFrom.Value; 
+                orderPlacedOnDateFrom = searchModel.SearchOrderDateFrom.Value;
             }
 
             if (searchModel.SearchOrderDateTo.HasValue)
             {
-                orderPlacedOnDateTo = searchModel.SearchOrderDateTo.Value.AddHours(23).AddMinutes(59).AddSeconds(59);  
+                orderPlacedOnDateTo = searchModel.SearchOrderDateTo.Value.AddHours(23).AddMinutes(59).AddSeconds(59);
             }
 
             var erpNopUser = await _erpNopUserService.GetErpNopUserByCustomerIdAsync(currCustomer.Id);
@@ -511,7 +509,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
 
         public async Task<ErpQuoteOrderListModel> PrepareErpQuoteOrderListModelAsync(ErpAccountQuoteOrderSearchModel searchModel)
         {
-            var currCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var currCustomer = await _workContext.GetCurrentCustomerAsync();
             var store = await _storeContext.GetCurrentStoreAsync();
 
             var orderPlacedOnDateFrom = searchModel.SearchOrderDateFrom;
@@ -634,11 +632,11 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
         //        model.IsOverSpend = orderTotal > availableBlanace;
         //        if (model.HasB2BOrderAssistantRole || model.HasB2BQuoteAssistantRole)
         //        {
-        //            model.CreditWarningMessage = string.Format(_localizationService.GetResource("Plugins.Payments.B2BCustomerAccount.B2BQouteOrder.CreditLimitExceed"));
+        //            model.CreditWarningMessage = string.Format(_localizationService.GetResource("NopStation.Plugin.B2B.B2BB2CFeatures.B2BQouteOrder.CreditLimitExceed"));
         //        }
         //        else
         //        {
-        //            model.CreditWarningMessage = string.Format(_localizationService.GetResource("Plugins.Payments.B2BCustomerAccount.B2BQouteOrder.CreditLimitExceedWithValue"), model.AvailableCredit, model.CurrentOrderTotal);
+        //            model.CreditWarningMessage = string.Format(_localizationService.GetResource("NopStation.Plugin.B2B.B2BB2CFeatures.B2BQouteOrder.CreditLimitExceedWithValue"), model.AvailableCredit, model.CurrentOrderTotal);
         //        }
         //    }
         //    return model;

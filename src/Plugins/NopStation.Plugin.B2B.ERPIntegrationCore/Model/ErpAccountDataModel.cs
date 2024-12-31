@@ -1,46 +1,45 @@
-﻿using System.Collections.Generic;
-using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
+﻿using System;
+using System.Collections.Generic;
 
-namespace NopStation.Plugin.B2B.ERPIntegrationCore.Model
+namespace NopStation.Plugin.B2B.ERPIntegrationCore.Model;
+
+public class ErpAccountDataModel
 {
-    public class ErpAccountDataModel
-    {
-        public bool IsActive { get; set; }
-        public string ErpSalesOrgName { get; set; }
-        public string PaymentTypeCode { get; set; }
-        public string AccNo { get; set; }
-        public string Name { get; set; }
-        public string Branch { get; set; }
-        public string Notes { get; set; }
-        public string Address1 { get; set; }
-        public string Address2 { get; set; }
-        public string Address3 { get; set; }
-        public string Province { get; set; }
-        public string Country { get; set; }
-        public string PostalCode { get; set; }
-        public string TelNo { get; set; }
-        public string EMail { get; set; }
-        public string EMail1 { get; set; }
-        public string DelName { get; set; }
-        public string DelInstruc1 { get; set; }
-        public string DelInstruc2 { get; set; }
-        public string DelInstruc3 { get; set; }
-        public string CompanyNo { get; set; }
-        public string PrefilterFacets { get; set; }
-        public string VatNumber { get; set; } 
-        public string PriceGroupCode { get; set; }
-        public decimal CreditLimit { get; set; }
-        public decimal? CreditLimitUsed { get; set; }
-        public decimal? CreditLimitAvailable { get; set; }
-        public decimal? Balance { get; set; }   
-        public string CreditLimitUsedStr { get; set; }
-        public string CreditLimitAvailableStr { get; set; }
-        public string BalanceStr { get; set; }
-        public bool? AllowSwitchSalesOrg { get; set; }
-        public bool? AllowOverspend { get; set; }
-        public List<KeyValuePair<string, string>> Attributes { get; set; }
-        public string CreditRepresentativeGroup { get; set; }
-        public decimal? PercentageOfStockAllowedForCustomer { get; set; }
-        public List<ErpShipToAddress> ShipToAddresses { get; set; }  
-    }
+    public string AccountNumber { get; set; }
+    public string AccountName { get; set; }
+    public string ErpSalesOrgCode { get; set; }
+    public string BillingSuburb { get; set; }
+    public string BillingName { get; set; }
+    public string VatNumber { get; set; }
+    public decimal? CreditLimit { get; set; }
+    public decimal? CreditLimitUsed { get; set; }
+    public decimal? CreditLimitAvailable { get; set; }
+    public decimal? CurrentBalance { get; set; }
+    public bool AllowOverspend { get; set; }
+    public string PreFilterFacets { get; set; }
+    public string PaymentTypeCode { get; set; }
+    public string PriceGroupCode { get; set; }
+    public string CreditLimitStr { get; set; }
+    public string CreditLimitUsedStr { get; set; }
+    public string CreditLimitAvailableStr { get; set; }
+    public string CurrentBalanceStr { get; set; }
+    public decimal? PercentageOfStockAllowed { get; set; }
+    public string Address1 { get; set; }
+    public string Address2 { get; set; }
+    public string Address3 { get; set; }
+    public string StateProvince { get; set; }
+    public string City { get; set; }
+    public string Country { get; set; }
+    public string ZipPostalCode { get; set; }
+    public string PhoneNumber { get; set; }
+    public string Email { get; set; }
+    public string DeliveryRoute { get; set; }
+    public string CompanyNo { get; set; }
+    public bool IsActive { get; set; }
+    public List<KeyValuePair<string, string>> ErpAccountAttributes { get; set; }
+    public bool IsDeleted { get; set; }
+    public DateTime? UpdatedOnUtc { get; set; }
+    public bool OverrideBackOrderingConfigSetting { get; set; }
+    public bool AllowAccountsBackOrdering { get; set; }
+    public bool AllowAccountsAddressEditOnCheckout { get; set; }
 }

@@ -25,7 +25,7 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncLogServices
             return path;
         }
 
-        public async Task SyncLogSaveOnFileAsync(string syncTaskName = "", ErpSyncLavel syncLavel = 0, string shortMessage = "", string fullMessage = "")
+        public async Task SyncLogSaveOnFileAsync(string syncTaskName = "", ErpSyncLevel syncLavel = 0, string shortMessage = "", string fullMessage = "")
         {
             var path = GetSyncLogDirectoryPath();
 

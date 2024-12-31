@@ -120,7 +120,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Infrastructure
             CreateMap<ErpLogs, ErpActivityLogModel>();
             CreateMap<ErpActivityLogModel, ErpLogs>()
                 .ForMember(model => model.LogLevel, options => options.Ignore())
-                .ForMember(model => model.ErpSyncLavel, options => options.Ignore());
+                .ForMember(model => model.ErpSyncLevel, options => options.Ignore());
 
             CreateMap<ErpActivityLogs, ErpActivityLogsModel>();
             CreateMap<ErpActivityLogsModel, ErpActivityLogs>();

@@ -58,7 +58,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
         private readonly IErpAccountService _erpAccountService;
         private readonly IErpNopUserService _erpNopUserService;
         private readonly IErpCustomerFunctionalityService _erpCustomerFunctionalityService;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
         private readonly IErpLogsService _erpLogsService;
         private readonly IErpOrderDetailsModelFactory _erpOrderDetailsModelFactory;
         private readonly IProductService _productService;
@@ -93,7 +92,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
             IErpNopUserService erpNopUserService,
             IErpOrderModelFactory erpOrderModelFactory,
             IErpCustomerFunctionalityService erpCustomerFunctionalityService,
-            IB2BB2CWorkContext b2BB2CWorkContext,
             IErpLogsService erpLogsService,
             IErpOrderDetailsModelFactory erpOrderDetailsModelFactory,
             IProductService productService,
@@ -134,7 +132,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
             _erpAccountService = erpAccountService;
             _erpNopUserService = erpNopUserService;
             _erpCustomerFunctionalityService = erpCustomerFunctionalityService;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
             _erpLogsService = erpLogsService;
             _erpOrderDetailsModelFactory = erpOrderDetailsModelFactory;
             _productService = productService;
@@ -162,7 +159,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
         {
 
             var order = await _orderService.GetOrderByIdAsync(orderId);
-            var customer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var customer = await _workContext.GetCurrentCustomerAsync();
 
             (var erpAccount, var erpNopUser) = await GetErpAccountAndUserOfCurrentCustomerAsync(customer.Id);
 
@@ -184,7 +181,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
         public override async Task<IActionResult> Details(int orderId)
         {
             var order = await _orderService.GetOrderByIdAsync(orderId);
-            var customer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var customer = await _workContext.GetCurrentCustomerAsync();
 
             #region Erp
 
@@ -212,7 +209,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
         public override async Task<IActionResult> PrintOrderDetails(int orderId)
         {
             var order = await _orderService.GetOrderByIdAsync(orderId);
-            var customer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var customer = await _workContext.GetCurrentCustomerAsync();
 
             #region Erp
 
@@ -243,7 +240,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
         public override async Task<IActionResult> RePostPayment(int orderId)
         {
             var order = await _orderService.GetOrderByIdAsync(orderId);
-            var customer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var customer = await _workContext.GetCurrentCustomerAsync();
 
             #region Erp
 
@@ -286,7 +283,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
         //My account / Order details page / Shipment details page
         public override async Task<IActionResult> ShipmentDetails(int shipmentId)
         {
-            var customer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var customer = await _workContext.GetCurrentCustomerAsync();
             var shipment = await _shipmentService.GetShipmentByIdAsync(shipmentId);
             if (shipment == null)
                 return Challenge();
@@ -323,7 +320,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
         // but they are not allowed to see the Accounts screen with the invoices and available credit.
         private async Task<bool> HasB2BQuoteAssistantRole()
         {
-            var customer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var customer = await _workContext.GetCurrentCustomerAsync();
             var customerRoles = await _customerService.GetCustomerRolesAsync(customer);
             return customerRoles.Any(x => x.SystemName.Equals(B2BB2CFeaturesDefaults.ErpQuoteAssistantRoleSystemName));
         }
@@ -334,7 +331,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
 
         public virtual async Task<IActionResult> IsItemsInCart()
         {
-            var customer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var customer = await _workContext.GetCurrentCustomerAsync();
             var shoppingCartItem = await _shoppingCartService.GetShoppingCartAsync(customer);
             var hasItemOnCart = shoppingCartItem.Where(x => x.ShoppingCartType == ShoppingCartType.ShoppingCart).Any();
 
@@ -343,7 +340,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
 
         public override async Task<IActionResult> ReOrder(int orderId)
         {
-            var customer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var customer = await _workContext.GetCurrentCustomerAsync();
             var store = await _storeContext.GetCurrentStoreAsync();
 
             var order = await _orderService.GetOrderByIdAsync(orderId);
@@ -364,7 +361,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
 
                 if (isCartActivityOn)
                 {
-                    _notificationService.WarningNotification(await _localizationService.GetResourceAsync("Plugins.Payments.B2BCustomerAccount.ShoppingCart.CartActivityOn"));
+                    _notificationService.WarningNotification(await _localizationService.GetResourceAsync("NopStation.Plugin.B2B.B2BB2CFeatures.ShoppingCart.CartActivityOn"));
                     return RedirectToRoute("ShoppingCart");
                 }
 
@@ -434,27 +431,27 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
                         if (warnnings.Any())
                         {
                             await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.IsCartActivityOn, false, store.Id);
-                            _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("Plugins.Payments.B2BCustomerAccount.Reorder.Error"));
+                            _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("NopStation.Plugin.B2B.B2BB2CFeatures.Reorder.Error"));
                             return RedirectToRoute("ShoppingCart");
                         }
                     }
 
                     await _orderProcessingService.ReOrderAsync(order);
-                    await _erpLogsService.InformationAsync($"Reordered! Order id: {order.Id}", ErpSyncLavel.Order, customer: customer);
+                    await _erpLogsService.InformationAsync($"Reordered! Order id: {order.Id}", ErpSyncLevel.Order, customer: customer);
 
                     //erp activity log
                     await _erpActivityLogsService.InsertErpActivityAsync(customer, "Erp_ReOrder",
                         string.Format(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.ErpActivityLogs.ErpReOrder"),
                         order.Id, customer.Id), customer);
 
-                    _notificationService.SuccessNotification(await _localizationService.GetResourceAsync("Plugins.Payments.B2BCustomerAccount.Reorder.Succeed"));
+                    _notificationService.SuccessNotification(await _localizationService.GetResourceAsync("NopStation.Plugin.B2B.B2BB2CFeatures.Reorder.Succeed"));
                 }
                 catch (Exception ex)
                 {
-                    var msg = await _localizationService.GetResourceAsync("Plugins.Payments.B2BCustomerAccount.Reorder.Error");
+                    var msg = await _localizationService.GetResourceAsync("NopStation.Plugin.B2B.B2BB2CFeatures.Reorder.Error");
                     _logger.Error(msg + " " + ex.Message, ex);
-                    _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("Plugins.Payments.B2BCustomerAccount.Reorder.Error"));
-                    await _erpLogsService.ErrorAsync(msg, ErpSyncLavel.Order, ex, customer: customer);
+                    _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("NopStation.Plugin.B2B.B2BB2CFeatures.Reorder.Error"));
+                    await _erpLogsService.ErrorAsync(msg, ErpSyncLevel.Order, ex, customer: customer);
                 }
                 finally
                 {

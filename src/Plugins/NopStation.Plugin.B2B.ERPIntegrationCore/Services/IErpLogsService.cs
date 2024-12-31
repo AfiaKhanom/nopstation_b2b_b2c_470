@@ -10,9 +10,9 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
 {
     public interface IErpLogsService
     {
-        Task<ErpLogs> InsertErpLogAsync(ErpLogLevel logLevel, ErpSyncLavel syncLavel, string shortMessage, string fullMessage = "", Customer customer = null);
+        Task<ErpLogs> InsertErpLogAsync(ErpLogLevel logLevel, ErpSyncLevel syncLavel, string shortMessage, string fullMessage = "", Customer customer = null);
 
-        ErpLogs  InsertErpLog(ErpLogLevel logLevel, ErpSyncLavel syncLavel, string shortMessage, string fullMessage = "", Customer customer = null);
+        ErpLogs  InsertErpLog(ErpLogLevel logLevel, ErpSyncLevel syncLavel, string shortMessage, string fullMessage = "", Customer customer = null);
 
         Task UpdateErpLogAsync(ErpLogs erpLog);
 
@@ -24,7 +24,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
 
         Task<IList<ErpLogs>> GetErpLogsByIdsAsync(int[] erpLogIds);
 
-        Task InformationAsync(string message, ErpSyncLavel syncLavel, Exception exception = null, Customer customer = null);
+        Task InformationAsync(string message, ErpSyncLevel syncLavel, Exception exception = null, Customer customer = null);
 
         /// <summary>
         /// Information
@@ -32,7 +32,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
         /// <param name="message">Message</param>
         /// <param name="exception">Exception</param>
         /// <param name="customer">Customer</param>
-        void Information(string message, ErpSyncLavel syncLavel, Exception exception = null, Customer customer = null);
+        void Information(string message, ErpSyncLevel syncLavel, Exception exception = null, Customer customer = null);
 
         /// <summary>
         /// Warning
@@ -41,7 +41,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
         /// <param name="exception">Exception</param>
         /// <param name="customer">Customer</param>
         /// <returns>A task that represents the asynchronous operation</returns>
-        Task WarningAsync(string message, ErpSyncLavel syncLavel, Exception exception = null, Customer customer = null);
+        Task WarningAsync(string message, ErpSyncLevel syncLavel, Exception exception = null, Customer customer = null);
 
         /// <summary>
         /// Warning
@@ -49,7 +49,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
         /// <param name="message">Message</param>
         /// <param name="exception">Exception</param>
         /// <param name="customer">Customer</param>
-        void Warning(string message, ErpSyncLavel syncLavel, Exception exception = null, Customer customer = null);
+        void Warning(string message, ErpSyncLevel syncLavel, Exception exception = null, Customer customer = null);
 
         /// <summary>
         /// Error
@@ -58,7 +58,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
         /// <param name="exception">Exception</param>
         /// <param name="customer">Customer</param>
         /// <returns>A task that represents the asynchronous operation</returns>
-        Task ErrorAsync(string message, ErpSyncLavel syncLavel, Exception exception = null, Customer customer = null);
+        Task ErrorAsync(string message, ErpSyncLevel syncLavel, Exception exception = null, Customer customer = null);
 
         /// <summary>
         /// Error
@@ -66,7 +66,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
         /// <param name="message">Message</param>
         /// <param name="exception">Exception</param>
         /// <param name="customer">Customer</param>
-        void Error(string message, ErpSyncLavel syncLavel, Exception exception = null, Customer customer = null);
+        void Error(string message, ErpSyncLevel syncLavel, Exception exception = null, Customer customer = null);
         /// <summary>
         /// Clears a log
         /// </summary>

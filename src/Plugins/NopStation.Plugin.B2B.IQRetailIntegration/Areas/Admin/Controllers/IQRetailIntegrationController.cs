@@ -154,7 +154,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.Areas.Admin.Controllers
             var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.IQRetailIntegration.Configuration.Updated");
             _notificationService.SuccessNotification(successMsg);
 
-            await _erpLogsService.InformationAsync(successMsg, ErpSyncLavel.Account, customer: await _workContext.GetCurrentCustomerAsync());
+            await _erpLogsService.InformationAsync(successMsg, ErpSyncLevel.Account, customer: await _workContext.GetCurrentCustomerAsync());
 
             await PrepareAvailableCustomersAsync(model);
 

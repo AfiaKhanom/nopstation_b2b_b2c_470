@@ -1,0 +1,42 @@
+﻿@model TaxTypeSelectorModel
+@using Nop.Core.Domain.Tax
+@inject Nop.Core.IWebHelper webHelper
+
+@{
+    var returnUrl = webHelper.GetRawUrl(Context.Request);
+
+    <script src="~/Plugins/SevenSpikes.Core/Scripts/jquery.styleSelect.min.js" asp-location="Footer"></script>
+    <script src="~/Plugins/SevenSpikes.Core/Scripts/jquery.jscrollpane.min.js" asp-location="Footer"></script>
+
+    var taxTypes = new List<SelectListItem>();
+    taxTypes.Add(new SelectListItem
+    {
+        Text = T("Tax.Inclusive").Text,
+        Value = Url.RouteUrl("ChangeTaxType", new { customertaxtype = ((int)TaxDisplayType.IncludingTax), returnUrl }, webHelper.GetCurrentRequestProtocol()),
+        Selected = Model.CurrentTaxType == TaxDisplayType.IncludingTax
+    });
+    taxTypes.Add(new SelectListItem
+    {
+        Text = T("Tax.Exclusive").Text,
+        Value = Url.RouteUrl("ChangeTaxType", new { customertaxtype = ((int)TaxDisplayType.ExcludingTax), returnUrl }, webHelper.GetCurrentRequestProtocol()),
+        Selected = Model.CurrentTaxType == TaxDisplayType.ExcludingTax
+    });
+
+	<div class="tax-display-type-selector">
+        <div class="header-taxdisplaytypeselector">
+
+    		<select id="customerTaxType" name="customerTaxType" asp-items="@taxTypes" onchange="setLocation(this.value);" aria-label="@T("Tax.Selector.Label")"></select>
+
+            <script type="text/javascript" asp-location="Footer">
+                $(function() {
+                    var options = {
+                        styleClass: "new_select",
+                        jScrollPane: 1
+                    }
+                    $("#customerTaxType").styleSelect(options);
+                });
+            </script>
+
+        </div>
+    </div>
+}

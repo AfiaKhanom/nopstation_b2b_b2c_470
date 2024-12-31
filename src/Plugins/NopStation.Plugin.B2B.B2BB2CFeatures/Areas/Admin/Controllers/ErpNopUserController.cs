@@ -37,7 +37,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
         private readonly ICustomerActivityService _customerActivityService;
         private readonly ICustomerService _customerService;
         private readonly IErpNopUserAccountMapService _erpNopUserAccountMapService;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
         private readonly IErpLogsService _erpLogsService;
         private readonly IWebHelper _webHelper;
         private readonly IErpActivityLogsService _erpActivityLogsService;
@@ -57,7 +56,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             IGenericAttributeService genericAttributeService,
             ICustomerService customerService,
             IErpNopUserAccountMapService erpNopUserAccountMapService,
-            IB2BB2CWorkContext b2BB2CWorkContext,
             IErpLogsService erpLogsService,
             IWebHelper webHelper,
             IErpActivityLogsService erpActivityLogsService)
@@ -72,7 +70,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             _customerActivityService = customerActivityService;
             _customerService = customerService;
             _erpNopUserAccountMapService = erpNopUserAccountMapService;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
             _erpLogsService = erpLogsService;
             _webHelper = webHelper;
             _erpActivityLogsService = erpActivityLogsService;
@@ -143,7 +140,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 var erpNopUser = model.ToEntity<ErpNopUser>();
 
                 erpNopUser.CreatedOnUtc = DateTime.UtcNow;
-                erpNopUser.CreatedById = (await _b2BB2CWorkContext.GetCurrentCustomerAsync()).Id;
+                erpNopUser.CreatedById = (await _workContext.GetCurrentCustomerAsync()).Id;
                 erpNopUser.ErpUserTypeId = model.ErpUserTypeId;
 
                 await _erpNopUserService.InsertErpNopUserAsync(erpNopUser);
@@ -160,7 +157,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Added");
                 _notificationService.SuccessNotification(successMsg);
 
-                await _erpLogsService.InformationAsync($"{successMsg}. Erp Nop User Id: {erpNopUser.Id}", ErpSyncLavel.ErpNopUser, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+                await _erpLogsService.InformationAsync($"{successMsg}. Erp Nop User Id: {erpNopUser.Id}", ErpSyncLevel.ErpNopUser, customer: await _workContext.GetCurrentCustomerAsync());
 
                 //erp activity log
                 await _erpActivityLogsService.InsertErpActivityAsync("Erp_AddNewErpNopUser",
@@ -209,13 +206,13 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             if (erpNopUser == null)
                 return RedirectToAction("List");
 
-            var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+            var currentCustomer = await _workContext.GetCurrentCustomerAsync();
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var currCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+                    var currCustomer = await _workContext.GetCurrentCustomerAsync();
                     erpNopUser.ErpShipToAddressId = model.ErpShipToAddressId;
                     erpNopUser.BillingErpShipToAddressId = model.BillingErpShipToAddressId;
                     erpNopUser.ShippingErpShipToAddressId = model.ShippingErpShipToAddressId;
@@ -244,7 +241,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                     var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Updated");
                     _notificationService.SuccessNotification(successMsg);
 
-                    await _erpLogsService.InformationAsync($"{successMsg}. Erp Nop User Id: {erpNopUser.Id}", ErpSyncLavel.Account, customer: currentCustomer);
+                    await _erpLogsService.InformationAsync($"{successMsg}. Erp Nop User Id: {erpNopUser.Id}", ErpSyncLevel.Account, customer: currentCustomer);
 
                     //erp activity log
                     await _erpActivityLogsService.InsertErpActivityAsync("Erp_EditErpNopUser",
@@ -260,7 +257,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 catch (Exception exc)
                 {
                     _notificationService.ErrorNotification(exc.Message);
-                    await _erpLogsService.InformationAsync($"{exc.Message}. Erp Nop User Id: {erpNopUser.Id}", ErpSyncLavel.Account, exc, customer: currentCustomer);
+                    await _erpLogsService.InformationAsync($"{exc.Message}. Erp Nop User Id: {erpNopUser.Id}", ErpSyncLevel.Account, exc, customer: currentCustomer);
                 }
             }
 
@@ -306,7 +303,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             await _genericAttributeService.SaveAttributeAsync<string?>(currentCustomer, NopCustomerDefaults.LastVisitedPageAttribute, $"{_webHelper.GetStoreLocation().TrimEnd('/')}/Admin/ErpNopUser/ErpNopUserEdit/{erpNopUser.Id}");
 
             var successMsg = await _localizationService.GetResourceAsync("ActivityLog.Impersonation.Started.Customer");
-            await _erpLogsService.InformationAsync($"{successMsg}. Impersonated Customer Id: {customer.Id}. Original Customer Id: {currentCustomer.Id}", ErpSyncLavel.SalesOrg, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+            await _erpLogsService.InformationAsync($"{successMsg}. Impersonated Customer Id: {customer.Id}. Original Customer Id: {currentCustomer.Id}", ErpSyncLevel.SalesOrg, customer: await _workContext.GetCurrentCustomerAsync());
 
             //erp activity log
             await _erpActivityLogsService.InsertErpActivityAsync(customer, "Erp_CustomerImpersonationStart",
@@ -341,7 +338,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Deleted");
             _notificationService.SuccessNotification(successMsg);
 
-            await _erpLogsService.ErrorAsync($"{successMsg}. Erp Nop User Id: {erpNopUser.Id}", ErpSyncLavel.Account, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+            await _erpLogsService.ErrorAsync($"{successMsg}. Erp Nop User Id: {erpNopUser.Id}", ErpSyncLevel.Account, customer: await _workContext.GetCurrentCustomerAsync());
 
             //erp activity log
             await _erpActivityLogsService.InsertErpActivityAsync("Erp_DeleteErpNopUser",
@@ -398,7 +395,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 await _erpNopUserAccountMapService.InsertErpNopUserAccountMapAsync(erpNopUserAccountMap);
 
                 var successMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Account.Added");
-                await _erpLogsService.InformationAsync($"{successMsg}. Erp Account Id: {model.ErpAccountId}. Erp Nop User Id: {model.ErpUserId}", ErpSyncLavel.Account, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+                await _erpLogsService.InformationAsync($"{successMsg}. Erp Account Id: {model.ErpAccountId}. Erp Nop User Id: {model.ErpUserId}", ErpSyncLevel.Account, customer: await _workContext.GetCurrentCustomerAsync());
 
                 //erp activity log
                 await _erpActivityLogsService.InsertErpActivityAsync("Erp_AddNewErpNopUserAccountMap",
@@ -430,7 +427,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
 
             //try to get a erpNopUserAccount with the specified id
             var erpNopUserAccountMap = await _erpNopUserAccountMapService.GetErpNopUserAccountMapByAccountAndUserIdAsync(erpAccountId, nopUserId);
-            
+
             if (erpNopUserAccountMap == null)
                 return Json(new { Result = false });
 

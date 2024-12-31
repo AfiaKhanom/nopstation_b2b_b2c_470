@@ -38,7 +38,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IAddressService _addressService;
         private readonly IErpSalesOrgService _erpSalesOrgService;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
+        private readonly IWorkContext _workContext;
         private readonly IErpLogsService _erpLogsService;
         private readonly IStateProvinceService _stateProvinceService;
         private readonly ICountryService _countryService;
@@ -68,7 +68,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             ICustomerActivityService customerActivityService,
             IAddressService addressService,
             IErpSalesOrgService erpSalesOrgService,
-            IB2BB2CWorkContext b2BB2CWorkContext,
             IErpLogsService erpLogsService,
             ICountryService countryService,
             IStateProvinceService stateProvinceService,
@@ -83,7 +82,8 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             IErpAccountCustomerRegistrationPhysicalTradingAddressService erpAccountCustomerRegistrationPhysicalTradingAddressService,
             IErpAccountCustomerRegistrationTradeReferencesService erpAccountCustomerRegistrationTradeReferencesService,
             IErpAccountCustomerRegistrationPremisesService erpAccountCustomerRegistrationPremisesService,
-            IErpWorkflowMessageService erpWorkflowMessageService)
+            IErpWorkflowMessageService erpWorkflowMessageService,
+            IWorkContext workContext)
         {
             _localizationService = localizationService;
             _notificationService = notificationService;
@@ -93,7 +93,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             _customerActivityService = customerActivityService;
             _addressService = addressService;
             _erpSalesOrgService = erpSalesOrgService;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
             _erpLogsService = erpLogsService;
             _countryService = countryService;
             _stateProvinceService = stateProvinceService;
@@ -109,6 +108,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
             _erpAccountCustomerRegistrationPremisesService = erpAccountCustomerRegistrationPremisesService;
             _erpWorkflowMessageService = erpWorkflowMessageService;
             _erpShipToAddressModelFactory = erpShipToAddressModelFactory;
+            _workContext = workContext;
         }
 
         #endregion
@@ -192,7 +192,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 };
 
                 applicationForm.CreatedOnUtc = DateTime.UtcNow;
-                applicationForm.CreatedById = (await _b2BB2CWorkContext.GetCurrentCustomerAsync()).Id;
+                applicationForm.CreatedById = (await _workContext.GetCurrentCustomerAsync()).Id;
 
                 await _erpAccountCustomerRegistrationFormService.InsertErpAccountCustomerRegistrationFormAsync(applicationForm);
 
@@ -265,10 +265,10 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 var successMsg = await _localizationService.GetResourceAsync("B2BB2CFeatures.ErpAccountCustomerRegistrationForm.Added");
                 _notificationService.SuccessNotification(successMsg);
 
-                await _erpLogsService.InformationAsync(successMsg + " Erp Account Customer Registration Form Id: " + applicationForm.Id, ErpSyncLavel.Account, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+                await _erpLogsService.InformationAsync(successMsg + " Erp Account Customer Registration Form Id: " + applicationForm.Id, ErpSyncLevel.Account, customer: await _workContext.GetCurrentCustomerAsync());
 
                 //Send Email to Admin and Customer
-                await _erpWorkflowMessageService.SendERPCustomerRegistrationApplicationCreatedNotificationAsync(applicationForm, (await _b2BB2CWorkContext.GetWorkingLanguageAsync()).Id);
+                await _erpWorkflowMessageService.SendERPCustomerRegistrationApplicationCreatedNotificationAsync(applicationForm, (await _workContext.GetWorkingLanguageAsync()).Id);
 
                 if (!continueEditing)
                     return RedirectToAction("List");
@@ -318,7 +318,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                 await _erpAccountCustomerRegistrationFormService.UpdateErpAccountCustomerRegistrationFormAsync(erpAccountCustomerRegistrationForm);
 
                 //Send Email to Customer
-                await _erpWorkflowMessageService.SendERPCustomerRegistrationApplicationApprovedNotificationAsync(erpAccountCustomerRegistrationForm, (await _b2BB2CWorkContext.GetWorkingLanguageAsync()).Id);
+                await _erpWorkflowMessageService.SendERPCustomerRegistrationApplicationApprovedNotificationAsync(erpAccountCustomerRegistrationForm, (await _workContext.GetWorkingLanguageAsync()).Id);
 
                 return RedirectToAction("ApplicationEdit", new { id = model.Id });
             }
@@ -352,7 +352,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                     erpAccountCustomerRegistrationForm.EstimatePurchasesPerMonthZAR = model.EstimatePurchasesPerMonthZAR;
                     erpAccountCustomerRegistrationForm.CreditLimitRequired = model.CreditLimitRequired;
                     erpAccountCustomerRegistrationForm.UpdatedOnUtc = DateTime.UtcNow;
-                    erpAccountCustomerRegistrationForm.UpdatedById = (await _b2BB2CWorkContext.GetCurrentCustomerAsync()).Id;
+                    erpAccountCustomerRegistrationForm.UpdatedById = (await _workContext.GetCurrentCustomerAsync()).Id;
 
                     await _erpAccountCustomerRegistrationFormService.UpdateErpAccountCustomerRegistrationFormAsync(erpAccountCustomerRegistrationForm);
                     #endregion
@@ -383,7 +383,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                             Branch = model.BankingDetailsModel.Branch,
                             IsActive = true,
                             CreatedOnUtc = DateTime.UtcNow,
-                            CreatedById = (await _b2BB2CWorkContext.GetCurrentCustomerAsync()).Id
+                            CreatedById = (await _workContext.GetCurrentCustomerAsync()).Id
                         };
 
                         await _erpAccountCustomerRegistrationBankingDetailsService.InsertErpAccountCustomerRegistrationBankingDetailsAsync(erpBankingDetails);
@@ -412,7 +412,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                     {
                         var newPhysicalTradingAddress = model.PhysicalTradingAddressModel.PhysicalTradingAddress.ToEntity<Address>();
 
-                        if(newPhysicalTradingAddress.Id == 0)
+                        if (newPhysicalTradingAddress.Id == 0)
                             await _addressService.InsertAddressAsync(newPhysicalTradingAddress);
                         else
                             await _addressService.UpdateAddressAsync(newPhysicalTradingAddress);
@@ -425,7 +425,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                             PhysicalTradingAddressId = newPhysicalTradingAddress.Id,
                             IsActive = true,
                             CreatedOnUtc = DateTime.UtcNow,
-                            CreatedById = (await _b2BB2CWorkContext.GetCurrentCustomerAsync()).Id
+                            CreatedById = (await _workContext.GetCurrentCustomerAsync()).Id
                         };
 
                         await _erpAccountCustomerRegistrationPhysicalTradingAddressService.InsertErpAccountCustomerRegistrationPhysicalTradingAddressAsync(erpPhysicalTradingAddress);
@@ -457,7 +457,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                             TelephoneNumberOfLandlord = model.PremisesModel.TelephoneNumberOfLandlord,
                             IsActive = true,
                             CreatedOnUtc = DateTime.UtcNow,
-                            CreatedById = (await _b2BB2CWorkContext.GetCurrentCustomerAsync()).Id
+                            CreatedById = (await _workContext.GetCurrentCustomerAsync()).Id
                         };
 
                         await _erpAccountCustomerRegistrationPremisesService.InsertErpAccountCustomerRegistrationPremisesAsync(erpPremises);
@@ -489,7 +489,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                             HowLong = model.TradeReferencesModel.HowLong,
                             IsActive = true,
                             CreatedOnUtc = DateTime.UtcNow,
-                            CreatedById = (await _b2BB2CWorkContext.GetCurrentCustomerAsync()).Id
+                            CreatedById = (await _workContext.GetCurrentCustomerAsync()).Id
                         };
 
                         await _erpAccountCustomerRegistrationTradeReferencesService.InsertErpAccountCustomerRegistrationTradeReferencesAsync(erpTradeReferences);
@@ -499,7 +499,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
                     var successMsg = await _localizationService.GetResourceAsync("B2BB2CFeatures.ErpAccountCustomerRegistrationForm.Updated");
                     _notificationService.SuccessNotification(successMsg);
 
-                    await _erpLogsService.InformationAsync(successMsg + "  " + model.Id, ErpSyncLavel.Account, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+                    await _erpLogsService.InformationAsync(successMsg + "  " + model.Id, ErpSyncLevel.Account, customer: await _workContext.GetCurrentCustomerAsync());
 
                     if (!continueEditing)
                         return RedirectToAction("List");
@@ -541,7 +541,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers
 
             _notificationService.SuccessNotification(successMsg);
 
-            await _erpLogsService.InformationAsync(successMsg + " Erp Account Customer Registration Form Id: " + id, ErpSyncLavel.Account, customer: await _b2BB2CWorkContext.GetCurrentCustomerAsync());
+            await _erpLogsService.InformationAsync(successMsg + " Erp Account Customer Registration Form Id: " + id, ErpSyncLevel.Account, customer: await _workContext.GetCurrentCustomerAsync());
 
             return RedirectToAction("List");
         }

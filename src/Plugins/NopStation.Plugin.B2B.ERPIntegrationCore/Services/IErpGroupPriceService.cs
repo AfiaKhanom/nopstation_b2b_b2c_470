@@ -24,7 +24,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
 
         Task<ErpGroupPrice> GetB2BPriceGroupProductPricingByErpPriceGroupCodeAndProductId(int priceGroupCodeId, int productId);
 
-        Task<bool> CheckAnyPriceGroupProductPricingExistWithProductIdAndPriceGroupCodeId(int prouctId, int priceGroupCodeId);
+        Task<bool> CheckAnyPriceGroupProductPricingExistWithProductIdAndPriceGroupCodeId(int prouctdId, int priceGroupCodeId);
         Task InActiveAllOldGroupPrice(DateTime syncStartTime);
     }
 }

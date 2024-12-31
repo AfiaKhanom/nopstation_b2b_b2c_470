@@ -153,11 +153,11 @@
         <Value>Enter ERP time out milliseconds</Value>
     </LocaleResource>
 
-    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.MaxERPIntegrationOrderPlaceReties">
+    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.MaxErpIntegrationOrderPlaceRetries">
         <Value>Max ERP integration order place reties</Value>
     </LocaleResource>
 
-    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.MaxERPIntegrationOrderPlaceReties.Hint">
+    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.MaxErpIntegrationOrderPlaceRetries.Hint">
         <Value>Enter max ERP integration order place reties</Value>
     </LocaleResource>
 
@@ -3620,11 +3620,11 @@
         <Value>No Data</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugins.Payments.B2BCustomerAccount.Reorder.Succeed">
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Reorder.Succeed">
         <Value>Re Order Successful</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugins.Payments.B2BCustomerAccount.Reorder.Error">
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Reorder.Error">
         <Value>Re Order Failed</Value>
     </LocaleResource>
 
@@ -3845,7 +3845,7 @@
         <Value>ERP Log Level</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ErpSyncLavel">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ErpSyncLevel">
         <Value>ERP Sync Label</Value>
     </LocaleResource>
 
@@ -3889,7 +3889,7 @@
         <Value>ERP Log Level represents the log elements type.</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ErpSyncLavel.Hint">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ErpSyncLevel.Hint">
         <Value>ERP Sync Label represents the log entity/module type.</Value>
     </LocaleResource>
 
@@ -4472,11 +4472,11 @@
         <Value>Percentage of stock allowed for this account</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugins.Payments.B2BCustomerAccount.Fields.SalesOrgCode">
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Fields.SalesOrgCode">
         <Value>Sales Organization Code</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugins.Payments.B2BCustomerAccount.Fields.SalesOrgCode.Hint">
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Fields.SalesOrgCode.Hint">
         <Value>Sales Organization Code</Value>
     </LocaleResource>
 
@@ -5371,11 +5371,11 @@
 
     <!-- Card:116 - 15-April-2024 -->
 
-    <LocaleResource Name="Plugins.Payments.B2BCustomerAccount.B2BAccountOrderDetails.DownloadInvoicePOD">
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.B2BAccountOrderDetails.DownloadInvoicePOD">
         <Value>Download Invoice POD</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugins.Payments.B2BCustomerAccount.B2BAccount.FinancialTransaction.Fields.DownloadInvoiceOrPod">
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.B2BAccount.FinancialTransaction.Fields.DownloadInvoiceOrPod">
         <Value>Download</Value>
     </LocaleResource>
 
@@ -5928,4 +5928,35 @@
     <LocaleResource Name="B2B.BackOrderProducts.ProductHasBeenAddedToTheCart.Link">
         <Value><![CDATA[The product has been added to your <a href="{0}">shopping cart</a>]]></Value>
     </LocaleResource>
+    
+    <!-- Card:2804-Fix-checkout-steps-structure-on-top-of-standard-b2b-4.70  -  29-Aug-2024 -->
+    
+    <LocaleResource Name="Checkout.ShippingAddress.SelectDeliverOrCollect">
+        <Value>Select Deliver or Collect</Value>
+    </LocaleResource>
+
+    <LocaleResource Name="Checkout.ShippingAddress.SelectYourDeliveryAddress">
+        <Value>Select your delivery address</Value>
+    </LocaleResource>
+
+    <LocaleResource Name="Checkout.ShippingAddress.CouldNotLoadShippingAddress">
+        <Value>Could not load Shipping Address</Value>
+    </LocaleResource>
+
+    <LocaleResource Name="Checkout.ShippingAddress.SelectCollectionPoint">
+        <Value>Select collection point</Value>
+    </LocaleResource>
+
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.DeliveryDatesErpFailed.Notice">
+        <Value>Notice</Value>
+    </LocaleResource>
+    
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.DeliveryDatesErpFailed.Notice.Text">
+        <Value>We are unable to connect to the database at this moment in the time, by default the next available delivery date will be selected - please contact your macsteel sales clerk to select a new date once your order is placed.</Value>
+    </LocaleResource>
+    
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.DeliveryDatesErpFailedDialog.Close">
+        <Value>Close</Value>
+    </LocaleResource>
+    
 </Language>

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Nop.Core;
+using Nop.Core.Caching;
 using Nop.Core.Domain.Customers;
 using Nop.Data;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
@@ -15,6 +16,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
         private readonly IRepository<ErpNopUser> _erpNopUserRepository;
         private readonly IRepository<Customer> _customerRepository;
         private readonly IRepository<CustomerCustomerRoleMapping> _customerCustomerRoleMappingRepository;
+        private readonly IStaticCacheManager _staticCacheManager;
 
         #endregion
 
@@ -22,11 +24,13 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
 
         public ErpNopUserService(IRepository<ErpNopUser> erpNopUserRepository,
             IRepository<Customer> customerRepository,
-            IRepository<CustomerCustomerRoleMapping> customerCustomerRoleMappingRepository)
+            IRepository<CustomerCustomerRoleMapping> customerCustomerRoleMappingRepository,
+            IStaticCacheManager staticCacheManager)
         {
             _erpNopUserRepository = erpNopUserRepository;
             _customerRepository = customerRepository;
             _customerCustomerRoleMappingRepository = customerCustomerRoleMappingRepository;
+            _staticCacheManager = staticCacheManager;
         }
 
         #endregion
@@ -186,10 +190,23 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
             return erpNopUsers;
         }
 
+        public async Task<ErpNopUser> GetErpNopUserByCustomerIdAsync(int customerId)
+        {
+            if (customerId == 0)
+                return null;
+
+            var key = _staticCacheManager.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpNopUserByCustomerCacheKey, customerId);
+
+            var query = _erpNopUserRepository.Table.Where(enu=> enu.NopCustomerId == customerId && !enu.IsDeleted && enu.IsActive);
+
+            return await _staticCacheManager.GetAsync(key, async () => await query.FirstOrDefaultAsync());
+        }
+
         /// <summary>
-        /// Gets an ErpAccount by OrderId
+        /// Gets an ErpNopUser by customer Id
         /// </summary>
-        /// <param name="orderId">Order identifier</param>
+        /// <param name="customerId">customerId</param>
+        /// <param name="erpAccountId">erpAccountId</param>
         /// <returns>
         /// A task that represents the asynchronous operation
         /// The task result contains the ErpAccount
@@ -199,15 +216,18 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
             if (customerId == 0)
                 return null;
 
+            var key = _staticCacheManager.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpNopUserByCustomerAndErpAccountCacheKey, customerId, erpAccountId);
+
             var query = from enu in _erpNopUserRepository.Table
                         where enu.NopCustomerId == customerId && enu.IsDeleted != true && enu.IsActive == true
                         select enu;
+
             if (erpAccountId > 0)
             {
                 query = query.Where(x => x.ErpAccountId == erpAccountId);
             }
 
-            return await query.FirstOrDefaultAsync();
+            return await _staticCacheManager.GetAsync(key, async () => await query.FirstOrDefaultAsync());
         }
 
         public async Task<IList<ErpNopUser>> GetAllErpNopUserByAccountIdAsync(int accountId, bool showHidden = false)

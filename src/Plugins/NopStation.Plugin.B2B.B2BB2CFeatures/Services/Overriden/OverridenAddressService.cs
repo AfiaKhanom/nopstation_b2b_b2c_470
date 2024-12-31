@@ -29,7 +29,7 @@ namespace Nop.Services.Common
         private readonly IRepository<Address> _addressRepository;
         private readonly IStateProvinceService _stateProvinceService;
         private readonly IGenericAttributeService _genericAttributeService;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
+        private readonly IWorkContext _workContext;
         private readonly ILocalizationService _localizationService;
 
         #endregion
@@ -43,7 +43,7 @@ namespace Nop.Services.Common
             IRepository<Address> addressRepository,
             IStateProvinceService stateProvinceService,
             IGenericAttributeService genericAttributeService,
-            IB2BB2CWorkContext b2BB2CWorkContext,
+            IWorkContext workContext,
             ILocalizationService localizationService) : base(
                 addressSettings,
                 addressAttributeParser,
@@ -60,7 +60,7 @@ namespace Nop.Services.Common
             _addressRepository = addressRepository;
             _stateProvinceService = stateProvinceService;
             _genericAttributeService = genericAttributeService;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
+            _workContext = workContext;
             _localizationService = localizationService;
         }
 
@@ -151,9 +151,9 @@ namespace Nop.Services.Common
                 string.IsNullOrWhiteSpace(address.FaxNumber))
                 return false;
 
-            var erpCustomer = await _b2BB2CWorkContext.GetCurrentERPCustomerAsync();
+            var customer = await _workContext.GetCurrentCustomerAsync();
 
-            var registeringCustomerErpType = await _genericAttributeService.GetAttributeAsync<string?>(erpCustomer.Customer, nameof(ErpUserType));
+            var registeringCustomerErpType = await _genericAttributeService.GetAttributeAsync<string?>(customer, nameof(ErpUserType));
 
             if (registeringCustomerErpType == ErpUserType.B2CUser.ToString())
             {

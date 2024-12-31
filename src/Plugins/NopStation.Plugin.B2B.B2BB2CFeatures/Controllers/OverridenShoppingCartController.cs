@@ -43,108 +43,66 @@ using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
 
-namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
+namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers;
+
+public class OverridenShoppingCartController : ShoppingCartController
 {
-    public class OverridenShoppingCartController : ShoppingCartController
-    {
-        #region Fields
+    #region Fields
 
-        private readonly CaptchaSettings _captchaSettings;
-        private readonly CustomerSettings _customerSettings;
-        private readonly IAttributeParser<CheckoutAttribute, CheckoutAttributeValue> _checkoutAttributeParser;
-        private readonly IAttributeService<CheckoutAttribute, CheckoutAttributeValue> _checkoutAttributeService;
-        private readonly ICurrencyService _currencyService;
-        private readonly ICustomerActivityService _customerActivityService;
-        private readonly ICustomerService _customerService;
-        private readonly IDiscountService _discountService;
-        private readonly IDownloadService _downloadService;
-        private readonly IGenericAttributeService _genericAttributeService;
-        private readonly IGiftCardService _giftCardService;
-        private readonly IHtmlFormatter _htmlFormatter;
-        private readonly ILocalizationService _localizationService;
-        private readonly INopFileProvider _fileProvider;
-        private readonly INopUrlHelper _nopUrlHelper;
-        private readonly INotificationService _notificationService;
-        private readonly IPermissionService _permissionService;
-        private readonly IPictureService _pictureService;
-        private readonly IPriceFormatter _priceFormatter;
-        private readonly IProductAttributeParser _productAttributeParser;
-        private readonly IProductAttributeService _productAttributeService;
-        private readonly IProductService _productService;
-        private readonly IShippingService _shippingService;
-        private readonly IShoppingCartModelFactory _shoppingCartModelFactory;
-        private readonly IShoppingCartService _shoppingCartService;
-        private readonly IStaticCacheManager _staticCacheManager;
-        private readonly IStoreContext _storeContext;
-        private readonly ITaxService _taxService;
-        private readonly IUrlRecordService _urlRecordService;
-        private readonly IWebHelper _webHelper;
-        private readonly IWorkContext _workContext;
-        private readonly IWorkflowMessageService _workflowMessageService;
-        private readonly MediaSettings _mediaSettings;
-        private readonly OrderSettings _orderSettings;
-        private readonly ShoppingCartSettings _shoppingCartSettings;
-        private readonly ShippingSettings _shippingSettings;
-        private readonly IErpOrderAdditionalDataService _erpOrderAdditionalDataService;
-        private readonly IErpCustomerFunctionalityService _erpCustomerFunctionalityService;
-        private readonly IOrderService _orderService;
-        private readonly IPriceCalculationService _priceCalculationService;
-        private readonly IErpProductModelFactory _erpProductModelFactory;
-        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
-        private readonly ILogger _logger;
-        private readonly IErpLogsService _erpLogsService;
-        private readonly IStoreMappingService _storeMappingService;
+    private readonly IErpOrderAdditionalDataService _erpOrderAdditionalDataService;
+    private readonly IErpCustomerFunctionalityService _erpCustomerFunctionalityService;
+    private readonly IOrderService _orderService;
+    private readonly IErpProductModelFactory _erpProductModelFactory;
+    private readonly ILogger _logger;
+    private readonly IErpLogsService _erpLogsService;
+    #endregion
 
-        #endregion
+    #region Ctor
 
-        #region Ctor
-
-        public OverridenShoppingCartController(CaptchaSettings captchaSettings,
-            CustomerSettings customerSettings,
-            IAttributeParser<CheckoutAttribute, CheckoutAttributeValue> checkoutAttributeParser,
-            IAttributeService<CheckoutAttribute, CheckoutAttributeValue> checkoutAttributeService,
-            ICurrencyService currencyService,
-            ICustomerActivityService customerActivityService,
-            ICustomerService customerService,
-            IDiscountService discountService,
-            IDownloadService downloadService,
-            IGenericAttributeService genericAttributeService,
-            IGiftCardService giftCardService,
-            IHtmlFormatter htmlFormatter,
-            ILocalizationService localizationService,
-            INopFileProvider fileProvider,
-            INopUrlHelper nopUrlHelper,
-            INotificationService notificationService,
-            IPermissionService permissionService,
-            IPictureService pictureService,
-            IPriceFormatter priceFormatter,
-            IProductAttributeParser productAttributeParser,
-            IProductAttributeService productAttributeService,
-            IProductService productService,
-            IShippingService shippingService,
-            IShoppingCartModelFactory shoppingCartModelFactory,
-            IShoppingCartService shoppingCartService,
-            IStaticCacheManager staticCacheManager,
-            IStoreContext storeContext,
-            ITaxService taxService,
-            IUrlRecordService urlRecordService,
-            IWebHelper webHelper,
-            IWorkContext workContext,
-            IWorkflowMessageService workflowMessageService,
-            MediaSettings mediaSettings,
-            OrderSettings orderSettings,
-            ShoppingCartSettings shoppingCartSettings,
-            ShippingSettings shippingSettings,
-            IErpOrderAdditionalDataService erpOrderAdditionalDataService,
-            IErpCustomerFunctionalityService erpCustomerFunctionalityService,
-            IOrderService orderService,
-            IPriceCalculationService priceCalculationService,
-            IErpProductModelFactory erpProductModelFactory,
-            IB2BB2CWorkContext b2BB2CWorkContext,
-            ILogger logger,
-            IErpLogsService erpLogsService,
-            IStoreMappingService storeMappingService)
-            : base(captchaSettings,
+    public OverridenShoppingCartController(CaptchaSettings captchaSettings,
+        CustomerSettings customerSettings,
+        IAttributeParser<CheckoutAttribute, CheckoutAttributeValue> checkoutAttributeParser,
+        IAttributeService<CheckoutAttribute, CheckoutAttributeValue> checkoutAttributeService,
+        ICurrencyService currencyService,
+        ICustomerActivityService customerActivityService,
+        ICustomerService customerService,
+        IDiscountService discountService,
+        IDownloadService downloadService,
+        IGenericAttributeService genericAttributeService,
+        IGiftCardService giftCardService,
+        IHtmlFormatter htmlFormatter,
+        ILocalizationService localizationService,
+        INopFileProvider fileProvider,
+        INopUrlHelper nopUrlHelper,
+        INotificationService notificationService,
+        IPermissionService permissionService,
+        IPictureService pictureService,
+        IPriceFormatter priceFormatter,
+        IProductAttributeParser productAttributeParser,
+        IProductAttributeService productAttributeService,
+        IProductService productService,
+        IShippingService shippingService,
+        IShoppingCartModelFactory shoppingCartModelFactory,
+        IShoppingCartService shoppingCartService,
+        IStaticCacheManager staticCacheManager,
+        IStoreContext storeContext,
+        ITaxService taxService,
+        IUrlRecordService urlRecordService,
+        IWebHelper webHelper,
+        IWorkContext workContext,
+        IWorkflowMessageService workflowMessageService,
+        MediaSettings mediaSettings,
+        OrderSettings orderSettings,
+        ShoppingCartSettings shoppingCartSettings,
+        ShippingSettings shippingSettings,
+        IErpOrderAdditionalDataService erpOrderAdditionalDataService,
+        IErpCustomerFunctionalityService erpCustomerFunctionalityService,
+        IOrderService orderService,
+        IPriceCalculationService priceCalculationService,
+        IErpProductModelFactory erpProductModelFactory,
+        ILogger logger,
+        IErpLogsService erpLogsService,
+        IStoreMappingService storeMappingService) : base(captchaSettings,
             customerSettings,
             checkoutAttributeParser,
             checkoutAttributeService,
@@ -181,595 +139,555 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers
             orderSettings,
             shoppingCartSettings,
             shippingSettings)
+    {
+        _erpOrderAdditionalDataService = erpOrderAdditionalDataService;
+        _erpCustomerFunctionalityService = erpCustomerFunctionalityService;
+        _orderService = orderService;
+        _erpProductModelFactory = erpProductModelFactory;
+        _logger = logger;
+        _erpLogsService = erpLogsService;
+    }
+
+    #endregion
+
+    #region Utilities
+
+    protected override async Task<IActionResult> GetProductToCartDetailsAsync(List<string> addToCartWarnings, ShoppingCartType cartType,
+        Product product)
+    {
+        if (addToCartWarnings.Any())
         {
-            _captchaSettings = captchaSettings;
-            _customerSettings = customerSettings;
-            _checkoutAttributeParser = checkoutAttributeParser;
-            _checkoutAttributeService = checkoutAttributeService;
-            _currencyService = currencyService;
-            _customerActivityService = customerActivityService;
-            _customerService = customerService;
-            _discountService = discountService;
-            _downloadService = downloadService;
-            _genericAttributeService = genericAttributeService;
-            _giftCardService = giftCardService;
-            _htmlFormatter = htmlFormatter;
-            _localizationService = localizationService;
-            _fileProvider = fileProvider;
-            _nopUrlHelper = nopUrlHelper;
-            _notificationService = notificationService;
-            _permissionService = permissionService;
-            _pictureService = pictureService;
-            _priceFormatter = priceFormatter;
-            _productAttributeParser = productAttributeParser;
-            _productAttributeService = productAttributeService;
-            _productService = productService;
-            _shippingService = shippingService;
-            _shoppingCartModelFactory = shoppingCartModelFactory;
-            _shoppingCartService = shoppingCartService;
-            _staticCacheManager = staticCacheManager;
-            _storeContext = storeContext;
-            _taxService = taxService;
-            _urlRecordService = urlRecordService;
-            _webHelper = webHelper;
-            _workContext = workContext;
-            _workflowMessageService = workflowMessageService;
-            _mediaSettings = mediaSettings;
-            _orderSettings = orderSettings;
-            _shoppingCartSettings = shoppingCartSettings;
-            _shippingSettings = shippingSettings;
-            _erpOrderAdditionalDataService = erpOrderAdditionalDataService;
-            _erpCustomerFunctionalityService = erpCustomerFunctionalityService;
-            _orderService = orderService;
-            _priceCalculationService = priceCalculationService;
-            _erpProductModelFactory = erpProductModelFactory;
-            _b2BB2CWorkContext = b2BB2CWorkContext;
-            _logger = logger;
-            _erpLogsService = erpLogsService;
-            _storeMappingService = storeMappingService;
+            //cannot be added to the cart/wishlist
+            //let's display warnings
+            return Json(new
+            {
+                success = false,
+                productId = product.Id,
+                message = addToCartWarnings.ToArray()
+            });
         }
 
-        #endregion
+        var currCustomer = await _workContext.GetCurrentCustomerAsync();
+        var currStore = await _storeContext.GetCurrentStoreAsync();
 
-        #region Utilities
-
-        protected override async Task<IActionResult> GetProductToCartDetailsAsync(List<string> addToCartWarnings, ShoppingCartType cartType,
-            Product product)
+        //added to the cart/wishlist
+        switch (cartType)
         {
-            if (addToCartWarnings.Any())
-            {
-                //cannot be added to the cart/wishlist
-                //let's display warnings
-                return Json(new
+            case ShoppingCartType.Wishlist:
                 {
-                    success = false,
-                    productId = product.Id,
-                    message = addToCartWarnings.ToArray()
-                });
-            }
+                    //activity log
+                    await _customerActivityService.InsertActivityAsync("PublicStore.AddToWishlist",
+                        string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.AddToWishlist"), product.Name), product);
 
-            var currCustomer = await _workContext.GetCurrentCustomerAsync();
-            var currStore = await _storeContext.GetCurrentStoreAsync();
-
-            //added to the cart/wishlist
-            switch (cartType)
-            {
-                case ShoppingCartType.Wishlist:
+                    if (_shoppingCartSettings.DisplayWishlistAfterAddingProduct)
                     {
-                        //activity log
-                        await _customerActivityService.InsertActivityAsync("PublicStore.AddToWishlist",
-                            string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.AddToWishlist"), product.Name), product);
-
-                        if (_shoppingCartSettings.DisplayWishlistAfterAddingProduct)
-                        {
-                            //redirect to the wishlist page
-                            return Json(new
-                            {
-                                redirect = Url.RouteUrl("Wishlist")
-                            });
-                        }
-
-                        //display notification message and update appropriate blocks
-                        var shoppingCarts = await _shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.Wishlist, currStore.Id);
-
-                        var updatetopwishlistsectionhtml = string.Format(
-                            await _localizationService.GetResourceAsync("Wishlist.HeaderQuantity"),
-                            shoppingCarts.Sum(item => item.Quantity));
-
+                        //redirect to the wishlist page
                         return Json(new
                         {
-                            success = true,
-                            message = string.Format(
-                                await _localizationService.GetResourceAsync("Products.ProductHasBeenAddedToTheWishlist.Link"),
-                                Url.RouteUrl("Wishlist")),
-                            updatetopwishlistsectionhtml
+                            redirect = Url.RouteUrl("Wishlist")
                         });
                     }
-                case ShoppingCartType.ShoppingCart:
-                default:
+
+                    //display notification message and update appropriate blocks
+                    var shoppingCarts = await _shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.Wishlist, currStore.Id);
+
+                    var updatetopwishlistsectionhtml = string.Format(
+                        await _localizationService.GetResourceAsync("Wishlist.HeaderQuantity"),
+                        shoppingCarts.Sum(item => item.Quantity));
+
+                    return Json(new
                     {
-                        //activity log
-                        await _customerActivityService.InsertActivityAsync("PublicStore.AddToShoppingCart",
-                            string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.AddToShoppingCart"), product.Name), product);
+                        success = true,
+                        message = string.Format(
+                            await _localizationService.GetResourceAsync("Products.ProductHasBeenAddedToTheWishlist.Link"),
+                            Url.RouteUrl("Wishlist")),
+                        updatetopwishlistsectionhtml
+                    });
+                }
+            case ShoppingCartType.ShoppingCart:
+            default:
+                {
+                    //activity log
+                    await _customerActivityService.InsertActivityAsync("PublicStore.AddToShoppingCart",
+                        string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.AddToShoppingCart"), product.Name), product);
 
-                        if (_shoppingCartSettings.DisplayCartAfterAddingProduct)
-                        {
-                            //redirect to the shopping cart page
-                            return Json(new
-                            {
-                                redirect = Url.RouteUrl("ShoppingCart")
-                            });
-                        }
-
-                        //display notification message and update appropriate blocks
-                        var shoppingCarts = await _shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.ShoppingCart, currStore.Id);
-
-                        var updatetopcartsectionhtml = string.Format(
-                            await _localizationService.GetResourceAsync("ShoppingCart.HeaderQuantity"),
-                            shoppingCarts.Sum(item => item.Quantity));
-
-                        var updateflyoutcartsectionhtml = _shoppingCartSettings.MiniShoppingCartEnabled
-                            ? await RenderViewComponentToStringAsync(typeof(FlyoutShoppingCartViewComponent))
-                            : string.Empty;
-
-                        // B2B Custom (backorder Checking)
-                        var shoppingCartItem = await _shoppingCartService.FindShoppingCartItemInTheCartAsync(shoppingCarts, cartType, product);
-                        var shoppingCartItemQuantity = shoppingCartItem?.Quantity ?? 0;
-                        var productQuantity = await _productService.GetTotalStockQuantityAsync(product);
-                        var message = productQuantity < shoppingCartItemQuantity ? await _localizationService.GetResourceAsync("B2B.BackOrderProducts.ProductHasBeenAddedToTheCart.Link")
-                            : await _localizationService.GetResourceAsync("Products.ProductHasBeenAddedToTheCart.Link");
-
+                    if (_shoppingCartSettings.DisplayCartAfterAddingProduct)
+                    {
+                        //redirect to the shopping cart page
                         return Json(new
                         {
-                            success = true,
-                            isBackOrder = productQuantity < shoppingCartItemQuantity,
-                            productId = product.Id,
-                            message = string.Format(message, Url.RouteUrl("ShoppingCart")),
-                            updatetopcartsectionhtml,
-                            updateflyoutcartsectionhtml
+                            redirect = Url.RouteUrl("ShoppingCart")
                         });
                     }
-            }
+
+                    //display notification message and update appropriate blocks
+                    var shoppingCarts = await _shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.ShoppingCart, currStore.Id);
+
+                    var updatetopcartsectionhtml = string.Format(
+                        await _localizationService.GetResourceAsync("ShoppingCart.HeaderQuantity"),
+                        shoppingCarts.Sum(item => item.Quantity));
+
+                    var updateflyoutcartsectionhtml = _shoppingCartSettings.MiniShoppingCartEnabled
+                        ? await RenderViewComponentToStringAsync(typeof(FlyoutShoppingCartViewComponent))
+                        : string.Empty;
+
+                    // B2B Custom (backorder Checking)
+                    var shoppingCartItem = await _shoppingCartService.FindShoppingCartItemInTheCartAsync(shoppingCarts, cartType, product);
+                    var shoppingCartItemQuantity = shoppingCartItem?.Quantity ?? 0;
+                    var productQuantity = await _productService.GetTotalStockQuantityAsync(product);
+                    var message = productQuantity < shoppingCartItemQuantity ? await _localizationService.GetResourceAsync("B2B.BackOrderProducts.ProductHasBeenAddedToTheCart.Link")
+                        : await _localizationService.GetResourceAsync("Products.ProductHasBeenAddedToTheCart.Link");
+
+                    return Json(new
+                    {
+                        success = true,
+                        isBackOrder = productQuantity < shoppingCartItemQuantity,
+                        productId = product.Id,
+                        message = string.Format(message, Url.RouteUrl("ShoppingCart")),
+                        updatetopcartsectionhtml,
+                        updateflyoutcartsectionhtml
+                    });
+                }
         }
-        #endregion
+    }
+    #endregion
 
-        #region Shopping cart
+    #region Shopping cart
 
-        public override async Task<IActionResult> Cart()
+    public override async Task<IActionResult> Cart()
+    {
+        if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.EnableShoppingCart))
+            return RedirectToRoute("Homepage");
+
+        var store = await _storeContext.GetCurrentStoreAsync();
+        var cart = await _shoppingCartService.GetShoppingCartAsync(await _workContext.GetCurrentCustomerAsync(), ShoppingCartType.ShoppingCart, store.Id);
+        var model = new ShoppingCartModel();
+        model = await _shoppingCartModelFactory.PrepareShoppingCartModelAsync(model, cart);
+
+        return View(model);
+    }
+
+    [HttpPost, ActionName("Cart")]
+    [FormValueRequired("checkout")]
+    public override async Task<IActionResult> StartCheckout(IFormCollection form)
+    {
+        var erpAccount = await _erpCustomerFunctionalityService.GetActiveErpAccountOfCurrentCustomer();
+        if (erpAccount == null)
         {
-            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.EnableShoppingCart))
-                return RedirectToRoute("Homepage");
+            _notificationService.WarningNotification("Erp Accounts Need for Checkout");
+            return RedirectToAction(nameof(Cart));
+        }
 
-            var store = await _storeContext.GetCurrentStoreAsync();
-            var cart = await _shoppingCartService.GetShoppingCartAsync(await _workContext.GetCurrentCustomerAsync(), ShoppingCartType.ShoppingCart, store.Id);
+        var customer = await _workContext.GetCurrentCustomerAsync();
+        var store = await _storeContext.GetCurrentStoreAsync();
+        var cart = await _shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.ShoppingCart, store.Id);
+
+        //parse and save checkout attributes
+        await ParseAndSaveCheckoutAttributesAsync(cart, form);
+
+        //validate attributes
+        var checkoutAttributes = await _genericAttributeService.GetAttributeAsync<string>(customer,
+            NopCustomerDefaults.CheckoutAttributes, store.Id);
+        var checkoutAttributeWarnings = await _shoppingCartService.GetShoppingCartWarningsAsync(cart, checkoutAttributes, true);
+        if (checkoutAttributeWarnings.Any())
+        {
+            //something wrong, redisplay the page with warnings
             var model = new ShoppingCartModel();
-            model = await _shoppingCartModelFactory.PrepareShoppingCartModelAsync(model, cart);
-
+            model = await _shoppingCartModelFactory.PrepareShoppingCartModelAsync(model, cart, validateCheckoutAttributes: true);
             return View(model);
         }
 
-        [HttpPost, ActionName("Cart")]
-        [FormValueRequired("checkout")]
-        public override async Task<IActionResult> StartCheckout(IFormCollection form)
+        var anonymousPermissed = _orderSettings.AnonymousCheckoutAllowed
+                                 && _customerSettings.UserRegistrationType == UserRegistrationType.Disabled;
+
+        if (anonymousPermissed || !await _customerService.IsGuestAsync(customer))
+            return RedirectToRoute("Checkout");
+
+        var cartProductIds = cart.Select(ci => ci.ProductId).ToArray();
+        var downloadableProductsRequireRegistration =
+            _customerSettings.RequireRegistrationForDownloadableProducts && await _productService.HasAnyDownloadableProductAsync(cartProductIds);
+
+        if (!_orderSettings.AnonymousCheckoutAllowed || downloadableProductsRequireRegistration)
         {
-            var b2bb2cContext = await _b2BB2CWorkContext.GetCurrentERPCustomerAsync();
-            if (b2bb2cContext == null || b2bb2cContext.ErpNopUser == null)
-            {
-                _notificationService.WarningNotification("Erp Accounts Need for Checkout");
-                return RedirectToAction(nameof(Cart));
-            }
-
-            var customer = await _workContext.GetCurrentCustomerAsync();
-            var store = await _storeContext.GetCurrentStoreAsync();
-            var cart = await _shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.ShoppingCart, store.Id);
-
-            //parse and save checkout attributes
-            await ParseAndSaveCheckoutAttributesAsync(cart, form);
-
-            //validate attributes
-            var checkoutAttributes = await _genericAttributeService.GetAttributeAsync<string>(customer,
-                NopCustomerDefaults.CheckoutAttributes, store.Id);
-            var checkoutAttributeWarnings = await _shoppingCartService.GetShoppingCartWarningsAsync(cart, checkoutAttributes, true);
-            if (checkoutAttributeWarnings.Any())
-            {
-                //something wrong, redisplay the page with warnings
-                var model = new ShoppingCartModel();
-                model = await _shoppingCartModelFactory.PrepareShoppingCartModelAsync(model, cart, validateCheckoutAttributes: true);
-                return View(model);
-            }
-
-            var anonymousPermissed = _orderSettings.AnonymousCheckoutAllowed
-                                     && _customerSettings.UserRegistrationType == UserRegistrationType.Disabled;
-
-            if (anonymousPermissed || !await _customerService.IsGuestAsync(customer))
-                return RedirectToRoute("Checkout");
-
-            var cartProductIds = cart.Select(ci => ci.ProductId).ToArray();
-            var downloadableProductsRequireRegistration =
-                _customerSettings.RequireRegistrationForDownloadableProducts && await _productService.HasAnyDownloadableProductAsync(cartProductIds);
-
-            if (!_orderSettings.AnonymousCheckoutAllowed || downloadableProductsRequireRegistration)
-            {
-                //verify user identity (it may be facebook login page, or google, or local)
-                return Challenge();
-            }
-
-            return RedirectToRoute("LoginCheckoutAsGuest", new { returnUrl = Url.RouteUrl("ShoppingCart") });
+            //verify user identity (it may be facebook login page, or google, or local)
+            return Challenge();
         }
 
-        [HttpPost, ActionName("Cart")]
-        [FormValueRequired("quote")]
-        public virtual async Task<IActionResult> StartQuoteCheckout(IFormCollection form)
-        {
-            var b2bb2cContext = await _b2BB2CWorkContext.GetCurrentERPCustomerAsync();
-            if (b2bb2cContext == null || b2bb2cContext.ErpNopUser == null)
-            {
-                _notificationService.WarningNotification("Erp Accounts Need for Checkout");
-                return RedirectToAction(nameof(Cart));
-            }
-
-            var currCustomer = await _workContext.GetCurrentCustomerAsync();
-            var store = await _storeContext.GetCurrentStoreAsync();
-            var cart = await _shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.ShoppingCart, store.Id);
-
-            //parse and save checkout attributes
-            await ParseAndSaveCheckoutAttributesAsync(cart, form);
-
-            //validate attributes
-            var checkoutAttributes = await _genericAttributeService.GetAttributeAsync<string>(currCustomer,
-                NopCustomerDefaults.CheckoutAttributes, store.Id);
-            var checkoutAttributeWarnings = await _shoppingCartService.GetShoppingCartWarningsAsync(cart, checkoutAttributes, true);
-            if (checkoutAttributeWarnings.Any())
-            {
-                //something wrong, redisplay the page with warnings
-                var model = new ShoppingCartModel();
-                model = await _shoppingCartModelFactory.PrepareShoppingCartModelAsync(model, cart, validateCheckoutAttributes: true);
-                return View("~/Views/ShoppingCart/Cart.cshtml", model);
-            }
-
-            var anonymousPermissed = _orderSettings.AnonymousCheckoutAllowed
-                                     && _customerSettings.UserRegistrationType == UserRegistrationType.Disabled;
-
-            if (anonymousPermissed || !await _customerService.IsGuestAsync(currCustomer))
-                return RedirectToRoute("QuoteOrder");
-
-            var hasDownloadableProduct = false;
-
-            foreach (var sci in cart)
-            {
-                var pro = await _productService.GetProductByIdAsync(sci.ProductId);
-                hasDownloadableProduct = pro?.IsDownload ?? false;
-
-                if (hasDownloadableProduct)
-                    break;
-            }
-            var downloadableProductsRequireRegistration =
-                _customerSettings.RequireRegistrationForDownloadableProducts && hasDownloadableProduct;
-
-            if (!_orderSettings.AnonymousCheckoutAllowed || downloadableProductsRequireRegistration)
-            {
-                //verify user identity (it may be facebook login page, or google, or local)
-                return Challenge();
-            }
-
-            return RedirectToRoute("LoginCheckoutAsGuest", new { returnUrl = Url.RouteUrl("ShoppingCart") });
-        }
-
-        //add product to cart using AJAX
-        //currently we use this method on catalog pages (category/manufacturer/etc)
-        [HttpPost]
-        public override async Task<IActionResult> AddProductToCart_Catalog(int productId, int shoppingCartTypeId,
-            int quantity, bool forceredirection = false)
-        {
-            var cartType = (ShoppingCartType)shoppingCartTypeId;
-
-            var product = await _productService.GetProductByIdAsync(productId);
-            if (product == null)
-                //no product found
-                return Json(new
-                {
-                    success = false,
-                    message = "No product found with the specified ID"
-                });
-
-            //we can add only simple products
-            if (product.ProductType != ProductType.SimpleProduct)
-            {
-                return Json(new
-                {
-                    redirect = Url.RouteUrl("ProductDetails", new { SeName = await _urlRecordService.GetSeNameAsync(product) })
-                });
-            }
-
-            //products with "minimum order quantity" more than a specified qty
-            if (product.OrderMinimumQuantity > quantity)
-            {
-                //we cannot add to the cart such products from category pages
-                //it can confuse customers. That's why we redirect customers to the product details page
-                return Json(new
-                {
-                    redirect = Url.RouteUrl("ProductDetails", new { SeName = await _urlRecordService.GetSeNameAsync(product) })
-                });
-            }
-
-            if (product.CustomerEntersPrice)
-            {
-                //cannot be added to the cart (requires a customer to enter price)
-                return Json(new
-                {
-                    redirect = Url.RouteUrl("ProductDetails", new { SeName = await _urlRecordService.GetSeNameAsync(product) })
-                });
-            }
-
-            if (product.IsRental)
-            {
-                //rental products require start/end dates to be entered
-                return Json(new
-                {
-                    redirect = Url.RouteUrl("ProductDetails", new { SeName = await _urlRecordService.GetSeNameAsync(product) })
-                });
-            }
-
-            var allowedQuantities = _productService.ParseAllowedQuantities(product);
-            if (allowedQuantities.Length > 0)
-            {
-                //cannot be added to the cart (requires a customer to select a quantity from dropdownlist)
-                return Json(new
-                {
-                    redirect = Url.RouteUrl("ProductDetails", new { SeName = await _urlRecordService.GetSeNameAsync(product) })
-                });
-            }
-
-            //allow a product to be added to the cart when all attributes are with "read-only checkboxes" type
-            var productAttributes = await _productAttributeService.GetProductAttributeMappingsByProductIdAsync(product.Id);
-            if (productAttributes.Any(pam => pam.AttributeControlType != AttributeControlType.ReadonlyCheckboxes))
-            {
-                //product has some attributes. let a customer see them
-                return Json(new
-                {
-                    redirect = Url.RouteUrl("ProductDetails", new { SeName = await _urlRecordService.GetSeNameAsync(product) })
-                });
-            }
-
-            //creating XML for "read-only checkboxes" attributes
-            var attXml = await productAttributes.AggregateAwaitAsync(string.Empty, async (attributesXml, attribute) =>
-            {
-                var attributeValues = await _productAttributeService.GetProductAttributeValuesAsync(attribute.Id);
-                foreach (var selectedAttributeId in attributeValues
-                    .Where(v => v.IsPreSelected)
-                    .Select(v => v.Id)
-                    .ToList())
-                {
-                    attributesXml = _productAttributeParser.AddProductAttribute(attributesXml,
-                        attribute, selectedAttributeId.ToString());
-                }
-                return attributesXml;
-            });
-
-            //get standard warnings without attribute validations
-            //first, try to find existing shopping cart item
-            var currCustomer = await _workContext.GetCurrentCustomerAsync();
-            var store = await _storeContext.GetCurrentStoreAsync();
-            var cart = await _shoppingCartService.GetShoppingCartAsync(currCustomer, cartType, store.Id);
-            var shoppingCartItem = await _shoppingCartService.FindShoppingCartItemInTheCartAsync(cart, cartType, product);
-            //if we already have the same product in the cart, then use the total quantity to validate
-            var quantityToValidate = shoppingCartItem != null ? shoppingCartItem.Quantity + quantity : quantity;
-            var addToCartWarnings = await _shoppingCartService
-                .GetShoppingCartItemWarningsAsync(currCustomer, cartType,
-                product, store.Id, string.Empty,
-                decimal.Zero, null, null, quantityToValidate, false, shoppingCartItem?.Id ?? 0, true, false, false, false);
-            if (addToCartWarnings.Any())
-            {
-                //cannot be added to the cart
-                //let's display standard warnings
-                return Json(new
-                {
-                    success = false,
-                    productId = productId,
-                    message = addToCartWarnings.ToArray()
-                });
-            }
-
-            //now let's try adding product to the cart (now including product attribute validation, etc)
-            addToCartWarnings = await _shoppingCartService.AddToCartAsync(customer: currCustomer,
-                product: product,
-                shoppingCartType: cartType,
-                storeId: store.Id,
-                attributesXml: attXml,
-                quantity: quantity);
-            if (addToCartWarnings.Any())
-            {
-                //cannot be added to the cart
-                //but we do not display attribute and gift card warnings here. let's do it on the product details page
-                return Json(new
-                {
-                    redirect = Url.RouteUrl("ProductDetails", new { SeName = await _urlRecordService.GetSeNameAsync(product) })
-                });
-            }
-
-            //added to the cart/wishlist
-            switch (cartType)
-            {
-                case ShoppingCartType.Wishlist:
-                    {
-                        //activity log
-                        await _customerActivityService.InsertActivityAsync("PublicStore.AddToWishlist",
-                            string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.AddToWishlist"), product.Name), product);
-
-                        if (_shoppingCartSettings.DisplayWishlistAfterAddingProduct || forceredirection)
-                        {
-                            //redirect to the wishlist page
-                            return Json(new
-                            {
-                                redirect = Url.RouteUrl("Wishlist")
-                            });
-                        }
-
-                        //display notification message and update appropriate blocks
-                        var shoppingCarts = await _shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.Wishlist, store.Id);
-
-                        var updatetopwishlistsectionhtml = string.Format(await _localizationService.GetResourceAsync("Wishlist.HeaderQuantity"),
-                            shoppingCarts.Sum(item => item.Quantity));
-                        return Json(new
-                        {
-                            success = true,
-                            message = string.Format(await _localizationService.GetResourceAsync("Products.ProductHasBeenAddedToTheWishlist.Link"), Url.RouteUrl("Wishlist")),
-                            updatetopwishlistsectionhtml
-                        });
-                    }
-                case ShoppingCartType.ShoppingCart:
-                default:
-                    {
-                        //activity log
-                        await _customerActivityService.InsertActivityAsync("PublicStore.AddToShoppingCart",
-                            string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.AddToShoppingCart"), product.Name), product);
-
-                        if (_shoppingCartSettings.DisplayCartAfterAddingProduct || forceredirection)
-                        {
-                            //redirect to the shopping cart page
-                            return Json(new
-                            {
-                                redirect = Url.RouteUrl("ShoppingCart")
-                            });
-                        }
-
-                        //display notification message and update appropriate blocks
-                        var shoppingCarts = await _shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.ShoppingCart, store.Id);
-
-                        var updatetopcartsectionhtml = string.Format(await _localizationService.GetResourceAsync("ShoppingCart.HeaderQuantity"),
-                            shoppingCarts.Sum(item => item.Quantity));
-
-                        var updateflyoutcartsectionhtml = _shoppingCartSettings.MiniShoppingCartEnabled
-                            ? await RenderViewComponentToStringAsync(typeof(FlyoutShoppingCartViewComponent))
-                            : "";
-
-                        // B2B Custom (backorder Checking)
-                        var productQuantity = await _productService.GetTotalStockQuantityAsync(product);
-                        var message = productQuantity < quantityToValidate ? await _localizationService.GetResourceAsync("B2B.BackOrderProducts.ProductHasBeenAddedToTheCart.Link")
-                            : await _localizationService.GetResourceAsync("Products.ProductHasBeenAddedToTheCart.Link");
-                        return Json(new
-                        {
-                            success = true,
-                            isBackOrder = productQuantity < quantityToValidate,
-                            productId = productId,
-                            message = string.Format(message, Url.RouteUrl("ShoppingCart")),
-                            updatetopcartsectionhtml,
-                            updateflyoutcartsectionhtml
-                        });
-                    }
-            }
-        }
-
-        #endregion
-
-        #region B2B Extra
-
-        // for cart page
-        public async Task<IActionResult> LoadB2BCartItemData()
-        {
-            var model = await _erpProductModelFactory.PrepareErpOrderSummaryModelAsync();
-            return Json(new
-            {
-                Data = model
-            });
-        }
-
-        public virtual async Task<IActionResult> ClearCart(bool deleteWishlistAndShoppingCartItems)
-        {
-            var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
-            var store = await _storeContext.GetCurrentStoreAsync();
-            // if cart is undergoing any activity, don't clear it. wait for it to finish.
-            var isCartActivityOn = await _genericAttributeService.GetAttributeAsync<bool>(currentCustomer, B2BB2CFeaturesDefaults.IsCartActivityOn, store.Id);
-            if (isCartActivityOn)
-            {
-                _notificationService.WarningNotification(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.ShoppingCart.Warning.CartActivityOn"));
-                return RedirectToRoute("ShoppingCart");
-            }
-
-            try
-            {
-                // set cart activity attribute and begin clearing cart
-                await _genericAttributeService.SaveAttributeAsync(currentCustomer, B2BB2CFeaturesDefaults.IsCartActivityOn, true, store.Id);
-
-                var carts = deleteWishlistAndShoppingCartItems ?
-                    await _shoppingCartService.GetShoppingCartAsync(currentCustomer, storeId: store.Id) :
-                    await _shoppingCartService.GetShoppingCartAsync(currentCustomer, ShoppingCartType.ShoppingCart, store.Id);
-
-                if (carts != null)
-                {
-                    //clear shopping cart
-                    carts.ToList().ForEach(async sci => await _shoppingCartService.DeleteShoppingCartItemAsync(sci, false));
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(_localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.Wishlist.ClearCart.Error") + " " + ex.Message, ex);
-                _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.Wishlist.ClearCart.Error"));
-
-                //ERP activity log
-                await _erpLogsService.ErrorAsync(_localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.Wishlist.ClearCart.Error") + " " + ex.Message, ErpSyncLavel.Order, customer: currentCustomer);
-
-                return Json(new
-                {
-                    success = false,
-                    message = _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.Wishlist.ClearCart.Error")
-                });
-            }
-            finally
-            {
-                // reset cart activity attribute 
-                await _genericAttributeService.SaveAttributeAsync(currentCustomer, B2BB2CFeaturesDefaults.IsCartActivityOn, false, store.Id);
-            }
-
-            return Json(new { success = true });
-        }
-
-
-        // for cart page
-        public async Task<IActionResult> CheckCartItemQuotePriceChangeWarning()
-        {
-            var showWarning = false;
-            var currCustomer = await _workContext.GetCurrentCustomerAsync();
-            var currStore = await _storeContext.GetCurrentStoreAsync();
-            var b2bOrderId = await _genericAttributeService.GetAttributeAsync<int>(currCustomer, B2BB2CFeaturesDefaults.B2BConvertedQuoteB2BOrderId, currStore.Id);
-
-            if (b2bOrderId > 0)
-            {
-                var b2BOrderPerAccount = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(b2bOrderId);
-
-                if (await _erpCustomerFunctionalityService.CheckQuoteOrderStatusAsync(b2BOrderPerAccount))
-                {
-                    var quoteOrder = await _orderService.GetOrderByIdAsync(b2BOrderPerAccount.NopOrderId);
-                    var quoteOrderItems = await _orderService.GetOrderItemsAsync(quoteOrder?.Id ?? 0);
-                    var cartItems = await _shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.ShoppingCart, currStore.Id);
-
-                    if (quoteOrderItems != null && cartItems.Any())
-                    {
-                        foreach (var cartItem in cartItems)
-                        {
-                            var quoteOrderItemsForCartItem = quoteOrderItems?.Where(x => x.ProductId == cartItem?.ProductId)?.OrderByDescending(x => x.UnitPriceExclTax)?.ToList();
-                            var relatedQuoteOrderItem = quoteOrderItemsForCartItem?.FirstOrDefault();
-
-                            var lowestLineQuantity = quoteOrderItemsForCartItem != null && quoteOrderItemsForCartItem?.Count > 0 ? quoteOrderItemsForCartItem?.Min(x => x.Quantity) : 0;
-
-                            if (relatedQuoteOrderItem != null && cartItem.Quantity < lowestLineQuantity)
-                            {
-                                //unit price
-                                var (productUnitPriceWithDiscount, discountAmount, appliedDiscounts) = await _shoppingCartService.GetUnitPriceAsync(cartItem, false);
-                                if (relatedQuoteOrderItem.UnitPriceExclTax < productUnitPriceWithDiscount)
-                                    showWarning = true;
-                            }
-                        }
-                    }
-
-                }
-            }
-            return Json(new
-            {
-                Data = showWarning
-            });
-        }
-
-        #endregion
+        return RedirectToRoute("LoginCheckoutAsGuest", new { returnUrl = Url.RouteUrl("ShoppingCart") });
     }
+
+    [HttpPost, ActionName("Cart")]
+    [FormValueRequired("quote")]
+    public virtual async Task<IActionResult> StartQuoteCheckout(IFormCollection form)
+    {
+        var erpAccount = await _erpCustomerFunctionalityService.GetActiveErpAccountOfCurrentCustomer();
+        if (erpAccount == null)
+        {
+            _notificationService.WarningNotification("Erp Accounts Need for Checkout");
+            return RedirectToAction(nameof(Cart));
+        }
+
+        var currCustomer = await _workContext.GetCurrentCustomerAsync();
+        var store = await _storeContext.GetCurrentStoreAsync();
+        var cart = await _shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.ShoppingCart, store.Id);
+
+        //parse and save checkout attributes
+        await ParseAndSaveCheckoutAttributesAsync(cart, form);
+
+        //validate attributes
+        var checkoutAttributes = await _genericAttributeService.GetAttributeAsync<string>(currCustomer,
+            NopCustomerDefaults.CheckoutAttributes, store.Id);
+        var checkoutAttributeWarnings = await _shoppingCartService.GetShoppingCartWarningsAsync(cart, checkoutAttributes, true);
+        if (checkoutAttributeWarnings.Any())
+        {
+            //something wrong, redisplay the page with warnings
+            var model = new ShoppingCartModel();
+            model = await _shoppingCartModelFactory.PrepareShoppingCartModelAsync(model, cart, validateCheckoutAttributes: true);
+            return View("~/Views/ShoppingCart/Cart.cshtml", model);
+        }
+
+        var anonymousPermissed = _orderSettings.AnonymousCheckoutAllowed
+                                 && _customerSettings.UserRegistrationType == UserRegistrationType.Disabled;
+
+        if (anonymousPermissed || !await _customerService.IsGuestAsync(currCustomer))
+            return RedirectToRoute("QuoteOrder");
+
+        var hasDownloadableProduct = false;
+
+        foreach (var sci in cart)
+        {
+            var pro = await _productService.GetProductByIdAsync(sci.ProductId);
+            hasDownloadableProduct = pro?.IsDownload ?? false;
+
+            if (hasDownloadableProduct)
+                break;
+        }
+        var downloadableProductsRequireRegistration =
+            _customerSettings.RequireRegistrationForDownloadableProducts && hasDownloadableProduct;
+
+        if (!_orderSettings.AnonymousCheckoutAllowed || downloadableProductsRequireRegistration)
+        {
+            //verify user identity (it may be facebook login page, or google, or local)
+            return Challenge();
+        }
+
+        return RedirectToRoute("LoginCheckoutAsGuest", new { returnUrl = Url.RouteUrl("ShoppingCart") });
+    }
+
+    //add product to cart using AJAX
+    //currently we use this method on catalog pages (category/manufacturer/etc)
+    [HttpPost]
+    public override async Task<IActionResult> AddProductToCart_Catalog(int productId, int shoppingCartTypeId,
+        int quantity, bool forceredirection = false)
+    {
+        var cartType = (ShoppingCartType)shoppingCartTypeId;
+
+        var product = await _productService.GetProductByIdAsync(productId);
+        if (product == null)
+            //no product found
+            return Json(new
+            {
+                success = false,
+                message = "No product found with the specified ID"
+            });
+
+        //we can add only simple products
+        if (product.ProductType != ProductType.SimpleProduct)
+        {
+            return Json(new
+            {
+                redirect = Url.RouteUrl("ProductDetails", new { SeName = await _urlRecordService.GetSeNameAsync(product) })
+            });
+        }
+
+        //products with "minimum order quantity" more than a specified qty
+        if (product.OrderMinimumQuantity > quantity)
+        {
+            //we cannot add to the cart such products from category pages
+            //it can confuse customers. That's why we redirect customers to the product details page
+            return Json(new
+            {
+                redirect = Url.RouteUrl("ProductDetails", new { SeName = await _urlRecordService.GetSeNameAsync(product) })
+            });
+        }
+
+        if (product.CustomerEntersPrice)
+        {
+            //cannot be added to the cart (requires a customer to enter price)
+            return Json(new
+            {
+                redirect = Url.RouteUrl("ProductDetails", new { SeName = await _urlRecordService.GetSeNameAsync(product) })
+            });
+        }
+
+        if (product.IsRental)
+        {
+            //rental products require start/end dates to be entered
+            return Json(new
+            {
+                redirect = Url.RouteUrl("ProductDetails", new { SeName = await _urlRecordService.GetSeNameAsync(product) })
+            });
+        }
+
+        var allowedQuantities = _productService.ParseAllowedQuantities(product);
+        if (allowedQuantities.Length > 0)
+        {
+            //cannot be added to the cart (requires a customer to select a quantity from dropdownlist)
+            return Json(new
+            {
+                redirect = Url.RouteUrl("ProductDetails", new { SeName = await _urlRecordService.GetSeNameAsync(product) })
+            });
+        }
+
+        //allow a product to be added to the cart when all attributes are with "read-only checkboxes" type
+        var productAttributes = await _productAttributeService.GetProductAttributeMappingsByProductIdAsync(product.Id);
+        if (productAttributes.Any(pam => pam.AttributeControlType != AttributeControlType.ReadonlyCheckboxes))
+        {
+            //product has some attributes. let a customer see them
+            return Json(new
+            {
+                redirect = Url.RouteUrl("ProductDetails", new { SeName = await _urlRecordService.GetSeNameAsync(product) })
+            });
+        }
+
+        //creating XML for "read-only checkboxes" attributes
+        var attXml = await productAttributes.AggregateAwaitAsync(string.Empty, async (attributesXml, attribute) =>
+        {
+            var attributeValues = await _productAttributeService.GetProductAttributeValuesAsync(attribute.Id);
+            foreach (var selectedAttributeId in attributeValues
+                .Where(v => v.IsPreSelected)
+                .Select(v => v.Id)
+                .ToList())
+            {
+                attributesXml = _productAttributeParser.AddProductAttribute(attributesXml,
+                    attribute, selectedAttributeId.ToString());
+            }
+            return attributesXml;
+        });
+
+        //get standard warnings without attribute validations
+        //first, try to find existing shopping cart item
+        var currCustomer = await _workContext.GetCurrentCustomerAsync();
+        var store = await _storeContext.GetCurrentStoreAsync();
+        var cart = await _shoppingCartService.GetShoppingCartAsync(currCustomer, cartType, store.Id);
+        var shoppingCartItem = await _shoppingCartService.FindShoppingCartItemInTheCartAsync(cart, cartType, product);
+        //if we already have the same product in the cart, then use the total quantity to validate
+        var quantityToValidate = shoppingCartItem != null ? shoppingCartItem.Quantity + quantity : quantity;
+        var addToCartWarnings = await _shoppingCartService
+            .GetShoppingCartItemWarningsAsync(currCustomer, cartType,
+            product, store.Id, string.Empty,
+            decimal.Zero, null, null, quantityToValidate, false, shoppingCartItem?.Id ?? 0, true, false, false, false);
+        if (addToCartWarnings.Any())
+        {
+            //cannot be added to the cart
+            //let's display standard warnings
+            return Json(new
+            {
+                success = false,
+                productId = productId,
+                message = addToCartWarnings.ToArray()
+            });
+        }
+
+        //now let's try adding product to the cart (now including product attribute validation, etc)
+        addToCartWarnings = await _shoppingCartService.AddToCartAsync(customer: currCustomer,
+            product: product,
+            shoppingCartType: cartType,
+            storeId: store.Id,
+            attributesXml: attXml,
+            quantity: quantity);
+        if (addToCartWarnings.Any())
+        {
+            //cannot be added to the cart
+            //but we do not display attribute and gift card warnings here. let's do it on the product details page
+            return Json(new
+            {
+                redirect = Url.RouteUrl("ProductDetails", new { SeName = await _urlRecordService.GetSeNameAsync(product) })
+            });
+        }
+
+        //added to the cart/wishlist
+        switch (cartType)
+        {
+            case ShoppingCartType.Wishlist:
+                {
+                    //activity log
+                    await _customerActivityService.InsertActivityAsync("PublicStore.AddToWishlist",
+                        string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.AddToWishlist"), product.Name), product);
+
+                    if (_shoppingCartSettings.DisplayWishlistAfterAddingProduct || forceredirection)
+                    {
+                        //redirect to the wishlist page
+                        return Json(new
+                        {
+                            redirect = Url.RouteUrl("Wishlist")
+                        });
+                    }
+
+                    //display notification message and update appropriate blocks
+                    var shoppingCarts = await _shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.Wishlist, store.Id);
+
+                    var updatetopwishlistsectionhtml = string.Format(await _localizationService.GetResourceAsync("Wishlist.HeaderQuantity"),
+                        shoppingCarts.Sum(item => item.Quantity));
+                    return Json(new
+                    {
+                        success = true,
+                        message = string.Format(await _localizationService.GetResourceAsync("Products.ProductHasBeenAddedToTheWishlist.Link"), Url.RouteUrl("Wishlist")),
+                        updatetopwishlistsectionhtml
+                    });
+                }
+            case ShoppingCartType.ShoppingCart:
+            default:
+                {
+                    //activity log
+                    await _customerActivityService.InsertActivityAsync("PublicStore.AddToShoppingCart",
+                        string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.AddToShoppingCart"), product.Name), product);
+
+                    if (_shoppingCartSettings.DisplayCartAfterAddingProduct || forceredirection)
+                    {
+                        //redirect to the shopping cart page
+                        return Json(new
+                        {
+                            redirect = Url.RouteUrl("ShoppingCart")
+                        });
+                    }
+
+                    //display notification message and update appropriate blocks
+                    var shoppingCarts = await _shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.ShoppingCart, store.Id);
+
+                    var updatetopcartsectionhtml = string.Format(await _localizationService.GetResourceAsync("ShoppingCart.HeaderQuantity"),
+                        shoppingCarts.Sum(item => item.Quantity));
+
+                    var updateflyoutcartsectionhtml = _shoppingCartSettings.MiniShoppingCartEnabled
+                        ? await RenderViewComponentToStringAsync(typeof(FlyoutShoppingCartViewComponent))
+                        : "";
+
+                    // B2B Custom (backorder Checking)
+                    var productQuantity = await _productService.GetTotalStockQuantityAsync(product);
+                    var message = productQuantity < quantityToValidate ? await _localizationService.GetResourceAsync("B2B.BackOrderProducts.ProductHasBeenAddedToTheCart.Link")
+                        : await _localizationService.GetResourceAsync("Products.ProductHasBeenAddedToTheCart.Link");
+                    return Json(new
+                    {
+                        success = true,
+                        isBackOrder = productQuantity < quantityToValidate,
+                        productId = productId,
+                        message = string.Format(message, Url.RouteUrl("ShoppingCart")),
+                        updatetopcartsectionhtml,
+                        updateflyoutcartsectionhtml
+                    });
+                }
+        }
+    }
+
+    #endregion
+
+    #region B2B Extra
+
+    // for cart page
+    public async Task<IActionResult> LoadB2BCartItemData()
+    {
+        var model = await _erpProductModelFactory.PrepareErpOrderSummaryModelAsync();
+        return Json(new
+        {
+            Data = model
+        });
+    }
+
+    public virtual async Task<IActionResult> ClearCart(bool deleteWishlistAndShoppingCartItems)
+    {
+        var currentCustomer = await _workContext.GetCurrentCustomerAsync();
+        var store = await _storeContext.GetCurrentStoreAsync();
+        // if cart is undergoing any activity, don't clear it. wait for it to finish.
+        var isCartActivityOn = await _genericAttributeService.GetAttributeAsync<bool>(currentCustomer, B2BB2CFeaturesDefaults.IsCartActivityOn, store.Id);
+        if (isCartActivityOn)
+        {
+            _notificationService.WarningNotification(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.ShoppingCart.Warning.CartActivityOn"));
+            return RedirectToRoute("ShoppingCart");
+        }
+
+        try
+        {
+            // set cart activity attribute and begin clearing cart
+            await _genericAttributeService.SaveAttributeAsync(currentCustomer, B2BB2CFeaturesDefaults.IsCartActivityOn, true, store.Id);
+
+            var carts = deleteWishlistAndShoppingCartItems ?
+                await _shoppingCartService.GetShoppingCartAsync(currentCustomer, storeId: store.Id) :
+                await _shoppingCartService.GetShoppingCartAsync(currentCustomer, ShoppingCartType.ShoppingCart, store.Id);
+
+            if (carts != null)
+            {
+                //clear shopping cart
+                carts.ToList().ForEach(async sci => await _shoppingCartService.DeleteShoppingCartItemAsync(sci, false));
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(_localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.Wishlist.ClearCart.Error") + " " + ex.Message, ex);
+            _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.Wishlist.ClearCart.Error"));
+
+            //ERP activity log
+            await _erpLogsService.ErrorAsync(_localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.Wishlist.ClearCart.Error") + " " + ex.Message, ErpSyncLevel.Order, customer: currentCustomer);
+
+            return Json(new
+            {
+                success = false,
+                message = _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.Wishlist.ClearCart.Error")
+            });
+        }
+        finally
+        {
+            // reset cart activity attribute 
+            await _genericAttributeService.SaveAttributeAsync(currentCustomer, B2BB2CFeaturesDefaults.IsCartActivityOn, false, store.Id);
+        }
+
+        return Json(new { success = true });
+    }
+
+
+    // for cart page
+    public async Task<IActionResult> CheckCartItemQuotePriceChangeWarning()
+    {
+        var showWarning = false;
+        var currCustomer = await _workContext.GetCurrentCustomerAsync();
+        var currStore = await _storeContext.GetCurrentStoreAsync();
+        var b2bOrderId = await _genericAttributeService.GetAttributeAsync<int>(currCustomer, B2BB2CFeaturesDefaults.B2BConvertedQuoteB2BOrderId, currStore.Id);
+
+        if (b2bOrderId > 0)
+        {
+            var b2BOrderPerAccount = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(b2bOrderId);
+
+            if (await _erpCustomerFunctionalityService.CheckQuoteOrderStatusAsync(b2BOrderPerAccount))
+            {
+                var quoteOrder = await _orderService.GetOrderByIdAsync(b2BOrderPerAccount.NopOrderId);
+                var quoteOrderItems = await _orderService.GetOrderItemsAsync(quoteOrder?.Id ?? 0);
+                var cartItems = await _shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.ShoppingCart, currStore.Id);
+
+                if (quoteOrderItems != null && cartItems.Any())
+                {
+                    foreach (var cartItem in cartItems)
+                    {
+                        var quoteOrderItemsForCartItem = quoteOrderItems?.Where(x => x.ProductId == cartItem?.ProductId)?.OrderByDescending(x => x.UnitPriceExclTax)?.ToList();
+                        var relatedQuoteOrderItem = quoteOrderItemsForCartItem?.FirstOrDefault();
+
+                        var lowestLineQuantity = quoteOrderItemsForCartItem != null && quoteOrderItemsForCartItem?.Count > 0 ? quoteOrderItemsForCartItem?.Min(x => x.Quantity) : 0;
+
+                        if (relatedQuoteOrderItem != null && cartItem.Quantity < lowestLineQuantity)
+                        {
+                            //unit price
+                            var (productUnitPriceWithDiscount, discountAmount, appliedDiscounts) = await _shoppingCartService.GetUnitPriceAsync(cartItem, false);
+                            if (relatedQuoteOrderItem.UnitPriceExclTax < productUnitPriceWithDiscount)
+                                showWarning = true;
+                        }
+                    }
+                }
+
+            }
+        }
+        return Json(new
+        {
+            Data = showWarning
+        });
+    }
+
+    #endregion
 }

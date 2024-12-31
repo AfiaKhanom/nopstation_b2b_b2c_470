@@ -1,0 +1,144 @@
+# List of stages for jobs, and their order of execution
+stages:
+  - checkout
+  - build
+  - publish
+  - stop_website
+  - deploy
+  - rollback
+  - start_website
+  - lsif
+
+variables:
+  PLUGINS_DIR_LIVE: "C:\\Users\\nopapp\\Desktop\\gitlab-ci-cd\\artifacts\\Plugins"
+  PUBLISH_DIR: "C:\\Users\\nopapp\\Desktop\\gitlab-ci-cd\\artifacts"
+  DEPLOY_DIR: "C:\\inetpub\\wwwroot\\b2b.nop-station.com\\Plugins"
+  ROOT_DIR: "C:\\Users\\nopapp\\Desktop\\gitlab-ci-cd"
+  CACHE_DIR_LIVE: "C:\\GitLab-Runner\\builds\\t3_xK_vHT\\0\\nop-station\\nopstation_b2b_b2c_erp_470\\src\\Presentation\\Nop.Web\\Plugins"
+  BACKUP_DIR: "C:\\Users\\nopapp\\Desktop\\gitlab-ci-cd\\backup\\b2b.nop-station.com"
+  LIVE_SITE_NAME: "b2b.nop-station.com"
+  BRANCH_LIVE: "develop"
+
+checkout:
+  stage: checkout
+  tags:
+    - nopstation-live-server
+  script:
+    - git checkout $BRANCH_LIVE
+    - git pull
+  only:
+    - develop
+
+build:
+  stage: build
+  tags:
+    - nopstation-live-server
+  script:
+    - cd src
+    - dotnet clean --configuration Release
+    - dotnet restore
+    - dotnet build "Plugins\NopStation.Plugin.Misc.Actions\NopStation.Plugin.Misc.Actions.csproj" --configuration Release
+    - dotnet build --no-restore -c Release
+  only:
+    - develop
+  cache:
+    key: build-cache
+    paths:
+      - $CACHE_DIR_LIVE
+
+publish:
+  stage: publish
+  tags:
+    - nopstation-live-server
+  environment:
+    name: production
+    url: http://b2b.nop-station.com
+  script:
+    - cd src
+    - dotnet restore
+    - cd "Presentation\Nop.Web"
+    - dotnet publish "Nop.Web.csproj" -c Release -o $PUBLISH_DIR /p:CopyRefAssembliesToPublishDirectory=true
+  only:
+    - develop
+  cache:
+    key: build-cache
+    paths:
+      - $CACHE_DIR_LIVE
+
+
+stop-website:
+  stage: stop_website
+  tags:
+    - nopstation-live-server
+  environment:
+    name: production
+    action: stop
+  script:
+    - Stop-Website $LIVE_SITE_NAME
+    - Stop-WebAppPool -Name $LIVE_SITE_NAME
+    - echo "Waiting for 2 minutes to ensure file locks are released..."
+    - powershell -Command "Start-Sleep -Seconds 120"
+  # only:
+  #   - develop
+
+
+deploy:
+  stage: deploy
+  tags:
+    - nopstation-live-server
+  environment:
+    name: production
+    url: http://b2b.nop-station.com
+  script:
+    - xcopy $DEPLOY_DIR $BACKUP_DIR /y /c /h /e /r /s
+    - xcopy $PLUGINS_DIR_LIVE $DEPLOY_DIR /y /c /h /e /r /s
+  only:
+    - develop
+  retry: 2   
+
+rollback:
+  stage: rollback
+  tags:
+    - nopstation-live-server
+  script:
+    - echo "Deploy failed. Rolling back to previous version..."
+    - xcopy "$BACKUP_DIR\\" "$DEPLOY_DIR" /y /c /h /e /r /s
+  only:
+    - develop
+  when: on_failure
+  needs:
+    - deploy
+
+start-website:
+  stage: start_website
+  tags:
+    - nopstation-live-server
+  environment:
+    name: production
+    action: start
+    url: http://b2b.nop-station.com
+  script:
+    - Start-WebAppPool -Name $LIVE_SITE_NAME
+    - Start-Website $LIVE_SITE_NAME
+  only:
+    - develop
+  when: always 
+
+lsif:
+  stage: lsif
+  tags:
+    - nopstation-live-server
+  script:
+    - |
+      dotnet tool install -g Microsoft.Lsif.DotnetTool
+      export PATH="$PATH:~/.dotnet/tools"
+      lsif-dotnet -p src/Nop.Web
+      test -f lsif-output.lsif
+      curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file lsif-output.lsif "$CI_SERVER_URL/api/v4/projects/$CI_PROJECT_ID/uploads"
+  artifacts:
+    paths:
+      - lsif-output.lsif
+    expire_in: 1 week
+  only:
+    - develop
+

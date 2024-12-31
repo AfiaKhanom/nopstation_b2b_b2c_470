@@ -1,0 +1,29 @@
+﻿
+@media all and (min-width: 480px) {
+
+    .side-2, .block {
+        text-align: right;
+    }
+    .block .listbox {
+        padding: 0 10px 40px 5px;
+        text-align: right;
+    }
+    .block .sublist {
+        margin: -5px 20px 20px 0;
+    }
+    .block .view-all {
+        text-align: left;
+    }
+    .block-popular-tags .listbox,
+    .block-poll .listbox {
+        padding-right: 5px !important;
+        padding-left: 0 !important;
+    }
+    .poll .buttons,
+    .poll-total-votes {
+        text-align: left;
+    }
+    .item-box {
+        float: right;
+    }
+}
