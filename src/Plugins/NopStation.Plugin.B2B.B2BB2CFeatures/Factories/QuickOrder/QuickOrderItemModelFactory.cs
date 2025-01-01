@@ -733,7 +733,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories.QuickOrder
             await _customerService.ResetCheckoutDataAsync(customer, storeId);
 
             var cart = await _shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.ShoppingCart, (await _storeContext.GetCurrentStoreAsync()).Id);
-
             var quickOrderItems = await _quickOrderItemService.GetAllQuickOrderItemsPagedAsync(quickOrderTemplateId: quickOrderTemplate.Id);
 
             var skus = quickOrderItems.Select(x => x.ProductSku).ToArray();
@@ -742,11 +741,13 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories.QuickOrder
 
             foreach (var item in quickOrderItems)
             {
-                var product = products.Where(p => p.Sku == item.ProductSku).FirstOrDefault();
+                var product = products.FirstOrDefault(p => p.Sku == item.ProductSku);
                 if (product != null && item.Quantity > 0)
                 {
-                    var addToCartWarnings = await AddToCartQuickOrderTempleteAsync(customer, product, ShoppingCartType.ShoppingCart, (List<ShoppingCartItem>)cart, (await _storeContext.GetCurrentStoreAsync()).Id,
-                     attributesXml: item.AttributesXml, quantity: item.Quantity, addRequiredProducts: false);
+                    var addToCartWarnings = await AddToCartQuickOrderTempleteAsync(customer, product, ShoppingCartType.ShoppingCart,
+                        (List<ShoppingCartItem>)cart, (await _storeContext.GetCurrentStoreAsync()).Id, attributesXml: item.AttributesXml,
+                        quantity: item.Quantity, addRequiredProducts: false);
+
                     if (addToCartWarnings.Any())
                     {
                         failed++;
@@ -762,10 +763,11 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories.QuickOrder
                 }
             }
 
-            customer.HasShoppingCartItems = (cart.Any() || added > 0);
+            customer.HasShoppingCartItems = cart.Any() || added > 0;
+
             await _customerService.UpdateCustomerAsync(customer);
 
-            return $"Total: {quickOrderTemplate.QuickOrderItems.Count}, {added} item added and {failed} item failed.";
+            return string.Format(await _localizationService.GetResourceAsync("NopStation.Plugin.B2B.B2BB2CFeatures.QuickOrderTemplate.AddToCartResult"), quickOrderItems.Count, added, failed);
         }
 
         private async Task<bool> ValidateDataAndTypeAsync(string sku, string quantity)
@@ -862,7 +864,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories.QuickOrder
 
                 if (warnings.Any())
                     return warnings;
-
+                var cartType = ShoppingCartType.ShoppingCart;
                 //maximum items validation
                 switch (shoppingCartType)
                 {
@@ -877,6 +879,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories.QuickOrder
                     case ShoppingCartType.Wishlist:
                         if (cart.Count >= _shoppingCartSettings.MaximumWishlistItems)
                         {
+                            cartType = ShoppingCartType.Wishlist;
                             warnings.Add(string.Format(await _localizationService.GetResourceAsync("ShoppingCart.MaximumWishlistItems"), _shoppingCartSettings.MaximumWishlistItems));
                             return warnings;
                         }
@@ -886,27 +889,8 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories.QuickOrder
                         break;
                 }
 
-                var now = DateTime.UtcNow;
-                shoppingCartItem = new ShoppingCartItem
-                {
-                    ShoppingCartType = shoppingCartType,
-                    StoreId = storeId,
-                    ProductId = product.Id,
-                    AttributesXml = attributesXml,
-                    CustomerEnteredPrice = customerEnteredPrice,
-                    Quantity = quantity,
-                    RentalStartDateUtc = rentalStartDate,
-                    RentalEndDateUtc = rentalEndDate,
-                    CreatedOnUtc = now,
-                    UpdatedOnUtc = now
-                };
-
-                // These methods updated to nopcommerce method - arshad 
-
-                var shoppingCartItems = await _shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.ShoppingCart, storeId);
-                shoppingCartItems.Add(shoppingCartItem);
-
-                await _shoppingCartService.AddToCartAsync(customer, product, shoppingCartItem.ShoppingCartType, storeId, attributesXml, customerEnteredPrice, rentalStartDate, rentalEndDate, quantity, addRequiredProducts);
+                
+                await _shoppingCartService.AddToCartAsync(customer, product, cartType, storeId, attributesXml, customerEnteredPrice, rentalStartDate, rentalEndDate, quantity, addRequiredProducts);
                 //event notification
             }
 
