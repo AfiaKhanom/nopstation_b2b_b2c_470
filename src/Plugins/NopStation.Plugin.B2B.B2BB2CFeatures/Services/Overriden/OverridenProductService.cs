@@ -847,7 +847,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Overriden
 
                 if (!commonSpecIds.Any())
                 {
-                    return null;
+                    return new Product();
                 }
                 if (specialExcludeSpecIds != null && specialExcludeSpecIds.Any())
                 {
@@ -856,7 +856,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Services.Overriden
                         var commonSpecificationIds = specialExcludeSpecIds.Intersect(productSpecificationAttributeIds);
                         if (commonSpecificationIds.Any())
                         {
-                            return null;
+                            return new Product();
                         }
                     }
                 }
