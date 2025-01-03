@@ -13,8 +13,8 @@
 @inject AppSettings appSettings
 @inject IThemeContext themeContext
 
-@{
 
+@{
     var themeName = await themeContext.GetWorkingThemeNameAsync();
 
     NopHtml.AppendScriptParts(ResourceLocation.Footer, $"~/Themes/{themeName}/Content/js/main.js");
@@ -22,11 +22,13 @@
     NopHtml.AppendScriptParts(ResourceLocation.Footer, $"~/Themes/{themeName}/Content/js/tippy-bundle.umd.min.js");
     NopHtml.AppendScriptParts(ResourceLocation.Footer, $"~/Themes/{themeName}/Content/js/popper.min.js");
     NopHtml.AppendScriptParts(ResourceLocation.Footer, $"~/Themes/{themeName}/Content/js/jsmartable.js");
-
+    if (catalogSettings.DisplayAllPicturesOnCatalogPages)
+    {
+        NopHtml.AppendScriptParts(ResourceLocation.Footer, "~/lib_npm/swiper/swiper-bundle.min.js");
+    }
     NopHtml.AppendScriptParts(ResourceLocation.Footer, "~/js/public.countryselect.js");
     NopHtml.AppendScriptParts(ResourceLocation.Footer, "~/js/public.ajaxcart.js");
     NopHtml.AppendScriptParts(ResourceLocation.Footer, "~/js/public.common.js");
-
     //when jQuery migrate script logging is active you will see the log in the browser console
     if (commonSettings.JqueryMigrateScriptLoggingActive)
     {
@@ -47,8 +49,6 @@
         NopHtml.AppendHeadCustomParts(seoSettings.CustomHeadTags);
     }
 
-    //var displayMiniProfiler = appSettings.Get<CommonConfig>().MiniProfilerEnabled && await permissionService.AuthorizeAsync(StandardPermissionProvider.AccessProfiling);
-
     //event
     await eventPublisher.PublishAsync(new PageRenderingEvent(NopHtml));
 
@@ -64,8 +64,7 @@
     <meta name="description" content="@description" />
     <meta name="keywords" content="@keywords" />
     <meta name="generator" content="nopCommerce" />
-    <meta name="theme-color" content="#4caf50">
-    <meta name="viewport" content="width=device-width, initial-scale=1 , user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     @NopHtml.GenerateHeadCustom()
     @*This is used so that themes can inject content into the header*@
     @await Html.PartialAsync("Head")
@@ -78,14 +77,10 @@
     @await Component.InvokeAsync(typeof(BlogRssHeaderLinkViewComponent))
     @*Insert favicon and app icons head code*@
     @await Component.InvokeAsync(typeof(FaviconViewComponent))
-@*     @if (displayMiniProfiler)
-    {
-        <mini-profiler />
-    } *@
+    
     @NopHtml.GenerateScripts(ResourceLocation.Head)
     @NopHtml.GenerateInlineScripts(ResourceLocation.Head)
     <!--Powered by nopCommerce - https://www.nopCommerce.com-->
-    
     @Html.Raw(commonSettings.HeaderCustomHtml)
 </head>
 <body>
@@ -94,7 +89,7 @@
 
     @NopHtml.GenerateScripts(ResourceLocation.Footer)
     @NopHtml.GenerateInlineScripts(ResourceLocation.Footer)
-    
+
     @Html.Raw(commonSettings.FooterCustomHtml)
 </body>
 </html>

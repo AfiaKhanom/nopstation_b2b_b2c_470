@@ -1,5 +1,7 @@
 .order-summary-content {
-
+    .selected-checkout-attributes{
+        padding-top:6px;
+    }
     @media (min-width: $md) {
         &::after {
             content: "";

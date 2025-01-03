@@ -1,48 +1,71 @@
-﻿@{
+﻿@using Nop.Core
+@using Nop.Core.Infrastructure
+@using Nop.Services.Plugins;
+@using Nop.Services.Cms;
+
+@inject IWidgetPluginManager widgetPluginManager
+@inject IStoreContext storeContext
+@inject IWorkContext workContext
+@{
     Layout = "_Root.Head";
+    var store = await storeContext.GetCurrentStoreAsync();
+    var pluginService = EngineContext.Current.Resolve<IPluginService>();
+    var customer = await workContext.GetCurrentCustomerAsync();
+
+    var smartMegamenuPluginName = "NopStation.Plugin.Widgets.SmartMegaMenu";
+    var isSmartMegamenuPluginActive = await widgetPluginManager.IsPluginActiveAsync(smartMegamenuPluginName, customer, store.Id);
 }
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.BodyStartHtmlTagAfter })
-@{ await Html.RenderPartialAsync("_Notifications"); }
-@{ await Html.RenderPartialAsync("_JavaScriptDisabledWarning"); }@* 
-@{ await Html.RenderPartialAsync("_OldInternetExplorerWarning"); } *@
-
-
+@{
+    await Html.RenderPartialAsync("_Notifications");
+}
+@{
+    await Html.RenderPartialAsync("_JavaScriptDisabledWarning");
+}
 @await Component.InvokeAsync(typeof(AdminHeaderLinksViewComponent))
 <div class="header-wrapper">
     @{
         await Html.RenderPartialAsync("_Header");
     }
-
     <div class="header-menu">
         <div class="container">
             <div class="top-menu-wrap">
-                <div class="megamenu-left">
-                    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = "header_menu_left" })
-                </div>
-                @*@await Component.InvokeAsync(typeof(TopMenuViewComponent))*@
-                <div class="megamenu-right">
-                    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = "header_menu_right" })
-                </div>
+                @if (isSmartMegamenuPluginActive)
+                {
+                    <div class="megamenu-left">
+                        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = "header_menu_left" })
+                    </div>
+
+                    <div class="megamenu-right">
+                        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = "header_menu_right" })
+                    </div>
+                }
+                else
+                {
+                    @await Component.InvokeAsync(typeof(TopMenuViewComponent))
+                }
             </div>
-           
         </div>
     </div>
 </div>
+
+
+
 <div class="master-wrapper-page">
+    
     <script asp-location="Footer">
         var localized_data = {
             AjaxCartFailure: "@T("AjaxCart.Failure")"
         };
         AjaxCart.init(false, '.header-links .cart-qty', '.header-links .wishlist-qty', '#flyout-cart', localized_data);
     </script>
-
     @if (IsSectionDefined("Breadcrumb"))
     {
         @RenderSection("Breadcrumb")
     }
-    <div class="master-wrapper-content">
+    <div class="master-wrapper-content" id="main" role="main">
         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ContentBefore })
-
+        
         <div class="master-column-wrapper">
             @RenderBody()
         </div>
@@ -52,5 +75,4 @@
 </div>
 @await Component.InvokeAsync(typeof(EuCookieLawViewComponent))
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.BodyEndHtmlTagBefore })
-
 @await Component.InvokeAsync(typeof(FlyoutShoppingCartViewComponent))

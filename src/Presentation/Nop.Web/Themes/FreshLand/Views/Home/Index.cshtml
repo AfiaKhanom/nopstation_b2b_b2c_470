@@ -1,7 +1,10 @@
-﻿@using Nop.Services.Localization
+﻿@using Nop.Services.Configuration
+@using Nop.Services.Localization
 @using Nop.Core
 @inject ILocalizationService localizationService
 @inject IStoreContext storeContext
+@inject ISettingService settingService
+
 
 @{
     Layout = "_ColumnsOne";
@@ -21,7 +24,20 @@
     {
         NopHtml.AddMetaDescriptionParts(homepageDescription);
     }
+    var store = await storeContext.GetCurrentStoreAsync();
+    var showHomePageCategory = true;
+    var showHomePageProduct = true;
 
+    if (await settingService.GetSettingByKeyAsync<bool>
+           ("FreshLandSettings.HideHomePageFeaturedCategories", storeId: store.Id, loadSharedValueIfNotFound: true))
+    {
+        showHomePageCategory = false;
+    }
+    if (await settingService.GetSettingByKeyAsync<bool>
+           ("FreshLandSettings.HideHomePageProducts", storeId: store.Id, loadSharedValueIfNotFound: true))
+    {
+        showHomePageProduct = false;
+    }
     //page class
     NopHtml.AppendPageCssClassParts("html-home-page");
 }
@@ -30,13 +46,19 @@
         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageTop })
         @await Component.InvokeAsync(typeof(TopicBlockViewComponent), new { systemName = "HomepageText" })
         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeCategories })
-        @await Component.InvokeAsync(typeof(HomepageCategoriesViewComponent))
+        @if (showHomePageCategory)
+        {
+            @await Component.InvokeAsync(typeof(HomepageCategoriesViewComponent))
+        }
         <div class="slider-ad-2">
             @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = "homepage-BeforeHomepageProducts-left" })
             @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = "homepage-BeforeHomepageProducts-right" })
         </div>
         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeProducts })
-        @await Component.InvokeAsync(typeof(HomepageProductsViewComponent))
+        @if (showHomePageProduct)
+        {
+            @await Component.InvokeAsync(typeof(HomepageProductsViewComponent))
+        }
         <div class="slider-ad-3">
             @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = "homepage-beforeBestSell-left" })
             @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = "homepage-beforeBestSell-middle" })

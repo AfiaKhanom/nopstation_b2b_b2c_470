@@ -42,10 +42,12 @@
                 padding: 0;
                 border: none;
                 border-radius: 50px;
-                background: url('/Themes/FreshLand/Content/images/newsletter-icon.png') center no-repeat;
+                background: url('../images/newsletter-icon.png') center no-repeat;
                 background-color: var(--primary-green_dark);
                 font-size: 0;
                 line-height: 0;
+                position: absolute;
+                top: 20px;
 
                 @media(min-width: $sm) {
                     width: initial;
@@ -59,6 +61,10 @@
                     opacity: 0.8;
                 }
             }
+        }
+
+        .options{
+            padding-top:5px;
         }
     }
 }

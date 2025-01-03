@@ -1,6 +1,13 @@
-.product-reviews-page {
+.page.product-reviews {
+    /*@media(min-width:$lg) {
+        display: flex;
+        flex-direction: row;
+        gap: 30px;
+    }*/
+
     .write-review {
         text-align: center;
+        flex-grow: 1;
 
         .title {
             margin: 15px 0;
@@ -39,12 +46,21 @@
             line-height: clamp(17px,3vw,24px);
         }
 
-        .product-review-item {
+        .product-review-item-list {
             border: 1px solid var(--primary-grey_light);
             box-shadow: 0 2px 4px rgba(153,153,153,.15);
+        }
+
+        .product-review-item {
+            border-bottom: 1px solid var(--primary-grey_light);
+            /*box-shadow: 0 2px 4px rgba(153,153,153,.15);*/
             border-radius: 3px;
-            margin: 15px auto;
-            padding: 15px;
+            margin: 15px 8px;
+            padding-inline: 15px;
+
+            &:nth-child(3n), &:last-child {
+                border-bottom: none;
+            }
 
             .review-item-head {
                 > div {
@@ -60,7 +76,106 @@
                         display: inline;
                     }
                 }
+
+                .product-review-helpfulness {
+                    .vote-options {
+                        span {
+                            color: var(--primary-green);
+                            margin-right: 2px;
+                            margin-left: 2px;
+
+                            &:hover {
+                                cursor: pointer;
+                            }
+                        }
+                    }
+
+                    .result {
+                        font-size: 16px;
+                        line-height: 16px;
+                        color: var(--primary-green);
+                    }
+                }
             }
         }
+    }
+
+    .product-share-button {
+        margin-bottom: 10px;
+    }
+
+    #pagination-controls {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        text-align: center;
+
+        > span {
+            &:first-child, &:last-child {
+                font-size: 0;
+
+                &:before {
+                    font-family: "icomoon" !important;
+                    font-weight: 600;
+                    font-size: 12px;
+                    display: inline;
+                    line-height: 1;
+                    line-height: 30px;
+                }
+            }
+
+            &:first-child {
+                &:before {
+                    content: "\e919";
+                }
+            }
+
+            &:last-child {
+                &:before {
+                    content: "\e91d";
+                }
+            }
+        }
+    }
+
+    #pagination-controls a, #pagination-controls span {
+        margin: 0 5px;
+        text-decoration: none;
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+        display: inline-block;
+        background: var(--white);
+        border: 1px solid var(--primary-grey_light);
+        color: var(--black);
+        border-radius: 50%;
+        text-align: center;
+        line-height: 30px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all .3s;
+    }
+
+    #pagination-controls span {
+        border: 1px solid var(--primary-green);
+        color: var(--primary-green);
+    }
+
+    #pagination-controls span.disabled-Previous, #pagination-controls span.disabled-Next {
+        border: 1px solid var(--primary-grey_light);
+        color: var(--black);
+
+        &:hover {
+            cursor: default;
+        }
+    }
+
+    #pagination-controls a:hover, #pagination-controls span:hover {
+    }
+
+    #pagination-controls a.disabled {
+        color: var(--white);
+        cursor: default;
+        text-decoration: none;
+        background: var(--primary-green);
     }
 }

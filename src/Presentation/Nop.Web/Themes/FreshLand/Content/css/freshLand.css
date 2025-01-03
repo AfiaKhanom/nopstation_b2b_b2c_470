@@ -952,16 +952,17 @@ label {
   }
 }
 .rating {
-  background: url(/Themes/FreshLand/Content/images/rating-1.png) repeat-x;
+  background: url(../images/rating-1.png) repeat-x;
   width: 50px;
   height: 10px;
   background-size: 10px;
   margin-bottom: 5px;
 }
 .rating div {
-  background: url(/Themes/FreshLand/Content/images/rating-2.png) repeat-x;
+  background: url(../images/rating-2.png) repeat-x;
   height: 10px;
   background-size: 10px;
+  font-size: 0;
 }
 @media (min-width: 992px) {
   .rating {
@@ -984,7 +985,7 @@ label {
 }
 .link-rss::before {
   content: "";
-  background-image: url(/Themes/FreshLand/Content/images/rss.svg);
+  background-image: url(../images/rss.svg);
   display: block;
   height: 15px;
   width: 15px;
@@ -3916,7 +3917,7 @@ body > #mobile-bottom-navigation > ul > li.cart-item > a::before {
   padding: 0;
   border: none;
   border-radius: 50px;
-  background: url("/Themes/FreshLand/Content/images/newsletter-icon.png") center no-repeat;
+  background: url("../images/newsletter-icon.png") center no-repeat;
   background-color: var(--primary-green_dark);
   font-size: 0;
   line-height: 0;
@@ -3940,7 +3941,7 @@ body > #mobile-bottom-navigation > ul > li.cart-item > a::before {
 }
 
 .newsletter-container {
-  background: url("/Themes/FreshLand/Content/images/newsletter-bg.jpg") no-repeat;
+  background: url("../images/newsletter-bg.jpg") no-repeat;
   background-size: cover !important;
   margin-top: 15px;
   margin-bottom: 15px;
@@ -4164,25 +4165,25 @@ body > #mobile-bottom-navigation > ul > li.cart-item > a::before {
   background-repeat: no-repeat;
 }
 .social li.facebook a::before {
-  background-image: url("/Themes/FreshLand/Content/images/facebook.svg");
+  background-image: url("../images/facebook.svg");
 }
 .social li.youtube a::before {
-  background-image: url("/Themes/FreshLand/Content/images/youtube.svg");
+  background-image: url("../images/youtube.svg");
 }
 .social li.instagram a::before {
-  background-image: url("/Themes/FreshLand/Content/images/instagram.svg");
+  background-image: url("../images/instagram.svg");
 }
 .social li.twitter a::before {
-  background-image: url("/Themes/FreshLand/Content/images/twitter.svg");
+  background-image: url("../images/twitter.svg");
 }
 .social li.rss a::before {
-  background-image: url("/Themes/FreshLand/Content/images/rss.svg");
+  background-image: url("../images/rss.svg");
 }
 .social li.linkedin a::before {
-  background-image: url("/Themes/FreshLand/Content/images/linkedin.svg");
+  background-image: url("../images/linkedin.svg");
 }
 .social li.pinterest a::before {
-  background-image: url("/Themes/FreshLand/Content/images/pinterest.svg");
+  background-image: url("../images/pinterest.svg");
 }
 
 .footer-logo-bg {
@@ -5535,52 +5536,139 @@ $xs: 556px;*/
   font-weight: 600;
 }
 
-.product-reviews-page .write-review {
-  text-align: center;
+.page.product-reviews {
+  /*@media(min-width:$lg) {
+      display: flex;
+      flex-direction: row;
+      gap: 30px;
+  }*/
 }
-.product-reviews-page .write-review .title {
+.page.product-reviews .write-review {
+  text-align: center;
+  flex-grow: 1;
+}
+.page.product-reviews .write-review .title {
   margin: 15px 0;
 }
-.product-reviews-page .write-review .form-fields {
+.page.product-reviews .write-review .form-fields {
   width: 460px;
   max-width: 100%;
   margin: auto;
 }
-.product-reviews-page .write-review .form-fields .rating-wrapper {
+.page.product-reviews .write-review .form-fields .rating-wrapper {
   display: inline-flex;
   align-items: center;
 }
-.product-reviews-page .write-review .form-fields .rating-wrapper .first {
+.page.product-reviews .write-review .form-fields .rating-wrapper .first {
   margin-right: 10px;
   color: #F40F00;
 }
-.product-reviews-page .write-review .form-fields .rating-wrapper .last {
+.page.product-reviews .write-review .form-fields .rating-wrapper .last {
   margin-left: 10px;
   color: #4CAF50;
 }
-.product-reviews-page .write-review .form-fields .rating-wrapper input {
+.page.product-reviews .write-review .form-fields .rating-wrapper input {
   display: inline-block !important;
 }
-.product-reviews-page .product-review-list .title {
+.page.product-reviews .product-review-list .title {
   margin: 15px 0;
   font-size: clamp(1rem, 3vw, 20px);
   line-height: clamp(17px, 3vw, 24px);
 }
-.product-reviews-page .product-review-list .product-review-item {
+.page.product-reviews .product-review-list .product-review-item-list {
   border: 1px solid var(--primary-grey_light);
   box-shadow: 0 2px 4px rgba(153, 153, 153, 0.15);
+}
+.page.product-reviews .product-review-list .product-review-item {
+  border-bottom: 1px solid var(--primary-grey_light);
+  /*box-shadow: 0 2px 4px rgba(153,153,153,.15);*/
   border-radius: 3px;
-  margin: 15px auto;
-  padding: 15px;
+  margin: 15px 8px;
+  padding-inline: 15px;
 }
-.product-reviews-page .product-review-list .product-review-item .review-item-head > div {
+.page.product-reviews .product-review-list .product-review-item:nth-child(3n), .page.product-reviews .product-review-list .product-review-item:last-child {
+  border-bottom: none;
+}
+.page.product-reviews .product-review-list .product-review-item .review-item-head > div {
   margin-bottom: 10px;
 }
-.product-reviews-page .product-review-list .product-review-item .review-content > div {
+.page.product-reviews .product-review-list .product-review-item .review-content > div {
   margin-bottom: 10px;
 }
-.product-reviews-page .product-review-list .product-review-item .review-content > div label {
+.page.product-reviews .product-review-list .product-review-item .review-content > div label {
   display: inline;
+}
+.page.product-reviews .product-review-list .product-review-item .review-content .product-review-helpfulness .vote-options span {
+  color: var(--primary-green);
+  margin-right: 2px;
+  margin-left: 2px;
+}
+.page.product-reviews .product-review-list .product-review-item .review-content .product-review-helpfulness .vote-options span:hover {
+  cursor: pointer;
+}
+.page.product-reviews .product-review-list .product-review-item .review-content .product-review-helpfulness .result {
+  font-size: 16px;
+  line-height: 16px;
+  color: var(--primary-green);
+}
+.page.product-reviews .product-share-button {
+  margin-bottom: 10px;
+}
+.page.product-reviews #pagination-controls {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.page.product-reviews #pagination-controls > span:first-child, .page.product-reviews #pagination-controls > span:last-child {
+  font-size: 0;
+}
+.page.product-reviews #pagination-controls > span:first-child:before, .page.product-reviews #pagination-controls > span:last-child:before {
+  font-family: "icomoon" !important;
+  font-weight: 600;
+  font-size: 12px;
+  display: inline;
+  line-height: 1;
+  line-height: 30px;
+}
+.page.product-reviews #pagination-controls > span:first-child:before {
+  content: "\e919";
+}
+.page.product-reviews #pagination-controls > span:last-child:before {
+  content: "\e91d";
+}
+.page.product-reviews #pagination-controls a, .page.product-reviews #pagination-controls span {
+  margin: 0 5px;
+  text-decoration: none;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  background: var(--white);
+  border: 1px solid var(--primary-grey_light);
+  color: var(--black);
+  border-radius: 50%;
+  text-align: center;
+  line-height: 30px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+.page.product-reviews #pagination-controls span {
+  border: 1px solid var(--primary-green);
+  color: var(--primary-green);
+}
+.page.product-reviews #pagination-controls span.disabled-Previous, .page.product-reviews #pagination-controls span.disabled-Next {
+  border: 1px solid var(--primary-grey_light);
+  color: var(--black);
+}
+.page.product-reviews #pagination-controls span.disabled-Previous:hover, .page.product-reviews #pagination-controls span.disabled-Next:hover {
+  cursor: default;
+}
+.page.product-reviews #pagination-controls a.disabled {
+  color: var(--white);
+  cursor: default;
+  text-decoration: none;
+  background: var(--primary-green);
 }
 
 .attributes .attribute-item > div {
@@ -5996,6 +6084,9 @@ form > .buttons button {
 }
 .html-account-page .side-2 ul li.customer-reviews a::before {
   content: "\e942";
+}
+.html-account-page .side-2 ul li.customer-avatar a::before {
+  content: "\e94a";
 }
 
 .address-list {

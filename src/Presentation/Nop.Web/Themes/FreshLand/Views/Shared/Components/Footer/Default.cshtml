@@ -14,8 +14,11 @@
 @inject IStoreContext storeContext
 @inject IWidgetPluginManager widgetPluginManager
 @inject ISettingService settingService
+@inject IThemeContext themeContext
+
 
 @{
+    var themeName = await themeContext.GetWorkingThemeNameAsync();
     var language = await workContext.GetWorkingLanguageAsync();
     var store = await storeContext.GetCurrentStoreAsync();
     var storeName = await localizationService.GetLocalizedAsync(store, s => s.Name);
@@ -221,7 +224,7 @@
             {
                 <div class="footer-info">
                     <div class="footer-powered-by">
-                        Designed By  <img alt="Designed by nopStation" title="Designed by nopStation" src="/Themes/FreshLand/Content/images/designed_by_nopStation.png" width="89" height="17" />
+                        Designed By  <img alt="Designed by nopStation" title="Designed by nopStation" src="/Themes/@themeName/Content/images/designed_by_nopStation.png" width="89" height="17" />
                     </div>
                 </div>
             }
