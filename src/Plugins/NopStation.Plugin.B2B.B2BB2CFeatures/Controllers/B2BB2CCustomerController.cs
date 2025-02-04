@@ -1311,6 +1311,7 @@ public class B2BB2CCustomerController : CustomerController
                 await _erpNopUserService.UpdateErpNopUserAsync(erpUser);
 
                 await _staticCacheManager.RemoveAsync(_staticCacheManager.PrepareKeyForDefaultCache(NopEntityCacheDefaults<ErpNopUser>.ByIdCacheKey, erpUser.Id));
+                await _staticCacheManager.RemoveAsync(_staticCacheManager.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpAccountByCustomerCacheKey, currentCustomer.Id, string.Join(",", await _customerService.GetCustomerRoleIdsAsync(currentCustomer))));
 
                 await _b2BB2CWorkContext.SetCurrentERPCustomerAsync(erpAccountId: model.ErpAccountId);
 
