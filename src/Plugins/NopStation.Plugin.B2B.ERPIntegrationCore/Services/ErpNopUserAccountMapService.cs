@@ -141,7 +141,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
             return erpNopUserAccountMaps;
         }
 
-        public async Task<IList<int>> GetErpNopUserRolesByAsync(ErpNopUser user)
+        public async Task<IList<int>> GetErpNopUserRolesByNopUserAsync(ErpNopUser user)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));

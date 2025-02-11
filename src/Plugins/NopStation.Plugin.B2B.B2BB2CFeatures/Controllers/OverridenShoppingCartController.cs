@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Presentation;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Nop.Core;
@@ -25,6 +29,7 @@ using Nop.Services.Logging;
 using Nop.Services.Media;
 using Nop.Services.Messages;
 using Nop.Services.Orders;
+using Nop.Services.Plugins;
 using Nop.Services.Security;
 using Nop.Services.Seo;
 using Nop.Services.Shipping;
@@ -40,6 +45,7 @@ using NopStation.Plugin.B2B.B2BB2CFeatures.Contexts;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Factories;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality;
+using NopStation.Plugin.B2B.ERPIntegrationCore;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
 
@@ -55,6 +61,8 @@ public class OverridenShoppingCartController : ShoppingCartController
     private readonly IErpProductModelFactory _erpProductModelFactory;
     private readonly ILogger _logger;
     private readonly IErpLogsService _erpLogsService;
+    private readonly IErpNopUserService _erpNopUserService;
+    private readonly IErpNopUserAccountMapService _erpNopUserAccountMapService;
     #endregion
 
     #region Ctor
@@ -102,7 +110,9 @@ public class OverridenShoppingCartController : ShoppingCartController
         IErpProductModelFactory erpProductModelFactory,
         ILogger logger,
         IErpLogsService erpLogsService,
-        IStoreMappingService storeMappingService) : base(captchaSettings,
+        IStoreMappingService storeMappingService,
+        IErpNopUserService erpNopUserService,
+        IErpNopUserAccountMapService erpNopUserAccountMapService) : base(captchaSettings,
             customerSettings,
             checkoutAttributeParser,
             checkoutAttributeService,
@@ -146,6 +156,8 @@ public class OverridenShoppingCartController : ShoppingCartController
         _erpProductModelFactory = erpProductModelFactory;
         _logger = logger;
         _erpLogsService = erpLogsService;
+        _erpNopUserService = erpNopUserService;
+        _erpNopUserAccountMapService = erpNopUserAccountMapService;
     }
 
     #endregion
@@ -297,6 +309,16 @@ public class OverridenShoppingCartController : ShoppingCartController
             return View(model);
         }
 
+        var erpNopUserRoles = await _erpNopUserAccountMapService.GetErpNopUserRolesByNopUserAsync(await _erpNopUserService.GetErpNopUserByCustomerIdAsync((await _workContext.GetCurrentCustomerAsync()).Id));
+
+        if (erpNopUserRoles.Contains((await _customerService.GetCustomerRoleBySystemNameAsync(ERPIntegrationCoreDefaults.B2BCustomerAccountingPersonnelRoleSystemName)).Id))
+        {
+            _notificationService.WarningNotification(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.Checkout.AccessDenied"));
+            var model = new ShoppingCartModel();
+            model = await _shoppingCartModelFactory.PrepareShoppingCartModelAsync(model, cart, validateCheckoutAttributes: true);
+            return View(model);
+        }
+
         var anonymousPermissed = _orderSettings.AnonymousCheckoutAllowed
                                  && _customerSettings.UserRegistrationType == UserRegistrationType.Disabled;
 
@@ -328,6 +350,15 @@ public class OverridenShoppingCartController : ShoppingCartController
         }
 
         var currCustomer = await _workContext.GetCurrentCustomerAsync();
+        var erpNopUserRoles = await _erpNopUserAccountMapService.GetErpNopUserRolesByNopUserAsync(await _erpNopUserService.GetErpNopUserByCustomerIdAsync(currCustomer.Id));
+
+        if (erpNopUserRoles.Contains((await _customerService.GetCustomerRoleBySystemNameAsync(ERPIntegrationCoreDefaults.B2BCustomerAccountingPersonnelRoleSystemName)).Id))
+        {
+            _notificationService.WarningNotification(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.Quote.AccessDenied"));
+            
+            return RedirectToAction("Cart", "ShoppingCart");
+        }
+
         var store = await _storeContext.GetCurrentStoreAsync();
         var cart = await _shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.ShoppingCart, store.Id);
 

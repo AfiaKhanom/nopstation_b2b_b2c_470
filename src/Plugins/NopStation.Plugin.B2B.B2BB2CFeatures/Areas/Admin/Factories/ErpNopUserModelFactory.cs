@@ -402,7 +402,7 @@ public class ErpNopUserModelFactory : IErpNopUserModelFactory
                         shippingErpShipToAddressModel = shippingErpShipToAddress.ToModel(shippingErpShipToAddressModel);
 
                     await _addressModelFactory.PrepareAddressModelAsync(shippingErpShipToAddressModel, shippingErpShipToAddress);
-                    var selectedCustomerRoleIds = await _erpNopUserAccountMapService.GetErpNopUserRolesByAsync(erpNopUser);
+                    var selectedCustomerRoleIds = await _erpNopUserAccountMapService.GetErpNopUserRolesByNopUserAsync(erpNopUser);
 
                     erpNopUserModel = new ErpNopUserModel
                     {
@@ -468,7 +468,7 @@ public class ErpNopUserModelFactory : IErpNopUserModelFactory
             model.CreatedOn = await _dateTimeHelper.ConvertToUserTimeAsync(erpNopUser.CreatedOnUtc, DateTimeKind.Utc);
             model.UpdatedOn = await _dateTimeHelper.ConvertToUserTimeAsync(erpNopUser.UpdatedOnUtc, DateTimeKind.Utc);
 
-            var selectedCustomerRoleIds = await _erpNopUserAccountMapService.GetErpNopUserRolesByAsync(erpNopUser);
+            var selectedCustomerRoleIds = await _erpNopUserAccountMapService.GetErpNopUserRolesByNopUserAsync(erpNopUser);
 
             model.SelectedCustomerRoleIds = selectedCustomerRoleIds;
             model.SelectedCustomerRoles = await PrepareSelectedRolesAsync(selectedCustomerRoleIds.ToList());

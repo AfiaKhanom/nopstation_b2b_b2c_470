@@ -22,7 +22,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
         Task<IPagedList<ErpNopUserAccountMap>> GetAllErpNopUserAccountMapsAsync(int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false);
         Task<ErpNopUserAccountMap> GetErpNopUserAccountMapByAccountAndUserIdAsync(int accountId, int userId);
 
-        Task<IList<int>> GetErpNopUserRolesByAsync(ErpNopUser user);
+        Task<IList<int>> GetErpNopUserRolesByNopUserAsync(ErpNopUser user);
 
         Task<bool> CheckAnyErpNopUserAccountMapExistWithAccountIdAndUserIdAsync(int erpAccountId, int erpUserId);
     }

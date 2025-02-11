@@ -5958,5 +5958,13 @@
     <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.DeliveryDatesErpFailedDialog.Close">
         <Value>Close</Value>
     </LocaleResource>
+
+    <LocaleResource Name="Plugin.Misc.NopStation.B2BB2CFeatures.Quote.AccessDenied">
+        <Value>You are not allowed to quote checkout.</Value>
+    </LocaleResource>
+
+    <LocaleResource Name="Plugin.Misc.NopStation.B2BB2CFeatures.Checkout.AccessDenied">
+        <Value>You are not allowed to checkout.</Value>
+    </LocaleResource>
     
 </Language>
