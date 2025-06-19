@@ -1,0 +1,13 @@
+@using NopStation.Plugin.B2B.D365BCIntegration.Areas.Admin.Models
+
+@model ConfigurationModel
+
+<div class="form-group row">
+    <div class="col-md-3">
+        <nop-label asp-for="OrderSyncLimit" />
+    </div>
+    <div class="col-md-9">
+        <nop-editor asp-for="OrderSyncLimit" />
+        <span asp-validation-for="OrderSyncLimit"></span>
+    </div>
+</div>

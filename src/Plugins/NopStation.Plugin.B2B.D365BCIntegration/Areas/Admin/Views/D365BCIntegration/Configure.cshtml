@@ -1,0 +1,63 @@
+@using NopStation.Plugin.B2B.D365BCIntegration
+@using NopStation.Plugin.B2B.D365BCIntegration.Areas.Admin.Models
+
+@model ConfigurationModel
+
+@{
+    Layout = "_ConfigurePlugin";
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName($"{D365BCIntegrationDefaults.AdminMenuSystemName}.Configure");
+}
+
+@{
+    var customer = await workContext.GetCurrentCustomerAsync();
+    const string hideSettingsBlockAttributeName = "Configure.hideSettingsBlock";
+    var hideSettingsBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideSettingsBlockAttributeName);
+
+    const string hideCustomerBlockAttributeName = "Configure.hideCustomerBlock";
+    var hideCustomerBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideCustomerBlockAttributeName);
+
+    const string hideProductBlockAttributeName = "Configure.hideProductBlock";
+    var hideProductBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideProductBlockAttributeName);
+
+    const string hideStockBlockAttributeName = "Configure.hideStockBlock";
+    var hideStockBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideStockBlockAttributeName);
+
+    const string hideOrderBlockAttributeName = "Configure.hideOrderBlock";
+    var hideOrderBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideOrderBlockAttributeName);
+}
+
+<form asp-controller="D365BCIntegration" asp-action="Configure" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Plugins.NopStation.D365BCIntegration.Admin.Configure.Title")
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.Save")
+            </button>
+        </div>
+    </div>
+
+    <div asp-validation-summary="All"></div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="form-horizontal">
+                <nop-cards id="d365-integration-cards">
+                    <nop-card asp-name="d365-integration-settings" asp-icon="fas fa-info" asp-title="@T("Plugins.NopStation.D365BCIntegration.Admin.Configure.Settings")" asp-hide-block-attribute-name="@hideSettingsBlockAttributeName" asp-hide="@hideSettingsBlock"
+                              asp-advanced="false">@await Html.PartialAsync("_Configure.D365BCIntegrationSettings", Model)</nop-card>
+                    <nop-card asp-name="d365-customer-info" asp-icon="fas fa-info" asp-title="@T("Plugins.NopStation.D365BCIntegration.Admin.Configure.Customer")" asp-advanced="false" asp-hide-block-attribute-name="@hideCustomerBlockAttributeName"
+                              asp-hide="@hideCustomerBlock">@await Html.PartialAsync("_Configure.Customer", Model)</nop-card>
+                    <nop-card asp-name="d365-product-info" asp-icon="fas fa-info" asp-title="@T("Plugins.NopStation.D365BCIntegration.Admin.Configure.Product")" asp-advanced="false" asp-hide-block-attribute-name="@hideProductBlockAttributeName"
+                              asp-hide="@hideProductBlock">@await Html.PartialAsync("_Configure.Product", Model)</nop-card>
+                    <nop-card asp-name="d365-stock-info" asp-icon="fas fa-info" asp-title="@T("Plugins.NopStation.D365BCIntegration.Admin.Configure.Stock")" asp-advanced="false" asp-hide-block-attribute-name="@hideStockBlockAttributeName"
+                              asp-hide="@hideStockBlock">@await Html.PartialAsync("_Configure.Product", Model)</nop-card>
+                    <nop-card asp-name="d365-order-info" asp-icon="fas fa-info" asp-title="@T("Plugins.NopStation.D365BCIntegration.Admin.Configure.Order")" asp-advanced="false" asp-hide-block-attribute-name="@hideOrderBlockAttributeName"
+                              asp-hide="@hideOrderBlock">@await Html.PartialAsync("_Configure.Order", Model)</nop-card>
+                </nop-cards>
+            </div>
+        </div>
+    </section>
+</form> 
