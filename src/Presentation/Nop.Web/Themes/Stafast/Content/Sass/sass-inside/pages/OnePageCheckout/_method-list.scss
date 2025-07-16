@@ -1,0 +1,38 @@
+.method-list {
+    li {
+        border: 1px solid var(--primary-grey_light);
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        border-radius: 3px;
+
+        label {
+            margin-bottom: 0;
+            display: inline-block;
+        }
+
+        .payment-details,
+        .payment-logo {
+            display: inline-block;
+        }
+
+        .payment-logo {
+            padding-right: 5px;
+        }
+    }
+
+
+    @media (min-width: $lg) {
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+        flex-wrap: wrap;
+
+        li {
+            width: calc(33.33% - 10px);
+            &:nth-child(even) {
+                margin-left: 15px;
+                margin-right: 15px;
+            }
+        }
+    }
+}

@@ -1,0 +1,54 @@
+﻿@using Nop.Core
+@using Nop.Core.Domain.Catalog
+@using Nop.Services.Helpers
+@using Nop.Web.Framework.UI
+@using Nop.Core.Infrastructure
+
+@inject CatalogSettings catalogSettings
+@inject IThemeContext themeContext
+@inject IStoreContext storeContext
+@inject IUserAgentHelper userAgentHelper
+@inject INopFileProvider nopFileProvider
+
+@{
+    Layout ="";
+    var themeName = await themeContext.GetWorkingThemeNameAsync();
+    var supportRtl = await Html.ShouldUseRtlThemeAsync();
+    var storeId = storeContext.GetCurrentStore().Id;
+
+    var customCssPath = $"~/Themes/{themeName}/Content/css/styles.default-{storeId}.css";
+
+    if (nopFileProvider.FileExists(nopFileProvider.MapPath(customCssPath)))
+        NopHtml.AppendCssFileParts(customCssPath, excludeFromBundle: true);
+
+    //add main CSS file
+    NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/Stafast{(supportRtl ? ".rtl" : "")}.css");
+    NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/scale.css");
+    
+    //add swiper css file
+    NopHtml.AppendCssFileParts($"~/Themes/{themeName}/Content/css/swiper-bundle.min.css");
+
+    //add jQuery UI css file
+    NopHtml.AppendCssFileParts("~/lib_npm/jquery-ui-dist/jquery-ui.min.css");
+}
+
+
+@*productbox tooltip for wishlist and compare button*@
+
+@{
+    var tooltipPosition = "left";
+    if (supportRtl)
+    {
+        tooltipPosition = "right";
+    }
+}
+<script asp-location="Footer">
+    
+    function ProductToolTip(thisButton, tippyContent) {
+        console.log("tippy init", tippyContent);
+        tippy(thisButton, {
+            content: tippyContent,
+            placement: '@tooltipPosition',
+        });
+    }
+</script>

@@ -1,0 +1,34 @@
+.order-details-page {
+    .order-overview {
+        .button-2 {
+            @include buttons;
+            margin-bottom: 15px;
+
+            &:before {
+                @include icon-font-style;
+                content: "\e935";
+                font-weight: bold;
+                margin-right: 4px;
+            }
+
+            &.pdf-invoice-button {
+                opacity: 0.9;
+
+                &:hover {
+                    opacity: 1;
+                }
+            }
+        }
+
+        .print-order-button {
+            @include buttons( $background: var(--primary-grey), $border: 1px solid var(--primary-grey), $hover-border-color: var(--primary-color), $hover-background: var(--primary-color));
+
+            &:before {
+                @include icon-font-style;
+                content: "\e961";
+                font-weight: bold;
+                margin-right: 4px;
+            }
+        }
+    }
+}

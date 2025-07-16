@@ -1,0 +1,68 @@
+.html-account-page {
+    .side-2 {
+        .side-2-container {
+            .block {
+                padding: 0;
+
+                .listbox {
+                    padding: 10px;
+
+                    @media(min-width: $md) {
+                        padding: 15px;
+                    }
+                }
+            }
+        }
+
+
+        .title {
+            padding: 10px;
+            margin-bottom: 0;
+            border-bottom: 1px solid var(--primary-grey_light);
+            text-transform: uppercase;
+            color: var(--primary-color);
+
+            strong {
+                font-weight: 700;
+            }
+
+            @media(min-width: $md) {
+                padding: 15px;
+            }
+        }
+
+        ul {
+            li {
+                font-weight: 600;
+                font-size: 14px;
+                line-height: 35px;
+
+                &.active {
+                    a {
+                        color: var(--primary-color);
+                    }
+                }
+
+                a {
+                    position: relative;
+                    color: var(--black);
+                    transition: all .3s;
+
+                    &:hover {
+                        color: var(--primary-color);
+                    }
+                }
+
+                a::before {
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    font-family: "icomoon";
+                    color: var(--primary-color);
+                    top: 50%;
+                    transform: translateY(-50%);
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,22 @@
+@import "../mixins/text_fonts";
+
+/*theme fonts added*/
+@font-face {
+    @include font-face_genarate($font-weight: 400);
+}
+@font-face {
+    @include font-face_genarate($font-weight: 400, $font-style: italic,$font-path-last: "Montserrat-Italic.woff");
+}
+@font-face {
+    @include font-face_genarate( $font-weight: 500,$font-path-last: "Montserrat-Medium.woff");
+}
+@font-face {
+    @include font-face_genarate($font-style: italic, $font-weight: 500,$font-path-last: "Montserrat-MediumItalic.woff");
+}
+@font-face {
+    @include font-face_genarate( $font-weight: 600,$font-path-last: "Montserrat-Bold.woff");
+}
+@font-face {
+    @include font-face_genarate( $font-style: italic,$font-weight: 600,$font-path-last: "Montserrat-BoldItalic.woff");
+}
+

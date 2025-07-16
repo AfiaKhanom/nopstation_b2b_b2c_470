@@ -26,27 +26,31 @@ var B2BAccountCommon = {
           $('#b2bWeightValue').hide();
         }
         if (response.Data) {
-          for (var i = 0; i < response.Data.length; i++) {
-            var productId = response.Data[i].Id;
-            $('#b2bUOM_' + productId).html("" + response.Data[i].UOM + "");
-            $('#b2bStockAvailability_' + productId).html("" + response.Data[i].StockAvailability + "");
-            if (response.Data[i].IsOutOfStock) {
+          for (const element of response.Data) {
+            let productId = element.Id;
+
+            $('#b2bUOM_' + productId).html("" + element.UOM + "");
+
+            $('#b2bStockAvailability_' + productId).html("" + element.StockAvailability + "");
+
+            if (element.IsOutOfStock) {
               $('#b2bStockAvailability_' + productId).addClass("out-of-stock")
             }
-            if (response.Data[i].DisplayBackInStockSubscription) {
+
+            if (element.DisplayBackInStockSubscription) {
               $('#backInStockSubscription_' + productId).html("<div title='Notify me when available' class='back-in-stock-subscription b2blist-back-in-stock-subscription' onclick=\"backInStockSubscriptionClick(" + productId + ")\"></div>");
             }
 
             if (!response.IsHidePricingnote) {
-              $('#b2bPricingNotes_' + productId).html("" + response.Data[i].PricingNotes + "");
+              $('#b2bPricingNotes_' + productId).html("" + element.PricingNotes + "");
             }
 
             if (!response.IsHideWeightinfo) {
-              $('#b2bWeightValue_' + productId).html("" + response.Data[i].WeightValue + "");
+              $('#b2bWeightValue_' + productId).html("" + element.WeightValue + "");
             }
 
-            //$('#b2bProductQty_' + productId).val("" + response.Data[i].Quantity + "");
-            //$('.b2bProductQty_' + productId).val("" + response.Data[i].Quantity + "");
+            //$('#b2bProductQty_' + productId).val("" + element.Quantity + "");
+            //$('.b2bProductQty_' + productId).val("" + element.Quantity + "");
           }
         }
       },

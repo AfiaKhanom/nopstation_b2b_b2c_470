@@ -1,0 +1,13 @@
+
+
+@mixin font-face_genarate(
+    $font-family-name: 'Montserrat',
+    $font-path-last: "Montserrat-Regular.woff",
+    $font-style: normal,
+    $font-weight: 400
+) {
+    font-family: $font-family-name;
+    font-style: $font-style;
+    font-weight: $font-weight;
+    src: url("../fonts/" + $font-path-last),url("../fonts/" + $font-path-last + 2);
+}

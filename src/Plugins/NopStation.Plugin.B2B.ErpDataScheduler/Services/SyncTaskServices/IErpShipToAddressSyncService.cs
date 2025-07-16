@@ -2,5 +2,5 @@
 
 public interface IErpShipToAddressSyncService
 {
-    Task<bool> IsErpShipToAddressSyncSuccessfulAsync();
+    Task<bool> IsErpShipToAddressSyncSuccessfulAsync(string? erpAccountNumber, bool isManualTrigger = false, bool isIncrementalSync = true, CancellationToken cancellationToken = default);
 }

@@ -35,7 +35,6 @@
         <div class="container-fluid">
             <div class="form-horizontal">
                 <nop-cards id="productpricing-panels">
-
                     <nop-card asp-name="productpricing-peraccount" asp-icon="fa fa-list" asp-title="@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSpecialPrice.List")"
                               asp-hide-block-attribute-name="@hideAddErpSpecialPriceBlockAttributeName"
                               asp-hide="@hideAddErpSpecialPriceBlock">@await Html.PartialAsync("_SpecialPrice", Model.ErpSpecialPriceSearchModel)</nop-card>

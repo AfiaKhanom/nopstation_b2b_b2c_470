@@ -1,0 +1,8 @@
+.bestsellers,
+.home-page-product-grid {
+    margin: 0 auto 20px;
+
+    @media(min-width: $sm) {
+        margin: 0 auto 50px;
+    }
+}

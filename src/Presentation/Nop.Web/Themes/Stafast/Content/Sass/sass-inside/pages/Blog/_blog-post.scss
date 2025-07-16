@@ -1,0 +1,108 @@
+@import "../../mixins/_buttons.scss";
+@import "../../mixins/_show-max-line.scss";
+
+.post {
+    box-shadow: -2px 10px 40px -10px rgba(0,0,0,.1);
+    background: var(--white);
+    border: 1px solid var(--primary-grey_light);
+    border-radius: 3px;
+    margin: 15px 0 0;
+    width: 100%;
+
+    .post-head {
+        padding: 10px;
+        border-bottom: 1px solid var(--primary-grey_light);
+
+        .post-title {
+            display: block;
+            color: var(--primary-color);
+            font-size: clamp(14px, 2.5vw, 18px);
+            line-height: clamp(17px, 2.5vw, 22px);
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .post-date {
+            display: block;
+            color: var(--black);
+            font-size: clamp(13px, 2.5vw, 14px);
+            line-height: clamp(16px, 2.5vw, 18px);
+            font-weight: 400;
+        }
+    }
+
+    .post-body {
+        padding: 10px 10px 0px;
+        font-weight: 400;
+        font-size: clamp(12px, 2.5vw, 14px);
+        line-height: clamp(16px, 2.5vw, 18px);
+        color: var(--black);
+        margin: 0 0 15px;
+
+        @include show-max-line($webkit-line-clamp: 4);
+    }
+
+    .buttons {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row-reverse;
+        align-items: center;
+        padding: 10px;
+        border-top: 1px solid var(--primary-grey_light);
+
+        .read-more {
+            @include buttons($font-size: 14px, $line-height: 16px, $padding: 6px);
+            text-transform: capitalize;
+        }
+
+        .read-comments {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+    }
+}
+
+.blogpost-page,
+.post {
+    .tags {
+        padding: 0px 10px 10px;
+
+        label {
+            display: inline-block;
+            font-weight: 600;
+            font-size: 13px;
+            line-height: 18px;
+            color: var(--black);
+            margin-right: 5px;
+        }
+
+        ul {
+            display: inline-block;
+
+            li {
+                display: inline-block;
+                margin: 2px 3px;
+
+                a {
+                    display: block;
+                    color: var(--white);
+                    background: var(--secondary-color);
+                    border: 1px solid var(--secondary-color);
+                    border-radius: 3px;
+                    padding: 6px 15px;
+                    font-weight: 400;
+                    font-size: 13px;
+                    line-height: 1.2;
+                }
+
+                &:nth-child(4n-1) a {
+                    background: var(--secondary-color);
+                }
+            }
+
+            .separator {
+                display: none;
+            }
+        }
+    }
+}

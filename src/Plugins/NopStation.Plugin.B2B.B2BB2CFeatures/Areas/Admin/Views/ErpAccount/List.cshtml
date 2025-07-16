@@ -1,6 +1,6 @@
 ﻿@using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models;
 @using Nop.Web.Areas.Admin.Models.Common;
-@model NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models.ErpAccountSearchModel
+@model ErpAccountSearchModel
 
 @{
     Layout = "_AdminLayout";
@@ -230,7 +230,7 @@
 
 <script>
     function ShowEmail(data, type, row, meta) {
-        return '<span>' + row.BillingAddress.Email + '</span >';
+        return '<span>' + (row.BillingAddress && row.BillingAddress.Email ? row.BillingAddress.Email : '') + '</span>';
     }
 </script>
 

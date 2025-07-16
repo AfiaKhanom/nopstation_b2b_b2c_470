@@ -2,5 +2,5 @@
 
 public interface IErpAccountSyncService
 {
-    Task<bool> IsErpAccountSyncSuccessfulAsync();
+    Task<bool> IsErpAccountSyncSuccessfulAsync(string? erpAccountNumber, bool isManualTrigger = false, bool isIncrementalSync = true, CancellationToken cancellationToken = default);
 }

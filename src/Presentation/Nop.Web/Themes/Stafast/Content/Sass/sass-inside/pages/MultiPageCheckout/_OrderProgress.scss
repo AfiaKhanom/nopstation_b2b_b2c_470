@@ -1,0 +1,56 @@
+.order-progress {
+    text-align: center;
+    background: var(--white);
+    margin-bottom: 16px;
+    box-shadow: 1px 2px 4px 1px #FFFFFF33, 2px 2px 5px 2px #9BAAD033;
+    border-radius: 10px;
+    padding: 15px 0;
+
+    li {
+        display: inline-block;
+        color: #9C9EA3;
+        opacity: 0.8;
+
+        a {
+            color: #9C9EA3;
+            font-weight: 500;
+            font-size: 12px;
+            line-height: 14px;
+            vertical-align: middle;
+
+
+            @media (min-width: $md) {
+                font-size: 16px;
+                line-height: 18px;
+
+                &::before {
+                    font-size: 20px;
+                    line-height: 24px;
+                    margin-right: 10px;
+                }
+            }
+        }
+
+        &.active-step {
+            color: var(--primary-color);
+
+            a {
+                color: var(--primary-color);
+            }
+        }
+
+
+        &:not(:last-child)::after {
+            @include icon-font-style($font-size: 12px, $font-weight: 600);
+            display: inline;
+            line-height: 18px;
+            margin: 0 5px;
+            content: "\ea09";
+
+            @media (min-width: $md) {
+                margin: 0 15px;
+                line-height: 24px;
+            }
+        }
+    }
+}

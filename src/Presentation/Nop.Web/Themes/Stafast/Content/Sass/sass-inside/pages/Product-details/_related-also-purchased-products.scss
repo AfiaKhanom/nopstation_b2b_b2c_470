@@ -1,0 +1,21 @@
+.product-details-page {
+    .related-carousel {
+        .title {
+            text-align: center;
+            color: var(--black);
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 24.38px;
+        }
+
+        .item-box {
+            padding-left: 7.5px;
+            padding-right: 7.5px;
+        }
+    }
+
+    .also-purchased-products-grid, .related-products-grid {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}

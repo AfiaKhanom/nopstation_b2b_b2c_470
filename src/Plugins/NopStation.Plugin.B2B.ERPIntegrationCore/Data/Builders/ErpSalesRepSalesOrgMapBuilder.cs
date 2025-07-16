@@ -1,28 +1,25 @@
 ﻿using FluentMigrator.Builders.Create.Table;
 using Nop.Data.Extensions;
-using Nop.Data.Mapping;
 using Nop.Data.Mapping.Builders;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
 using System.Data;
 
-namespace NopStation.Plugin.B2B.ERPIntegrationCore.Data.Builders
+namespace NopStation.Plugin.B2B.ERPIntegrationCore.Data.Builders;
+
+public class ErpSalesRepSalesOrgMapBuilder : NopEntityBuilder<ErpSalesRepSalesOrgMap>
 {
-    public class ErpSalesRepSalesOrgMapBuilder : NopEntityBuilder<ErpSalesRepSalesOrgMap>
+    #region Methods
+
+    /// <summary>
+    /// Apply entity configuration
+    /// </summary>
+    /// <param name="table">Create table expression builder</param>
+    public override void MapEntity(CreateTableExpressionBuilder table)
     {
-        #region Methods
-
-        /// <summary>
-        /// Apply entity configuration
-        /// </summary>
-        /// <param name="table">Create table expression builder</param>
-        public override void MapEntity(CreateTableExpressionBuilder table)
-        {
-            table
-                .WithColumn(NameCompatibilityManager.GetColumnName(typeof(ErpSalesRepSalesOrgMap), nameof(ErpSalesRepSalesOrgMap.ErpSalesRepId))).AsInt32().ForeignKey<ErpSalesRep>(onDelete: Rule.None)
-                .WithColumn(NameCompatibilityManager.GetColumnName(typeof(ErpSalesRepSalesOrgMap), nameof(ErpSalesRepSalesOrgMap.ErpSalesOrgId))).AsInt32().ForeignKey<ErpSalesOrg>(onDelete: Rule.None)
-                ; 
-
-        }
-        #endregion
+        table
+            .WithColumn(nameof(ErpSalesRepSalesOrgMap.ErpSalesRepId)).AsInt32().ForeignKey<ErpSalesRep>(onDelete: Rule.None)
+            .WithColumn(nameof(ErpSalesRepSalesOrgMap.ErpSalesOrgId)).AsInt32().ForeignKey<ErpSalesOrg>(onDelete: Rule.None);
     }
+
+    #endregion
 }

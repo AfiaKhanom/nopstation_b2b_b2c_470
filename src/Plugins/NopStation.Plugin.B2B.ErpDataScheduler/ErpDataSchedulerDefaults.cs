@@ -1,144 +1,70 @@
-﻿namespace NopStation.Plugin.B2B.ErpDataScheduler
+﻿namespace NopStation.Plugin.B2B.ErpDataScheduler;
+
+public static class ErpDataSchedulerDefaults
 {
-    /// <summary>
-    /// Represents plugin constants
-    /// </summary>
-    public static class ErpDataSchedulerDefaults
-    {
-        /// <summary>
-        /// Gets a plugin system name
-        /// </summary>
-        public static string SystemName => "Misc.NopStation.ErpDataScheduler";
+    public static string ErpAccountSyncTask => "NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices.ErpAccountSyncTask";
 
-        /// <summary>
-        /// Gets a type of the erp account synchronization schedule task
-        /// </summary>
-        public static string ErpAccountSyncTask => "NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices.ErpAccountSyncTask";
+    public static string ErpAccountSyncTaskName => "Erp Account Synchronization";
 
-        /// <summary>
-        /// Gets a name of the erp account synchronization schedule task name
-        /// </summary>
-        public static string ErpAccountSyncTaskName => "Erp Account Synchronization";
+    public static string ErpInvoiceSyncTask => "NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices.ErpInvoiceSyncTask";
 
-        /// <summary>
-        /// Gets a type of the erp invoice synchronization schedule task
-        /// </summary>
-        public static string ErpInvoiceSyncTask => "NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices.ErpInvoiceSyncTask";
+    public static string ErpInvoiceSyncTaskName => "Erp Invoice Synchronization";
 
-        /// <summary>
-        /// Gets a name of the erp invoice synchronization schedule task name
-        /// </summary>
-        public static string ErpInvoiceSyncTaskName => "Erp Invoice Synchronization";
+    public static string ErpProductSyncTask => "NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices.ErpProductSyncTask";
 
-        /// <summary>
-        /// Gets a type of the erp product synchronization schedule task
-        /// </summary>
-        public static string ErpProductSyncTask => "NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices.ErpProductSyncTask";
+    public static string ErpProductSyncTaskName => "Erp Product Synchronization";
 
-        /// <summary>
-        /// Gets a name of the erp product synchronization schedule task name
-        /// </summary>
-        public static string ErpProductSyncTaskName => "Erp Product Synchronization";
+    public static string ErpStockSyncTask => "NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices.ErpStockSyncTask";
 
-        /// <summary>
-        /// Gets a type of the erp stock synchronization schedule task
-        /// </summary>
-        public static string ErpStockSyncTask => "NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices.ErpStockSyncTask";
+    public static string ErpStockSyncTaskName => "Erp Stock Synchronization";
 
-        /// <summary>
-        /// Gets a name of the erp stock synchronization schedule task name
-        /// </summary>
-        public static string ErpStockSyncTaskName => "Erp Stock Synchronization";
+    public static string ErpOrderSyncTask => "NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices.ErpOrderSyncTask";
 
-        /// <summary>
-        /// Gets a type of the erp order synchronization schedule task
-        /// </summary>
-        public static string ErpOrderSyncTask => "NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices.ErpOrderSyncTask";
+    public static string ErpOrderSyncTaskName => "Erp Order Synchronization";
 
-        /// <summary>
-        /// Gets a name of the erp order synchronization schedule task name
-        /// </summary>
-        public static string ErpOrderSyncTaskName => "Erp Order Synchronization";
+    public static string ErpSpecialPriceSyncTask => "NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices.ErpSpecialPriceSyncTask";
 
-        /// <summary>
-        /// Gets a type of the erp special price synchronization schedule task
-        /// </summary>
-        public static string ErpSpecialPriceSyncTask => "NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices.ErpSpecialPriceSyncTask";
+    public static string ErpSpecialPriceSyncTaskName => "Erp Special Price Synchronization";
 
-        /// <summary>
-        /// Gets a name of the erp special price synchronization schedule task name
-        /// </summary>
-        public static string ErpSpecialPriceSyncTaskName => "Erp Special Price Synchronization";
+    public static string ErpGroupPriceSyncTask => "NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices.ErpGroupPriceSyncTask";
 
-        /// <summary>
-        /// Gets a type of the erp group price synchronization schedule task
-        /// </summary>
-        public static string ErpGroupPriceSyncTask => "NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices.ErpGroupPriceSyncTask";
+    public static string ErpGroupPriceSyncTaskName => "Erp Group Price Synchronization";
 
-        /// <summary>
-        /// Gets a name of the erp group price synchronization schedule task name
-        /// </summary>
-        public static string ErpGroupPriceSyncTaskName => "Erp Group Price Synchronization";
+    public static string ErpShipToAddressSyncTask => "NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices.ErpShipToAddressSyncTask";
 
-        /// <summary>
-        /// Gets a type of the erp ship to address synchronization schedule task
-        /// </summary>
-        public static string ErpShipToAddressSyncTask => "NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices.ErpShipToAddressSyncTask";
+    public static string ErpShipToAddressSyncTaskName => "Erp Ship To Address Synchronization";
 
-        /// <summary>
-        /// Gets a name of the erp ship to address synchronization schedule task name
-        /// </summary>
-        public static string ErpShipToAddressSyncTaskName => "Erp Ship To Address Synchronization";
+    public static string SyncLogFileSaveDefaultPath => "SyncLogs\\";
 
-        /// <summary>
-        /// Gets a default sync task time out period in seconds
-        /// </summary>
-        public static int DefaultSyncTaskTimeOutPeriod => 1800;
+    public static string SyncLogFileExtension => "txt";
 
-        /// <summary>
-        /// Gets a default sync task time interval in minutes
-        /// </summary>
-        public static int DefaultSyncTaskTimeInterval => 30;
+    public static string SyncLogFileDeleteTask => "NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncLogServices.SyncLogFileDeleteTask";
 
-        /// <summary>
-        /// Gets a default Erp Order Type
-        /// </summary>
-        public static string ErpOrderType => "ORDER";
+    public static string SyncLogFileDeleteTaskName => "Sync Log Files Delete";
 
-        /// <summary>
-        /// Gets a default Erp Quote Type
-        /// </summary>
-        public static string ErpQuoteType => "QUOTE";
+    public static int DefaultSyncLogFileDeleteTaskInverval => 3600;
 
-        /// <summary>
-        /// Gets a default Response empty or null status
-        /// </summary>
-        public static string ResponseEmptyOrNull => "Server Response empty or null.";
+    public static string ErpAccountSyncTaskIdentity => "ErpAccountSync";
 
-        public static string SyncLogFileSaveDefaultPath => "SyncLogs\\";
+    public static string ErpGroupPriceSyncTaskIdentity => "ErpGroupPriceSync";
 
-        public static string SyncLogFileExtension => "txt";
+    public static string ErpInvoiceSyncTaskIdentity => "ErpInvoiceSync";
 
-        /// <summary>
-        /// Gets a type of the sync log file delete schedule task
-        /// </summary>
-        public static string SyncLogFileDeleteTask => "NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncLogServices.SyncLogFileDeleteTask";
+    public static string ErpOrderSyncTaskIdentity => "ErpOrderSync";
 
-        /// <summary>
-        /// Gets a name of the sync log file delete schedule task name
-        /// </summary>
-        public static string SyncLogFileDeleteTaskName => "Sync Log Files Delete";
+    public static string ErpProductSyncTaskIdentity => "ErpProductSync";
 
-        /// <summary>
-        /// Gets a default sync log files checker for deleting, interval in seconds
-        /// </summary>
-        public static int DefaultSyncLogFileDeleteTaskInverval => 3600;
+    public static string ErpShipToAddressSyncTaskIdentity => "ErpShipToAddressSync";
 
-        /// <summary>
-        /// Gets the last sync product sku from erp
-        /// </summary>
-        public static string LastSyncedProductSkuFromErp => "LastSyncedProductSkuFromErp";
+    public static string ErpSpecialPriceSyncTaskIdentity => "ErpSpecialPriceSync";
 
-        public static string LastSyncStartTimeBeforeDisruption => "LastSyncStartTimeBeforeDisruption";
-    }
+    public static string ErpStockSyncTaskIdentity => "ErpStockSync";
+
+    public static string JobShouldExecute => "JobShouldExecute";
+
+    public static string IsManualTrigger => "ManualTrigger";
+
+    public static string IsIncrementalSync => "IncrementalSync";
+
+    public static string SyncFailedNotificationMessageTemplate => "SyncFailedNotificationMessageTemplate";
 }

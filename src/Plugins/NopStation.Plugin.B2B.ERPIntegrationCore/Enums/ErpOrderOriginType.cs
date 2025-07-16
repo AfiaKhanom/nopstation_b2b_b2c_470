@@ -1,8 +1,7 @@
-﻿namespace NopStation.Plugin.B2B.ERPIntegrationCore.Enums
+﻿namespace NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
+
+public enum ErpOrderOriginType
 {
-    public enum ErpOrderOriginType
-    {
-        OnlineOrder = 10,
-        ERPOrder = 20,
-    }
+    OnlineOrder = 10,
+    ERPOrder = 20
 }

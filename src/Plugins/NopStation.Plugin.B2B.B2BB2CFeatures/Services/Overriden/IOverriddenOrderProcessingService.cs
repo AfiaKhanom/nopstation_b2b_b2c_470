@@ -13,5 +13,5 @@ public interface IOverriddenOrderProcessingService
 
     Task PlaceErpOrderAtNopAsync(Order order, ErpOrderType erpOrderType);
 
-    Task<(bool, string)> RetryPlaceErpOrderAtErpAsync(ErpOrderAdditionalData erpOrderAdditionalData, B2BB2CFeaturesSettings b2BB2CFeaturesSettings);
+    Task<(bool, string)> RetryPlaceErpOrderAtErpAsync(ErpOrderAdditionalData erpOrderAdditionalData);
 }

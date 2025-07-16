@@ -1,0 +1,63 @@
+.giftcard {
+    > div {
+        position: relative;
+        margin: 0px 5px 13px;
+        clear: both;
+
+        &::after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        .required {
+            position: absolute;
+            color: var(--red);
+            top: 0;
+            right: 0;
+        }
+    }
+
+    .message-error,
+    .field-validation-error,
+    .username-not-available-status,
+    .poll-vote-error,
+    .password-error {
+        display: block;
+        text-align: left;
+        font-size: 13px;
+        color: var(--red);
+        margin-top: 5px;
+    }
+
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"],
+    select,
+    textarea {
+        border: 1px solid var(--primary-grey_light);
+        box-shadow: inset 2px 3px 5px rgba(0, 0, 0, 0.08);
+        border-radius: 3px;
+        height: 35px;
+        width: 100%;
+        padding: 5px 10px;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 14px;
+        color: var(--primary-grey_dark);
+        transition: border 0.3s, box-shadow 0.3s;
+
+        &:hover, &:focus {
+            border-color: var(--primary-color);
+            box-shadow: 1px 2px 4px rgba(177, 177, 177, 0.25);
+        }
+    }
+
+
+    textarea {
+        height: auto;
+        min-height: 100px;
+    }
+}

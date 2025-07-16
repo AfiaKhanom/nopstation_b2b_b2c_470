@@ -15,6 +15,7 @@ public class ErpPlaceOrderDataModel
     public string AccountNumber { get; set; }
     public string Location { get; set; }
     public string CustomOrderNumber { get; set; }
+    public string ErpOrderNumber { get; set; }
     public string RepCode { get; set; }
     public string AddressCode { get; set; }
     public ErpAddressModel ShippingAddress { get; set; }
@@ -41,4 +42,6 @@ public class ErpPlaceOrderDataModel
     public DateTime? DeliveryDate { get; set; }
     public DateTime? DateRequired { get; set; }
     public IList<ErpPlaceOrderItemDataModel> ErpPlaceOrderItemDatas { get; set; }
+    public string AccountName { get; set; }
+    public decimal ShippingAmount { get; set; }
 }

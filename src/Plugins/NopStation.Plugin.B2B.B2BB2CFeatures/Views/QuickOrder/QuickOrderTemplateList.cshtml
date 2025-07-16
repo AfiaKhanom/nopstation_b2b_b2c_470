@@ -49,22 +49,16 @@
 
                     <div class="col-md-4" style="margin:auto">
                         <div class="form-group SearchName">
-                            <div class="label-inline">
-                                <nop-label asp-for="SearchName" />
-                            </div>
                             <div class="input-inline">
-                                <nop-editor asp-for="SearchName" />
+                                <input asp-for="SearchName" type="text" placeholder="@T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.SearchName")" />
                             </div>
                         </div>
 
                     </div>
                     <div class="col-md-4" style="margin:auto">
                         <div class="form-group SearchCreatedOn">
-                            <div class="label-inline">
-                                <nop-label asp-for="SearchCreatedOn" />
-                            </div>
                             <div class="input-inline">
-                                <input asp-for="SearchCreatedOn" type="text" />
+                                <input asp-for="SearchCreatedOn" type="text" placeholder="@T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.SearchCreatedOn")" />
                             </div>
                         </div>
                     </div>
@@ -81,7 +75,6 @@
                 </div>
             </div>
         </div>
-
 
         <div class="card-body">
             @{
@@ -103,41 +96,41 @@
                         new FilterParameter(nameof(Model.SearchCreatedOn))
                     }
                 };
-                    
+
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.Name))
                 {
                     Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.Name").Text,
                     Width = "200"
                 });
-                    
-                var formatedRenderDate = new RenderDate();                    
-                formatedRenderDate.Format = "DD/MM/YYYY";                    
+
+                var formatedRenderDate = new RenderDate();
+                formatedRenderDate.Format = "DD/MM/YYYY";
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.CreatedOn))
                 {
                     Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.CreatedOn").Text,
                     Width = "200",
                     Render = formatedRenderDate
                 });
-                    
+
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.LastOrderDate))
                 {
                     Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.LastOrderDate").Text,
                     Width = "200",
                     Render = formatedRenderDate
                 });
-                    
+
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.TotalOrderItems))
                 {
                     Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.TotalOrderItems").Text,
                     Width = "200"
                 });
-                    
+
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.TotalValueText))
                 {
                     Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.TotalValue").Text,
                     Width = "90"
                 });
-                    
+
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.Id))
                 {
                     Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.OrderNow").Text,
@@ -145,7 +138,7 @@
                     Render = new RenderCustom("renderColumnViewOrderNow"),
                     ClassName = NopColumnClassDefaults.Button
                 });
-                    
+
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.Id))
                 {
                     Title = T("Admin.Common.Edit").Text,
@@ -153,7 +146,7 @@
                     ClassName = NopColumnClassDefaults.Button,
                     Render = new RenderButtonEdit(new DataUrl("/FavouritesDetails/")) // should be matched with route provider
                 });
-                    
+
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.Id))
                 {
                     Title = T("Admin.Common.Delete").Text,
@@ -198,8 +191,6 @@
 
 
             <script asp-location="Footer">
-
-
                 function placeOrder(popUpData) {
                     var templateId = $('#templateId').val();
                     QuickOrderJs.disableAddToCartButton(templateId);
@@ -255,6 +246,7 @@
         </div>
     </div>
 </div>
+
 <div id="importModal" class="modal">
     <!-- Modal content -->
     <div class="modal-content">
@@ -299,6 +291,7 @@
         </div>
     </div>
 </div>
+
 <script asp-location="Footer">
     $("#SearchCreatedOn").datepicker({
         dateFormat: 'dd/mm/yy'

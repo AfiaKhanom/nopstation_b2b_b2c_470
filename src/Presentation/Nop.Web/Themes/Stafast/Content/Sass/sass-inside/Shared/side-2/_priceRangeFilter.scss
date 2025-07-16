@@ -1,0 +1,54 @@
+.price-range-filter {
+    .selected-price-range {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        font-weight: 600;
+        font-size: 13px;
+        line-height: 16px;
+        color: var(--black);
+    }
+
+    #price-range-slider {
+        border: none;
+        width: calc(100% - 15px);
+        margin: auto;
+        background: var(--primary-grey_light);
+        height: 3px;
+        border-radius: 0;
+
+        &::before,
+        &::after {
+            content: "";
+            display: block;
+            width: 7px;
+            margin: auto;
+            background: var(--primary-grey_light);
+            height: 3px;
+            position: absolute;
+            top: 0;
+        }
+
+        &::before {
+            right: 100%;
+        }
+
+        &::after {
+            left: 100%;
+        }
+
+        .ui-slider-handle {
+            top: 40%;
+            transform: translateY(-50%);
+            background: var(--primary-color);
+        }
+
+        .ui-state-active {
+            background: var(--primary-color);
+        }
+
+        .ui-slider-range {
+            background: var(--primary-color);
+        }
+    }
+}

@@ -1,0 +1,37 @@
+.picture-thumbs {
+    white-space: nowrap;
+    overflow: auto;
+    text-align: center;
+    margin: 7.5px 0;
+    width: 100%;
+    align-self: baseline;
+    margin-top: auto;
+    margin-bottom: 10px;
+
+    .thumb-item {
+        display: inline-block;
+        padding: 7.5px;
+        width: calc(25% - 7.5px);
+        position: relative;
+        overflow: hidden;
+
+        &:not(:first-child) {
+            margin-left: 6px;
+        }
+
+        &::before {
+            content: "";
+            display: block;
+            padding-top: 100%;
+        }
+
+        img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            max-width: 100%;
+            width: 100%;
+        }
+    }
+}

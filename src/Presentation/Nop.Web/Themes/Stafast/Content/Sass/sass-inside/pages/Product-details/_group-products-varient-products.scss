@@ -1,0 +1,133 @@
+
+
+.product-variant-list {
+    .product-variant-line {
+        display: flex;
+        flex-wrap: wrap;
+        box-shadow: $shadow-style-3;
+        background: var(--white);
+        border: 1px solid var(--primary-grey_light);
+        border-radius: 3px;
+        padding: 10px;
+        margin-bottom: 15px;
+
+        .variant-picture {
+            width: 100%;
+            text-align: center;
+
+            @media (min-width: $sm) {
+                width: 250px;
+                max-width: 100%;
+                padding-right: 5px;
+            }
+        }
+
+        .variant-overview {
+            width: 100%;
+            padding-top: 5px;
+
+            .variant-name {
+                font-weight: 600;
+                font-size: 18px;
+            }
+
+            @media (min-width: $sm) {
+                width: calc(100% - 250px);
+                padding-left: 5px;
+            }
+
+            @media (min-width: $md) {
+                padding-right: 320px;
+                position: relative;
+            }
+
+            > div {
+                margin-bottom: 10px;
+
+                label, .label {
+                    font-weight: 600;
+                }
+
+                .value, a {
+                    color: var(--primary-color);
+                    font-weight: 600;
+                }
+            }
+
+            .attributes {
+                dd,
+                .option-list {
+                    margin-bottom: 0;
+                }
+            }
+
+
+            .product-rating-box, .prices {
+                margin-bottom: 15px;
+            }
+
+            .add-to-cart-panel {
+                width: auto !important;
+                flex-wrap: nowrap;
+
+                .qty-input-wrap {
+                    margin-right: 15px;
+
+                    input {
+                        background: none;
+                    }
+                }
+            }
+
+            .buynow-wrapper {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .variant-buttons {
+                display: flex;
+                justify-content: flex-start;
+                align-items: flex-start;
+
+                @media (min-width: $md) {
+                    position: absolute;
+                    right: 10px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                }
+
+                .add-to-cart {
+                    padding: 0;
+                    margin: 0;
+                    display: block;
+                    text-align: left;
+                }
+
+                .add-to-wishlist {
+                    margin-left: 10px;
+
+                    button {
+                        border: none;
+                        font-size: 0;
+                        line-height: 1.6;
+                        padding: 9px;
+                        border-radius: 3px;
+                        background: var(--secondary-color);
+                        color: var(--white);
+                        height: 40px;
+                        width: 40px;
+
+                        &::before {
+                            content: "\e976";
+                            font-family: 'icomoon' !important;
+                            font-size: 14px;
+                            line-height: 14px;
+                            display: inline;
+                            font-weight: 600;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

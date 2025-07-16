@@ -1,0 +1,42 @@
+.order-details-page {
+
+    .shipments {
+        @media(min-width: $md) {
+            padding: 15px;
+        }
+
+        .title {
+            text-align: left;
+            font-size: clamp(1rem,3vw,20px);
+            line-height: clamp(16px,3vw,22px);
+            font-style: italic;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--primary-grey_light);
+        }
+
+        .table-wrapper {
+            overflow: auto;
+
+            table.data-table {
+
+                > thead th, > tbody td {
+                    min-width: 150px;
+
+                    @media(min-width: $md) {
+                        text-align: center;
+
+                        &.view-details a {
+                            color: var(--primary-color);
+                            text-decoration: underline;
+                        }
+                    }
+                }
+
+                label {
+                    display: none;
+                }
+            }
+        }
+    }
+}

@@ -174,7 +174,7 @@
         }
     </div>
 </div>
-@if (Model.CompanyEnabled || Model.DisplayVatNumber)
+@if (Model.CompanyEnabled@*  || Model.DisplayVatNumber *@)
 {
     <div class="fieldset">
         <div class="title">
@@ -194,21 +194,21 @@
                 </div>
             }
             @*@if (Model.DisplayVatNumber)
-        {
-        <div class="inputs">
-        <label asp-for="VatNumber" asp-postfix=":"></label>
-        <input asp-for="VatNumber" />
-        <span class="vat-note"><em>@T("Account.Fields.VatNumber.Note")</em></span>
-        </div>
-        }*@
+            {
+                <div class="inputs">
+                    <label asp-for="VatNumber" asp-postfix=":"></label>
+                    <input asp-for="VatNumber" />
+                    <span class="vat-note"><em>@T("Account.Fields.VatNumber.Note")</em></span>
+                </div>
+            }*@
         </div>
     </div>
 }
-@if (Model.StreetAddressEnabled ||
-Model.StreetAddress2Enabled ||
-Model.ZipPostalCodeEnabled ||
-Model.CityEnabled ||
-Model.CountyEnabled ||
+@if (Model.StreetAddressEnabled || 
+Model.StreetAddress2Enabled || 
+Model.ZipPostalCodeEnabled || 
+Model.CityEnabled || 
+Model.CountyEnabled || 
 Model.CountryEnabled)
 {
     <div class="fieldset">

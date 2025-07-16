@@ -1,12 +1,11 @@
 ﻿@model ErpShipToAddressModelForCheckout
-@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.Checkout;
-@using System.Globalization;
-@using NopStation.Plugin.B2B.B2BB2CFeatures.Contexts;
-@using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.Checkout
+@using System.Globalization
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Contexts
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Enums
 @inject IB2BB2CWorkContext workContext
-@{
-    var erpNopUser = workContext.GetCurrentERPCustomerAsync().Result.ErpNopUser;
-}
+@inject B2BB2CFeaturesSettings b2BB2CFeaturesSettings
+
 <style>
     .FullLoadRequired-div {
         font-size: 15px;
@@ -25,10 +24,10 @@
 </style>
 
 <div class="product-essential">
-    <div class="popup-header">
+    <div class="popup-header">        
         <h1 class="product-name">
-            Edit (@Model.ShipToName, @Model.ShipToCode)
-        </h1>
+            Edit (@Model.ShipToCode, @Model.ShipToName)
+        </h1>        
     </div>
     <div class="product-content">
         <form id="ErpShipToAddressPopUpForm" asp-action="ErpShipToAddressPopUp" asp-controller="ErpCheckout" method="post">
@@ -40,6 +39,7 @@
             <input asp-for="DeliveryNotes" type="hidden" />
             <input asp-for="AllowEdit" type="hidden" />
             <input asp-for="ErpToDetermineDate" type="hidden" />
+
             <div class="edit-address">
                 <div class="inputs" style="display:none;">
                     <label asp-for="ShipToCode" asp-postfix=":"></label>

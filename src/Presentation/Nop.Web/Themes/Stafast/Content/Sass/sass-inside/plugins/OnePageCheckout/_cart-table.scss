@@ -1,0 +1,29 @@
+﻿table.cart {
+    tbody {
+        td {
+            vertical-align: middle;
+            
+            .jsmartable-subcol {
+                font-size: 13px;
+            }
+
+            label {
+                display: none;
+            }
+
+            span {
+                font-size: 13px;
+            }
+
+            .qty-input-wrap {
+                input {
+                    display: inline-block;
+                    width: auto;
+                    max-width: 100px;
+                    padding: 8px 25px;
+                    box-shadow: none;
+                }
+            }
+        }
+    }
+}

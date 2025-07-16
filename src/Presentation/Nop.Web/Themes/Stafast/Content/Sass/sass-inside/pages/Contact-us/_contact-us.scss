@@ -1,0 +1,46 @@
+﻿.apply-vendor-page,
+.contact-page {
+    .page-body {
+        width: 460px;
+        max-width: calc(100% - 20px) !important;
+        border: 1px solid var(--primary-grey_light);
+        box-shadow: 0 2px 4px rgba(153,153,153,.15);
+        border-radius: 10px;
+        margin: 15px auto;
+        padding: 0px !important;
+        background-color:var(--white);
+
+        .topic-block {
+            font-weight: 400;
+            font-size: 13px;
+            line-height: 16px;
+            color: var(--black);
+            padding: 15px;
+            border-bottom: 1px solid var(--primary-grey_light);
+            text-align: center;
+        }
+
+        form {
+            .fieldset {
+                width: 100%;
+                max-width: 100%;
+                border: none;
+                box-shadow: none;
+                margin: 0;
+
+                .form-fields {
+                    padding: 20px 10px 0px;
+                }
+            }
+
+            .buttons {
+                max-width: calc(100% - 20px);
+                margin: 25px auto;
+            }
+        }
+
+        .result {
+            padding: 15px;
+        }
+    }
+}

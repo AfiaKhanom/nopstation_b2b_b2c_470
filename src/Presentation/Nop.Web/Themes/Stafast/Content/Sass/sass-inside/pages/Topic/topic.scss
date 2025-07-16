@@ -1,0 +1,21 @@
+﻿.topic-page {
+    .page-body {
+        margin-top: 30px;
+        margin-bottom: 30px;
+        line-height: 18px;
+        color: var(--black);
+
+        ul {
+            list-style-type: initial;
+            padding-left: 15px;
+
+            li {
+                margin-bottom: 5px;
+            }
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+    }
+}

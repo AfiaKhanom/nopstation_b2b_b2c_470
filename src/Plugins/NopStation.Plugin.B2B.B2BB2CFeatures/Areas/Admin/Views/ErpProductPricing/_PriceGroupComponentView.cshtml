@@ -1,19 +1,61 @@
 ﻿@model ErpPriceGroupProductPricingSearchModel
 @using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models
 
+@{
+    var customer = await workContext.GetCurrentCustomerAsync();
+    const string hideProductPageGroupPriceSearchBlockAttributeName = "ProductPageGroupPriceList.HideSearchBlock";
+    var hideProductPageGroupPriceSearchBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideProductPageGroupPriceSearchBlockAttributeName);
+}
+
 <div class="card card-default">
     <div class="card-header">
         @T("Admin.Catalog.Products.PriceGroups")
+    </div>
+    <div class="card card-default card-search">
+        <div class="card-body">
+            <div class="row search-row @(!hideProductPageGroupPriceSearchBlock ? "opened" : "")" data-hideAttribute="@hideProductPageGroupPriceSearchBlockAttributeName">
+                <div class="search-text">@T("Admin.Common.Search")</div>
+                <div class="icon-search"><i class="fas fa-search" aria-hidden="true"></i></div>
+                <div class="icon-collapse"><i class="fas fa-angle-down" aria-hidden="true"></i></div>
+            </div>
+            <div class="search-body @(hideProductPageGroupPriceSearchBlock ? "closed" : "")">
+                <div class="form-group row">
+                    <div class="col-md-5">
+                        <div class="form-group row">
+                            <div class="col-md-4">
+                                <nop-label asp-for="SearchErpPriceGroupCode" />
+                            </div>
+                            <div class="col-md-8">
+                                <nop-editor asp-for="SearchErpPriceGroupCode" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="text-center col-md-12">
+                        <button type="button" id="search-price-group-product-pricing" class="btn btn-primary btn-search">
+                            <i class="fas fa-search"></i>
+                            @T("Admin.Common.Search")
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="card-body">
         @await Html.PartialAsync("Table", new DataTablesModel
         {
             Name = "price-group-product-pricing-grid",
             UrlRead = new DataUrl("PriceGroupProductPricingList", "ErpProductPricing", new RouteValueDictionary { [nameof(ErpPriceGroupProductPricingSearchModel.ProductId)] = Model.ProductId }),
-            UrlUpdate = new DataUrl("EditPriceGroupProductPricing", "ErpProductPricing", null),
+            UrlUpdate = new DataUrl("EditPriceGroupProductPricing", "ErpProductPricing", new RouteValueDictionary { [nameof(ErpPriceGroupProductPricingSearchModel.ProductId)] = Model.ProductId }),
             UrlDelete = new DataUrl("DeletePriceGroupProductPricing", "ErpProductPricing", null),
             Length = Model.PageSize,
             LengthMenu = Model.AvailablePageSizes,
+            SearchButtonId = "search-price-group-product-pricing",
+            Filters = new List<FilterParameter>
+            {
+                new FilterParameter(nameof(Model.SearchErpPriceGroupCode))
+            },
             ColumnCollection = new List<ColumnProperty>
             {
                 new ColumnProperty(nameof(ErpPriceGroupProductPricingModel.ErpGroupPriceCodeId))
@@ -53,7 +95,6 @@
             }
         })
     </div>
-
     <div class="card-footer">
         <div class="card-body">
             <div class="card card-default">                     
@@ -127,5 +168,21 @@
                 </script>            
             </div>
         </div>
+        <button type="submit" id="btnRefreshGroupPrices" style="display: none"></button>
+        <script>
+            $(document).ready(function () {
+                $('#btnRefreshGroupPrices').click(function () {
+                    updateTable('#price-group-product-pricing-grid');
+                    //return false to don't reload a page
+                    return false;
+                });
+            });
+        </script>
     </div>
 </div>
+
+<script>
+    function renderColumnGroupPriceEdit(data, type, row, meta) {
+        return '<button onclick=\"javascript:OpenWindow(\'@Url.Content("~/Admin/ErpProductPricing/GroupPriceEditPopUp/")' + data + '?btnId=btnRefreshGroupPrices&formId=product-form\', 800, 400, true); return false;\" class="btn btn-default"><i class="fas fa-pencil-alt"></i>@T("Admin.Common.Edit")</button>';
+    }
+</script>

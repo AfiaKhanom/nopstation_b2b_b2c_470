@@ -1,0 +1,56 @@
+﻿.cart-footer {
+    .step-title {
+        margin-bottom: 7px;
+    }
+
+    .cart-option {
+        margin-bottom: 10px;
+    }
+
+    dl {
+        margin: 0 0 5px;
+
+        dt {
+            position: relative;
+
+            .required {
+                position: absolute;
+                color: var(--red);
+                top: 0;
+                right: 0;
+            }
+
+            .text-prompt {
+                margin-bottom: 5px;
+            }
+        }
+    }
+
+    .title strong,
+    dt .text-prompt {
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 17px;
+        color: var(--primary-color);
+    }
+
+    .cart-total {
+        td {
+            vertical-align: middle;
+        }
+
+        label {
+            display: inline-block;
+            margin: 0;
+        }
+    }
+
+    .buttons {
+        margin: 15px 0px;
+
+        button {
+            width: 100%;
+            @include buttons($background: var(--black), $hover-background: var(--primary-color),$hover-border-color: var(--primary-color), $border: 1px solid var(--black));
+        }
+    }
+}

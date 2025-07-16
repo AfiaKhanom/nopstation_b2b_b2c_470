@@ -1,0 +1,7 @@
+@import "../mixins/_common-title.scss";
+
+.product-grid {
+    .title {
+        @include common-title;
+    }
+}

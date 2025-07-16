@@ -1,8 +1,4 @@
 ﻿@inherits Nop.Web.Framework.Mvc.Razor.NopRazorPage<TModel>
-@inject Nop.Services.Common.IGenericAttributeService genericAttributeService
-@inject INopHtmlHelper NopHtml
-@inject IWorkContext workContext
-@inject Nop.Services.Customers.ICustomerService customerService
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @*we remove the default InputTagHelper to prevent the checkbox duplicating: https://stackoverflow.com/questions/42544961/asp-net-core-custom-input-tag-helper-rendering-duplicate-checkboxes*@
 @removeTagHelper Microsoft.AspNetCore.Mvc.TagHelpers.InputTagHelper, Microsoft.AspNetCore.Mvc.TagHelpers
@@ -22,11 +18,13 @@
 @using Microsoft.Extensions.Primitives
 @using static Nop.Services.Common.NopLinksDefaults
 @using Nop.Web.Components
+@using Nop.Services.Common
 @using Nop.Web.Extensions
 @using Nop.Web.Framework
 @using Nop.Web.Framework.Models
 @using Nop.Web.Framework.Events
 @using Nop.Web.Framework.Extensions
+@using Nop.Web.Framework.Models.Cms
 @using Nop.Web.Framework.Infrastructure
 @using Nop.Web.Framework.Mvc.Routing
 @using Nop.Web.Framework.Models.DataTables
@@ -38,7 +36,6 @@
 @using Nop.Web.Models.Boards
 @using Nop.Web.Models.Catalog
 @using Nop.Web.Models.Checkout
-@using Nop.Web.Framework.Models.Cms
 @using Nop.Web.Models.Common
 @using Nop.Web.Models.Customer
 @using Nop.Web.Models.Media
@@ -52,6 +49,7 @@
 @using Nop.Web.Models.Sitemap
 @using Nop.Web.Models.Topics
 @using Nop.Web.Models.Vendors
+@using Nop.Services.Customers
 @using Nop.Services.Configuration
 @using NopStation.Plugin.B2B.B2BB2CFeatures
 @using NopStation.Plugin.B2B.B2BB2CFeatures.Model.Registration
@@ -59,9 +57,12 @@
 @using NopStation.Plugin.B2B.B2BB2CFeatures.Model.Checkout
 @using NopStation.Plugin.B2B.B2BB2CFeatures.Model.QuickOrderModels.QuickOrderItems
 @using NopStation.Plugin.B2B.B2BB2CFeatures.Model.QuickOrderModels.QuickOrderTemplates
-@using NopStation.Plugin.B2B.B2BB2CFeatures
-@inject Nop.Web.Framework.Themes.IThemeContext themeContext
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Factories
 
-@inject Nop.Web.Framework.Themes.IThemeContext themeContext
+@inject IThemeContext themeContext
 @inject IStoreContext storeContext
 @inject ISettingService settingsService
+@inject IGenericAttributeService genericAttributeService
+@inject INopHtmlHelper NopHtml
+@inject IWorkContext workContext
+@inject ICustomerService customerService

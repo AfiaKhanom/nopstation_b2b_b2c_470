@@ -1,0 +1,37 @@
+﻿:root {
+    --sm-container: 100%;
+    --md-container: 950px;
+    --lg-container: 1150px;
+    --xl-container: 1450px;
+    --primary-color: #{$primary-color};
+    --secondary-color: #{$secondary-color};
+    --primary-grey_light: #{$primary-grey_light};
+    --primary-grey: #{$primary-grey};
+    --primary-grey_dark: #{$primary-grey_dark};
+    --white: #{$white};
+    --black: #{$black};
+    --yellow: #{$yellow};
+    --red: #{$red};
+    --success: #{$success};
+    --black-faded: #{$black-faded};
+    --page-body-color: #{$page-body-color};
+    --shadow-item-box: 2px 2px 5px 2px #9BAAD033,1px 2px 4px 1px #FFFFFF33;
+    --input-color: #{$input-color};
+    --input-border: #{$input-border};
+    --green: #{$green};
+    --input-text: #{$input-text};
+}
+.dark-theme:root {
+    --primary-color: #{$primary-color};
+    --secondary-color: #{$secondary-color};
+    --primary-grey_light: #{$primary-grey_light};
+    --primary-grey: #{$primary-grey};
+    --primary-grey_dark: #{$primary-grey_dark};
+    --white: #{$black};
+    --black: #{$white};
+    --yellow: #{$yellow};
+    --red: #{$red};
+    --success: #{$success};
+    --page-body-color: mix(white, black, $page-body-color);
+    --shadow-item-box: 2px 2px 5px 2px #9BAAD033,1px 2px 4px 1px #FFFFFF33;
+}

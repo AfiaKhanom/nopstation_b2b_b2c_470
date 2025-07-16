@@ -1,0 +1,186 @@
+﻿@import "../../mixins/_common-title.scss";
+@import "../../Components/_font-korolev.scss";
+
+.carousel-grid {
+    position: relative;
+    margin: 0 auto 30px;
+
+    .carousel-grid-container {
+        position: relative;
+
+        @media(max-width:$xs) {
+            padding: 0;
+        }
+    }
+
+    .title {
+        @include common-title;
+    }
+
+    .carousel {
+        position: relative;
+    }
+
+    .see-more {
+        text-align: center;
+        margin: 5px auto;
+
+        a {
+            font-size: 14px;
+            font-weight: 700;
+        }
+    }
+
+    .swiper-button-next,
+    .swiper-button-prev {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        left: auto;
+
+        @media (min-width: $md) {
+            opacity: 0;
+            transition: all 0.3s;
+        }
+    }
+
+    &:hover {
+        @media (min-width: $md) {
+            .swiper-button-next,
+            .swiper-button-prev {
+                opacity: 1;
+            }
+        }
+    }
+
+    .swiper-button-prev {
+        right: auto;
+    }
+
+    .swiper-pagination-bottom {
+        position: absolute;
+        bottom: -25px;
+    }
+
+    &.carousel-product,
+    &.carousel-manufacturer {
+        .swiper-slide {
+            width: 50%;
+            padding: 5px;
+        }
+    }
+
+    &.carousel-category {
+        .swiper-slide {
+            width: 50%;
+            padding: 4px 4px 6px;
+
+            @media (min-width: $md) {
+                width: 33.33%;
+                padding: 4px 10px 6px;
+            }
+
+            .category-item {
+                .picture {
+                    width: 45%;
+                }
+
+                .title {
+                    width: 55%;
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    justify-content: start;
+                    margin: auto;
+                    text-transform: capitalize;
+
+                    a {
+                        height: 100%;
+                        display: block;
+                        width: 100%;
+                        font-size: 20px;
+                        padding: 0 10px;
+                        position: relative;
+                        white-space: normal;
+
+                        @media (max-width: $xs) {
+                            font-size: 10px;
+                            padding: 0 5px;
+                            font-weight: 500;
+                        }
+
+                        @media (min-width: $lg) {
+                            font-size: 1.5rem;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @media (min-width: $xs) {
+        .swiper-button-prev {
+            transform: translate(-8px, 12px);
+            right: auto;
+        }
+
+        .swiper-button-next {
+            transform: translate(6px, 12px);
+        }
+    }
+
+    @media (min-width: $sm) {
+        margin: 0 auto 50px;
+
+        &.carousel-category {
+            .swiper-button-next {
+                transform: translate(2px, 6px);
+            }
+
+            .swiper-button-prev {
+                transform: translate(-4px, 6px);
+            }
+        }
+
+        &.carousel-product {
+            .swiper-button-next {
+                transform: translate(8px, 6px);
+            }
+        }
+
+        &.carousel-manufacturer {
+            .swiper-slide {
+                width: 25%;
+                padding: 5px;
+            }
+        }
+    }
+
+    @media (min-width: $md) {
+
+        &.carousel-category {
+            .swiper-button-prev {
+                transform: translate(-8px, 6px);
+            }
+
+            .swiper-button-next {
+                transform: translate(8px, 6px);
+            }
+        }
+    }
+
+
+
+    @media (max-width: $xs - 1) {
+        .swiper-button-next,
+        .swiper-button-prev {
+            display: none;
+        }
+    }
+
+    @media (max-width: $md - 1) {
+        .swiper-button-next {
+            right: 0;
+        }
+    }
+}

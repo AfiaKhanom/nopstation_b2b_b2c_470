@@ -1,0 +1,54 @@
+.offer-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: auto;
+    text-transform: uppercase;
+    z-index: 999;
+
+    > div {
+        color: var(--white);
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 100px;
+        margin-bottom: 5px;
+        background: #888;
+    }
+
+    .new-product-label {
+        background: #006f0e;
+        font-weight: 700;
+    }
+
+    .bestseller-label {
+        background: var(--secondary-color);
+        text-transform: capitalize;
+        font-weight: 700;
+    }
+
+    .discount-info-label {
+        background: #F40F00;
+        font-weight: 700;
+    }
+}
+.gallery {
+    .offer-content {
+        z-index: 10000;
+    }
+}
+.product-horizontal, .product-tab {
+    .swiper-wrapper {
+        .product-item {
+            .picture {
+                .product-ribbon {
+                    top: 4px;
+                    left: 4px;
+                }
+            }
+        }
+    }
+}

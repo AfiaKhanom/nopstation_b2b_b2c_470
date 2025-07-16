@@ -105,13 +105,28 @@
                                 <div class="form-text-row">@Model.ERPOrderStatus</div>
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="form-group row" id="expectedDeliveryDateGroup">
                             <div class="col-md-3">
                                 <nop-label asp-for="ExpectedDeliveryDate" />
                             </div>
                             <div class="col-md-9">
-                                <input type="hidden" asp-for="ExpectedDeliveryDate" />
-                                <div class="form-text-row">@Model.ExpectedDeliveryDate</div>
+                                <div class="date-display-container" id="dateDisplayContainer">
+                                    <div class="form-text-row">@Model.ExpectedDeliveryDate</div>
+                                    @if (Model.ExpectedDeliveryDate != null &&
+                                   Model.IntegrationStatusTypeId == (int)IntegrationStatusType.Failed)
+                                    {
+                                        <button type="button" id="editDateBtn" class="btn btn-primary">
+                                            @T("Admin.Common.Edit")
+                                        </button>
+                                    }
+                                </div>
+                                <div class="date-edit-container d-none" id="dateEditContainer">
+                                    <div class="d-flex align-items-center">
+                                        <nop-editor asp-for="ExpectedDeliveryDate" />
+                                        <button type="button" id="saveDateBtn" class="btn btn-primary">@T("Admin.Common.Save")</button>
+                                        <button type="button" id="cancelDateBtn" class="btn btn-secondary">@T("Admin.Common.Cancel")</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -188,3 +203,93 @@
         </div>
     </div>
 </div>
+
+
+<script asp-Location="Footer">
+    $(document).ready(function() {
+        const displayContainer = $('#dateDisplayContainer');
+        const editContainer = $('#dateEditContainer');
+        const editBtn = $('#editDateBtn');
+        const saveBtn = $('#saveDateBtn');
+        const cancelBtn = $('#cancelDateBtn');
+        const dateInput = $('input[name="ExpectedDeliveryDate"]');
+
+        function startLoading() {
+            $('.please-wait').show();
+            $('body').addClass('loading');
+        }
+
+        function stopLoading() {
+            $('.please-wait').hide();
+            $('body').removeClass('loading');
+        }
+
+        function toggleEditMode(show) {
+            if (show) {
+                displayContainer.addClass('d-none');
+                editContainer.removeClass('d-none');
+            } else {
+                displayContainer.removeClass('d-none');
+                editContainer.addClass('d-none');
+            }
+        }
+
+        editBtn.on('click', function() {
+            toggleEditMode(true);
+        });
+
+        cancelBtn.on('click', function() {
+            toggleEditMode(false);
+        });
+
+        saveBtn.on('click', function() {
+            const newDate = dateInput.val();
+            if (!newDate) {
+                alert('Please select a date');
+                return;
+            }
+
+            startLoading();
+
+            $.ajax({
+                url: '@Url.Action("UpdateExpectedDeliveryDate", "ErpOrder")',
+                type: 'POST',
+                data: {
+                    id: @Model.Id,
+                    expectedDeliveryDate: newDate,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        window.location.reload();
+                    } else {
+                        alert(response.message || 'Failed to update the date');
+                        stopLoading();
+                    }
+                },
+                error: function() {
+                    alert('An error occurred while updating the date');
+                    stopLoading();
+                }
+            });
+        });
+
+        // Initialize datepicker
+        /*dateInput.datepicker({
+            showOn: "both",
+            buttonText: "Select date",
+            dateFormat: "dd/mm/yy"
+        });*/
+    });
+</script>
+
+<style>
+    .date-display-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .date-edit-container {
+        margin-top: 5px;
+    }
+</style>

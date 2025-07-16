@@ -1,0 +1,77 @@
+@import "../../variables/_color-variables.scss";
+@import "../../variables/_breakpoint.scss";
+
+.category-banner {
+    width: 100%;
+    margin-top: 10px;
+
+    .banner-slider-item {
+        position: relative;
+        border-radius: 10px;
+        overflow: hidden;
+
+        &:before {
+            content: "";
+            display: block;
+            padding-top: 17%;
+        }
+    }
+
+    img {
+        max-width: 100%;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .owl-nav {
+        margin-top: 0;
+
+        button.owl-prev {
+            border: 1px solid var(--primary-color);
+            padding: 0 10px !important;
+            background-color: var(--white);
+            font-size: 23px;
+            position: absolute;
+            margin: 0;
+            left: -10px;
+            color: var(--primary-color);
+        }
+
+        button.owl-next {
+            border: 1px solid #ccc;
+            padding: 0 10px !important;
+            background-color: var(--secondary-color);
+            font-size: 23px;
+            position: absolute;
+            margin: 0;
+            right: -9px;
+            color: var(--white);
+        }
+
+        position: absolute;
+        top: 40%;
+        width: 100%;
+        transform: translateY(-50%);
+
+        [class*=owl-] {
+            border-radius: 100px;
+
+            &:hover {
+                background: var(--primary-color);
+                color: var(--white);
+            }
+        }
+
+        @media(max-width: $xs) {
+            display: none;
+        }
+    }
+
+    .owl-dots {
+        display: none;
+    }
+}

@@ -1,0 +1,120 @@
+﻿@model CategoryNavigationModel
+
+@using Nop.Core.Domain.Catalog
+
+@functions {
+    bool BreadCrumbContainsCurrentCategoryId(CategorySimpleModel category)
+    {
+        if (Model.CurrentCategoryId == 0)
+            return false;
+
+        if (category.Id == Model.CurrentCategoryId)
+            return true;
+
+        foreach (var subCategory in category.SubCategories)
+        {
+            if (BreadCrumbContainsCurrentCategoryId(subCategory))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    async Task CategoryLine(CategoryNavigationModel.CategoryLineModel lineModel)
+    {
+        var active = lineModel.Category.Id == lineModel.CurrentCategoryId || lineModel.Category.SubCategories.Count(BreadCrumbContainsCurrentCategoryId) > 0;
+        var last = lineModel.Category.Id == lineModel.CurrentCategoryId;
+        var liClass = active ? "active" : "inactive";
+        if (last)
+        {
+            liClass += " last";
+        }
+
+        <li class="@liClass">
+            <a href="@(Url.RouteUrl<Category>(new { SeName = lineModel.Category.SeName }))">
+                <span>@lineModel.Category.Name</span>
+                @if (lineModel.Category.NumberOfProducts.HasValue)
+                {
+                    <span class="count">
+                        <text> </text> @T("Categories.TotalProducts", lineModel.Category.NumberOfProducts.Value)
+                    </span>
+                }
+            </a>
+            @{
+                if (lineModel.Category.Id == lineModel.CurrentCategoryId ||
+                lineModel.Category.SubCategories.Count(BreadCrumbContainsCurrentCategoryId) > 0)
+                {
+                    if (lineModel.Category.SubCategories.Count > 0)
+                    {
+                        <ul class="sublist">
+                            @foreach (var subCategory in lineModel.Category.SubCategories)
+                            {
+                                var categoryLineModel = new CategoryNavigationModel.CategoryLineModel
+                        {
+                            CurrentCategoryId = lineModel.CurrentCategoryId,
+                            Category = subCategory
+                        };
+                                await CategoryLine(categoryLineModel);
+                            }
+                        </ul>
+                    }
+                }
+            }
+        </li>
+    }
+}
+
+@if (Model.Categories.Count > 0)
+{
+    <div class="block-category-navigation block">
+        <div class="title">
+            <strong>@T("Categories")</strong>
+        </div>
+        <div class="listbox">
+            <ul class="list">
+                @foreach (var category in Model.Categories)
+                {
+                    var categoryLineModel = new CategoryNavigationModel.CategoryLineModel
+                    {
+                        CurrentCategoryId = Model.CurrentCategoryId,
+                        Category = category
+                    };
+                    await CategoryLine(categoryLineModel);
+                }
+            </ul>
+        </div>
+    </div>
+}
+
+<script asp-location="Footer">
+    $(document).ready(function () {
+        const $listItems = $('.block-category-navigation li');
+        const totalItems = $listItems.length;
+
+        if (totalItems > 8) {
+            $listItems.slice(8).hide();
+
+            const remainingItems = totalItems - 8;
+
+            const moreLabel = `<li class="more-label">+ ${remainingItems} More</li>`;
+
+            $('.block-category-navigation .list').append(moreLabel);
+
+            $('.block-category-navigation .more-label').click(function () {
+                $listItems.slice(8).slideDown('slow');
+                $(this).hide();
+
+                const seeLessButton = `<li class="see-less-label">See less</li>`;
+                $('.block-category-navigation .list').append(seeLessButton);
+
+                $('.block-category-navigation .see-less-label').click(function () {
+                    $listItems.slice(8).slideUp('slow');
+                    $(this).hide();
+                    $('.block-category-navigation .more-label').show();
+                });
+            });
+        }
+    });
+</script>

@@ -1,0 +1,47 @@
+﻿@using Nop.Core
+@using Nop.Core.Domain.Customers
+@using Nop.Services.Configuration
+@using NopStation.Plugin.B2B.ERPIntegrationCore
+@using NopStation.Plugin.B2B.B2BB2CFeatures
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Contexts
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Services
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Enums
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpPriceSyncFunctionality
+
+@inject Nop.Core.IWebHelper webHelper
+@inject B2BB2CFeaturesSettings b2BB2CFeaturesSettings
+@inject IErpAccountService erpAccountService
+@inject IErpNopUserService erpNopUserService
+@inject IErpPriceSyncFunctionalityService erpPriceSyncFunctionalityService
+@{
+    var customer = await workContext.GetCurrentCustomerAsync();
+    var erpAccount = await erpAccountService.GetActiveErpAccountByCustomerIdAsync(customer.Id);
+    var prefilterFacets = erpAccount?.PreFilterFacets ?? string.Empty;
+    var searchParamsTypes = string.IsNullOrEmpty(prefilterFacets) ? "exclude" : "filter";
+    var erpNopUser = await erpNopUserService.GetErpNopUserByCustomerIdAsync(customer.Id);
+
+    var isPriceSyncRequired = false;
+    if (erpAccount is not null &&
+        erpNopUser is not null &&
+        erpNopUser.ErpUserType == ErpUserType.B2BUser)
+    {
+        isPriceSyncRequired = await erpPriceSyncFunctionalityService.IsB2BPriceSyncRequiredAsync();
+    }
+}
+
+@if (isPriceSyncRequired)
+{
+    <script asp-location="Footer">
+        $(document).ready(function () {
+            displayPopupNotification("@T("NopStation.Plugin.B2B.B2BB2CFeatures.PriceSync.PopUp.Message")", 'success');
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: "@Url.Action("AllProductsLivePriceSync", "ErpAccountPublic")",
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("Products Live Price Sync Failed");
+                }
+            });
+        });
+    </script>
+}

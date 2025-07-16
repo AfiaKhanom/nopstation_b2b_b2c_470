@@ -13,6 +13,7 @@ using Nop.Core.Domain.Messages;
 using Nop.Core.Infrastructure;
 using Nop.Services.Cms;
 using Nop.Services.Common;
+using Nop.Services.Customers;
 using Nop.Services.Localization;
 using Nop.Services.Logging;
 using Nop.Services.Messages;
@@ -23,6 +24,7 @@ using Nop.Web.Framework.Infrastructure;
 using Nop.Web.Framework.Menu;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Components;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Components;
+using NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Infrastructure;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
@@ -45,10 +47,13 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
     private readonly ILocalizationService _localizationService;
     private readonly IEmailAccountService _emailAccountService;
     private readonly IMessageTemplateService _messageTemplateService;
+    private readonly ICustomerService _customerService;
 
     public bool HideInWidgetList => false;
 
     public int Order => throw new NotImplementedException();
+
+    private static string DEFAULT_ERP_SALES_ORG_CODE => "101";
 
     #endregion
 
@@ -63,7 +68,8 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
         IScheduleTaskService scheduleTaskService,
         IEmailAccountService emailAccountService,
         ILocalizationService localizationService,
-        IMessageTemplateService messageTemplateService)
+        IMessageTemplateService messageTemplateService,
+        ICustomerService customerService)
     {
         _logger = logger;
         _webHelper = webHelper;
@@ -75,6 +81,7 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
         _emailAccountService = emailAccountService;
         _localizationService = localizationService;
         _messageTemplateService = messageTemplateService;
+        _customerService = customerService;
     }
 
     #endregion
@@ -83,7 +90,7 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
 
     private Language GetDefaultEnglishLanguage()
     {
-        return _languageService.GetAllLanguages().Where(x => x.UniqueSeoCode.Equals("en", StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+        return _languageService.GetAllLanguages().FirstOrDefault(x => x.UniqueSeoCode.Equals("en", StringComparison.InvariantCultureIgnoreCase));
     }
 
     public async Task InstalLocalResourseStringFromXmlFileAsync()
@@ -105,7 +112,7 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
         }
         catch (Exception ex)
         {
-            _logger.Error("B2BCustomerAccount: Can't Add Resource string!", ex);
+            _logger.Error("B2B Features Plugin: Can't Add Resource string!", ex);
         }
     }
 
@@ -133,7 +140,7 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
         }
         catch (Exception ex)
         {
-            _logger.Error("B2BCustomerAccount: Can't Remove Resource string!", ex);
+            _logger.Error("B2B Features Plugin: Can't Remove Resource string!", ex);
         }
     }
 
@@ -145,6 +152,8 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
     {
         if (widgetZone.Equals(PublicWidgetZones.HeaderLinksBefore))
             return typeof(PublicHeaderViewComponent);
+        else if (widgetZone.Equals(PublicWidgetZones.HeadHtmlTag))
+            return typeof(B2BRootHeadViewComponent);
         else if (widgetZone.Equals(PublicWidgetZones.OrderSummaryContentDeals))
             return typeof(OrderSummaryContentDealsViewComponent);
         else if (widgetZone.Equals(B2BB2CFeaturesDefaults.ZoneAfterTirePriceCard))
@@ -155,6 +164,8 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
             return typeof(ErpOrderItemInOrderDetailsAdminViewComponent);
         else if (widgetZone.Equals(B2BB2CFeaturesDefaults.ErpAdminWidgetZonesOrderDetailsBlock))
             return typeof(ErpOrderInOrderDetailsAdminViewComponent);
+        else if (widgetZone.Equals(AdminWidgetZones.CustomerDetailsBlock))
+            return typeof(NopCustomerErpAccountInfoComponent);
         else
             return null;
     }
@@ -168,12 +179,17 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
             return Task.FromResult<IList<string>>(new List<string> { string.Empty });
         }
 
-        return Task.FromResult<IList<string>>(new List<string> { PublicWidgetZones.HeaderLinksBefore,
+        return Task.FromResult<IList<string>>(new List<string>
+        {
+            PublicWidgetZones.HeaderLinksBefore,
+            PublicWidgetZones.HeadHtmlTag,
+            PublicWidgetZones.OrderSummaryContentDeals,
             B2BB2CFeaturesDefaults.ZoneAfterTirePriceCard,
             B2BB2CFeaturesDefaults.ZoneAfterSpecialPriceCard,
-            AdminWidgetZones.OrderDetailsBlock,
             B2BB2CFeaturesDefaults.ErpAdminWidgetZonesOrderDetailsBlock,
-            PublicWidgetZones.OrderSummaryContentDeals});
+            AdminWidgetZones.OrderDetailsBlock,
+            AdminWidgetZones.CustomerDetailsBlock
+        });
     }
 
     public override async Task InstallAsync()
@@ -195,6 +211,8 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
                 Seconds = B2BB2CFeaturesDefaults.DefaultTaskTimeOutPeriod
             });
         }
+
+        #region Message Templates
 
         var emailAccount = (await _emailAccountService.GetAllEmailAccountsAsync()).FirstOrDefault();
 
@@ -237,6 +255,8 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
             });
         }
 
+        #endregion
+
         await this.InstallPluginAsync();
 
         #region Default Sales Org and addres creation
@@ -254,19 +274,23 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
         };
         await _addressService.InsertAddressAsync(address);
 
+        var defaultSalesOrg = await _erpSalesOrgService.GetSalesOrgByCodeAsync(DEFAULT_ERP_SALES_ORG_CODE);
 
-        var defaultSalesOrg = new ErpSalesOrg
+        if (defaultSalesOrg is null)
         {
-            Name = "Default Sales Org",
-            Code = "101",
-            Email = "default@mail.com",
-            IntegrationClientId = "1",
-            AuthenticationKey = "authkey1212",
-            IsActive = true,
-            AddressId = address.Id,
-            CreatedOnUtc = DateTime.UtcNow,
-        };
-        await _erpSalesOrgService.InsertErpSalesOrgAsync(defaultSalesOrg);
+            defaultSalesOrg = new ErpSalesOrg
+            {
+                Name = "Default Sales Org",
+                Code = DEFAULT_ERP_SALES_ORG_CODE,
+                Email = "default@mail.com",
+                IntegrationClientId = "1",
+                AuthenticationKey = "authkey1212",
+                IsActive = true,
+                AddressId = address.Id,
+                CreatedOnUtc = DateTime.UtcNow,
+            };
+            await _erpSalesOrgService.InsertErpSalesOrgAsync(defaultSalesOrg);
+        }
 
         #endregion
 
@@ -275,54 +299,9 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
 
     public override async Task UpdateAsync(string currentVersion, string targetVersion)
     {
-        if (targetVersion != currentVersion && targetVersion == "1.51")
-        {
-            await _permissionService.InstallPermissionsAsync(new B2BB2CPermissionProvider());
-            await _permissionService.InstallPermissionsAsync(new ErpPermissionProvider());
-            var emailAccount = (await _emailAccountService.GetAllEmailAccountsAsync()).FirstOrDefault();
-
-            if (emailAccount is not null)
-            {
-                var template1 = await _messageTemplateService.GetMessageTemplatesByNameAsync(B2BB2CFeaturesDefaults.MessageTemplateSystemNames_ERPAccountCustomerRegistrationCreatedNotificationToAdmin);
-                if (!template1.Any())
-                {
-                    await _messageTemplateService.InsertMessageTemplateAsync(new MessageTemplate
-                    {
-                        Name = B2BB2CFeaturesDefaults.MessageTemplateSystemNames_ERPAccountCustomerRegistrationCreatedNotificationToAdmin,
-                        Subject = "%Store.Name%. ERP Customer Registration Application Created",
-                        Body = $"<p>{Environment.NewLine}<a href=\"%Store.URL%\">%Store.Name%</a>{Environment.NewLine}<br />{Environment.NewLine}<br />{Environment.NewLine}Hello %Application.AdminName%,{Environment.NewLine}<br />{Environment.NewLine}An application is created to register a new customer in ERP.{Environment.NewLine}<br />{Environment.NewLine}<br />{Environment.NewLine}Please review the application. Application Id: %Application.Id%. And Registration Number: %Application.RegistrationNumber%{Environment.NewLine}<br />{Environment.NewLine}Thanks</p>{Environment.NewLine}",
-                        IsActive = true,
-                        EmailAccountId = emailAccount.Id
-                    });
-                }
-
-                var template2 = await _messageTemplateService.GetMessageTemplatesByNameAsync(B2BB2CFeaturesDefaults.MessageTemplateSystemNames_ERPAccountCustomerRegistrationCreatedNotificationToCustomer);
-                if (!template2.Any())
-                {
-                    await _messageTemplateService.InsertMessageTemplateAsync(new MessageTemplate
-                    {
-                        Name = B2BB2CFeaturesDefaults.MessageTemplateSystemNames_ERPAccountCustomerRegistrationCreatedNotificationToCustomer,
-                        Subject = "%Store.Name%. ERP Customer Registration Application Created",
-                        Body = $"<p>{Environment.NewLine}<a href=\"%Store.URL%\">%Store.Name%</a>{Environment.NewLine}<br />{Environment.NewLine}<br />{Environment.NewLine}Hello %Application.CustomerFullName%,{Environment.NewLine}<br />{Environment.NewLine}An application is created to register a new customer in ERP.{Environment.NewLine}<br />{Environment.NewLine}<br />{Environment.NewLine}Admin will review your application. You will get another mail if it gets approved.{Environment.NewLine}<br />{Environment.NewLine}Thank you</p>{Environment.NewLine}",
-                        IsActive = true,
-                        EmailAccountId = emailAccount.Id
-                    });
-                }
-
-                var template3 = await _messageTemplateService.GetMessageTemplatesByNameAsync(B2BB2CFeaturesDefaults.MessageTemplateSystemNames_ERPAccountCustomerRegistrationApprovedNotification);
-                if (!template3.Any())
-                {
-                    await _messageTemplateService.InsertMessageTemplateAsync(new MessageTemplate
-                    {
-                        Name = B2BB2CFeaturesDefaults.MessageTemplateSystemNames_ERPAccountCustomerRegistrationApprovedNotification,
-                        Subject = "%Store.Name%. ERP Customer Registration Application Approved",
-                        Body = $"<p>{Environment.NewLine}<a href=\"%Store.URL%\">%Store.Name%</a>{Environment.NewLine}<br />{Environment.NewLine}<br />{Environment.NewLine}Hello %Application.CustomerFullName%,{Environment.NewLine}<br />{Environment.NewLine}Your application is Approved to register a new customer in ERP.{Environment.NewLine}<br />{Environment.NewLine}<br />{Environment.NewLine}Admin will create an ERP account for your user according to your given information.{Environment.NewLine}<br />{Environment.NewLine}Thank you</p>{Environment.NewLine}",
-                        IsActive = true,
-                        EmailAccountId = emailAccount.Id
-                    });
-                }
-            }
-            await InstalLocalResourseStringFromXmlFileAsync();
+        if (targetVersion != currentVersion && targetVersion == "4.70.2.50")
+        {            
+            //await InstalLocalResourseStringFromXmlFileAsync();
         }
 
         await base.UpdateAsync(currentVersion, targetVersion);
@@ -330,7 +309,7 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
 
     public override string GetConfigurationPageUrl()
     {
-        return _webHelper.GetStoreLocation() + "Admin/B2BB2CFeatures/Configure";
+        return $"{_webHelper.GetStoreLocation()}Admin/B2BB2CFeatures/Configure";
     }
 
     public async Task ManageSiteMapAsync(SiteMapNode rootNode)
@@ -342,7 +321,7 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
             IconClass = "nav-icon fas fa-cube",
             Visible = true,
             ChildNodes = new List<SiteMapNode>() {
-                new SiteMapNode()
+                new ()
                 {
                     SystemName = "NopStation.B2BB2CFeatures.Configuration",
                     Title = "Configuration",
@@ -352,7 +331,7 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
                     Visible = true,
                     ChildNodes = new List<SiteMapNode>() { }
                 },
-                new SiteMapNode()
+                new ()
                 {
                     SystemName = "NopStation.B2BB2CFeatures.ErpAccounts",
                     Title = "ERP Accounts",
@@ -362,7 +341,7 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
                     Visible = true,
                     ChildNodes = new List<SiteMapNode>() { }
                 },
-                new SiteMapNode()
+                new ()
                 {
                     SystemName = "NopStation.B2BB2CFeatures.ErpRegistrationApplication",
                     Title = "Registration Applications",
@@ -372,7 +351,7 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
                     Visible = true,
                     ChildNodes = new List<SiteMapNode>() { }
                 },
-                new SiteMapNode()
+                new ()
                 {
                     SystemName = "NopStation.B2BB2CFeatures.ErpSalesOrgs",
                     Title = "ERP Sales Orgs",
@@ -382,7 +361,7 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
                     Visible = true,
                     ChildNodes = new List<SiteMapNode>() { }
                 },
-                new SiteMapNode()
+                new ()
                 {
                     SystemName = "NopStation.B2BB2CFeatures.ErpShipToAddress",
                     Title = "ERP Account Branch",
@@ -392,7 +371,7 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
                     Visible = true,
                     ChildNodes = new List<SiteMapNode>() { }
                 },
-                new SiteMapNode()
+                new ()
                 {
                     SystemName = "NopStation.B2BB2CFeatures.ErpNopUsers",
                     Title = "ERP Nop Users",
@@ -402,7 +381,7 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
                     Visible = true,
                     ChildNodes = new List<SiteMapNode>() { }
                 },
-                new SiteMapNode()
+                new ()
                 {
                     SystemName = "NopStation.B2BB2CFeatures.ErpGroupPriceCode",
                     Title = "ERP Group Price Code",
@@ -412,7 +391,7 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
                     Visible = true,
                     ChildNodes = new List<SiteMapNode>() { }
                 },
-                new SiteMapNode()
+                new ()
                 {
                     SystemName = "NopStation.B2BB2CFeatures.ErpInvoices",
                     Title = "ERP Invoices",
@@ -422,7 +401,7 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
                     Visible = true,
                     ChildNodes = new List<SiteMapNode>() { }
                 },
-                new SiteMapNode()
+                new ()
                 {
                     SystemName = "NopStation.B2BB2CFeatures.SalesRepresentatives",
                     Title = "Sales representatives",
@@ -432,7 +411,7 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
                     Visible = true,
                     ChildNodes = new List<SiteMapNode>() { }
                 },
-                new SiteMapNode()
+                new ()
                 {
                     SystemName = "NopStation.B2BB2CFeatures.ErpAllProducts",
                     Title = "All ERP Products",
@@ -442,7 +421,7 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
                     Visible = true,
                     ChildNodes = new List<SiteMapNode>() { }
                 },
-                new SiteMapNode()
+                new ()
                 {
                     SystemName = "NopStation.B2BB2CFeatures.ErpOrder",
                     Title = "All ERP Orders",
@@ -459,9 +438,9 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
 
         childNode = new SiteMapNode()
         {
-            SystemName = "NopStation.B2BB2CFeatures.ErpActivityLogs",
+            SystemName = "NopStation.B2BB2CFeatures.ErpLogs",
             Title = "ERP Logs",
-            ControllerName = "ErpActivityLog",
+            ControllerName = "ErpLogs",
             ActionName = "List",
             IconClass = "nav-icon fas fa-list",
             Visible = true,
@@ -471,12 +450,12 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
 
         childNode = new SiteMapNode()
         {
-            SystemName = "NopStation.B2BB2CFeatures.ErpActivityLogsNew",
+            SystemName = "NopStation.B2BB2CFeatures.ErpActivityLogs",
             Title = "ERP Activity Logs",
             IconClass = "nav-icon fas fa-cube",
             Visible = true,
             ChildNodes = new List<SiteMapNode>() {
-                new SiteMapNode()
+                new ()
                 {
                     SystemName = "NopStation.B2BB2CFeatures.ErpActivityLogsList",
                     Title = "ERP Activity Logs List",
@@ -486,7 +465,7 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
                     Visible = true,
                     ChildNodes = new List<SiteMapNode>() { }
                 },
-                new SiteMapNode()
+                new ()
                 {
                     SystemName = "NopStation.B2BB2CFeatures.ErpActivityLogsTypes",
                     Title = "ERP Activity Logs Types",
@@ -509,6 +488,9 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
     public override async Task UninstallAsync()
     {
         await UnInstalLocalResourseStringFromXmlFileAsync();
+
+        await _permissionService.UninstallPermissionsAsync(new B2BB2CPermissionProvider());
+        await _permissionService.UninstallPermissionsAsync(new ErpPermissionProvider());
 
         await base.UninstallAsync();
     }
@@ -538,9 +520,7 @@ public class B2BB2CFeaturesPlugin : BasePlugin, IAdminMenuPlugin, IMiscPlugin, I
                 break;
             }
 
-        List<KeyValuePair<string, string>> list = result.Select(item => new KeyValuePair<string, string>(item.name, item.value)).ToList();
-
-        return list;
+        return result.Select(item => new KeyValuePair<string, string>(item.name, item.value)).ToList();
     }
 
     #endregion

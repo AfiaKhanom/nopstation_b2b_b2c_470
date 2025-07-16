@@ -1,0 +1,37 @@
+@mixin buttons (
+    $display: inline-block, 
+    $background: var(--primary-color), 
+    $color: var(--white), 
+    $padding: 5px 9px,
+    $border-radius: 3px,
+    $border: 1px solid $background,
+    $hover-border-color: var(--primary-color),
+    $font-size: 16px,
+    $line-height: 18px,
+    $hover-background: var(--primary-color),
+    $hover-color: var(--white)
+) {
+    background: $background;
+    display: $display;
+    color: $color;
+    padding: $padding;
+    border-radius:$border-radius;
+    border: $border;
+    font-size: $font-size;
+    line-height: $line-height;
+    transition: all 0.3s;
+    text-align: center;
+
+
+    &:not(:disabled) {
+        cursor: pointer;
+        &:hover {
+            border: 1px solid  $hover-border-color;
+            background: $hover-background;
+            color: $hover-color;
+        }
+    }
+    &:disabled {
+        opacity: 0.8;
+    }
+}

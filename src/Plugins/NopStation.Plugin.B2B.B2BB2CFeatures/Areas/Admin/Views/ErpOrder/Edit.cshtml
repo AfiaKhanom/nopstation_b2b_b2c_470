@@ -22,8 +22,7 @@
         @if (Model.IntegrationStatusTypeId != (int)IntegrationStatusType.Confirmed)
         {
             <div class="float-right">
-                <button type="submit" name="reprocess" class="btn btn-default">
-                    <i class="fas fa-gears"></i>
+                <button type="submit" name="reprocess" class="btn btn-primary">
                     @T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Button.ReProcess")
                 </button>
             </div>

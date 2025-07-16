@@ -1,8 +1,7 @@
-﻿namespace NopStation.Plugin.B2B.ERPIntegrationCore.Enums
+﻿namespace NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
+
+public enum ErpUserType
 {
-    public enum ErpUserType
-    {
-        B2BUser = 5,
-        B2CUser = 10,
-    }
+    B2BUser = 5,
+    B2CUser = 10
 }

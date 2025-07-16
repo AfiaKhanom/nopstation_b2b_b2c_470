@@ -1,0 +1,23 @@
+.carousel-grid,
+.product-tab,
+.blog-news-area,
+.deals-products,
+.deals-image {
+    .swiper-pagination,
+    .swiper-pagination.swiper-pagination-bullets.swiper-pagination-horizontal {
+        bottom: -20px;
+
+        .swiper-pagination-bullet {
+            width: 16px;
+            height: 16px;
+            opacity: 1;
+            background-color: var(--white);
+            margin-inline: 6px;
+        }
+
+        .swiper-pagination-bullet-active {
+            background-color: transparent;
+            border: 2px solid var(--secondary-color);
+        }
+    }
+}

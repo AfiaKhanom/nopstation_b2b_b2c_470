@@ -4,9 +4,6 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures;
 
 public static class B2BB2CFeaturesDefaults
 {
-    /// <summary>
-    /// Gets a path to the file that contains Resource string xml File
-    /// </summary>
     public static string XmlResourceStringFilePath => "~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/ResourceString/B2BB2CFeatures.Resources.en-us.xml";
     public static string ErpPriceGroupProductPricingInsert => "ErpPriceGroupProductPricingInsert";
     public static string ErpPriceGroupProductPricingUpdate => "ErpPriceGroupProductPricingUpdate";
@@ -14,7 +11,6 @@ public static class B2BB2CFeaturesDefaults
     public static string ErpDateFormatForDataTable => "DD/MM/YYYY";
     public static string ErpDateFormatForPublicInputField => "mm/dd/yy";
     public static string IsCartActivityOn => "IsCartActivityOn";
-    public static string ErpQuoteAssistantRoleSystemName => "ErpQuoteAssistant";
 
     # region Erp Customer Navigation
 
@@ -45,7 +41,6 @@ public static class B2BB2CFeaturesDefaults
 
     public static string CartItemsLivePriceSyncProcessing => "CartItemsLivePriceSyncProcessing";
 
-    public static string B2BCustomerRoleSystemName => "B2BCustomer";
     public static string CustomerLastDateOfDisplayB2BPriceSyncInfo => "LastDateOfDisplayB2BPriceSyncInfo";
     public static string CustomerLastDateOfDisplayB2BPriceGroupPriceSyncInfo => "LastDateOfDisplayB2BPriceGroupPriceSyncInfo";
 
@@ -59,8 +54,6 @@ public static class B2BB2CFeaturesDefaults
 
     public static string B2BQouteOrderAttribute => "QouteOrderSelected";
     public static string B2CQouteOrderAttribute => "B2CQouteOrderSelected";
-    public static string B2BQuoteAssistantRoleName => "B2B Quote Assistant";
-    public static string B2BQuoteAssistantRoleSystemName => "B2BQuoteAssistant";
 
     public static CacheKey ErpProductInfoSpecificationAttributeOptionIdsByNamesCacheKey => new("ErpProductInfoSpecificationAttributeOptionIdsByNamesErpAccountId-{0}-{1}-{2}", ErpProductInfoSpecificationAttributeOptionIdsByNamesErpAccountId);
     public static string ErpProductInfoSpecificationAttributeOptionIdsByNamesErpAccountId => "ErpProductInfoSpecificationAttributeOptionIdsByNamesErpAccountId.{0}";
@@ -77,7 +70,7 @@ public static class B2BB2CFeaturesDefaults
     public static CacheKey ProductsByIdCacheKey => new("NopProductId-{0}", NopProductId);
     public static string NopProductId => "NopProductId.{0}";
 
-    public static CacheKey ErpCustomerAccountErpActivityLogSyncLabelSelectList => new("B2BB2CFeatures.ErpActivityLog.SyncLabelSelectList");
+    public static CacheKey ErpCustomerAccountErpLogsSyncLabelSelectList => new("B2BB2CFeatures.ErpLogs.SyncLabelSelectList");
     public static CacheKey ErpProductModelProductPriceCacheKey => new("Erp.ProductPricing.ProductModel.ProductPrice-{0}", ProductPrice);
     public static string ProductPrice => "ProductPrice.{0}";
 
@@ -122,6 +115,6 @@ public static class B2BB2CFeaturesDefaults
 
     public static string ProcessFailedErpOrdersTask => "NopStation.Plugin.B2B.B2BB2CFeatures.Services.ProcessFailedErpOrdersTask";
     public static string ProcessFailedErpOrdersTaskName => "B2B Process Failed ERP Orders";
+    public static string LastStockSyncDateTime => "LastStockSyncDateTime";
     public static int DefaultTaskTimeOutPeriod => 360;
-
 }

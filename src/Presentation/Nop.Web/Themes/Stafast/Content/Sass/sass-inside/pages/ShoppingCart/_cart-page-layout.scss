@@ -1,0 +1,41 @@
+.order-summary-content {
+
+    @media (min-width: $md) {
+        &::after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        #shopping-cart-form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+
+        .table-wrapper {
+            width: calc(100% - 300px - 15px);
+            background: var(--white);
+            margin-bottom: 0;
+        }
+
+        .cart-footer {
+            width: 300px;
+            margin-left: 15px;
+        }
+    }
+
+    @media (min-width: $lg) {
+        .table-wrapper {
+            width: calc(100% - 365px - 15px);
+        }
+
+        .cart-footer {
+            width: 365px;
+        }
+    }
+
+    .common-buttons {
+        background: var(--white);
+    }
+}

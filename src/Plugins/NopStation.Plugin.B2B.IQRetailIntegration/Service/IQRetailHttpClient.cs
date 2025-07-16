@@ -62,7 +62,7 @@ namespace NopStation.Plugin.B2B.IQRetailIntegration.Service
                             ((iQRetailIntegrationSettings.HttpCallMaxRetries - currentRetries > 0) ?
                             $"HTTP call will be retried after {iQRetailIntegrationSettings.HttpCallRestTimeInMinutes} minutes. Retry attempts left: {iQRetailIntegrationSettings.HttpCallMaxRetries - currentRetries}" :
                             "No retry attempts left."),
-                            syncLavel: erpSyncLabel);
+                            syncLevel: erpSyncLabel);
 
                         if (iQRetailIntegrationSettings.HttpCallMaxRetries - currentRetries <= 0)
                             httpResponse.EnsureSuccessStatusCode();

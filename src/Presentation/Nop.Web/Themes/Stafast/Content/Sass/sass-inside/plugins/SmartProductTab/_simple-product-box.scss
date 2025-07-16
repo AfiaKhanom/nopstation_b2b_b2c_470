@@ -1,0 +1,18 @@
+.simple-collection {
+    .simple-product-tab {
+        .item-box {
+            width: 50% !important;
+            padding: 5px;
+
+
+            @media (min-width: $md) {
+                width: 25% !important;
+                padding: 5px;
+            }
+
+            @media (min-width: $xl) {
+                width: 20% !important;
+            }
+        }
+    }
+}

@@ -3,23 +3,21 @@
 @using Nop.Core
 @using Nop.Core.Domain.Catalog
 @using Nop.Core.Domain.Media
-@using Nop.Core
-@using Nop.Core.Domain.Catalog
 @using Nop.Core.Domain.Seo
-@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.QuickOrderModels.QuickOrderItems;
-@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.QuickOrderModels.QuickOrderTemplates;
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.QuickOrderModels.QuickOrderItems
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.QuickOrderModels.QuickOrderTemplates
 @using Nop.Services.Html
+@using Nop.Services.Catalog
+@using Nop.Services.Media
+@using System.Text
 @inject IDownloadService downloadService
 @inject CatalogSettings catalogSettings
 @inject IHtmlFormatter htmlFormatter
 @inject IWebHelper webHelper
 @inject SeoSettings seoSettings
-@using Nop.Services.Catalog
-@using Nop.Services.Media
-@using System.Text;
+
 <div class="page product-details-page">
     <div class="page-body">
-
         <form asp-controller="QuickOrder" asp-method="QuickOrderItemCreate" id="product-details-form">
             <input type="hidden" asp-for="@Model.QuickOrderTemplateId" />
             <div data-productid="@Model.ProductDetailsModel.Id">
@@ -112,7 +110,7 @@
                                                                     attributeValue.CustomerEntersQty ? T("Products.ProductAttributes.PriceAdjustment.PerItem").Text : string.Empty).Text;
                                                                     <li data-attr-value="@attributeValue.Id">
                                                                         <input id="@(controlId)_@(attributeValue.Id)" type="radio" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected"
-                                                       @(attribute.Values.Any(value => value.CustomerEntersQty) ? Html.Raw($"onclick=\"showHideRadioQuantity('{controlId}')\"") : null) />
+                                                                                @(attribute.Values.Any(value => value.CustomerEntersQty) ? Html.Raw($"onclick=\"showHideRadioQuantity('{controlId}')\"") : null) />
                                                                         <label for="@(controlId)_@(attributeValue.Id)">@attributeName</label>
 
                                                                         @if (attributeValue.CustomerEntersQty)
@@ -144,7 +142,7 @@
                                                                     attributeValue.CustomerEntersQty ? T("Products.ProductAttributes.PriceAdjustment.PerItem").Text : string.Empty).Text;
                                                                     <li @(attribute.AttributeControlType == AttributeControlType.Checkboxes ? Html.Raw("data-attr-value=" + attributeValue.Id) : null)>
                                                                         <input id="@(controlId)_@(attributeValue.Id)" type="checkbox" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected" @(attribute.AttributeControlType == AttributeControlType.ReadonlyCheckboxes ? Html.Raw(" disabled=\"disabled\"") : null)
-                                                       @(attributeValue.CustomerEntersQty ? Html.Raw($"onchange=\"showHideCheckboxQuantity('{controlId}_{attributeValue.Id}')\"") : null) />
+                                                                                @(attributeValue.CustomerEntersQty ? Html.Raw($"onchange=\"showHideCheckboxQuantity('{controlId}_{attributeValue.Id}')\"") : null) />
                                                                         <label for="@(controlId)_@(attributeValue.Id)">@attributeName</label>
 
                                                                         @if (attributeValue.CustomerEntersQty)
@@ -303,7 +301,7 @@
                                                                                 <span class="attribute-square" style="background-color:@(attributeValue.ColorSquaresRgb);">&nbsp;</span>
                                                                             </span>
                                                                             <input id="@(controlId)_@(attributeValue.Id)" type="radio" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected"
-                                                           @(attribute.Values.Any(value => value.CustomerEntersQty) ? Html.Raw($"onclick=\"showHideRadioQuantity('{controlId}')\"") : null) />
+                                                                                    @(attribute.Values.Any(value => value.CustomerEntersQty) ? Html.Raw($"onclick=\"showHideRadioQuantity('{controlId}')\"") : null) />
                                                                         </label>
                                                                         <div class="tooltip-container">
                                                                             <div class="not-available-text">@T("Products.ProductAttributes.NotAvailable")</div>
@@ -343,7 +341,7 @@
                                                                                 <span class="attribute-square" style="background: url('@(attributeValue.ImageSquaresPictureModel.ImageUrl)') 50% 50% no-repeat;">&nbsp;</span>
                                                                             </span>
                                                                             <input id="@(controlId)_@(attributeValue.Id)" type="radio" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected"
-                                                           @(attribute.Values.Any(value => value.CustomerEntersQty) ? Html.Raw($"onclick=\"showHideRadioQuantity('{controlId}', true)\"") : null) />
+                                                                                    @(attribute.Values.Any(value => value.CustomerEntersQty) ? Html.Raw($"onclick=\"showHideRadioQuantity('{controlId}', true)\"") : null) />
                                                                         </label>
                                                                         <div class="tooltip-container">
                                                                             <div class="tooltip-header">@attributeName</div>
@@ -406,11 +404,11 @@
                                     <script asp-location="Footer">
                                         var combinationsBehavior_@(Model.Id);
                                         $(document).ready(function () {
-                                                                                                                                        combinationsBehavior_@(Model.Id) = createCombinationsBehavior({
-                                            contentEl: '[data-productid="@Model.Id"]',
-                                            fetchUrl: '@Html.Raw(Url.RouteUrl("GetProductCombinations", new { productId = Model.Id }))'
-                                        });
-                                                                                                                                        combinationsBehavior_@(Model.Id).init();
+                                            combinationsBehavior_@(Model.Id) = createCombinationsBehavior({
+                                                contentEl: '[data-productid="@Model.Id"]',
+                                                fetchUrl: '@Html.Raw(Url.RouteUrl("GetProductCombinations", new { productId = Model.Id }))'
+                                            });
+                                            combinationsBehavior_@(Model.Id).init();
                                         });
                                     </script>
                                 }
@@ -493,8 +491,8 @@
 
                                                         if (data.Result) {
                                                             displayBarNotification(data.Msg, 'success', 3500);
-                                                             $('#showProductDetails').css('display', 'none');
-                                                             window.location.reload();
+                                                                $('#showProductDetails').css('display', 'none');
+                                                                window.location.reload();
                                                         } else {
                                                             displayPopupNotification(data.Msg, 'error', true);
                                                         }
@@ -504,18 +502,13 @@
                                             });
                                         });
                                         $(document).ready(function () {
-                                        @(attributeChangeHandlerFuncName)();
-                                        @Html.Raw(attributeChangeScriptsBuilder.ToString())
-                                                                                                                                    });
+                                            @(attributeChangeHandlerFuncName)();
+                                            @Html.Raw(attributeChangeScriptsBuilder.ToString())
+                                        });
                                     </script>
                                 }
-                            }
-
-
-                           
+                            }                           
                         }
-
-
                     </div>
                 </div>
             </div>

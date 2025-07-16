@@ -1,0 +1,107 @@
+.html-account-page {
+    .master-column-wrapper {
+        margin: 15px 0;
+
+        .page > .page-title {
+            text-align: left !important;
+        }
+    }
+}
+
+.half-width {
+    float: left;
+    clear: none !important;
+    width: calc(50% - 10px);
+}
+
+.fieldset {
+   /* border: 1px solid var(--primary-grey_light);
+    box-shadow: 0px 2px 4px rgba(153, 153, 153, 0.15);
+    border-radius: 3px;*/
+    margin: 15px auto;
+
+    .title {
+        padding: 15px;
+        border-bottom: 1px solid var(--primary-grey_light);
+
+        strong {
+            font-weight: 600;
+            font-size: 15px;
+            line-height: 15px;
+            text-transform: uppercase;
+            color: var(--primary-color);
+        }
+    }
+
+    .form-fields {
+        padding: 15px 10px;
+
+        &::after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+    }
+}
+
+form {
+    > .buttons {
+        margin-bottom: 15px;
+        margin-top: 15px;
+        text-align: center;
+        
+        button {
+            width: 100%;
+            min-width: 180px;
+            padding: 9px 25px;
+
+            @media(min-width: $xs) {
+                width: auto;
+            }
+        }
+    }
+}
+
+.read {
+    color: var(--primary-color);
+    cursor: pointer;
+}
+
+.registration-result-page,
+.password-recovery-page {
+    .tooltip,
+    .result {
+        margin: 15px auto;
+        width: 460px;
+        max-width: 100%;
+        text-align: center;
+        color: var(--black);
+        font-size: clamp(1rem,2.5vw,18px);
+        line-height: clamp(17px,2.5vw,22px);
+    }
+
+    .buttons {
+        text-align: center;
+    }
+}
+
+.customer-blocks,
+.center-1 .page-body > form {
+    .fieldset {
+        width: 460px;
+        max-width: 100%;
+        background: var(--white);
+    }
+}
+
+.customer-blocks {
+    .returning-wrapper.fieldset {
+        padding-bottom: 5px;
+    }
+}
+
+
+.message-error {
+    color: var(--red);
+    margin: 5px 0px;
+}

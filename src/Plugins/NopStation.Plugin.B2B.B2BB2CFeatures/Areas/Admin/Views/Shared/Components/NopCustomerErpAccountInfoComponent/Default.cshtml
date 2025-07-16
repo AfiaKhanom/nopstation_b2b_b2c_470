@@ -1,0 +1,104 @@
+﻿@model CustomerErpAccountInfoModel
+
+@{
+    var customer = await workContext.GetCurrentCustomerAsync();
+    const string hideCustomerErpAccountInfoBlockAttributeName = "Admin.Customer.EditPage.HideCustomerErpAccountInfo";
+    var hideCustomerErpAccountInfoBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideCustomerErpAccountInfoBlockAttributeName);
+}
+
+@if (Model.NopCustomerId > 0)
+{
+    <nop-card asp-name="nop-customer-erp-account-info" asp-icon="fas fa-info" asp-title="@T("NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Customer.ErpAccountInfo")" asp-hide-block-attribute-name="@hideCustomerErpAccountInfoBlockAttributeName" asp-hide="@hideCustomerErpAccountInfoBlock" asp-advanced="true">
+        <div class="card-body">
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="NopCustomerId" />
+                </div>
+                <div class="col-md-9 justify-content-center align-self-center">
+                    <a asp-controller="Customer" asp-action="Edit" asp-route-id="@Model.NopCustomerId">@Model.NopCustomer</a>
+                </div>            
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="ErpSalesOrgId" />
+                </div>
+                <div class="col-md-9">
+                    <a asp-controller="ErpSalesOrg" asp-action="ErpSalesOrgEdit" asp-route-id="@Model.ErpSalesOrgId">@Model.ErpSalesOrg</a>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="ErpAccountId" />
+                </div>
+                <div class="col-md-9">
+                    <a asp-controller="ErpAccount" asp-action="ErpAccountEdit" asp-route-id="@Model.ErpAccountId">@Model.ErpAccountInfo</a>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="ErpShipToAddressId" />
+                </div>
+                <div class="col-md-9">
+                    <a asp-controller="ErpShipToAddress" asp-action="Edit" asp-route-id="@Model.ErpShipToAddressId">@Model.ErpShipToAddressInfo</a>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="ErpUserType" />
+                </div>
+                <div class="col-md-9">
+                    @Model.ErpUserType
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="IsActive" />
+                </div>
+                <div class="col-md-9">
+                    <input asp-for="IsActive" disabled="disabled" />
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="CreatedOn" />
+                </div>
+                <div class="col-md-9 justify-content-center align-self-center">
+                    @(Model.CreatedOn != DateTime.MinValue ? Model.CreatedOn : "")
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="CreatedBy" />
+                </div>
+                <div class="col-md-9 justify-content-center align-self-center">
+                    @Model.CreatedBy
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="UpdatedOn" />
+                </div>
+                <div class="col-md-9 justify-content-center align-self-center">
+                    @(Model.UpdatedOn != DateTime.MinValue ? Model.UpdatedOn : "")
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="UpdatedBy" />
+                </div>
+                <div class="col-md-9 justify-content-center align-self-center">
+                    @Html.DisplayFor(model => model.UpdatedBy)
+                </div>
+            </div>
+        </div>
+    </nop-card>
+}

@@ -1,0 +1,7 @@
+@mixin show-max-line ($webkit-line-clamp: 2) {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: $webkit-line-clamp;
+    -webkit-box-orient: vertical;
+}

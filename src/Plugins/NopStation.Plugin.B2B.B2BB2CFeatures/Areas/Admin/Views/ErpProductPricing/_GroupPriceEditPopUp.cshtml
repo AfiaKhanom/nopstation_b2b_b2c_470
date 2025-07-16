@@ -1,0 +1,23 @@
+﻿@model ErpPriceGroupProductPricingModel
+@{
+    Layout = "_AdminPopupLayout";
+
+    //page title
+    ViewBag.Title = T("NopStation.Plugin.B2B.ERPIntegrationCore.ErpGroupPrice.PageTitle.Edit").Text;
+}
+<form asp-controller="ErpProductPricing" asp-action="GroupPriceEditPopUp"
+      asp-route-btnId="@Context.Request.Query["btnId"]"
+      asp-route-formId="@Context.Request.Query["formId"]">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("NopStation.Plugin.B2B.ERPIntegrationCore.ErpGroupPrice.EditGroupPrice")
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.Save")
+            </button>
+        </div>
+    </div>
+    @await Html.PartialAsync("_CreateOrUpdateGroupPrice", Model)
+</form>

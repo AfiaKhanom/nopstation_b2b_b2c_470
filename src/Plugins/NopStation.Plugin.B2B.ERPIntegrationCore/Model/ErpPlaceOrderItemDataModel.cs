@@ -11,6 +11,8 @@ public class ErpPlaceOrderItemDataModel
     public decimal? UnitPriceExclTax { get; set; }
     public decimal? UnitPriceInclTax { get; set; }
     public decimal? DiscountPercentage { get; set; }
+    public decimal? DiscountAmountInclTax { get; set; }
+    public decimal? DiscountAmountExclTax { get; set; }
     public decimal? PriceExclTax { get; set; }
     public decimal? PriceInclTax { get; set; }
 }

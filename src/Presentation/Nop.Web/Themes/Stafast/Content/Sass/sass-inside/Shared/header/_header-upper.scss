@@ -1,0 +1,46 @@
+@import "../../mixins/layout_width_responsive";
+.header-wrapper {
+    background: var(--white);
+}
+.header-upper {
+    @include layout_width_responsive;
+    padding: 15px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    @media (min-width: $xs) {
+        padding: 15px 0;
+    }
+
+    .header-right {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-left: auto;
+        padding-right: 15px;
+
+        a {
+            text-decoration: none;
+        }
+
+
+        @media (min-width: $xs) {
+            order: 3;
+            margin-left: 0;
+            padding-right: 15px;
+        }
+
+        @media (max-width: $xs - 1) {
+            width: 40%;
+
+            .header-links-wrapper {
+                width: 100%;
+
+                ul {
+                    justify-content: space-between;
+                }
+            }
+        }
+    }
+}

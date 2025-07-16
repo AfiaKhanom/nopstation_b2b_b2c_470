@@ -1,0 +1,100 @@
+.buttons {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    transform: translate(0, 0);
+    z-index: $top;
+    opacity:0;
+    transition: all 0.3s;
+
+    @media(max-width: $xs) {
+        &.hide_on_mobile {
+            display: none !important;
+        }
+    }
+
+    .button-2 {
+        @include buttons( $background: var(--primary-color), $color: var(--white), $padding: 5px, $border-radius: 50%, $border: 0, $font-size: 0px, $line-height: 0px, $hover-background: var(--secondary-color), $hover-color: var(--primary-color));
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        display: block;
+        line-height: 24px;
+        margin: 0 auto 5px;
+        height: 26px;
+        width: 26px;
+
+        @media (min-width: $md) {
+            background: var(--primary-color);
+            color: var(--white);
+            margin-right: 4px;
+            padding: 7px;
+            height: 32px;
+            width: 32px;
+            vertical-align: middle;
+        }
+
+
+        &:not(:disabled) {
+            &:hover {
+                border: 0px;
+                background: var(--black);
+                color: var(--white);
+            }
+        }
+
+        &::before {
+            @include icon-font-style($font-size: 10px, $font-weight: 500, $line-height: 19px);
+        }
+
+
+        &.add-to-cart-button::before {
+            content: "\e979";
+
+            @media(min-width: $md) {
+                font-size: 14px;
+                vertical-align: sub;
+            }
+        }
+
+        &.add-to-compare-list-button::before {
+            content: "\e97a";
+
+            @media(min-width: $md) {
+                font-size: 14px;
+                vertical-align: sub;
+            }
+        }
+
+        &.add-to-wishlist-button::before {
+            content: "\e976";
+
+            @media(min-width: $md) {
+                font-size: 16px;
+                vertical-align: sub;
+            }
+        }
+    }
+}
+
+.add-to-cart {
+    padding: 0;
+    margin: 0;
+
+    .add-to-cart-button {
+        margin-right: 0;
+        width: 100%;
+        padding: 6px 5px;
+        background: var(--secondary-color);
+        border: 0;
+        text-transform: uppercase;
+        border-radius: 5px;
+        font-size: 12px;
+        line-height: 1;
+        font-weight: 500;
+
+        @media (min-width: $md) {
+            border-radius: 10px;
+            padding: 12px 5px;
+            font-size: 14px;
+        }
+    }
+}

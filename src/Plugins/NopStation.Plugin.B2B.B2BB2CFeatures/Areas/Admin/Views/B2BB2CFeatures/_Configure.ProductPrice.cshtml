@@ -57,7 +57,17 @@
             <nop-select asp-for="PreFilterFacetSpecificationAttributeId" asp-items="@Model.AvailableSpecificationAttributes" />
             <span asp-validation-for="PreFilterFacetSpecificationAttributeId"></span>
         </div>
-    </div> 
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-override-store-checkbox asp-for="UnitOfMeasureSpecificationAttributeId_OverrideForStore" asp-input="UnitOfMeasureSpecificationAttributeId" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+            <nop-label asp-for="UnitOfMeasureSpecificationAttributeId" />
+        </div>
+        <div class="col-md-9">
+            <nop-select asp-for="UnitOfMeasureSpecificationAttributeId" asp-items="@Model.AvailableSpecificationAttributes" />
+            <span asp-validation-for="UnitOfMeasureSpecificationAttributeId"></span>
+        </div>
+    </div>
     <div class="form-group row">
         <div class="col-md-3">
             <nop-label asp-for="EnableLivePriceChecks" />
@@ -69,13 +79,40 @@
     </div>
     <div class="form-group row">
         <div class="col-md-3">
+            <nop-label asp-for="EnableLiveCreditChecks" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="EnableLiveCreditChecks" />
+            <span asp-validation-for="EnableLiveCreditChecks"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
             <nop-label asp-for="IsShowLoginForPrice" />
         </div>
         <div class="col-md-9">
             <nop-editor asp-for="IsShowLoginForPrice" />
             <span asp-validation-for="IsShowLoginForPrice"></span>
         </div>
-    </div>     
+    </div> 
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="IsShowYearlySavings" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="IsShowYearlySavings" />
+            <span asp-validation-for="IsShowYearlySavings"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-label asp-for="IsShowAllTimeSavings" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="IsShowAllTimeSavings" />
+            <span asp-validation-for="IsShowAllTimeSavings"></span>
+        </div>
+    </div>
 </div>
 
 <script asp-location="Footer">

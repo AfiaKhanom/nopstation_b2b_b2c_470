@@ -3,25 +3,24 @@ using Microsoft.AspNetCore.Mvc;
 using Nop.Web.Framework.Components;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Services.Customers;
 
-namespace NopStation.Plugin.B2B.B2BB2CFeatures.Components
+namespace NopStation.Plugin.B2B.B2BB2CFeatures.Components;
+
+public class SalesRepHeaderViewComponent : NopViewComponent
 {
-    public class SalesRepHeaderViewComponent : NopViewComponent
+    private readonly ICommonHelperService _commonHelperService;
+
+    public SalesRepHeaderViewComponent(ICommonHelperService commonHelperService)
     {
-        private readonly ICommonHelperService _commonHelperService;
+        _commonHelperService = commonHelperService;
+    }
 
-        public SalesRepHeaderViewComponent(ICommonHelperService commonHelperService)
+    public async Task<IViewComponentResult> InvokeAsync(string widgetZone, object additionalData)
+    {
+        if (await _commonHelperService.HasB2BSalesRepRoleAsync())
         {
-            _commonHelperService = commonHelperService;
+            return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/Shared/Components/SalesRepHeader/Default.cshtml");
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(string widgetZone, object additionalData)
-        {
-            if (await _commonHelperService.HasB2BSalesRepRoleAsync())
-            {
-                return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/Shared/Components/SalesRepHeader/Default.cshtml");
-            }
-
-            return Content(string.Empty);
-        }
+        return Content(string.Empty);
     }
 }

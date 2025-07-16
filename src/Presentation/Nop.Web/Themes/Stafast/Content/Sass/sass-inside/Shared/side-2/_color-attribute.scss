@@ -1,0 +1,36 @@
+.product-spec-color {
+    .color-item {
+        input[type=checkbox] {
+            & ~ label {
+                position: relative;
+
+                &::before {
+                    content: none;
+                }
+
+                .attribute-square {
+                    display: inline-block;
+                    margin-right: 10px;
+                    height: 16px;
+                    width: 16px;
+                    border-radius: 3px;
+                }
+            }
+        }
+
+        input[type=checkbox]:checked {
+            & + label::before {
+                display: inline-block;
+                content: "\e984";
+                border: none;
+                color: var(--white);
+                background: none;
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 8px;
+            }
+        }
+    }
+}

@@ -1,0 +1,33 @@
+.return-request-page {
+    .table-wrapper {
+        .data-table {
+            thead {
+                th {
+                    padding: 10px;
+                }
+            }
+
+            tbody {
+                td {
+                    padding: 10px;
+                }
+
+                select {
+                    min-width: 45px;
+                }
+            }
+        }
+    }
+
+    .fieldset {
+        .title {
+            text-align: center;
+        }
+        .inputs {
+            width: 460px;
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+}

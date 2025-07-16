@@ -2,5 +2,5 @@
 
 public interface IErpProductSyncService
 {
-    Task<bool> IsErpProductSyncSuccessfulAsync();
+    Task<bool> IsErpProductSyncSuccessfulAsync(string? stockCode, bool isManualTrigger = false, bool isIncrementalSync = true, CancellationToken cancellationToken = default);
 }

@@ -1,0 +1,44 @@
+input[type="radio"],
+input[type="checkbox"] {
+    display: none;
+
+    ~ label {
+        display: flex;
+        align-items: center;
+        line-height: 26px;
+
+        &::before {
+            content: "";
+            display: inline-block;
+            border: 1px solid var(--primary-grey);
+            font-family: "icomoon" !important;
+            height: 16px;
+            width: 16px;
+            vertical-align: middle;
+            border-radius: 3px;
+            font-size: 10px;
+            line-height: 15px;
+            text-align: center;
+            color: var(--white);
+            margin-right: 10px;
+            text-align: center;
+            padding-left: 1px;
+        }
+    }
+
+    &:checked {
+        ~ label {
+            &::before {
+                content: "\e984";
+                background: var(--primary-color);
+                border-color: var(--primary-color);
+            }
+        }
+    }
+}
+
+input[type=radio] {
+    ~ label::before {
+        border-radius: 50%;
+    }
+}

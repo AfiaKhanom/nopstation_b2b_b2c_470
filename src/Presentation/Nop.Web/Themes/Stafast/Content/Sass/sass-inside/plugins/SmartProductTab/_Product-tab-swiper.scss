@@ -1,0 +1,49 @@
+
+.product-tab {
+    position: relative;
+    margin: 0 -5px;
+
+    .swiper-button-next {
+        transform: translateX(35%);
+        right: 0;
+        left: auto;
+    }
+
+    .swiper-button-prev {
+        transform: translateX(-35%);
+        left: 0;
+        right: auto;
+    }
+
+    @media(max-width: $sm - 1) {
+        .swiper-button-next,
+        .swiper-button-prev {
+            top: -60px;
+        }
+
+        .swiper-button-next {
+            right: 20px;
+        }
+
+        .swiper-button-prev {
+            left: 20px;
+        }
+    }
+
+    @media (min-width: $md) {
+        .swiper-button-next,
+        .swiper-button-prev {
+            opacity: 0;
+            transition: all 0.3s;
+        }
+    }
+
+    &:hover {
+        @media (min-width: $md) {
+            .swiper-button-next,
+            .swiper-button-prev {
+                opacity: 1;
+            }
+        }
+    }
+}

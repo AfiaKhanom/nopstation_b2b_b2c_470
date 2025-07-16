@@ -33,6 +33,7 @@
         </div>
     </div>
     <input asp-for="Id" type="hidden" />
+    <input asp-for="QuartzJobName" type="hidden"/>
     @await Html.PartialAsync("_CreateOrUpdate", Model)
 </div>
 <nop-delete-confirmation asp-model-id="@Model.Id" asp-button-id="erp-data-scheduler-settings-delete" />

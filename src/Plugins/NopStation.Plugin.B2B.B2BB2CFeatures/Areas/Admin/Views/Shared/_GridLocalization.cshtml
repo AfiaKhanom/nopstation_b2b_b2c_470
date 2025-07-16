@@ -10,12 +10,38 @@
     "processing":     "@JavaScriptEncoder.Default.Encode(T("Admin.DT.LoaderIcon").Text)",
     "search":         "@JavaScriptEncoder.Default.Encode(T("Admin.DT.Search").Text)",
     "zeroRecords":    "@JavaScriptEncoder.Default.Encode(T("Admin.DT.ZeroRecords").Text)",
-    "paginate": {
+    @*"paginate": {
+        "first":"@JavaScriptEncoder.Default.Encode(T("Admin.DT.Paginate.First").Text)",
+        "last":"@JavaScriptEncoder.Default.Encode(T("Admin.DT.Paginate.Last").Text)",
+        "next":"@JavaScriptEncoder.Default.Encode(T("Admin.DT.Paginate.Next").Text)",
+        "previous":"@JavaScriptEncoder.Default.Encode(T("Admin.DT.Paginate.previous").Text)"
+    },*@
+    @*"paginate": {
         "first":"&#171;",
         "last":"&#187;",
         "next":"&#8250;",
         "previous":"&#8249;"
-    }, 
+    },*@
+    "paginate": {
+        @if ((await workContext.GetWorkingLanguageAsync()).Rtl)
+        {
+            <text>
+                "first":"<i class='fa fa-angle-double-right'></i>",
+                "last":"<i class='fa fa-angle-double-left'></i>",
+                "next":"<i class='fa fa-angle-left'></i>",
+                "previous":"<i class='fa fa-angle-right'></i>"
+            </text>
+        }
+        else
+        {
+            <text>
+                "first":"<i class='fa fa-angle-double-left'></i>",
+                "last":"<i class='fa fa-angle-double-right'></i>",
+                "next":"<i class='fa fa-angle-right'></i>",
+                "previous":"<i class='fa fa-angle-left'></i>"
+            </text>
+        }
+    },
     "aria": {
         "sortAscending":  "@JavaScriptEncoder.Default.Encode(T("Admin.DT.Aria.SortAscending").Text)",
         "sortDescending": "@JavaScriptEncoder.Default.Encode(T("Admin.DT.Aria.SortDescending").Text)"

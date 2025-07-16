@@ -1,0 +1,57 @@
+ul {
+    list-style-type: none;
+}
+
+.no-data {
+    margin: 30px 0;
+    font-size: clamp(1rem,3vw,24px);
+    line-height: clamp(17px,3vw,30px);
+    text-align: center;
+}
+strong, th, b {
+    font-weight: 600;
+}
+body {
+    background: var(--page-body-color);
+}
+img {
+    max-width: 100%;
+}
+.theme-custom {
+    .nivoSlider {
+        margin-top: 30px;
+    }
+}
+.theme-custom .nivo-controlNav a.active {
+    background: var(--primary-color) !important;
+}
+
+/* For WebKit-based browsers (Chrome, Safari) */
+body::-webkit-scrollbar, body ::-webkit-scrollbar {
+    width: 6px; /* Set the scrollbar width */
+}
+
+body::-webkit-scrollbar-thumb, body ::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color); /* Set the scrollbar thumb color */
+    border-radius: 100%l
+}
+
+/* For Firefox */
+body, body * {
+    scrollbar-width: thin; /* Set the scrollbar width */
+    scrollbar-color: var(--primary-color) transparent; /* Set the scrollbar thumb color */
+}
+.product-tags-all-page {
+    .page-body {
+        background: var(--white);
+        padding: 10px;
+    }
+}
+
+.header-selectors-wrapper {
+    @media (max-width: $sm - 1) {
+        margin-bottom: 10px;
+        text-align: right;
+        width: 100%;
+    }
+}

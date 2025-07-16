@@ -35,7 +35,7 @@ public class ProcessFailedErpOrdersTask : IScheduleTask
         var retryErpOrders = await _erpOrderAdditionalDataService.GetAllFailedOrProcessingOrQueuedErpOrders(_b2BB2CFeaturesSettings.MaxErpIntegrationOrderPlaceRetries);
 
         foreach (var erpOrders in retryErpOrders)
-            await _overridenOrderProcessingService.RetryPlaceErpOrderAtErpAsync(erpOrders, _b2BB2CFeaturesSettings);
+            await _overridenOrderProcessingService.RetryPlaceErpOrderAtErpAsync(erpOrders);
     }
 
     #endregion

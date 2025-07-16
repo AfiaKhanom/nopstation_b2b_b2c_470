@@ -28,16 +28,17 @@ using Nop.Services.Payments;
 using Nop.Services.Security;
 using Nop.Services.Shipping;
 using Nop.Services.Tax;
+using Nop.Web.Components;
 using Nop.Web.Controllers;
 using Nop.Web.Factories;
 using Nop.Web.Framework;
 using Nop.Web.Framework.Controllers;
 using Nop.Web.Framework.Mvc.Filters;
 using Nop.Web.Models.Checkout;
-using NopStation.Plugin.B2B.B2BB2CFeatures.Contexts;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Factories;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Factories.ErpOrderDetails;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Model.Checkout;
+using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpAccountCreditSyncFunctionality;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Services.Overriden;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
@@ -66,6 +67,9 @@ public class ErpCheckoutController : CheckoutController
     private readonly INotificationService _notificationService;
     private readonly IErpAccountService _erpAccountService;
     private readonly IErpActivityLogsService _erpActivityLogsService;
+    private readonly ICustomerActivityService _customerActivityService;
+    private readonly IErpAccountCreditSyncFunctionality _erpAccountCreditSyncFunctionality;
+    private static readonly string[] _separator = ["___"];
 
     #endregion
 
@@ -112,7 +116,9 @@ public class ErpCheckoutController : CheckoutController
         IErpOrderItemModelFactory erpOrderItemModelFactory,
         IErpNopUserService erpNopUserService,
         IErpOrderDetailsModelFactory erpOrderDetailsModelFactory,
-        IErpActivityLogsService erpActivityLogsService) : base(addressSettings,
+        IErpActivityLogsService erpActivityLogsService,
+        ICustomerActivityService customerActivityService,
+        IErpAccountCreditSyncFunctionality erpAccountCreditSyncFunctionality) : base(addressSettings,
             captchaSettings,
             customerSettings,
             addressModelFactory,
@@ -155,6 +161,8 @@ public class ErpCheckoutController : CheckoutController
         _erpNopUserService = erpNopUserService;
         _erpOrderDetailsModelFactory = erpOrderDetailsModelFactory;
         _erpActivityLogsService = erpActivityLogsService;
+        _customerActivityService = customerActivityService;
+        _erpAccountCreditSyncFunctionality = erpAccountCreditSyncFunctionality;
     }
 
     #endregion
@@ -173,6 +181,7 @@ public class ErpCheckoutController : CheckoutController
         else if (b2BAccount != null && b2CUser != null)
             await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.B2CQouteOrderAttribute, false, store.Id);
     }
+
     private async Task<bool> IsQuoteOrderAsync()
     {
         var currCustomer = await _workContext.GetCurrentCustomerAsync();
@@ -188,6 +197,7 @@ public class ErpCheckoutController : CheckoutController
 
         return isQuoteOrder;
     }
+
     private async Task<(ErpAccount b2BAccount, ErpNopUser b2BUser, ErpNopUser b2CUser)> GetB2BAccountAndUserOfCurrentCustomerAsync()
     {
         var currCustomer = await _workContext.GetCurrentCustomerAsync();
@@ -200,21 +210,20 @@ public class ErpCheckoutController : CheckoutController
         return (b2BAccount, b2BUser, b2CUser);
     }
 
-    private async Task<bool> IsUserValid(ErpAccount erpAccount, ErpNopUser b2BUser, ErpNopUser b2CUser)
+    private async Task<bool> IsUserPermittedToPlaceOrderOrQuote()
     {
-        if (erpAccount == null)
+        if (!await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BOrder) &&
+            !await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BQuote))
             return false;
+        return true;
+    }
 
-        if (b2BUser != null && !await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BOrder) && !await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BQuote))
-            return false;
-
-        if (b2CUser != null && !await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BOrder) && !await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BQuote))
-            return false;
-
-        if (await _erpCustomerFunctionalityService.IsSalesOrderInvalidForCurrentCustomerAsync())
-            return false;
-
-        if (_orderSettings.CheckoutDisabled)
+    private async Task<bool> IsUserValid(ErpAccount erpAccount)
+    {
+        if (erpAccount == null || 
+            !await IsUserPermittedToPlaceOrderOrQuote() || 
+            await _erpCustomerFunctionalityService.IsSalesOrderInvalidForCurrentCustomerAsync() || 
+            _orderSettings.CheckoutDisabled)
             return false;
 
         return true;
@@ -226,14 +235,16 @@ public class ErpCheckoutController : CheckoutController
 
     public override async Task<IActionResult> Index()
     {
-        if (await _erpCustomerFunctionalityService.IsCurrentCustomerInErpSalesRepRoleAsync())
+        if (await _erpCustomerFunctionalityService.IsCurrentCustomerInB2BSalesRepRoleAsync())
             return RedirectToAction("List", "SalesRepUsers", new { area = AreaNames.ADMIN });
 
-        if (await _erpCustomerFunctionalityService.IsCurrentCustomerInB2BQuoteAssistantRole())
+        if (await _erpCustomerFunctionalityService.IsCurrentCustomerInB2BQuoteAssistantRoleAsync())
             return RedirectToRoute("QuoteOrder");
 
-        var (erpAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
-        if (!await IsUserValid(erpAccount, b2BUser, b2CUser))
+        var customer = await _workContext.GetCurrentCustomerAsync();
+        var b2BAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(customer.Id);
+
+        if (!await IsUserValid(b2BAccount))
             return RedirectToRoute("ShoppingCart");
 
         if (await _erpCustomerFunctionalityService.IsSalesOrderInvalidForCurrentCustomerAsync())
@@ -244,23 +255,26 @@ public class ErpCheckoutController : CheckoutController
         if (_orderSettings.CheckoutDisabled)
             return RedirectToRoute("ShoppingCart");
 
-        var customer = await _workContext.GetCurrentCustomerAsync();
         var store = await _storeContext.GetCurrentStoreAsync();
         var cart = await _shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.ShoppingCart, store.Id);
 
         if (!cart.Any())
             return RedirectToRoute("ShoppingCart");
 
+        await _erpAccountCreditSyncFunctionality.LiveErpAccountCreditCheckAsync(b2BAccount, customer);
+
         var cartProductIds = cart.Select(ci => ci.ProductId).ToArray();
         var downloadableProductsRequireRegistration =
             _customerSettings.RequireRegistrationForDownloadableProducts && await _productService.HasAnyDownloadableProductAsync(cartProductIds);
 
-        if (await _customerService.IsGuestAsync(customer) && (!_orderSettings.AnonymousCheckoutAllowed || downloadableProductsRequireRegistration))
+        if (await _customerService.IsGuestAsync(customer) && 
+            (!_orderSettings.AnonymousCheckoutAllowed || downloadableProductsRequireRegistration))
             return Challenge();
 
-        var paymentMethods = await (await _paymentPluginManager
-            .LoadActivePluginsAsync(customer, store.Id))
-            .WhereAwait(async pm => !await pm.HidePaymentMethodAsync(cart)).ToListAsync();
+        var paymentMethods = await 
+            (await _paymentPluginManager.LoadActivePluginsAsync(customer, store.Id))
+            .WhereAwait(async pm => !await pm.HidePaymentMethodAsync(cart))
+            .ToListAsync();
 
         var nonButtonPaymentMethods = paymentMethods
             .Where(pm => pm.PaymentMethodType != PaymentMethodType.Button)
@@ -269,7 +283,7 @@ public class ErpCheckoutController : CheckoutController
         var buttonPaymentMethods = paymentMethods
             .Where(pm => pm.PaymentMethodType == PaymentMethodType.Button)
             .ToList();
-        if (!nonButtonPaymentMethods.Any() && buttonPaymentMethods.Any())
+        if (nonButtonPaymentMethods.Count == 0 && buttonPaymentMethods.Count != 0)
             return RedirectToRoute("ShoppingCart");
 
         await _customerService.ResetCheckoutDataAsync(customer, store.Id);
@@ -307,7 +321,8 @@ public class ErpCheckoutController : CheckoutController
     public async Task<IActionResult> IsCartItemsLivePriceSyncProcessing()
     {
         var currentStore = await _storeContext.GetCurrentStoreAsync();
-        var isCartItemsLivePriceSyncProcessing = await _genericAttributeService.GetAttributeAsync<bool>(await _workContext.GetCurrentCustomerAsync(), B2BB2CFeaturesDefaults.CartItemsLivePriceSyncProcessing, currentStore.Id);
+        var isCartItemsLivePriceSyncProcessing = await _genericAttributeService.GetAttributeAsync<bool>
+            (await _workContext.GetCurrentCustomerAsync(), B2BB2CFeaturesDefaults.CartItemsLivePriceSyncProcessing, currentStore.Id);
         return Json(new
         {
             success = true,
@@ -322,31 +337,25 @@ public class ErpCheckoutController : CheckoutController
         if (await _customerService.IsGuestAsync(customer) && !_orderSettings.AnonymousCheckoutAllowed)
             return Challenge();
 
-        Order order = null;
+        var order = await _orderService.GetOrderByIdAsync(orderId ?? 0);
 
-        order = await _orderService.GetOrderByIdAsync(orderId ?? 0);
         if (order == null)
         {
             var store = await _storeContext.GetCurrentStoreAsync();
-            order = (await _orderService.SearchOrdersAsync(storeId: store.Id,
-            customerId: customer.Id, pageSize: 1))
-                .FirstOrDefault();
-            orderId = order?.Id ?? 0;
+            order = (await _orderService.SearchOrdersAsync(storeId: store.Id, customerId: customer.Id, pageSize: 1)).FirstOrDefault();
         }
 
         #region B2B
 
         (var b2BAccount, var b2BUser, var b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
 
-        if (b2BAccount != null && b2BUser != null)
+        if (b2BAccount != null && (b2BUser != null || b2CUser != null))
         {
-
-            var erpOrderPerAccount = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByNopOrderIdAsync(order.Id);
+            var erpOrderPerAccount = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByNopOrderIdAsync(order?.Id ?? 0);
             if (order == null || order.Deleted || erpOrderPerAccount == null || erpOrderPerAccount.ErpAccountId != b2BAccount.Id)
                 return Challenge();
 
             var erpOrderDetailsModel = await _erpOrderDetailsModelFactory.PrepareErpOrderDetailsModelFactoryAsync(erpOrderPerAccount);
-
             if (erpOrderDetailsModel.IsQuoteOrder)
             {
                 return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/Checkout/QuoteOrderCompleted.cshtml", erpOrderDetailsModel);
@@ -364,7 +373,7 @@ public class ErpCheckoutController : CheckoutController
         }
 
         var model = await _orderModelFactory.PrepareOrderDetailsModelAsync(order);
-        return View(model);
+        return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/Checkout/Completed.cshtml", model);
     }
 
     #endregion
@@ -373,17 +382,14 @@ public class ErpCheckoutController : CheckoutController
 
     public override async Task<IActionResult> BillingAddress(IFormCollection form)
     {
-        //-->ToDo: After completing custom permission service for b2b b2c feature this permission check will be reopen
         var (b2BAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
 
-        if (b2BUser != null && !await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BOrder) && !await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BQuote))
+        if (!await IsUserValid(b2BAccount))
             return RedirectToRoute("ShoppingCart");
 
-        //b2b validation
         if (await _erpCustomerFunctionalityService.IsSalesOrderInvalidForCurrentCustomerAsync())
             return RedirectToRoute("ShoppingCart");
 
-        //validation
         if (_orderSettings.CheckoutDisabled)
             return RedirectToRoute("ShoppingCart");
 
@@ -400,22 +406,19 @@ public class ErpCheckoutController : CheckoutController
         if (await _customerService.IsGuestAsync(customer) && !_orderSettings.AnonymousCheckoutAllowed)
             return Challenge();
 
-        #region Erp Custom
+        #region B2B
 
         if (b2BAccount != null)
         {
-            //check whether "billing address" step is enabled
             if (_orderSettings.DisableBillingAddressCheckoutStep)
             {
                 var currentCustomer = await _workContext.GetCurrentCustomerAsync();
                 if (b2BUser != null && b2BAccount.BillingAddressId != null)
                 {
                     var b2bBillingAddress = await _addressService.GetAddressByIdAsync(b2BAccount.BillingAddressId.Value);
-                    // Billing address is not editable at all for B2BUser (But we have keep current customer name and email in the billing address)
                     var billingAddress = await _addressService.GetAddressByIdAsync(currentCustomer.BillingAddressId ?? 0);
                     if (billingAddress == null || !await _addressService.IsAddressValidAsync(billingAddress))
                     {
-                        // we will only add new billing address for a b2b customer for the first time or for invalid address
                         var newBillingAddress = b2bBillingAddress;
                         newBillingAddress.FirstName = currentCustomer.FirstName;
                         newBillingAddress.LastName = currentCustomer.LastName;
@@ -458,10 +461,8 @@ public class ErpCheckoutController : CheckoutController
                         var b2CShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdWithActiveAsync(b2CUser.ErpShipToAddressId);
                         var address = await _addressService.GetAddressByIdAsync(b2CShipToAddress != null ? b2CShipToAddress.AddressId : currentCustomer.ShippingAddressId ?? 0);
 
-                        // Billing address is not editable at all for B2BUser (But we have keep current customer name and email in the billing address)
                         if (billingAddress == null || !await _addressService.IsAddressValidAsync(billingAddress))
                         {
-                            // we will only add new billing address for a b2b customer for the first time or for invalid address
                             var newBillingAddress = address;
                             newBillingAddress.FirstName = currentCustomer.FirstName;
                             newBillingAddress.LastName = currentCustomer.LastName;
@@ -518,16 +519,13 @@ public class ErpCheckoutController : CheckoutController
 
         #endregion
 
-        //model
         var model = await _checkoutModelFactory.PrepareBillingAddressModelAsync(cart, prePopulateNewAddressWithCustomerFields: true);
 
-        //check whether "billing address" step is enabled
         if (_orderSettings.DisableBillingAddressCheckoutStep && model.ExistingAddresses.Any())
         {
             if (model.ExistingAddresses.Any())
             {
-                //choose the first one
-                return await SelectBillingAddress(model.ExistingAddresses.First().Id);
+                return await SelectBillingAddress(model.ExistingAddresses[0].Id);
             }
 
             TryValidateModel(model);
@@ -538,14 +536,50 @@ public class ErpCheckoutController : CheckoutController
         return View(model);
     }
 
+    public override async Task<IActionResult> SelectBillingAddress(int addressId, bool shipToSameAddress = false)
+    {
+        var customer = await _workContext.GetCurrentCustomerAsync();
+        var b2BAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(customer.Id);
+
+        if (!await IsUserValid(b2BAccount))
+            return RedirectToRoute("ShoppingCart");
+
+        var address = await _customerService.GetCustomerAddressAsync(customer.Id, addressId);
+
+        if (address == null)
+            return RedirectToRoute("CheckoutBillingAddress");
+
+        customer.BillingAddressId = address.Id;
+        await _customerService.UpdateCustomerAsync(customer);
+
+        var store = await _storeContext.GetCurrentStoreAsync();
+        var cart = await _shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.ShoppingCart, store.Id);
+
+        //ship to the same address?
+        //by default Shipping is available if the country is not specified
+        var shippingAllowed = !_addressSettings.CountryEnabled || ((await _countryService.GetCountryByAddressAsync(address))?.AllowsShipping ?? false);
+        if (_shippingSettings.ShipToSameAddress && shipToSameAddress && await _shoppingCartService.ShoppingCartRequiresShippingAsync(cart) && shippingAllowed)
+        {
+            customer.ShippingAddressId = customer.BillingAddressId;
+            await _customerService.UpdateCustomerAsync(customer);
+            //reset selected shipping method (in case if "pick up in store" was selected)
+            await _genericAttributeService.SaveAttributeAsync<ShippingOption>(customer, NopCustomerDefaults.SelectedShippingOptionAttribute, null, store.Id);
+            await _genericAttributeService.SaveAttributeAsync<PickupPoint>(customer, NopCustomerDefaults.SelectedPickupPointAttribute, null, store.Id);
+            //limitation - "Ship to the same address" doesn't properly work in "pick up in store only" case (when no shipping plugins are available) 
+            return RedirectToRoute("CheckoutShippingMethod");
+        }
+
+        return RedirectToRoute("CheckoutShippingAddress");
+    }
+
     [HttpPost, ActionName("ErpBillingAddress")]
     [FormValueRequired("nextstep")]
     public async Task<IActionResult> NewBillingAddress(CheckoutErpBillingAddressModel model, IFormCollection form)
     {
-        //-->ToDo: After completing custom permission service for b2b b2c feature this permission check will be reopen
-        var (b2BAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
+        var customer = await _workContext.GetCurrentCustomerAsync();
+        var b2BAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(customer.Id);
 
-        if (b2BUser != null && !await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BOrder) && !await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BQuote))
+        if (!await IsUserValid(b2BAccount))
             return RedirectToRoute("ShoppingCart");
 
         if (await _erpCustomerFunctionalityService.IsSalesOrderInvalidForCurrentCustomerAsync())
@@ -555,7 +589,6 @@ public class ErpCheckoutController : CheckoutController
         if (_orderSettings.CheckoutDisabled)
             return RedirectToRoute("ShoppingCart");
 
-        var customer = await _workContext.GetCurrentCustomerAsync();
         var store = await _storeContext.GetCurrentStoreAsync();
         var cart = await _shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.ShoppingCart, store.Id);
 
@@ -617,17 +650,12 @@ public class ErpCheckoutController : CheckoutController
     {
         #region Check settings
 
-        //-->ToDo: After completing custom permission service for b2b b2c feature this permission check will be reopen
         var (b2BAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
 
-        if (b2BUser != null && !await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BOrder) && !await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BQuote))
+        if (!await IsUserValid(b2BAccount))
             return RedirectToRoute("ShoppingCart");
 
         if (await _erpCustomerFunctionalityService.IsSalesOrderInvalidForCurrentCustomerAsync())
-            return RedirectToRoute("ShoppingCart");
-
-        //validation
-        if (_orderSettings.CheckoutDisabled)
             return RedirectToRoute("ShoppingCart");
 
         var customer = await _workContext.GetCurrentCustomerAsync();
@@ -648,12 +676,11 @@ public class ErpCheckoutController : CheckoutController
 
         #endregion
 
+        await _erpAccountCreditSyncFunctionality.LiveErpAccountCreditCheckAsync(b2BAccount, customer);
+
         #region B2B User
 
-        if (b2BUser != null)
-            b2BUser.ErpShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdWithActiveAsync(b2BUser.ErpShipToAddressId);
-
-        if (b2BUser != null && b2BAccount != null && b2BUser.ErpShipToAddress != null && b2BUser.ErpShipToAddress.Id > 0)
+        if (b2BUser != null && b2BAccount != null && b2BUser.ErpShipToAddressId > 0)
         {
             var b2BShipToAddressModel = await _erpCheckoutModelFactory.PrepareCheckoutB2BShippingAddressModelAsync(cart, b2BUser, b2BAccount);
             return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/ErpCheckout/ShippingAddress.cshtml", b2BShipToAddressModel);
@@ -672,33 +699,7 @@ public class ErpCheckoutController : CheckoutController
                 return RedirectToRoute("ShoppingCart");
             }
 
-            #region Todo code
-
-            //if (!Enum.IsDefined(typeof(DeliveryOption), b2CShipToAddress.DeliveryOptionId))
-            //{
-            //    _notificationService.ErrorNotification(_localizationService.GetResource("Plugins.Payment.B2BCustomerAccount.B2BCheckout.B2CShipToAddress.DeliveryOption.NotFound"));
-            //    return RedirectToRoute("ShoppingCart");
-            //}
-
-            //ToDo - isCustomerInExpressShopZone, isCustomerOnDeliveryRoute will come from ERP
-            var isCustomerInExpressShopZone = false; //dummy data
-            //var (isCustomerInExpressShopZone, isCustomerOnDeliveryRoute, response) = await _b2BERPIntegrationService.GetSoltrackResponse(_workContext.CurrentCustomer, b2CShipToAddress.Latitute, b2CShipToAddress.Longitute);
-
-            if (isCustomerInExpressShopZone)
-            {
-                b2CShipToAddress.IsActive = false;
-                //b2CShipToAddress.DeliveryOptionId = (int)DeliveryOption.NoShop;
-                await _erpShipToAddressService.UpdateErpShipToAddressAsync(b2CShipToAddress);
-
-            }
-
-            #endregion
-
             var b2CShipToAddressModel = await _erpCheckoutModelFactory.PrepareCheckoutB2CShippingAddressModelAsync(cart, b2CUser, b2BAccount);
-            if (isCustomerInExpressShopZone)
-            {
-                b2CShipToAddressModel.HasAddressChanged = 1;
-            }
 
             return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/ErpCheckout/ShippingAddress.cshtml", b2CShipToAddressModel);
         }
@@ -710,22 +711,39 @@ public class ErpCheckoutController : CheckoutController
         return View(model);
     }
 
+    public override async Task<IActionResult> SelectShippingAddress(int addressId)
+    {
+        var customer = await _workContext.GetCurrentCustomerAsync();
+        var b2BAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(customer.Id);
+
+        if (!await IsUserValid(b2BAccount))
+            return RedirectToRoute("ShoppingCart");
+
+        var address = await _customerService.GetCustomerAddressAsync(customer.Id, addressId);
+
+        if (address == null)
+            return RedirectToRoute("CheckoutShippingAddress");
+
+        customer.ShippingAddressId = address.Id;
+        await _customerService.UpdateCustomerAsync(customer);
+
+        if (_shippingSettings.AllowPickupInStore)
+        {
+            var store = await _storeContext.GetCurrentStoreAsync();
+            //set value indicating that "pick up in store" option has not been chosen
+            await _genericAttributeService.SaveAttributeAsync<PickupPoint>(customer, NopCustomerDefaults.SelectedPickupPointAttribute, null, store.Id);
+        }
+
+        return RedirectToRoute("CheckoutShippingMethod");
+    }
+
     [HttpPost, ActionName("ErpShippingAddress")]
     [FormValueRequired("nextstep")]
     public async Task<IActionResult> NewShippingAddress(CheckoutErpShippingAddressModel model, IFormCollection form)
     {
-        //b2b validation
-        if (await _erpCustomerFunctionalityService.IsSalesOrderInvalidForCurrentCustomerAsync())
-            return RedirectToRoute("ShoppingCart");
+        var (b2BAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
 
-        //-->ToDo: After completing custom permission service for b2b b2c feature this permission check will be reopen
-        var (erpAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
-
-        if (b2BUser != null && !await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BOrder) && !await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BQuote))
-            return RedirectToRoute("ShoppingCart");
-
-        //validation
-        if (_orderSettings.CheckoutDisabled)
+        if (!await IsUserValid(b2BAccount))
             return RedirectToRoute("ShoppingCart");
 
         var customer = await _workContext.GetCurrentCustomerAsync();
@@ -753,7 +771,11 @@ public class ErpCheckoutController : CheckoutController
                 var pickupOption = await ParsePickupOptionAsync(cart, form);
                 await SavePickupOptionAsync(pickupOption);
 
-                //customer ref set at generic attribute
+                if (!string.IsNullOrEmpty(model.SpecialInstructions?.Trim()))
+                {
+                    await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.ProvidedB2BSpecialInstructions, model.SpecialInstructions?.Trim(), store.Id);
+                }
+
                 if (!string.IsNullOrEmpty(model.CustomerReference?.Trim()))
                 {
                     await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.ProvidedB2BCustomerReferenceAsPO, model.CustomerReference?.Trim(), store.Id);
@@ -762,11 +784,16 @@ public class ErpCheckoutController : CheckoutController
                 return RedirectToRoute("CheckoutPaymentMethod");
             }
 
-            //set value indicating that "pick up in store" option has not been chosen
             await _genericAttributeService.SaveAttributeAsync<PickupPoint>(customer, NopCustomerDefaults.SelectedPickupPointAttribute, null, store.Id);
         }
 
-        var erpUser = await _erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(customer);
+        var erpUser = b2BUser ?? b2CUser;
+
+        if (erpUser == null)
+        {
+            _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("NopStation.Plugin.B2B.B2BB2CFeatures.ErpCheckout.ErpUser.NotFound"));
+            return RedirectToRoute("ShoppingCart");
+        }
 
         //custom address attributes
         var customAttributes = await _addressAttributeParser.ParseCustomAttributesAsync(form, NopCommonDefaults.AddressAttributeControlName);
@@ -776,62 +803,51 @@ public class ErpCheckoutController : CheckoutController
             ModelState.AddModelError("", error);
         }
 
-        var newAddress = model.SelectedShipToAddress;
+        var date = model.DeliveryDate;
 
-        if (model.IsFullLoadRequired)
-        {
-            (var minDeliveryDate, var maxDeliveryDate) = await _erpCustomerFunctionalityService.GetMinimumAndMaximumDeliveryDateForShippingAddress();
-            model.DeliveryDate = minDeliveryDate.Date;
-        }
         // validate DeliveryDate
-        else if (!model.ErpToDetermineDate)
+        if (!model.ErpToDetermineDate)
         {
-            if (model.DeliveryDate < DateTime.Now)
-                ModelState.AddModelError("DeliveryDate", "Please provide a valid delivery date");
-
-            (var minDeliveryDate, var maxDeliveryDate) = await _erpCustomerFunctionalityService.GetMinimumAndMaximumDeliveryDateForShippingAddress();
-
-            if (model.DeliveryDate < minDeliveryDate.Date || model.DeliveryDate > maxDeliveryDate)
-                ModelState.AddModelError("DeliveryDate", "Please provide a valid delivery date");
-        }
-
-        if (model.DeliveryDateString == null || !DateTime.TryParseExact(model.DeliveryDateString, "dd/MM/yyyy", null, DateTimeStyles.None, out var selectedDeliveryDate))
-            ModelState.AddModelError("DeliveryDate", "Please provide a valid delivery date");
-
-        //getB2BId for validation
-        model.ErpAccountId = erpAccount.Id;
-
-        erpUser.ErpShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdWithActiveAsync(model.ErpShipToAddressId);
-
-        if (ModelState.IsValid && erpUser != null && erpUser.ErpUserType == ErpUserType.B2BUser && erpUser.ErpShipToAddress != null && model.ErpShipToAddressId > 0)
-        {
-            // try to find an address with the same values (don't duplicate records)
-            var shipToAddress = erpUser.ErpShipToAddress;
-
-            // check if ship To address related b2b account id is matching
-            if (shipToAddress == null || shipToAddress.AddressId == 0)
-                throw new Exception("Ship to Address can't be loaded");
-
-            // set value of selected Delivery Date
-            if (model.ErpToDetermineDate && !string.IsNullOrEmpty(model.DeliveryDateString))
+            if (model.CustomDeliveryDateString is null)
             {
-                try
-                {
-                    var date = model.DeliveryDate;
-                    if (DateTime.TryParseExact(model.DeliveryDateString, "dd/MM/yyyy", new CultureInfo("en-GB"), DateTimeStyles.None, out var dateTimeForDelivery))
-                        date = dateTimeForDelivery;
-
-                    await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.SelectedB2BDeliveryDateAttribute, date, store.Id);
-                }
-                catch
-                {
-                    await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.SelectedB2BDeliveryDateAttribute, model.DeliveryDate, store.Id);
-                }
+                ModelState.AddModelError("CustomDeliveryDateString", "Please provide a valid delivery date");
             }
             else
             {
-                await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.SelectedB2BDeliveryDateAttribute, model.DeliveryDate, store.Id);
+                if (DateTime.TryParseExact(model.CustomDeliveryDateString, "dd/MM/yyyy", new CultureInfo("en-GB"), DateTimeStyles.None, out var dateTimeForDelivery))
+                    date = dateTimeForDelivery;
+
+                if (date < DateTime.Now.Date)
+                {
+                    ModelState.AddModelError("CustomDeliveryDateString", "Please provide a valid delivery date");
+                }
             }
+        }
+        else
+        {
+            if (model.DeliveryDateString is null)
+            {
+                ModelState.AddModelError("DeliveryDateString", "Please provide a valid delivery date");
+            }
+            else
+            {
+                if (DateTime.TryParseExact(model.DeliveryDateString, "dd/MM/yyyy", new CultureInfo("en-GB"), DateTimeStyles.None, out var dateTimeForDelivery))
+                    date = dateTimeForDelivery;
+
+                if (date < DateTime.Now.Date)
+                {
+                    ModelState.AddModelError("DeliveryDateString", "Please provide a valid delivery date");
+                }
+            }
+        }
+
+        model.ErpAccountId = b2BAccount.Id;
+        var shipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdWithActiveAsync(model.ErpShipToAddressId);
+
+        if (ModelState.IsValid && erpUser.ErpUserType == ErpUserType.B2BUser && shipToAddress != null && model.ErpShipToAddressId > 0)
+        {
+            if (shipToAddress.AddressId == 0)
+                throw new Exception("Ship to Address can't be loaded");
 
             //special Instruction set at generic attribute
             if (!string.IsNullOrEmpty(model.SpecialInstructions?.Trim()))
@@ -862,35 +878,10 @@ public class ErpCheckoutController : CheckoutController
 
             return RedirectToRoute("CheckoutShippingMethod");
         }
-        else if (ModelState.IsValid && erpUser != null && erpUser.ErpUserType == ErpUserType.B2CUser && erpUser.ErpShipToAddress != null && model.ErpShipToAddressId > 0)
+        else if (ModelState.IsValid && erpUser.ErpUserType == ErpUserType.B2CUser && shipToAddress != null && model.ErpShipToAddressId > 0)
         {
-            // try to find an address with the same values (don't duplicate records)
-            var shipToAddress = erpUser.ErpShipToAddress;
-
-            // check if ship To address related b2b account id is matching
-            if (shipToAddress == null || shipToAddress.AddressId == 0)
-                throw new Exception("Ship to Address can't be loaded");
-
-            // set value of selected Delivery Date
-            if (model.ErpToDetermineDate && !string.IsNullOrEmpty(model.DeliveryDateString))
-            {
-                try
-                {
-                    var date = model.DeliveryDate;
-                    if (DateTime.TryParseExact(model.DeliveryDateString, "dd/MM/yyyy", new CultureInfo("en-GB"), DateTimeStyles.None, out var dateTimeForDelivery))
-                        date = dateTimeForDelivery;
-
-                    await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.SelectedB2BDeliveryDateAttribute, date, store.Id);
-                }
-                catch
-                {
-                    await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.SelectedB2BDeliveryDateAttribute, model.DeliveryDate, store.Id);
-                }
-            }
-            else
-            {
-                await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.SelectedB2BDeliveryDateAttribute, model.DeliveryDate, store.Id);
-            }
+            if (shipToAddress.AddressId == 0)
+                throw new Exception("Ship to Address can't be loaded");            
 
             //special Instruction set at generic attribute
             if (!string.IsNullOrEmpty(model.SpecialInstructions?.Trim()))
@@ -923,8 +914,69 @@ public class ErpCheckoutController : CheckoutController
         }
 
         // If we got this far, something failed, redisplay form
-        var erpShipToAddressModel = await _erpCheckoutModelFactory.PrepareCheckoutB2BShippingAddressModelAsync(cart, erpUser, erpAccount);
+        var erpShipToAddressModel = await _erpCheckoutModelFactory.PrepareCheckoutB2BShippingAddressModelAsync(cart, b2BUser, b2BAccount);
+        
+        if (erpUser.ErpUserType == ErpUserType.B2CUser)
+        {
+            erpShipToAddressModel = await _erpCheckoutModelFactory.PrepareCheckoutB2CShippingAddressModelAsync(cart, b2CUser, b2BAccount);
+        }
+
         return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/ErpCheckout/ShippingAddress.cshtml", erpShipToAddressModel);
+    }
+
+    public override async Task<IActionResult> ShippingMethod()
+    {
+        var customer = await _workContext.GetCurrentCustomerAsync();
+        var b2BAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(customer.Id);
+
+        if (!await IsUserValid(b2BAccount))
+            return RedirectToRoute("ShoppingCart");
+
+        var store = await _storeContext.GetCurrentStoreAsync();
+        var cart = await _shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.ShoppingCart, store.Id);
+
+        if (!cart.Any())
+            return RedirectToRoute("ShoppingCart");
+
+        if (_orderSettings.OnePageCheckoutEnabled)
+            return RedirectToRoute("CheckoutOnePage");
+
+        if (await _customerService.IsGuestAsync(customer) && !_orderSettings.AnonymousCheckoutAllowed)
+            return Challenge();
+
+        if (!await _shoppingCartService.ShoppingCartRequiresShippingAsync(cart))
+        {
+            await _genericAttributeService.SaveAttributeAsync<ShippingOption>(customer, NopCustomerDefaults.SelectedShippingOptionAttribute, null, store.Id);
+            return RedirectToRoute("CheckoutPaymentMethod");
+        }
+
+        //check if pickup point is selected on the shipping address step
+        if (!_orderSettings.DisplayPickupInStoreOnShippingMethodPage)
+        {
+            var selectedPickUpPoint = await _genericAttributeService
+                .GetAttributeAsync<PickupPoint>(customer, NopCustomerDefaults.SelectedPickupPointAttribute, store.Id);
+            if (selectedPickUpPoint != null)
+                return RedirectToRoute("CheckoutPaymentMethod");
+        }
+
+        //model
+        var model = await _checkoutModelFactory.PrepareShippingMethodModelAsync(cart, await _customerService.GetCustomerShippingAddressAsync(customer));
+
+        if (_shippingSettings.BypassShippingMethodSelectionIfOnlyOne && model.ShippingMethods.Count == 1)
+        {
+            //if we have only one shipping method, then a customer doesn't have to choose a shipping method
+            if (await _genericAttributeService.GetAttributeAsync<ShippingOption>(customer, NopCustomerDefaults.SelectedShippingOptionAttribute, store.Id) == null)
+            {
+                await _genericAttributeService.SaveAttributeAsync(customer,
+                    NopCustomerDefaults.SelectedShippingOptionAttribute,
+                    model.ShippingMethods[0].ShippingOption,
+                    store.Id);
+            }
+
+            return RedirectToRoute("CheckoutPaymentMethod");
+        }
+
+        return View(model);
     }
 
     [HttpPost, ActionName("ShippingMethod")]
@@ -983,7 +1035,7 @@ public class ErpCheckoutController : CheckoutController
         //performance optimization. try cache first
         var shippingOptions = await _genericAttributeService.GetAttributeAsync<List<ShippingOption>>(customer,
             NopCustomerDefaults.OfferedShippingOptionsAttribute, store.Id);
-        if (shippingOptions == null || !shippingOptions.Any())
+        if (shippingOptions == null || shippingOptions.Count == 0)
         {
             //not found? let's load them using shipping service
             shippingOptions = (await _shippingService.GetShippingOptionsAsync(cart, await _customerService.GetCustomerShippingAddressAsync(customer),
@@ -1011,17 +1063,9 @@ public class ErpCheckoutController : CheckoutController
     {
         #region Check settings
 
-        //-->ToDo: After completing custom permission service for b2b b2c feature this permission check will be reopen
-        var (erpAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
+        var (b2BAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
 
-        if (b2BUser != null && !await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BOrder) && !await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BQuote))
-            return RedirectToRoute("ShoppingCart");
-
-        if (await _erpCustomerFunctionalityService.IsSalesOrderInvalidForCurrentCustomerAsync())
-            return RedirectToRoute("ShoppingCart");
-
-        //validation
-        if (_orderSettings.CheckoutDisabled)
+        if (!await IsUserValid(b2BAccount))
             return RedirectToRoute("ShoppingCart");
 
         var customer = await _workContext.GetCurrentCustomerAsync();
@@ -1039,56 +1083,78 @@ public class ErpCheckoutController : CheckoutController
 
         #endregion
 
-        #region Quote place
+        await _erpAccountCreditSyncFunctionality.LiveErpAccountCreditCheckAsync(b2BAccount, customer);
 
-        // check if it a Quote Order, for Quote Order we will skip payment part and redirect to CheckoutConfirm
-        var isQuoteOrder = await IsQuoteOrderAsync();
-        if (isQuoteOrder || await _erpCustomerFunctionalityService.IsCurrentCustomerInB2BQuoteAssistantRole())
+        try
         {
-            await _genericAttributeService.SaveAttributeAsync<string>(customer,
-                NopCustomerDefaults.SelectedPaymentMethodAttribute, null, store.Id);
+            #region Quote place
 
-            //skip payment info page too
-            var paymentInfo = new ProcessPaymentRequest();
-
-            //session save
-            await HttpContext.Session.SetAsync("OrderPaymentInfo", paymentInfo);
-
-            // For Quote Order, Place Order From Here
-
-            //prevent 2 orders being placed within an X seconds time frame
-            if (!await IsMinimumOrderPlacementIntervalValidAsync(customer))
-                throw new Exception(await _localizationService.GetResourceAsync("Checkout.MinOrderPlacementInterval"));
-
-            //place order
-            var processPaymentRequest = new ProcessPaymentRequest();
-
-            await _paymentService.GenerateOrderGuidAsync(processPaymentRequest);
-            processPaymentRequest.StoreId = store.Id;
-            processPaymentRequest.CustomerId = customer.Id;
-            processPaymentRequest.PaymentMethodSystemName = await _genericAttributeService.GetAttributeAsync<string>(customer,
-                NopCustomerDefaults.SelectedPaymentMethodAttribute, store.Id);
-            await HttpContext.Session.SetAsync<ProcessPaymentRequest>("OrderPaymentInfo", processPaymentRequest);
-            var placeOrderResult = await _overriddenOrderProcessingService.PlaceQuoteOrderAsync(processPaymentRequest);
-            if (placeOrderResult.Success)
+            // check if it a Quote Order, for Quote Order we will skip payment part and redirect to CheckoutConfirm
+            var isQuoteOrder = await IsQuoteOrderAsync();
+            if (isQuoteOrder || await _erpCustomerFunctionalityService.IsCurrentCustomerInB2BQuoteAssistantRoleAsync())
             {
-                // place b2B quote
-                if (erpAccount != null && (b2BUser != null || b2CUser != null))
-                    await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, ErpOrderType.B2BQuote);
+                await _genericAttributeService.SaveAttributeAsync<string>(customer, NopCustomerDefaults.SelectedPaymentMethodAttribute, null, store.Id);
 
-                await ClearGenericAttributeForQuoteOrderAsync();   //clear generic Attribute for Quote Order
+                //skip payment info page too
+                var paymentInfo = new ProcessPaymentRequest();
 
-                //ERP activity log
-                await _erpLogsService.InformationAsync("B2B Quote order placed successfully! OrderId: " + placeOrderResult.PlacedOrder.Id + ", Erp Order Id: " + placeOrderResult.PlacedOrder.CustomOrderNumber, ErpSyncLevel.Order, customer: await _workContext.GetCurrentCustomerAsync());
+                //session save
+                await HttpContext.Session.SetAsync("OrderPaymentInfo", paymentInfo);
 
-                return RedirectToRoute("CheckoutCompleted", new { orderId = placeOrderResult.PlacedOrder.Id });
+                // For Quote Order, Place Order From Here
+
+                //prevent 2 orders being placed within an X seconds time frame
+                if (!await IsMinimumOrderPlacementIntervalValidAsync(customer))
+                    throw new Exception(await _localizationService.GetResourceAsync("Checkout.MinOrderPlacementInterval"));
+
+                //place order
+                var processPaymentRequest = new ProcessPaymentRequest();
+
+                await _paymentService.GenerateOrderGuidAsync(processPaymentRequest);
+                processPaymentRequest.StoreId = store.Id;
+                processPaymentRequest.CustomerId = customer.Id;
+                processPaymentRequest.PaymentMethodSystemName = await _genericAttributeService.GetAttributeAsync<string>(customer,
+                    NopCustomerDefaults.SelectedPaymentMethodAttribute, store.Id);
+                await HttpContext.Session.SetAsync("OrderPaymentInfo", processPaymentRequest);
+                var placeOrderResult = await _overriddenOrderProcessingService.PlaceQuoteOrderAsync(processPaymentRequest);
+
+                if (placeOrderResult.Success)
+                {
+                    if (b2BAccount != null && b2BUser != null)
+                        await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, ErpOrderType.B2BQuote);
+                    else if (b2BAccount != null && b2CUser != null)
+                        await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, ErpOrderType.B2CQuote);
+
+                    await ClearGenericAttributeForQuoteOrderAsync();
+
+                    await _erpLogsService.InformationAsync($"Quote order placed successfully! Order-Id: {placeOrderResult.PlacedOrder.Id}, Erp Order Number: " + placeOrderResult.PlacedOrder.CustomOrderNumber, ErpSyncLevel.Order, customer: customer);
+
+                    await _customerActivityService.InsertActivityAsync(customer, "PublicStore.PlaceOrder",
+                            string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.PlaceOrder"),
+                                placeOrderResult.PlacedOrder.CustomOrderNumber), placeOrderResult.PlacedOrder);
+
+                    return RedirectToRoute("CheckoutCompleted", new { orderId = placeOrderResult.PlacedOrder.Id });
+                }
+                else
+                {
+                    foreach (var error in placeOrderResult.Errors)
+                        ModelState.AddModelError("", error);
+                }
+
+                // if place order is not successful
+                return RedirectToRoute("CheckoutPaymentMethod");
             }
 
-            // if place order is not successful
-            return RedirectToRoute("CheckoutConfirm");
+            #endregion
         }
+        catch (Exception ex)
+        {
+            await _logger.WarningAsync(ex.Message, ex);
 
-        #endregion
+            _notificationService.WarningNotification(ex.Message);
+
+            return RedirectToRoute("CheckoutShippingAddress");
+        }
 
         //Check whether payment workflow is required
         //we ignore reward points during cart total calculation
@@ -1096,12 +1162,12 @@ public class ErpCheckoutController : CheckoutController
         if (!isPaymentWorkflowRequired)
         {
             await _genericAttributeService.SaveAttributeAsync<string>(customer,
-                 NopCustomerDefaults.SelectedPaymentMethodAttribute, null, store.Id);
+                    NopCustomerDefaults.SelectedPaymentMethodAttribute, null, store.Id);
             return RedirectToRoute("CheckoutPaymentInfo");
         }
 
         var billingAddress = await _addressService.GetAddressByIdAsync(customer.BillingAddressId.Value);
-        var country = await _countryService.GetCountryByIdAsync(billingAddress.CountryId.Value);
+        var country = await _countryService.GetCountryByIdAsync(billingAddress?.CountryId ?? 0);
 
         //filter by country
         var filterByCountryId = 0;
@@ -1129,23 +1195,121 @@ public class ErpCheckoutController : CheckoutController
         return View(paymentMethodModel);
     }
 
+    [HttpPost, ActionName("PaymentMethod")]
+    [FormValueRequired("nextstep")]
+    public override async Task<IActionResult> SelectPaymentMethod(string paymentmethod, CheckoutPaymentMethodModel model)
+    {
+        var customer = await _workContext.GetCurrentCustomerAsync();
+        var b2BAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(customer.Id);
+
+        if (!await IsUserValid(b2BAccount))
+            return RedirectToRoute("ShoppingCart");
+
+        var store = await _storeContext.GetCurrentStoreAsync();
+        var cart = await _shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.ShoppingCart, store.Id);
+
+        if (!cart.Any())
+            return RedirectToRoute("ShoppingCart");
+
+        if (_orderSettings.OnePageCheckoutEnabled)
+            return RedirectToRoute("CheckoutOnePage");
+
+        if (await _customerService.IsGuestAsync(customer) && !_orderSettings.AnonymousCheckoutAllowed)
+            return Challenge();
+
+        //reward points
+        if (_rewardPointsSettings.Enabled)
+        {
+            await _genericAttributeService.SaveAttributeAsync(customer,
+                NopCustomerDefaults.UseRewardPointsDuringCheckoutAttribute, model.UseRewardPoints,
+                store.Id);
+        }
+
+        //Check whether payment workflow is required
+        var isPaymentWorkflowRequired = await _orderProcessingService.IsPaymentWorkflowRequiredAsync(cart);
+        if (!isPaymentWorkflowRequired)
+        {
+            await _genericAttributeService.SaveAttributeAsync<string>(customer, NopCustomerDefaults.SelectedPaymentMethodAttribute, null, store.Id);
+            return RedirectToRoute("CheckoutPaymentInfo");
+        }
+        //payment method 
+        if (string.IsNullOrEmpty(paymentmethod))
+            return await PaymentMethod();
+
+        if (!await _paymentPluginManager.IsPluginActiveAsync(paymentmethod, customer, store.Id))
+            return await PaymentMethod();
+
+        //save
+        await _genericAttributeService.SaveAttributeAsync(customer,
+            NopCustomerDefaults.SelectedPaymentMethodAttribute, paymentmethod, store.Id);
+
+        return RedirectToRoute("CheckoutPaymentInfo");
+    }
+
+    public override async Task<IActionResult> PaymentInfo()
+    {
+        var customer = await _workContext.GetCurrentCustomerAsync();
+        var b2BAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(customer.Id);
+
+        if (!await IsUserValid(b2BAccount))
+            return RedirectToRoute("ShoppingCart");
+
+        var store = await _storeContext.GetCurrentStoreAsync();
+        var cart = await _shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.ShoppingCart, store.Id);
+
+        if (!cart.Any())
+            return RedirectToRoute("ShoppingCart");
+
+        if (_orderSettings.OnePageCheckoutEnabled)
+            return RedirectToRoute("CheckoutOnePage");
+
+        if (await _customerService.IsGuestAsync(customer) && !_orderSettings.AnonymousCheckoutAllowed)
+            return Challenge();
+
+        await _erpAccountCreditSyncFunctionality.LiveErpAccountCreditCheckAsync(b2BAccount, customer);
+
+        //Check whether payment workflow is required
+        var isPaymentWorkflowRequired = await _orderProcessingService.IsPaymentWorkflowRequiredAsync(cart);
+        if (!isPaymentWorkflowRequired)
+        {
+            return RedirectToRoute("CheckoutConfirm");
+        }
+
+        //load payment method
+        var paymentMethodSystemName = await _genericAttributeService.GetAttributeAsync<string>(customer,
+            NopCustomerDefaults.SelectedPaymentMethodAttribute, store.Id);
+        var paymentMethod = await _paymentPluginManager
+            .LoadPluginBySystemNameAsync(paymentMethodSystemName, customer, store.Id);
+        if (paymentMethod == null)
+            return RedirectToRoute("CheckoutPaymentMethod");
+
+        //Check whether payment info should be skipped
+        if (paymentMethod.SkipPaymentInfo ||
+            (paymentMethod.PaymentMethodType == PaymentMethodType.Redirection && _paymentSettings.SkipPaymentInfoStepForRedirectionPaymentMethods))
+        {
+            //skip payment info page
+            var paymentInfo = new ProcessPaymentRequest();
+
+            //session save
+            await HttpContext.Session.SetAsync("OrderPaymentInfo", paymentInfo);
+
+            return RedirectToRoute("CheckoutConfirm");
+        }
+
+        //model
+        var model = await _checkoutModelFactory.PreparePaymentInfoModelAsync(paymentMethod);
+        return View(model);
+    }
+
     [HttpPost, ActionName("PaymentInfo")]
     [FormValueRequired("nextstep")]
     public override async Task<IActionResult> EnterPaymentInfo(IFormCollection form)
     {
         #region Check settings
 
-        //-->ToDo: After completing custom permission service for b2b b2c feature this permission check will be reopen
-        var (erpAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
+        var (b2BAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
 
-        if (b2BUser != null && !await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BOrder) && !await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BQuote))
-            return RedirectToRoute("ShoppingCart");
-
-        if (await _erpCustomerFunctionalityService.IsSalesOrderInvalidForCurrentCustomerAsync())
-            return RedirectToRoute("ShoppingCart");
-
-        //validation
-        if (_orderSettings.CheckoutDisabled)
+        if (!await IsUserValid(b2BAccount))
             return RedirectToRoute("ShoppingCart");
 
         var customer = await _workContext.GetCurrentCustomerAsync();
@@ -1171,16 +1335,15 @@ public class ErpCheckoutController : CheckoutController
         }
 
         //load payment method
-        var paymentMethodSystemName = await _genericAttributeService.GetAttributeAsync<string>(customer,
-            NopCustomerDefaults.SelectedPaymentMethodAttribute, store.Id);
-        var paymentMethod = await _paymentPluginManager
-            .LoadPluginBySystemNameAsync(paymentMethodSystemName, customer, store.Id);
+        var paymentMethodSystemName = await _genericAttributeService.GetAttributeAsync<string>(customer, NopCustomerDefaults.SelectedPaymentMethodAttribute, store.Id);
+        var paymentMethod = await _paymentPluginManager.LoadPluginBySystemNameAsync(paymentMethodSystemName, customer, store.Id);
         if (paymentMethod == null)
             return RedirectToRoute("CheckoutPaymentMethod");
 
         var warnings = await paymentMethod.ValidatePaymentFormAsync(form);
         foreach (var warning in warnings)
             ModelState.AddModelError("", warning);
+
         if (ModelState.IsValid)
         {
             //get payment info
@@ -1191,17 +1354,11 @@ public class ErpCheckoutController : CheckoutController
             //session save
             await HttpContext.Session.SetAsync("OrderPaymentInfo", paymentInfo);
 
-            // for non b2b account, display confirm form
-            if (erpAccount == null)
-            {
-                return RedirectToRoute("CheckoutConfirm");
-            }
-
             // for b2b account. place order from here (no need to display confirm page)
             try
             {
                 var isQouteOrder = await IsQuoteOrderAsync();
-                if (isQouteOrder || await _erpCustomerFunctionalityService.IsCurrentCustomerInB2BQuoteAssistantRole())
+                if (isQouteOrder || await _erpCustomerFunctionalityService.IsCurrentCustomerInB2BQuoteAssistantRoleAsync())
                 {
                     //prevent 2 orders being placed within an X seconds time frame
                     if (!await IsMinimumOrderPlacementIntervalValidAsync(customer))
@@ -1213,15 +1370,28 @@ public class ErpCheckoutController : CheckoutController
                     await _paymentService.GenerateOrderGuidAsync(processPaymentRequest);
                     processPaymentRequest.StoreId = store.Id;
                     processPaymentRequest.CustomerId = customer.Id;
-                    processPaymentRequest.PaymentMethodSystemName = await _genericAttributeService.GetAttributeAsync<string>(customer, NopCustomerDefaults.SelectedPaymentMethodAttribute, store.Id);
+                    processPaymentRequest.PaymentMethodSystemName = await _genericAttributeService.GetAttributeAsync<string>(customer,
+                        NopCustomerDefaults.SelectedPaymentMethodAttribute, store.Id);
 
                     await HttpContext.Session.SetAsync("OrderPaymentInfo", processPaymentRequest);
 
                     var placeOrderResult = await _overriddenOrderProcessingService.PlaceQuoteOrderAsync(processPaymentRequest);
                     if (placeOrderResult.Success)
                     {
-                        if (erpAccount != null && b2BUser != null && b2BUser.Id > 0)
+                        if (b2BAccount != null && b2BUser != null)
                             await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, ErpOrderType.B2BQuote);
+                        else if (b2BAccount != null && b2CUser != null)
+                            await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, ErpOrderType.B2CQuote);
+
+                        //erp activity log
+                        await _erpActivityLogsService.InsertErpActivityAsync(customer, "Erp_ErpOrderPlacement",
+                            string.Format(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.ErpActivityLogs.ErpOrderPlacement"),
+                            placeOrderResult.PlacedOrder.CustomOrderNumber), placeOrderResult.PlacedOrder);
+
+                        //activity log
+                        await _customerActivityService.InsertActivityAsync(customer, "PublicStore.PlaceOrder",
+                                string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.PlaceOrder"),
+                                    placeOrderResult.PlacedOrder.CustomOrderNumber), placeOrderResult.PlacedOrder);
 
                         await ClearGenericAttributeForQuoteOrderAsync();
 
@@ -1255,8 +1425,22 @@ public class ErpCheckoutController : CheckoutController
                     var placeOrderResult = await _orderProcessingService.PlaceOrderAsync(processPaymentRequest);
                     if (placeOrderResult.Success)
                     {
-                        if (erpAccount != null && b2BUser != null && b2BUser.Id > 0)
-                            await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, ErpOrderType.B2BSalesOrder);
+                        if (b2BAccount != null)
+                        {
+                            if (b2BUser != null && b2BUser.Id > 0)
+                            {                               
+                                await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, ErpOrderType.B2BSalesOrder);
+                            }
+                            else if (b2CUser != null && b2CUser.Id > 0)
+                            {
+                                await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, ErpOrderType.B2CSalesOrder);
+                            }
+                        }
+
+                        //activity log
+                        await _customerActivityService.InsertActivityAsync(customer, "PublicStore.PlaceOrder",
+                                string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.PlaceOrder"),
+                                    placeOrderResult.PlacedOrder.CustomOrderNumber), placeOrderResult.PlacedOrder);
 
                         await HttpContext.Session.SetAsync<ProcessPaymentRequest>("OrderPaymentInfo", null);
 
@@ -1274,15 +1458,24 @@ public class ErpCheckoutController : CheckoutController
 
                         return RedirectToRoute("CheckoutCompleted", new { orderId = placeOrderResult.PlacedOrder.Id });
                     }
+                    else
+                    {
+                        foreach (var error in placeOrderResult.Errors)
+                            warnings.Add(error);
+                    }
                 }
             }
             catch (Exception exc)
             {
                 _logger.Warning(exc.Message, exc);
+                warnings.Add(exc.Message);
             }
 
-            //If we got this far, something failed, display confirm form
-            return RedirectToRoute("CheckoutConfirm");
+            if (warnings.Any())
+                _notificationService.WarningNotification(warnings.FirstOrDefault());
+
+            //If we got this far, something failed, display form
+            return RedirectToRoute("CheckoutPaymentMethod");
         }
 
         //If we got this far, something failed, redisplay form
@@ -1291,21 +1484,39 @@ public class ErpCheckoutController : CheckoutController
         return View(model);
     }
 
+    public virtual async Task<IActionResult> Confirm()
+    {
+        var customer = await _workContext.GetCurrentCustomerAsync();
+        var b2BAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(customer.Id);
+
+        if (!await IsUserValid(b2BAccount))
+            return RedirectToRoute("ShoppingCart");
+
+        var store = await _storeContext.GetCurrentStoreAsync();
+        var cart = await _shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.ShoppingCart, store.Id);
+
+        if (!cart.Any())
+            return RedirectToRoute("ShoppingCart");
+
+        if (_orderSettings.OnePageCheckoutEnabled)
+            return RedirectToRoute("CheckoutOnePage");
+
+        if (await _customerService.IsGuestAsync(customer) && !_orderSettings.AnonymousCheckoutAllowed)
+            return Challenge();
+
+        //model
+        var model = await _checkoutModelFactory.PrepareConfirmOrderModelAsync(cart);
+        return View(model);
+    }
+
     [ValidateCaptcha]
     [HttpPost, ActionName("Confirm")]
     public override async Task<IActionResult> ConfirmOrder(bool captchaValid)
     {
-        //validation
-        //-->ToDo: After completing custom permission service for b2b b2c feature this permission check will be reopen
+
         var (b2BAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
 
-        if (b2BUser != null && !await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BOrder) && !await _permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BQuote))
-            return RedirectToRoute("ShoppingCart");
-
-        if (await _erpCustomerFunctionalityService.IsSalesOrderInvalidForCurrentCustomerAsync())
-            return RedirectToRoute("ShoppingCart");
-
-        if (_orderSettings.CheckoutDisabled)
+        if (!await IsUserValid(b2BAccount))
             return RedirectToRoute("ShoppingCart");
 
         var customer = await _workContext.GetCurrentCustomerAsync();
@@ -1343,9 +1554,8 @@ public class ErpCheckoutController : CheckoutController
 
             var isQuoteOrder = await IsQuoteOrderAsync();
 
-            if (isQuoteOrder || await _erpCustomerFunctionalityService.IsCurrentCustomerInB2BQuoteAssistantRole())
+            if (isQuoteOrder || await _erpCustomerFunctionalityService.IsCurrentCustomerInB2BQuoteAssistantRoleAsync())
             {
-
                 //place order
                 var processPaymentRequest = new ProcessPaymentRequest();
                 if (processPaymentRequest == null)
@@ -1361,31 +1571,30 @@ public class ErpCheckoutController : CheckoutController
                 processPaymentRequest.CustomerId = customer.Id;
                 processPaymentRequest.PaymentMethodSystemName = await _genericAttributeService.GetAttributeAsync<string>(customer,
                     NopCustomerDefaults.SelectedPaymentMethodAttribute, store.Id);
-                await HttpContext.Session.SetAsync<ProcessPaymentRequest>("OrderPaymentInfo", processPaymentRequest);
+                await HttpContext.Session.SetAsync("OrderPaymentInfo", processPaymentRequest);
                 var placeOrderResult = await _overriddenOrderProcessingService.PlaceQuoteOrderAsync(processPaymentRequest);
 
                 if (placeOrderResult.Success)
                 {
-                    if (b2BAccount != null && (b2BUser != null || b2CUser != null))
-                    {
+                    if (b2BAccount != null && b2BUser != null)
                         await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, ErpOrderType.B2BQuote);
-
-                        //erp activity log
-                        await _erpActivityLogsService.InsertErpActivityAsync(await _workContext.GetCurrentCustomerAsync(), "Erp_ErpOrderPlacement",
-                            string.Format(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.ErpActivityLogs.ErpOrderPlacement"),
-                            placeOrderResult.PlacedOrder.CustomOrderNumber),
-                            new ErpOrderAdditionalData());
-                    }
+                    else if (b2BAccount != null && b2CUser != null)
+                        await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, ErpOrderType.B2CQuote);
 
                     await ClearGenericAttributeForQuoteOrderAsync();
 
-                    await _erpLogsService.InformationAsync($"B2B Quote order placed successfully! OrderId: {placeOrderResult.PlacedOrder.Id}, Erp Order Id: {placeOrderResult.PlacedOrder.CustomOrderNumber}", ErpSyncLevel.Order, customer: await _workContext.GetCurrentCustomerAsync());
+                    await _erpLogsService.InformationAsync($"Quote order placed successfully! Order-Id: {placeOrderResult.PlacedOrder.Id}, Erp Order Number: {placeOrderResult.PlacedOrder.CustomOrderNumber}", ErpSyncLevel.Order, customer: await _workContext.GetCurrentCustomerAsync());
 
                     //erp activity log
                     await _erpActivityLogsService.InsertErpActivityAsync("Erp_B2BQuoteOrderPlacement",
                         string.Format(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.ErpActivityLogs.B2BQuoteOrderPlacement"),
                         placeOrderResult.PlacedOrder.Id),
                         placeOrderResult.PlacedOrder);
+
+                    //activity log
+                    await _customerActivityService.InsertActivityAsync(customer, "PublicStore.PlaceOrder",
+                            string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.PlaceOrder"),
+                                placeOrderResult.PlacedOrder.CustomOrderNumber), placeOrderResult.PlacedOrder);
 
                     return RedirectToRoute("CheckoutCompleted", new { orderId = placeOrderResult.PlacedOrder.Id });
                 }
@@ -1410,23 +1619,26 @@ public class ErpCheckoutController : CheckoutController
                 processPaymentRequest.CustomerId = customer.Id;
                 processPaymentRequest.PaymentMethodSystemName = await _genericAttributeService.GetAttributeAsync<string>(customer,
                     NopCustomerDefaults.SelectedPaymentMethodAttribute, store.Id);
-                await HttpContext.Session.SetAsync<ProcessPaymentRequest>("OrderPaymentInfo", processPaymentRequest);
+                await HttpContext.Session.SetAsync("OrderPaymentInfo", processPaymentRequest);
+
+                if (string.IsNullOrWhiteSpace(processPaymentRequest.PaymentMethodSystemName))
+                {
+                    //payment method could be null if order total is 0
+                    //success
+                    model.Warnings.Add(await _localizationService.GetResourceAsync("Checkout.NoPaymentMethods"));
+                    return RedirectToRoute("CheckoutPaymentMethod");
+                }
+
                 var placeOrderResult = await _orderProcessingService.PlaceOrderAsync(processPaymentRequest);
                 if (placeOrderResult.Success)
                 {
-                    if (b2BAccount != null && (b2BUser != null || b2CUser != null))
+                    if (b2BAccount != null && b2BUser != null)
                     {
-                        // place b2B order
                         await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, ErpOrderType.B2BSalesOrder);
-
-                        //activity log
-                        await _erpLogsService.InformationAsync($"B2B Order placed successfully! OrderId: {placeOrderResult.PlacedOrder.Id}, Erp Order Id: {placeOrderResult.PlacedOrder.CustomOrderNumber}", ErpSyncLevel.Order, customer: customer);
-
-                        //erp activity log
-                        await _erpActivityLogsService.InsertErpActivityAsync(await _workContext.GetCurrentCustomerAsync(), "Erp_ErpOrderPlacement",
-                            string.Format(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.ErpActivityLogs.ErpOrderPlacement"),
-                            placeOrderResult.PlacedOrder.CustomOrderNumber),
-                            new ErpOrderAdditionalData());
+                    }
+                    if (b2BAccount != null && b2CUser != null)
+                    {
+                        await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, ErpOrderType.B2CSalesOrder);
                     }
 
                     //erp activity log
@@ -1434,6 +1646,11 @@ public class ErpCheckoutController : CheckoutController
                         string.Format(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.ErpActivityLogs.B2BOrderPlacement"),
                         placeOrderResult.PlacedOrder.Id),
                         placeOrderResult.PlacedOrder);
+
+                    //activity log
+                    await _customerActivityService.InsertActivityAsync(customer, "PublicStore.PlaceOrder",
+                            string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.PlaceOrder"),
+                                placeOrderResult.PlacedOrder.CustomOrderNumber), placeOrderResult.PlacedOrder);
 
                     await HttpContext.Session.SetAsync<ProcessPaymentRequest>("OrderPaymentInfo", null);
                     var postProcessPaymentRequest = new PostProcessPaymentRequest
@@ -1444,12 +1661,7 @@ public class ErpCheckoutController : CheckoutController
                     var paymentMethod = await _paymentPluginManager
                         .LoadPluginBySystemNameAsync(placeOrderResult.PlacedOrder.PaymentMethodSystemName, customer, store.Id);
 
-                    if (paymentMethod == null)
-                        //payment method could be null if order total is 0
-                        //success
-                        return Json(new { success = 1 });
-
-                    if (paymentMethod.PaymentMethodType == PaymentMethodType.Redirection)
+                    if (paymentMethod is not null && paymentMethod.PaymentMethodType == PaymentMethodType.Redirection)
                     {
                         //Redirection will not work because it's AJAX request.
                         //That's why we don't process it here (we redirect a user to another page where he'll be redirected)
@@ -1468,8 +1680,6 @@ public class ErpCheckoutController : CheckoutController
                         //redirection or POST has been done in PostProcessPayment
                         return Content(await _localizationService.GetResourceAsync("Checkout.RedirectMessage"));
                     }
-
-                    //success
                     return RedirectToRoute("CheckoutCompleted", new { orderId = placeOrderResult.PlacedOrder.Id });
                 }
 
@@ -1488,16 +1698,15 @@ public class ErpCheckoutController : CheckoutController
         return View(model);
     }
 
-
     [HttpPost, ActionName("ErpShipToAddressPopUp")]
     [FormValueRequired("nextstep")]
     public async Task<IActionResult> ErpShipToAddressPopUp(ErpShipToAddressModelForCheckout modelShipToAddress, IFormCollection form)
     {
         var (erpAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
-        if (!await IsUserValid(erpAccount, b2BUser, b2CUser))
+        if (!await IsUserValid(erpAccount))
             return RedirectToRoute("ShoppingCart");
 
-        var user = b2BUser != null ? b2BUser : b2CUser;
+        var user = b2BUser ?? b2CUser;
         var currentCustomer = await _workContext.GetCurrentCustomerAsync();
         var currentStore = await _storeContext.GetCurrentStoreAsync();
         var cart = await _shoppingCartService.GetShoppingCartAsync(currentCustomer, ShoppingCartType.ShoppingCart, currentStore.Id);
@@ -1523,11 +1732,11 @@ public class ErpCheckoutController : CheckoutController
             await _genericAttributeService.SaveAttributeAsync<PickupPoint>(currentCustomer, NopCustomerDefaults.SelectedPickupPointAttribute, null, currentStore.Id);
         }
 
-        user.ErpShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdWithActiveAsync(user.ErpShipToAddressId);
+        var erpShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdWithActiveAsync(user.ErpShipToAddressId);
 
         if (modelShipToAddress.IsFullLoadRequired)
         {
-            (var minDeliveryDate, var maxDeliveryDate) = await _erpCustomerFunctionalityService.GetMinimumAndMaximumDeliveryDateForShippingAddress();
+            (var minDeliveryDate, var _) = await _erpCustomerFunctionalityService.GetMinimumAndMaximumDeliveryDateForShippingAddress();
             modelShipToAddress.DeliveryDate = minDeliveryDate.Date;
         }
 
@@ -1542,7 +1751,7 @@ public class ErpCheckoutController : CheckoutController
                 modelShipToAddress.DeliveryDate = maxDeliveryDate.Date;
         }
 
-        if (ModelState.IsValid && user.ErpShipToAddress != null && modelShipToAddress.Id > 0)
+        if (ModelState.IsValid && erpShipToAddress != null && modelShipToAddress.Id > 0)
         {
             //check if ship To address related b2b account id is matching
             if (modelShipToAddress.ErpAccountId != erpAccount.Id)
@@ -1566,9 +1775,8 @@ public class ErpCheckoutController : CheckoutController
 
                 if (lastShippingB2BShipToAddress == null)
                 {
-                    var currentShiptoAddress = await _erpShipToAddressService.GetErpShipToAddressByIdWithActiveAsync(modelShipToAddress.Id);
-                    if (currentShiptoAddress == null)
-                        throw new Exception("Ship to Address can't be loaded");
+                    var currentShiptoAddress = await _erpShipToAddressService.GetErpShipToAddressByIdWithActiveAsync(modelShipToAddress.Id) ?? throw new Exception("Ship to Address can't be loaded");
+
                     var address = new Address
                     {
                         Email = currentCustomer.Email,
@@ -1596,6 +1804,9 @@ public class ErpCheckoutController : CheckoutController
                     b2BShipToAddress.UpdatedById = currentCustomer.Id;
 
                     await _erpShipToAddressService.InsertErpShipToAddressAsync(b2BShipToAddress);
+                    await _erpShipToAddressService.InsertErpShipToAddressErpAccountMapAsync
+                        (erpAccount, b2BShipToAddress, ErpShipToAddressCreatedByType.User);
+
                     await _genericAttributeService.SaveAttributeAsync<int?>(currentCustomer, B2BB2CFeaturesDefaults.ShippingAddressModifiedIdInCheckoutAttribute, b2BShipToAddress.Id, currentStore.Id);
                     user.ShippingErpShipToAddressId = b2BShipToAddress.Id;
                     await _erpNopUserService.UpdateErpNopUserAsync(user);
@@ -1661,12 +1872,12 @@ public class ErpCheckoutController : CheckoutController
                 user.ShippingErpShipToAddressId = user.ErpShipToAddressId;
                 await _erpNopUserService.UpdateErpNopUserAsync(user);
 
-                var address = await _addressService.GetAddressByIdAsync(user.ErpShipToAddress?.AddressId ?? 0);
+                var address = await _addressService.GetAddressByIdAsync(erpShipToAddress.AddressId);
 
                 address.Email = currentCustomer.Email;
                 address.FirstName = currentCustomer.FirstName;
                 address.LastName = currentCustomer.LastName;
-                address.Company = user.ErpShipToAddress?.ShipToName;
+                address.Company = erpShipToAddress.ShipToName;
 
                 currentCustomer.ShippingAddressId = address.Id;
                 await _customerService.UpdateCustomerAsync(currentCustomer);
@@ -1676,25 +1887,32 @@ public class ErpCheckoutController : CheckoutController
             return RedirectToRoute("CheckoutShippingAddress");
         }
 
-        var b2BShipToAddressModel = await _erpCheckoutModelFactory.PrepareCheckoutB2BShippingAddressModelAsync(cart, user, erpAccount);
-        return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/ErpCheckout/ShippingAddress.cshtml", b2BShipToAddressModel);
+        if (user.ErpUserType == ErpUserType.B2BUser)
+        {
+            var b2BShipToAddressModel = await _erpCheckoutModelFactory.PrepareCheckoutB2BShippingAddressModelAsync(cart, user, erpAccount);
+            return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/ErpCheckout/ShippingAddress.cshtml", b2BShipToAddressModel);
+        }
+
+        var b2CShipToAddressModel = await _erpCheckoutModelFactory.PrepareCheckoutB2CShippingAddressModelAsync(cart, user, erpAccount);
+        return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/ErpCheckout/ShippingAddress.cshtml", b2CShipToAddressModel);
     }
 
     #endregion
 
-    #region Methods (one page checkout)
+    #region Methods (One page checkout)
 
     protected override async Task<JsonResult> OpcLoadStepAfterShippingAddress(IList<ShoppingCartItem> cart)
     {
         var customer = await _workContext.GetCurrentCustomerAsync();
         var shippingMethodModel = await _checkoutModelFactory.PrepareShippingMethodModelAsync(cart, await _customerService.GetCustomerShippingAddressAsync(customer));
+
         if (_shippingSettings.BypassShippingMethodSelectionIfOnlyOne &&
             shippingMethodModel.ShippingMethods.Count == 1)
         {
             var store = await _storeContext.GetCurrentStoreAsync();
             await _genericAttributeService.SaveAttributeAsync(customer,
                 NopCustomerDefaults.SelectedShippingOptionAttribute,
-                shippingMethodModel.ShippingMethods.First().ShippingOption,
+                shippingMethodModel.ShippingMethods[0].ShippingOption,
                 store.Id);
 
             return await OpcLoadStepAfterShippingMethod(cart);
@@ -1713,8 +1931,14 @@ public class ErpCheckoutController : CheckoutController
 
     protected override async Task<JsonResult> OpcLoadStepAfterPaymentMethod(IPaymentMethod paymentMethod, IList<ShoppingCartItem> cart)
     {
+        var customer = await _workContext.GetCurrentCustomerAsync();
+        var b2BAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(customer.Id);
+
+        await _erpAccountCreditSyncFunctionality.LiveErpAccountCreditCheckAsync(b2BAccount, customer);
+
         if (paymentMethod.SkipPaymentInfo ||
-            (paymentMethod.PaymentMethodType == PaymentMethodType.Redirection && _paymentSettings.SkipPaymentInfoStepForRedirectionPaymentMethods))
+            (paymentMethod.PaymentMethodType == PaymentMethodType.Redirection && 
+            _paymentSettings.SkipPaymentInfoStepForRedirectionPaymentMethods))
         {
             var paymentInfo = new ProcessPaymentRequest();
 
@@ -1747,11 +1971,14 @@ public class ErpCheckoutController : CheckoutController
     protected override async Task<JsonResult> OpcLoadStepAfterShippingMethod(IList<ShoppingCartItem> cart)
     {
         var isQuoteOrder = await IsQuoteOrderAsync();
-
-        var customer = await _workContext.GetCurrentCustomerAsync();
         var store = await _storeContext.GetCurrentStoreAsync();
         var isPaymentWorkflowRequired = await _orderProcessingService.IsPaymentWorkflowRequiredAsync(cart, false);
-        if (isPaymentWorkflowRequired && !isQuoteOrder && !await _erpCustomerFunctionalityService.IsCurrentCustomerInB2BQuoteAssistantRole())
+        var customer = await _workContext.GetCurrentCustomerAsync();
+        var b2BAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(customer.Id);
+
+        await _erpAccountCreditSyncFunctionality.LiveErpAccountCreditCheckAsync(b2BAccount, customer);
+
+        if (isPaymentWorkflowRequired && !isQuoteOrder && !await _erpCustomerFunctionalityService.IsCurrentCustomerInB2BQuoteAssistantRoleAsync())
         {
             var filterByCountryId = 0;
             if (_addressSettings.CountryEnabled)
@@ -1761,10 +1988,10 @@ public class ErpCheckoutController : CheckoutController
 
             var paymentMethodModel = await _checkoutModelFactory.PreparePaymentMethodModelAsync(cart, filterByCountryId);
 
-            if (_paymentSettings.BypassPaymentMethodSelectionIfOnlyOne &&
-                paymentMethodModel.PaymentMethods.Count == 1 && !paymentMethodModel.DisplayRewardPoints)
+            if (_paymentSettings.BypassPaymentMethodSelectionIfOnlyOne && 
+                paymentMethodModel.PaymentMethods.Count == 1 && 
+                !paymentMethodModel.DisplayRewardPoints)
             {
-
                 var selectedPaymentMethodSystemName = paymentMethodModel.PaymentMethods[0].PaymentMethodSystemName;
                 await _genericAttributeService.SaveAttributeAsync(customer,
                     NopCustomerDefaults.SelectedPaymentMethodAttribute,
@@ -1806,13 +2033,13 @@ public class ErpCheckoutController : CheckoutController
 
     public override async Task<IActionResult> OnePageCheckout()
     {
-        var (erpAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
-        if (!await IsUserValid(erpAccount, b2BUser, b2CUser))
-            return RedirectToRoute("ShoppingCart");
-
         var customer = await _workContext.GetCurrentCustomerAsync();
         var store = await _storeContext.GetCurrentStoreAsync();
         var cart = await _shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.ShoppingCart, store.Id);
+
+        var (erpAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
+        if (!await IsUserValid(erpAccount))
+            return RedirectToRoute("ShoppingCart");
 
         if (!cart.Any())
             return RedirectToRoute("ShoppingCart");
@@ -1825,8 +2052,8 @@ public class ErpCheckoutController : CheckoutController
 
         if (erpAccount != null && b2CUser != null)
         {
-            b2CUser.ErpShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdWithActiveAsync(b2CUser.ErpShipToAddressId);
-            if (b2CUser.ErpShipToAddress != null)
+            var erpShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdWithActiveAsync(b2CUser.ErpShipToAddressId);
+            if (erpShipToAddress != null)
             {
                 var erpOnePageCheckoutModel = await _erpCheckoutModelFactory.PrepareB2COnePageCheckoutModelAsync(cart, b2CUser);
                 return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/ErpCheckout/OnePageCheckout.cshtml", erpOnePageCheckoutModel);
@@ -1834,8 +2061,8 @@ public class ErpCheckoutController : CheckoutController
         }
         else if (erpAccount != null && b2BUser != null)
         {
-            b2BUser.ErpShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdWithActiveAsync(b2BUser.ErpShipToAddressId);
-            if (b2BUser.ErpShipToAddress != null)
+            var erpShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdWithActiveAsync(b2BUser.ErpShipToAddressId);
+            if (erpShipToAddress != null)
             {
                 var erpOnePageCheckoutModel = await _erpCheckoutModelFactory.PrepareB2BOnePageCheckoutModelAsync(cart, b2BUser);
                 return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/ErpCheckout/OnePageCheckout.cshtml", erpOnePageCheckoutModel);
@@ -1851,13 +2078,13 @@ public class ErpCheckoutController : CheckoutController
     {
         try
         {
-            var (erpAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
-            if (!await IsUserValid(erpAccount, b2BUser, b2CUser))
-                return RedirectToRoute("ShoppingCart");
-
             var customer = await _workContext.GetCurrentCustomerAsync();
             var store = await _storeContext.GetCurrentStoreAsync();
             var cart = await _shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.ShoppingCart, store.Id);
+
+            var (erpAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
+            if (!await IsUserValid(erpAccount))
+                return RedirectToRoute("ShoppingCart");
 
             if (!cart.Any())
                 throw new Exception("Your cart is empty");
@@ -1929,7 +2156,7 @@ public class ErpCheckoutController : CheckoutController
                         return await OpcLoadStepAfterShippingAddress(cart);
                     }
 
-                    var shippingAddressModel = await _erpCheckoutModelFactory.PrepareShippingAddressModelAsync(b2BUser != null ? b2BUser : b2CUser, erpAccount, prePopulateNewAddressWithCustomerFields: true);
+                    var shippingAddressModel = await _erpCheckoutModelFactory.PrepareShippingAddressModelAsync(b2BUser ?? b2CUser, erpAccount, prePopulateNewAddressWithCustomerFields: true);
                     if (shippingAddressModel.Warnings.Any())
                     {
                         _notificationService.ErrorNotification(shippingAddressModel.Warnings.FirstOrDefault());
@@ -1989,13 +2216,13 @@ public class ErpCheckoutController : CheckoutController
     {
         try
         {
-            var (erpAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
-            if (!await IsUserValid(erpAccount, b2BUser, b2CUser))
-                return RedirectToRoute("ShoppingCart");
-
             var customer = await _workContext.GetCurrentCustomerAsync();
             var store = await _storeContext.GetCurrentStoreAsync();
             var cart = await _shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.ShoppingCart, store.Id);
+
+            var (erpAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
+            if (!await IsUserValid(erpAccount))
+                return RedirectToRoute("ShoppingCart");
 
             if (!cart.Any())
                 throw new Exception("Your cart is empty");
@@ -2021,7 +2248,7 @@ public class ErpCheckoutController : CheckoutController
                     var pickupOption = await ParsePickupOptionAsync(cart, form);
                     await SavePickupOptionAsync(pickupOption);
 
-                    #region Order Additional Info
+                    #region Erp Order Additional Data
 
                     if (b2BUser != null)
                     {
@@ -2071,7 +2298,7 @@ public class ErpCheckoutController : CheckoutController
 
             if (modelShipToAddress.IsFullLoadRequired)
             {
-                (var minDeliveryDate, var maxDeliveryDate) = await _erpCustomerFunctionalityService.GetMinimumAndMaximumDeliveryDateForShippingAddress();
+                (var minDeliveryDate, var _) = await _erpCustomerFunctionalityService.GetMinimumAndMaximumDeliveryDateForShippingAddress();
                 modelShipToAddress.DeliveryDate = minDeliveryDate.Date;
             }
             else if (!modelShipToAddress.ErpToDetermineDate)
@@ -2082,7 +2309,7 @@ public class ErpCheckoutController : CheckoutController
                     ModelState.AddModelError("DeliveryDate", "Please provide a valid delivery date");
             }
 
-            var user = b2BUser != null ? b2BUser : b2CUser;
+            var user = b2BUser ?? b2CUser;
             var erpShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdWithActiveAsync(user?.ErpShipToAddressId ?? 0);
 
             if (erpAccount is not null && erpShipToAddress is not null && modelShipToAddress.Id > 0)
@@ -2131,6 +2358,7 @@ public class ErpCheckoutController : CheckoutController
                         };
 
                         await _erpShipToAddressService.InsertErpShipToAddressAsync(b2BShipToAddress);
+                        await _erpShipToAddressService.InsertErpShipToAddressErpAccountMapAsync(erpAccount, b2BShipToAddress, ErpShipToAddressCreatedByType.User);
 
                         //erp activity log
                         await _erpActivityLogsService.InsertErpActivityAsync("Erp_AddNewErpShipToAddress",
@@ -2181,10 +2409,9 @@ public class ErpCheckoutController : CheckoutController
                 else
                 {
                     user.ShippingErpShipToAddressId = erpShipToAddress.Id;
-                    user.ErpShipToAddress = erpShipToAddress;
                     await _erpNopUserService.UpdateErpNopUserAsync(user);
 
-                    var address = await _addressService.GetAddressByIdAsync(user.ErpShipToAddress.AddressId);
+                    var address = await _addressService.GetAddressByIdAsync(erpShipToAddress.AddressId);
 
                     address.Email = customer.Email;
                     address.FirstName = customer.FirstName;
@@ -2195,33 +2422,52 @@ public class ErpCheckoutController : CheckoutController
                     await _customerService.InsertCustomerAddressAsync(customer, address);
                 }
 
-                #region Additional order Data
+                #region Erp Order Additional Data
 
-                if (model.ErpToDetermineDate && !string.IsNullOrEmpty(model.DeliveryDateString))
+                var date = model.DeliveryDate;
+
+                if (!model.ErpToDetermineDate)
                 {
-                    try
+                    if (model.CustomDeliveryDateString is null)
                     {
-                        var date = DateTime.Parse(model.DeliveryDateString);
-                        if (date == new DateTime())
-                            date = model.DeliveryDate;
-
-                        await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.SelectedB2BDeliveryDateAttribute, date, store.Id);
+                        ModelState.AddModelError("DeliveryDateString", "Please provide a valid delivery date");
                     }
-                    catch
+                    else
                     {
-                        await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.SelectedB2BDeliveryDateAttribute, model.DeliveryDate, store.Id);
+                        if (DateTime.TryParseExact(model.CustomDeliveryDateString, "dd/MM/yyyy", new CultureInfo("en-GB"), DateTimeStyles.None, out var dateTimeForDelivery))
+                            date = dateTimeForDelivery;
+
+                        if (date < DateTime.Now.Date)
+                        {
+                            ModelState.AddModelError("DeliveryDate", "Please provide a valid delivery date");
+                        }
                     }
                 }
                 else
                 {
-                    await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.SelectedB2BDeliveryDateAttribute, model.DeliveryDate, store.Id);
+                    if (model.DeliveryDateString is null)
+                    {
+                        ModelState.AddModelError("DeliveryDate", "Please provide a valid delivery date");
+                    }
+                    else
+                    {
+                        if (DateTime.TryParseExact(model.DeliveryDateString, "dd/MM/yyyy", new CultureInfo("en-GB"), DateTimeStyles.None, out var dateTimeForDelivery))
+                            date = dateTimeForDelivery;
+
+                        if (date < DateTime.Now.Date)
+                        {
+                            ModelState.AddModelError("DeliveryDate", "Please provide a valid delivery date");
+                        }
+                    }
                 }
 
-                #region Order Additional Info
+                if (date >= DateTime.Now.Date)
+                {
+                    await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.SelectedB2BDeliveryDateAttribute, date, store.Id);
+                }
+
                 if (b2BUser != null)
                 {
-                    await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.SelectedB2BDeliveryDateAttribute, model.DeliveryDate.Date <= DateTime.Now.Date ? DateTime.Now.AddDays(1) : model.DeliveryDate.Date, store.Id);
-
                     if (!string.IsNullOrEmpty(specialInstruction))
                     {
                         await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.ProvidedB2BSpecialInstructions, specialInstruction, store.Id);
@@ -2233,25 +2479,18 @@ public class ErpCheckoutController : CheckoutController
                     }
                 }
 
-                if (b2CUser != null)
+                if (b2CUser != null && !string.IsNullOrEmpty(specialInstruction))
                 {
-                    await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.SelectedB2BDeliveryDateAttribute, model.DeliveryDate.Date <= DateTime.Now.Date ? DateTime.Now.AddDays(1) : model.DeliveryDate.Date, store.Id);
-
-                    if (!string.IsNullOrEmpty(specialInstruction))
-                    {
-                        await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.B2CSpecialInstructions, specialInstruction, store.Id);
-                    }
+                    await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.B2CSpecialInstructions, specialInstruction, store.Id);
                 }
-                #endregion
 
                 #endregion
+
 
                 return await OpcLoadStepAfterShippingAddress(cart);
             }
             else
             {
-                var newAddress = model.SelectedShipToAddress;
-
                 var customAttributes = await _addressAttributeParser.ParseCustomAttributesAsync(form, NopCommonDefaults.AddressAttributeControlName);
                 var customAttributeWarnings = await _addressAttributeParser.GetAttributeWarningsAsync(customAttributes);
                 foreach (var error in customAttributeWarnings)
@@ -2283,12 +2522,12 @@ public class ErpCheckoutController : CheckoutController
     {
         try
         {
-            var (erpAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
-            if (!await IsUserValid(erpAccount, b2BUser, b2CUser))
-                return RedirectToRoute("ShoppingCart");
-
             var currCustomer = await _workContext.GetCurrentCustomerAsync();
             var currStore = await _storeContext.GetCurrentStoreAsync();
+
+            var (erpAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
+            if (!await IsUserValid(erpAccount))
+                return RedirectToRoute("ShoppingCart");
 
             var isCaptchaSettingEnabled = await _customerService.IsGuestAsync(currCustomer) &&
                 _captchaSettings.Enabled && _captchaSettings.ShowOnCheckoutPageForGuests;
@@ -2313,7 +2552,7 @@ public class ErpCheckoutController : CheckoutController
                 throw new Exception(await _localizationService.GetResourceAsync("Checkout.MinOrderPlacementInterval"));
 
             var isQuoteOrder = await IsQuoteOrderAsync();
-            if (isQuoteOrder || await _erpCustomerFunctionalityService.IsCurrentCustomerInB2BQuoteAssistantRole())
+            if (isQuoteOrder || await _erpCustomerFunctionalityService.IsCurrentCustomerInB2BQuoteAssistantRoleAsync())
             {
                 var processPaymentRequest = new ProcessPaymentRequest();
 
@@ -2326,25 +2565,29 @@ public class ErpCheckoutController : CheckoutController
                 var placeOrderResult = await _overriddenOrderProcessingService.PlaceQuoteOrderAsync(processPaymentRequest);
                 if (placeOrderResult.Success)
                 {
-                    if (erpAccount != null && (b2BUser != null || b2CUser != null))
-                    {
-
+                    if (erpAccount != null && b2BUser != null)
                         await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, ErpOrderType.B2BQuote);
+                    else if (erpAccount != null && b2CUser != null)
+                        await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, ErpOrderType.B2CQuote);
 
-                        //erp activity log
-                        await _erpActivityLogsService.InsertErpActivityAsync(currCustomer, "Erp_ErpOrderPlacement",
-                            string.Format(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.ErpActivityLogs.ErpOrderPlacement"),
-                            placeOrderResult.PlacedOrder.CustomOrderNumber),
-                            new ErpOrderAdditionalData());
-                    }
+                    //erp activity log
+                    await _erpActivityLogsService.InsertErpActivityAsync(currCustomer, "Erp_ErpOrderPlacement",
+                        string.Format(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.ErpActivityLogs.ErpOrderPlacement"),
+                        placeOrderResult.PlacedOrder.CustomOrderNumber),
+                        new ErpOrderAdditionalData());
 
-                    await _erpLogsService.InformationAsync($"B2B Quote order placed successfully! OrderId: {placeOrderResult.PlacedOrder.Id}, Erp Order Id: {placeOrderResult.PlacedOrder.CustomOrderNumber}", ErpSyncLevel.Order, customer: currCustomer);
+                    await _erpLogsService.InformationAsync($"Quote order placed successfully! Order-Id: {placeOrderResult.PlacedOrder.Id}, Erp Order Number: {placeOrderResult.PlacedOrder.CustomOrderNumber}", ErpSyncLevel.Order, customer: currCustomer);
 
                     //erp activity log
                     await _erpActivityLogsService.InsertErpActivityAsync(currCustomer, "Erp_B2BQuoteOrderPlacement",
                         string.Format(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.ErpActivityLogs.B2BQuoteOrderPlacement"),
                         placeOrderResult.PlacedOrder.Id),
                         placeOrderResult.PlacedOrder);
+
+                    //activity log
+                    await _customerActivityService.InsertActivityAsync(currCustomer, "PublicStore.PlaceOrder",
+                            string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.PlaceOrder"),
+                                placeOrderResult.PlacedOrder.CustomOrderNumber), placeOrderResult.PlacedOrder);
 
                     return Json(new { success = 1 });
                 }
@@ -2385,12 +2628,12 @@ public class ErpCheckoutController : CheckoutController
                 {
                     if (erpAccount != null && (b2BUser != null || b2CUser != null))
                     {
-                        var erpNopUser = b2BUser != null ? b2BUser : b2CUser;
-                        var erpOrderTypeId = erpNopUser.ErpUserType == ErpUserType.B2BUser ? (int)ErpOrderType.B2BSalesOrder : erpNopUser.ErpUserType == ErpUserType.B2CUser ? (int)ErpOrderType.B2CSalesOrder : 0;
+                        var erpNopUser = b2BUser ?? b2CUser;
+                        var erpOrderTypeId = (int)erpNopUser.ErpUserType;
 
                         await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, (ErpOrderType)Enum.ToObject(typeof(ErpOrderType), erpOrderTypeId));
 
-                        await _erpLogsService.InformationAsync($"B2B Order placed successfully! OrderId: {placeOrderResult.PlacedOrder.Id}, Erp Order Id: {placeOrderResult.PlacedOrder.CustomOrderNumber}", ErpSyncLevel.Order, customer: currCustomer);
+                        await _erpLogsService.InformationAsync($"B2B Order placed successfully! Order-Id: {placeOrderResult.PlacedOrder.Id}, Erp Order Number: {placeOrderResult.PlacedOrder.CustomOrderNumber}", ErpSyncLevel.Order, customer: currCustomer);
 
                         //erp activity log
                         await _erpActivityLogsService.InsertErpActivityAsync(currCustomer, "Erp_ErpOrderPlacement",
@@ -2404,6 +2647,11 @@ public class ErpCheckoutController : CheckoutController
                         string.Format(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.ErpActivityLogs.B2BOrderPlacement"),
                         placeOrderResult.PlacedOrder.Id),
                         placeOrderResult.PlacedOrder);
+
+                    //activity log
+                    await _customerActivityService.InsertActivityAsync(currCustomer, "PublicStore.PlaceOrder",
+                            string.Format(await _localizationService.GetResourceAsync("ActivityLog.PublicStore.PlaceOrder"),
+                                placeOrderResult.PlacedOrder.CustomOrderNumber), placeOrderResult.PlacedOrder);
 
                     await HttpContext.Session.SetAsync<ProcessPaymentRequest>("OrderPaymentInfo", null);
                     var postProcessPaymentRequest = new PostProcessPaymentRequest
@@ -2449,24 +2697,306 @@ public class ErpCheckoutController : CheckoutController
         }
     }
 
+    [HttpPost]
+    public override async Task<IActionResult> OpcSaveShippingMethod(string shippingoption, IFormCollection form)
+    {
+        try
+        {
+            var (b2BAccount, _, _) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
+
+            if (!await IsUserValid(b2BAccount))
+                return RedirectToRoute("ShoppingCart");
+
+            var customer = await _workContext.GetCurrentCustomerAsync();
+            var store = await _storeContext.GetCurrentStoreAsync();
+            var cart = await _shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.ShoppingCart, store.Id);
+
+            if (!cart.Any())
+                throw new Exception("Your cart is empty");
+
+            if (!_orderSettings.OnePageCheckoutEnabled)
+                throw new Exception("One page checkout is disabled");
+
+            if (await _customerService.IsGuestAsync(customer) && !_orderSettings.AnonymousCheckoutAllowed)
+                throw new Exception("Anonymous checkout is not allowed");
+
+            if (!await _shoppingCartService.ShoppingCartRequiresShippingAsync(cart))
+                throw new Exception("Shipping is not required");
+
+            //pickup point
+            if (_shippingSettings.AllowPickupInStore /*&& _orderSettings.DisplayPickupInStoreOnShippingMethodPage*/)
+            {
+                var pickupInStore = ParsePickupInStore(form);
+                if (pickupInStore)
+                {
+                    var pickupOption = await ParsePickupOptionAsync(cart, form);
+                    await SavePickupOptionAsync(pickupOption);
+
+                    return await OpcLoadStepAfterShippingMethod(cart);
+                }
+
+                //set value indicating that "pick up in store" option has not been chosen
+                await _genericAttributeService.SaveAttributeAsync<PickupPoint>(customer, NopCustomerDefaults.SelectedPickupPointAttribute, null, store.Id);
+            }
+
+            //parse selected method 
+            if (string.IsNullOrEmpty(shippingoption))
+                throw new Exception("Selected shipping method can't be parsed");
+            var splittedOption = shippingoption.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
+            if (splittedOption.Length != 2)
+                throw new Exception("Selected shipping method can't be parsed");
+            var selectedName = splittedOption[0];
+            var shippingRateComputationMethodSystemName = splittedOption[1];
+
+            //find it
+            //performance optimization. try cache first
+            var shippingOptions = await _genericAttributeService.GetAttributeAsync<List<ShippingOption>>(customer,
+                NopCustomerDefaults.OfferedShippingOptionsAttribute, store.Id);
+            if (shippingOptions == null || !shippingOptions.Any())
+            {
+                //not found? let's load them using shipping service
+                shippingOptions = (await _shippingService.GetShippingOptionsAsync(cart, await _customerService.GetCustomerShippingAddressAsync(customer),
+                    customer, shippingRateComputationMethodSystemName, store.Id)).ShippingOptions.ToList();
+            }
+            else
+            {
+                //loaded cached results. let's filter result by a chosen shipping rate computation method
+                shippingOptions = shippingOptions.Where(so => so.ShippingRateComputationMethodSystemName.Equals(shippingRateComputationMethodSystemName, StringComparison.InvariantCultureIgnoreCase))
+                    .ToList();
+            }
+
+            var shippingOption = shippingOptions.Find(so => !string.IsNullOrEmpty(so.Name) && so.Name.Equals(selectedName, StringComparison.InvariantCultureIgnoreCase))
+                                 ?? throw new Exception("Selected shipping method can't be loaded");
+
+            //save
+            await _genericAttributeService.SaveAttributeAsync(customer, NopCustomerDefaults.SelectedShippingOptionAttribute, shippingOption, store.Id);
+
+            //load next step
+            return await OpcLoadStepAfterShippingMethod(cart);
+        }
+        catch (Exception exc)
+        {
+            await _logger.WarningAsync(exc.Message, exc, await _workContext.GetCurrentCustomerAsync());
+            return Json(new { error = 1, message = exc.Message });
+        }
+    }
+
+    [HttpPost]
+    public override async Task<IActionResult> OpcSavePaymentMethod(string paymentmethod, CheckoutPaymentMethodModel model)
+    {
+        try
+        {
+            var (b2BAccount, _, _) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
+
+            if (!await IsUserValid(b2BAccount))
+                return RedirectToRoute("ShoppingCart");
+
+            var customer = await _workContext.GetCurrentCustomerAsync();
+            var store = await _storeContext.GetCurrentStoreAsync();
+            var cart = await _shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.ShoppingCart, store.Id);
+
+            if (!cart.Any())
+                throw new Exception("Your cart is empty");
+
+            if (!_orderSettings.OnePageCheckoutEnabled)
+                throw new Exception("One page checkout is disabled");
+
+            if (await _customerService.IsGuestAsync(customer) && !_orderSettings.AnonymousCheckoutAllowed)
+                throw new Exception("Anonymous checkout is not allowed");
+
+            //payment method 
+            if (string.IsNullOrEmpty(paymentmethod))
+                throw new Exception("Selected payment method can't be parsed");
+
+            //reward points
+            if (_rewardPointsSettings.Enabled)
+            {
+                await _genericAttributeService.SaveAttributeAsync(customer,
+                    NopCustomerDefaults.UseRewardPointsDuringCheckoutAttribute, model.UseRewardPoints,
+                    store.Id);
+            }
+
+            //Check whether payment workflow is required
+            var isPaymentWorkflowRequired = await _orderProcessingService.IsPaymentWorkflowRequiredAsync(cart);
+            if (!isPaymentWorkflowRequired)
+            {
+                //payment is not required
+                await _genericAttributeService.SaveAttributeAsync<string>(customer,
+                    NopCustomerDefaults.SelectedPaymentMethodAttribute, null, store.Id);
+
+                var confirmOrderModel = await _checkoutModelFactory.PrepareConfirmOrderModelAsync(cart);
+                return Json(new
+                {
+                    update_section = new UpdateSectionJsonModel
+                    {
+                        name = "confirm-order",
+                        html = await RenderPartialViewToStringAsync("OpcConfirmOrder", confirmOrderModel)
+                    },
+                    goto_section = "confirm_order"
+                });
+            }
+
+            var paymentMethodInst = await _paymentPluginManager
+                .LoadPluginBySystemNameAsync(paymentmethod, customer, store.Id);
+            if (!_paymentPluginManager.IsPluginActive(paymentMethodInst))
+                throw new Exception("Selected payment method can't be parsed");
+
+            //save
+            await _genericAttributeService.SaveAttributeAsync(customer,
+                NopCustomerDefaults.SelectedPaymentMethodAttribute, paymentmethod, store.Id);
+
+            return await OpcLoadStepAfterPaymentMethod(paymentMethodInst, cart);
+        }
+        catch (Exception exc)
+        {
+            await _logger.WarningAsync(exc.Message, exc, await _workContext.GetCurrentCustomerAsync());
+            return Json(new { error = 1, message = exc.Message });
+        }
+    }
+
+    [HttpPost]
+    [IgnoreAntiforgeryToken]
+    public override async Task<IActionResult> OpcSavePaymentInfo(IFormCollection form)
+    {
+        try
+        {
+            var (b2BAccount, _, _) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
+
+            if (!await IsUserValid(b2BAccount))
+                return RedirectToRoute("ShoppingCart");
+
+            var customer = await _workContext.GetCurrentCustomerAsync();
+            var store = await _storeContext.GetCurrentStoreAsync();
+            var cart = await _shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.ShoppingCart, store.Id);
+
+            if (!cart.Any())
+                throw new Exception("Your cart is empty");
+
+            if (!_orderSettings.OnePageCheckoutEnabled)
+                throw new Exception("One page checkout is disabled");
+
+            if (await _customerService.IsGuestAsync(customer) && !_orderSettings.AnonymousCheckoutAllowed)
+                throw new Exception("Anonymous checkout is not allowed");
+
+            var paymentMethodSystemName = await _genericAttributeService.GetAttributeAsync<string>(customer,
+                NopCustomerDefaults.SelectedPaymentMethodAttribute, store.Id);
+            var paymentMethod = await _paymentPluginManager
+                                    .LoadPluginBySystemNameAsync(paymentMethodSystemName, customer, store.Id)
+                                ?? throw new Exception("Payment method is not selected");
+
+            var warnings = await paymentMethod.ValidatePaymentFormAsync(form);
+            foreach (var warning in warnings)
+                ModelState.AddModelError("", warning);
+            if (ModelState.IsValid)
+            {
+                //get payment info
+                var paymentInfo = await paymentMethod.GetPaymentInfoAsync(form);
+                //set previous order GUID (if exists)
+                await _paymentService.GenerateOrderGuidAsync(paymentInfo);
+
+                //session save
+                await HttpContext.Session.SetAsync("OrderPaymentInfo", paymentInfo);
+
+                var confirmOrderModel = await _checkoutModelFactory.PrepareConfirmOrderModelAsync(cart);
+                return Json(new
+                {
+                    update_section = new UpdateSectionJsonModel
+                    {
+                        name = "confirm-order",
+                        html = await RenderPartialViewToStringAsync("OpcConfirmOrder", confirmOrderModel)
+                    },
+                    goto_section = "confirm_order"
+                });
+            }
+
+            //If we got this far, something failed, redisplay form
+            var paymenInfoModel = await _checkoutModelFactory.PreparePaymentInfoModelAsync(paymentMethod);
+            return Json(new
+            {
+                update_section = new UpdateSectionJsonModel
+                {
+                    name = "payment-info",
+                    html = await RenderPartialViewToStringAsync("OpcPaymentInfo", paymenInfoModel)
+                }
+            });
+        }
+        catch (Exception exc)
+        {
+            await _logger.WarningAsync(exc.Message, exc, await _workContext.GetCurrentCustomerAsync());
+            return Json(new { error = 1, message = exc.Message });
+        }
+    }
+
+    public override async Task<IActionResult> OpcCompleteRedirectionPayment()
+    {
+        try
+        {
+            var (b2BAccount, _, _) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
+
+            if (!await IsUserValid(b2BAccount))
+                return RedirectToRoute("ShoppingCart");
+
+            //validation
+            if (!_orderSettings.OnePageCheckoutEnabled)
+                return RedirectToRoute("Homepage");
+
+            var customer = await _workContext.GetCurrentCustomerAsync();
+            if (await _customerService.IsGuestAsync(customer) && !_orderSettings.AnonymousCheckoutAllowed)
+                return Challenge();
+
+            //get the order
+            var store = await _storeContext.GetCurrentStoreAsync();
+            var order = (await _orderService.SearchOrdersAsync(storeId: store.Id,
+                customerId: customer.Id, pageSize: 1)).FirstOrDefault();
+            if (order == null)
+                return RedirectToRoute("Homepage");
+
+            var paymentMethod = await _paymentPluginManager
+                .LoadPluginBySystemNameAsync(order.PaymentMethodSystemName, customer, store.Id);
+            if (paymentMethod == null)
+                return RedirectToRoute("Homepage");
+            if (paymentMethod.PaymentMethodType != PaymentMethodType.Redirection)
+                return RedirectToRoute("Homepage");
+
+            //ensure that order has been just placed
+            if ((DateTime.UtcNow - order.CreatedOnUtc).TotalMinutes > 3)
+                return RedirectToRoute("Homepage");
+
+            //Redirection will not work on one page checkout page because it's AJAX request.
+            //That's why we process it here
+            var postProcessPaymentRequest = new PostProcessPaymentRequest
+            {
+                Order = order
+            };
+
+            await _paymentService.PostProcessPaymentAsync(postProcessPaymentRequest);
+
+            if (_webHelper.IsRequestBeingRedirected || _webHelper.IsPostBeingDone)
+            {
+                //redirection or POST has been done in PostProcessPayment
+                return Content(await _localizationService.GetResourceAsync("Checkout.RedirectMessage"));
+            }
+
+            //if no redirection has been done (to a third-party payment page)
+            //theoretically it's not possible
+            return RedirectToRoute("CheckoutCompleted", new { orderId = order.Id });
+        }
+        catch (Exception exc)
+        {
+            await _logger.WarningAsync(exc.Message, exc, await _workContext.GetCurrentCustomerAsync());
+            return Content(exc.Message);
+        }
+    }
+
     #endregion
 
     #region B2B Checkout Data
 
     [HttpPost]
-    public async Task<IActionResult> GetERPDeliveryDates(string suburb, string city)
+    public async Task<IActionResult> GetERPDeliveryDates(int shipToAddressId)
     {
+        var (deliveyDates, isSucceed) = await _erpCheckoutModelFactory.GetDeliveryDatesByShipToAddressAsync(shipToAddressId);
 
-        var (deliveyDates, isSucceed) = await _erpCheckoutModelFactory.GetDeliveryDatesBySuburbOrCityAsync(suburb, city);
-        if (isSucceed && (deliveyDates == null || deliveyDates.Count < 1))
-        {
-            return Json(new
-            {
-                deliveyDates = deliveyDates,
-                isSucceed = isSucceed,
-                isFullLoadRequired = true
-            });
-        }
         return Json(new
         {
             deliveyDates = deliveyDates,
@@ -2480,24 +3010,12 @@ public class ErpCheckoutController : CheckoutController
     {
         var currentCustomer = await _workContext.GetCurrentCustomerAsync();
         var b2BAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(currentCustomer.Id);
+
         if (b2BAccount == null)
         {
-            b2BAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(currentCustomer.Id);
-            var b2cShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdWithActiveAsync(shipToId);
-            if (b2BAccount == null || b2cShipToAddress == null)
-            {
-                return Json(new
-                {
-                    isSucceed = false
-                });
-            }
-
-            var b2BShipToAddressModel = new ErpShipToAddressModelForCheckout();
-            await _erpCheckoutModelFactory.PrepareB2CShipToAddressModelAsync(b2BShipToAddressModel, b2cShipToAddress, b2BAccount, loadAvailableAreas: true, loadCountriesAndStates: true);
             return Json(new
             {
-                Data = await RenderPartialViewToStringAsync("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/ErpCheckout/LoadErpShipToAddress", b2BShipToAddressModel),
-                isSucceed = true
+                isSucceed = false
             });
         }
         else
@@ -2512,7 +3030,7 @@ public class ErpCheckoutController : CheckoutController
             }
 
             var b2BShipToAddressModel = new ErpShipToAddressModelForCheckout();
-            await _erpCheckoutModelFactory.PrepareB2BShipToAddressModelAsync(b2BShipToAddressModel, shipToAddress, b2BAccount, loadAvailableAreas: true, loadCountriesAndStates: true);
+            await _erpCheckoutModelFactory.PrepareB2BShipToAddressModelAsync(b2BShipToAddressModel, shipToAddress, b2BAccount, loadAvailableSuburbs: true, loadCountriesAndStates: true);
 
             return Json(new
             {
@@ -2520,7 +3038,6 @@ public class ErpCheckoutController : CheckoutController
                 isSucceed = true
             });
         }
-
     }
 
     public async Task<IActionResult> LoadB2BCheckoutCompletedData(int nopOrderId)
@@ -2545,34 +3062,64 @@ public class ErpCheckoutController : CheckoutController
 
     public async Task<IActionResult> ClearShippingOptionAndSavePickupPoint()
     {
-        if (_shippingSettings.AllowPickupInStore)
+        if (!_shippingSettings.AllowPickupInStore)
+            return RedirectToRoute("CheckoutShippingAddress");
+
+        var currentCustomer = await _workContext.GetCurrentCustomerAsync();
+        var store = await _storeContext.GetCurrentStoreAsync();
+        var erpNopUser = await _erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(currentCustomer);
+
+        if (erpNopUser == null)
+            return RedirectToRoute("CheckoutShippingAddress");
+
+        var b2CShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdWithActiveAsync(erpNopUser.ErpShipToAddressId);
+        var nopAddress = await _addressService.GetAddressByIdAsync(b2CShipToAddress.AddressId);
+        var cart = await _shoppingCartService.GetShoppingCartAsync(currentCustomer, ShoppingCartType.ShoppingCart, store.Id);
+        var pickupPoints = (await _shippingService.GetPickupPointsAsync(cart, nopAddress, customer: currentCustomer, storeId: store.Id))
+                            ?.PickupPoints?.ToList();
+
+        var defaultPoint = pickupPoints?.FirstOrDefault();
+        if (defaultPoint == null)
+            return RedirectToRoute("CheckoutShippingAddress");
+
+        var pickUpInStoreShippingOption = new ShippingOption
         {
-            var currentCustomer = await _workContext.GetCurrentCustomerAsync();
-            var store = await _workContext.GetCurrentCustomerAsync();
-            var b2CUser = await _erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(currentCustomer);
-            var b2CShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdWithActiveAsync(b2CUser?.ErpShipToAddressId ?? 0);
-            var nopAddress = await _addressService.GetAddressByIdAsync(b2CShipToAddress?.AddressId ?? 0);
-            var cart = await _shoppingCartService.GetShoppingCartAsync(currentCustomer, ShoppingCartType.ShoppingCart, store.Id);
-            var pickupPoints = (await _shippingService.GetPickupPointsAsync(cart, nopAddress, customer: currentCustomer, storeId: store.Id))?.PickupPoints.ToList();
-            var defaultPoint = pickupPoints.FirstOrDefault();
-            if (defaultPoint == null)
-                return RedirectToRoute("CheckoutShippingAddress");
+            Name = string.Format(await _localizationService.GetResourceAsync("Checkout.PickupPoints.Name"), defaultPoint.Name),
+            Rate = 0,
+            Description = defaultPoint.Description,
+            ShippingRateComputationMethodSystemName = defaultPoint.ProviderSystemName
+        };
 
-            var pickUpInStoreShippingOption = new ShippingOption
+        await _genericAttributeService.SaveAttributeAsync(currentCustomer, NopCustomerDefaults.SelectedShippingOptionAttribute, pickUpInStoreShippingOption, store.Id);
+        await _genericAttributeService.SaveAttributeAsync(currentCustomer, NopCustomerDefaults.SelectedPickupPointAttribute, defaultPoint, store.Id);
+
+        return Json(await RenderViewComponentToStringAsync(typeof(OrderTotalsViewComponent), new { isEditable = false }));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ValidateCustomerReference(string customerReferenceAsPO, int erpAccountId)
+    {
+        if (await _erpOrderAdditionalDataService.IfCustomerReferenceExistWithThisErpAccount(customerReferenceAsPO, erpAccountId))
+        {
+            return Json(new
             {
-                Name = string.Format(await _localizationService.GetResourceAsync("Checkout.PickupPoints.Name"), defaultPoint.Name),
-                Rate = 0,
-                Description = defaultPoint.Description,
-                ShippingRateComputationMethodSystemName = defaultPoint.ProviderSystemName
-            };
-
-            await _genericAttributeService.SaveAttributeAsync(currentCustomer, NopCustomerDefaults.SelectedShippingOptionAttribute, pickUpInStoreShippingOption, store.Id);
-            await _genericAttributeService.SaveAttributeAsync(currentCustomer, NopCustomerDefaults.SelectedPickupPointAttribute, defaultPoint, store.Id);
-
-            return ViewComponent("OrderTotals", new { isEditable = false });
+                isValid = false,
+                errorMessage = await _localizationService.GetResourceAsync("Plugins.Payments.NopStation.B2B.Account.CustomerReferenceAsPO.AlreadyExist")
+            });
         }
 
-        return RedirectToRoute("CheckoutShippingAddress");
+        return Json(new { isValid = true });
+    }
+
+    public async Task<IActionResult> ClearPickUpPointAndSaveShippingOption()
+    {
+        var currentCustomer = await _workContext.GetCurrentCustomerAsync();
+        var currentStore = await _storeContext.GetCurrentStoreAsync();
+
+        await _genericAttributeService.SaveAttributeAsync<ShippingOption>(currentCustomer, NopCustomerDefaults.SelectedShippingOptionAttribute, null, currentStore.Id);
+        await _genericAttributeService.SaveAttributeAsync<PickupPoint>(currentCustomer, NopCustomerDefaults.SelectedPickupPointAttribute, null, currentStore.Id);
+
+        return Json(await RenderViewComponentToStringAsync(typeof(OrderTotalsViewComponent), new { isEditable = false }));
     }
 
     #endregion

@@ -1,0 +1,26 @@
+@import "../../mixins/_layout_width_responsive";
+@import "../../mixins/_item_grid";
+@import "../../mixins/_item_box";
+
+.category-grid {
+    @include layout_width_responsive;
+
+    .swiper {
+        margin-left: -10px;
+        margin-right: -10px;
+    }
+
+
+
+    .swiper-slide {
+        width: 50%;
+        padding: 4px 10px 6px;
+    }
+
+
+    @media (min-width: $lg) {
+        .swiper-slide {
+            width: 33.33%;
+        }
+    }
+}

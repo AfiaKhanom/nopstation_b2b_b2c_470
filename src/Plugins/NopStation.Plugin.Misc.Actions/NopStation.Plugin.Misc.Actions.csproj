@@ -4,15 +4,15 @@
     <OutputPath>..\NopStation.Plugin.Misc.Core</OutputPath>
     <OutDir>$(OutputPath)</OutDir>
     <Version>4.70.1.0</Version>
-    <Authors>Nop-Station Team, Jaber Kibria</Authors>
-    <Company>Nop-Station</Company>
-    <Product>Nop-Station Actions</Product>
+    <Authors>Comalytics</Authors>
+    <Company>Comalytics</Company>
+    <Product>Comalytics Actions</Product>
     <AssemblyVersion>4.70.1.0</AssemblyVersion>
     <FileVersion>4.70.1.0</FileVersion>
     <NeutralLanguage>en</NeutralLanguage>
-    <Description>This plugin is used to manage Nop-Station plugins.</Description>
-    <Copyright>Nop-Station Team</Copyright>
-    <PackageTags>NopStation,Core,NopCommerce,Plugin</PackageTags>
+    <Description>This plugin is used to manage Comalytics plugins.</Description>
+    <Copyright>Comalytics Team</Copyright>
+    <PackageTags>Comalytics,Core,NopCommerce,Plugin</PackageTags>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
   </PropertyGroup>

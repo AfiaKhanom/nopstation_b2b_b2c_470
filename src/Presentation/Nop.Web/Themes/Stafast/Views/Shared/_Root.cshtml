@@ -1,0 +1,96 @@
+﻿@using Nop.Core
+@using Nop.Core.Infrastructure
+@using Nop.Services.Plugins;
+@using Nop.Services.Cms;
+
+@inject IWidgetPluginManager widgetPluginManager
+@inject IStoreContext storeContext
+@inject IWorkContext workContext
+@inject ISettingService settingService
+
+@{
+    Layout = "_Root.Head";
+
+    var store = await storeContext.GetCurrentStoreAsync();
+    var pluginService = EngineContext.Current.Resolve<IPluginService>();
+    var customer = await workContext.GetCurrentCustomerAsync();
+
+    var smartMegamenuPluginName = "NopStation.Plugin.Widgets.SmartMegaMenu";
+    var isSmartMegamenuPluginActive = await widgetPluginManager.IsPluginActiveAsync(smartMegamenuPluginName, customer, store.Id);
+
+    var enableStickyHeader = await settingService.GetSettingByKeyAsync<bool>("StafastSettings.EnableStickyHeader", storeId: store.Id, loadSharedValueIfNotFound: true);
+}
+@await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.BodyStartHtmlTagAfter })
+@{
+    await Html.RenderPartialAsync("_Notifications");
+}
+@{
+    await Html.RenderPartialAsync("_JavaScriptDisabledWarning");
+}
+
+@if(enableStickyHeader) {
+    NopHtml.AppendScriptParts(ResourceLocation.Footer, $"~/Themes/Stafast/Content/js/jquery-sticky.js");
+}
+
+@await Component.InvokeAsync(typeof(AdminHeaderLinksViewComponent))
+
+@await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderBefore })
+@await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderMiddle })
+<div class="header-wrapper @(enableStickyHeader ? "sticky-header" : "")">
+    @{
+        await Html.RenderPartialAsync("_Header");
+    }
+    <div class="header-menu">
+        <div class="container">
+            <div class="top-menu-wrap">
+                @if (isSmartMegamenuPluginActive)
+                {
+                        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = "header_menu" })
+                }
+                else
+                {
+                    @await Component.InvokeAsync(typeof(TopMenuViewComponent))
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<div class="master-wrapper-page">
+    <script asp-location="Footer">
+        var localized_data = {
+            AjaxCartFailure: "@T("AjaxCart.Failure")"
+        };
+        AjaxCart.init(false, '.header-links .cart-qty', '.header-links .wishlist-qty', '#flyout-cart', localized_data);
+    </script>
+
+    @if (IsSectionDefined("categoryPageTop"))
+    {
+        @await RenderSectionAsync("CategoryPageTop", false)
+    }
+
+    @if (IsSectionDefined("Breadcrumb"))
+    {
+        @RenderSection("Breadcrumb")
+    }
+    <div class="master-wrapper-content">
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ContentBefore })
+
+        <div class="master-column-wrapper">
+            @RenderBody()
+        </div>
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ContentAfter })
+    </div>
+    @await Component.InvokeAsync(typeof(FooterViewComponent))
+</div>
+@await Component.InvokeAsync(typeof(EuCookieLawViewComponent))
+@await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.BodyEndHtmlTagBefore })
+@await Component.InvokeAsync(typeof(FlyoutShoppingCartViewComponent))
+
+@if (enableStickyHeader)
+{
+    <script asp-location="Footer">
+        $(document).ready(function () {
+            $('.sticky-header').sticky()
+        })
+    </script>
+}

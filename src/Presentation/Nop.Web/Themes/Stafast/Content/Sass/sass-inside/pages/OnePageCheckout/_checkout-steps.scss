@@ -1,0 +1,143 @@
+@import "../../mixins/buttons";
+
+.opc {
+    list-style-type: none;
+    background: var(--white);
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 1px 2px 4px 1px #FFFFFF33, 2px 2px 5px 2px #9BAAD033;
+
+    .step-title {
+        margin: 0 0 1px;
+        overflow: hidden;
+        background-color: var(--primary-grey);
+        border-radius: 5px;
+
+        .title,
+        .number {
+            float: left;
+            min-height: 30px;
+            padding: 6px 10px;
+            line-height: 26px;
+            font-size: 16px;
+            font-weight: normal;
+            color: var(--white);
+
+            @media (min-width: $md) {
+                min-height: 40px;
+            }
+        }
+
+        .number {
+            width: 30px;
+            border-right: 1px solid var(--white);
+            text-align: center;
+
+            @media (min-width: $md) {
+                width: 40px;
+            }
+        }
+    }
+
+    .step {
+        padding: 15px 10px;
+        margin-bottom: 5px;
+
+        .selector label {
+            text-align: left;
+        }
+
+        .buttons {
+            text-align: left;
+        }
+
+        @media (min-width: $md) {
+            padding: 15px 40px;
+        }
+
+        select {
+            width: 100% !important;
+            margin-bottom: 10px;
+        }
+
+        input#CardNumber,
+        input#CardholderName, input#CardCode {
+            width: 100% !important;
+            margin-bottom: 10px;
+            border: 1px solid var(--primary-grey_light);
+            color: var(--primary-grey_dark);
+            border-radius: 2px;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 16px;
+            padding: 6px;
+        }
+
+
+        td:has(#ExpireMonth) {
+           display:flex;
+           justify-content:space-between;
+           align-items:center;
+           flex-wrap:nowrap;
+        }
+
+        select#ExpireYear,
+        select#ExpireMonth {
+            width: calc(100%/2 - 8px)  !important;
+        }
+
+        .section {
+            margin-bottom: 15px;
+        }
+
+        .buttons {
+            margin-bottom: 10px;
+
+            button {
+                margin-right: 5px;
+            }
+
+            .back-link {
+                display: inline-block;
+                vertical-align: top;
+                margin-right: 5px;
+
+                a {
+                    width: 100%;
+                    @include buttons($border: 1px solid var(--primary-grey), $background: var(--primary-grey), $color: var(--white));
+                    position: relative;
+                    padding-left: 15px;
+                    padding-right: 15px;
+
+                    small {
+                        display: none;
+                    }
+                }
+
+                & ~ button {
+                    @include buttons($border: 1px solid var(--primary-color), $background: var(--primary-color), $color: var(--white));
+                    min-width: initial;
+                    width: auto;
+                    padding-left: 15px;
+                    padding-right: 15px;
+                }
+            }
+
+            #delete-billing-address-button,
+            #edit-billing-address-button {
+                @include buttons($border: 1px solid var(--primary-grey), $background: var(--primary-grey), $color: var(--white));
+            }
+        }
+    }
+
+    .allow {
+        .step-title {
+            background-color: var(--primary-color);
+
+            .title,
+            .number {
+                color: var(--white);
+            }
+        }
+    }
+}

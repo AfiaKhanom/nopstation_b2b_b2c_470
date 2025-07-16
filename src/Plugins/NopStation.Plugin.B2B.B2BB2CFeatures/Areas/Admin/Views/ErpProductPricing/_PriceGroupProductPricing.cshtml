@@ -51,21 +51,22 @@
                     {
                         Name = "price-group-product-pricing-grid",
                         UrlRead = new DataUrl("PriceGroupProductPricingList", "ErpProductPricing", new RouteValueDictionary { [nameof(ErpPriceGroupProductPricingSearchModel.ProductId)] = Model.ProductId }),
-                        UrlUpdate = new DataUrl("EditPriceGroupProductPricing", "ErpProductPricing", null),
+                        UrlUpdate = new DataUrl("EditPriceGroupProductPricing", "ErpProductPricing", new RouteValueDictionary { [nameof(ErpPriceGroupProductPricingSearchModel.ProductId)] = Model.ProductId }),
                         UrlDelete = new DataUrl("DeletePriceGroupProductPricing", "ErpProductPricing", null),
                         SearchButtonId = "search-price-group-product-pricing",
                         Length = Model.PageSize,
                         LengthMenu = Model.AvailablePageSizes,
                         Filters = new List<FilterParameter>
                         {
-                        new FilterParameter(nameof(Model.SearchErpPriceGroupCode))
+                            new FilterParameter(nameof(Model.SearchErpPriceGroupCode))
                         }
                     };
 
                     groupProductPricingGridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpPriceGroupProductPricingModel.ErpGroupPriceCodeId))
                     {
                         Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPrice.Fields.ErpPriceGroupCode").Text,
-                        Width = "200",
+                        Width = "0",
+                        ClassName = NopColumnClassDefaults.CenterAll,
                         Visible = false
                     });
 
@@ -177,7 +178,23 @@
                         </script>
                     </div>
                 </div>
+                <button type="submit" id="btnRefreshGroupPrices" style="display: none"></button>
+                <script>
+                    $(document).ready(function () {
+                        $('#btnRefreshGroupPrices').click(function () {
+                            updateTable('#price-group-product-pricing-grid');
+                            //return false to don't reload a page
+                            return false;
+                        });
+                    });
+                </script>
             </div>
         </div>
+
+        <script>
+            function renderColumnGroupPriceEdit(data, type, row, meta) {
+                return '<button onclick=\"javascript:OpenWindow(\'@Url.Content("~/Admin/ErpProductPricing/GroupPriceEditPopUp/")' + data + '?btnId=btnRefreshGroupPrices&formId=product-pricing-form\', 800, 400, true); return false;\" class="btn btn-default"><i class="fas fa-pencil-alt"></i>@T("Admin.Common.Edit")</button>';
+            }
+        </script>
     </div>
 </nop-card>

@@ -4,10 +4,11 @@
 @using Nop.Core.Domain.Common
 @using Nop.Core.Domain.Seo
 @using NopStation.Plugin.B2B.B2BB2CFeatures.Contexts
-@inject IB2BB2CWorkContext b2BB2CWorkContext;
-@inject Nop.Core.IWebHelper webHelper
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Services
+@inject IWebHelper webHelper
 @inject SeoSettings seoSettings
 @inject CommonSettings commonSettings
+@inject IErpAccountService erpAccountService
 
 @{
     Layout = "_ColumnsTwo";
@@ -26,8 +27,7 @@
         NopHtml.AddCanonicalUrlParts(categoryUrl, seoSettings.QueryStringInCanonicalUrlsEnabled);
     }
 
-    var erpCustomer = await b2BB2CWorkContext.GetCurrentERPCustomerAsync();
-
+    var erpAccount = await erpAccountService.GetActiveErpAccountByCustomerIdAsync((await workContext.GetCurrentCustomerAsync()).Id);
     var breadcrumbDelimiter = commonSettings.BreadcrumbDelimiter;
 }
 <style>
@@ -83,7 +83,7 @@
                     </li>
                     position++;
                 }
-                @if (erpCustomer.ErpAccount != null)
+                @if (erpAccount != null)
                 {
                     <li class="" style="float:right;">
                         <a onmouseover="this.style.color='#ffffff'; this.style.backgroundColor='#4ab2f1;'"

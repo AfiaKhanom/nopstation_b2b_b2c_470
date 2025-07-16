@@ -1,0 +1,43 @@
+﻿.not-found-page {
+    .not-found-container {
+        background: var(--secondary-color);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        border-radius: 3px;
+        padding: 15px;
+
+        .topic-block-body {
+            text-align: center;
+
+            p {
+                strong {
+                    font-style: italic;
+                    font-weight: 700;
+                    font-size: clamp(18px,3vw,25px);
+                    line-height: clamp(22px,3.3vw,35px);
+                }
+            }
+
+            ul {
+                width: 600px;
+                max-width: 100%;
+                margin: auto;
+
+                li {
+                    font-weight: 500;
+                    font-size: clamp(14px,2.2vw,18px);
+                    line-height: clamp(17px,2.5vw,21px);
+                    margin-bottom: 10px;
+                }
+            }
+        }
+
+        img {
+            display: block;
+            margin: 30px auto;
+
+            @media(min-width: $md) {
+                margin: 50px auto;
+            }
+        }
+    }
+}

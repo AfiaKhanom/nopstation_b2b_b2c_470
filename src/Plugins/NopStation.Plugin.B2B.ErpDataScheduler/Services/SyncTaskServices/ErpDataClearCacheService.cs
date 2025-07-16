@@ -11,8 +11,17 @@ public class ErpDataClearCacheService : IErpDataClearCacheService
     {
         _staticCacheManager = staticCacheManager;
     }
-    public async Task ClearCacheOfEntity<T>(T entity, int id) where T : BaseEntity
+
+    public async Task ClearCacheOfEntities<T>(IList<T> entities) where T : BaseEntity
     {
-        await _staticCacheManager.RemoveAsync(_staticCacheManager.PrepareKeyForDefaultCache(NopEntityCacheDefaults<T>.ByIdCacheKey, id));
+        foreach (var entity in entities)
+        {
+            await ClearCacheOfEntity(entity);
+        }
+    }
+
+    public async Task ClearCacheOfEntity<T>(T entity) where T : BaseEntity
+    {
+        await _staticCacheManager.RemoveAsync(_staticCacheManager.PrepareKeyForDefaultCache(NopEntityCacheDefaults<T>.ByIdCacheKey, entity.Id));
     }
 }

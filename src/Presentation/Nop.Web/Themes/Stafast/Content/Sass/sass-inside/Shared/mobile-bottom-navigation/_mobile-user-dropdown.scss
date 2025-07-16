@@ -1,0 +1,56 @@
+#mobile-bottom-navigation {
+    .mobile-login-dropdown-menu {
+        display: none;
+        
+    }
+}
+
+.mobile-account-dropdown {
+    .ui-dialog-titlebar {
+        padding: 0;
+        overflow: visible;
+
+        .ui-dialog-titlebar-close {
+            top: 0;
+            right: 0;
+            z-index: 10;
+            background: #dc3545;
+            color: var(--white);
+            margin: 0;
+
+            &::before {
+                font-size: 16px;
+                color: var(--white);
+            }
+        }
+    }
+
+    .ui-dialog-title {
+        display: none;
+    }
+
+
+
+    .mobile-login-dropdown-menu {
+        min-height: auto !important;
+        padding: 30px 20px;
+
+        li {
+            &:first-child {
+                margin-bottom: 10px;
+            }
+
+            a {
+                display: block;
+                padding: 10px;
+                width: 60%;
+                background: var(--primary-color);
+                color: var(--white);
+                border-radius: 5px;
+                text-align: center;
+                margin: auto;
+                font-weight: 600;
+            }
+        }
+    }
+}

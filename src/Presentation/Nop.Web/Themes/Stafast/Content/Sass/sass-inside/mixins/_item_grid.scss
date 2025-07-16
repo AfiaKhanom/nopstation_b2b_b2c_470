@@ -1,0 +1,19 @@
+@import "../variables/breakpoint";
+// $xl: 1600px;
+// $lg: 1200px;
+// $md: 992px;
+// $sm: 768px;
+// $xs: 556px;
+
+@mixin item-grid( $margin-left: -7.5px, $margin-right: -7.5px, $justify-content: center ) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: $justify-content;
+    margin-left: -7.5px;
+    margin-right: -7.5px;
+
+    @media (min-width: $sm) {
+        margin-left: $margin-left;
+        margin-right: $margin-right;
+    }
+}

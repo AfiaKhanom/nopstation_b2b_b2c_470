@@ -1,0 +1,23 @@
+.newsletter-picture {
+    position: relative;
+
+    @media (min-width: $sm) {
+        width: 50%;
+    }
+
+    &::before {
+        content: "";
+        display: block;
+        padding-top: 60%
+    }
+
+
+    img {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        object-fit: cover;
+    }
+}

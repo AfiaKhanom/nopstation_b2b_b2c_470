@@ -1,0 +1,31 @@
+.gallery {
+    margin: 0;
+    z-index: 10;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+    .picture-gallery {
+        width: 100%;
+        position: relative;
+        padding: 10px;
+        flex-grow: 3;
+        display: flex;
+        justify-content: center;
+
+        .picture {
+            font-size: 0;
+            align-self: center;
+        }
+    }
+
+    #wrap {
+        z-index: 99 !important;
+    }
+
+    .cloud-zoom-thumb-container {
+        text-align: center;
+    }
+}

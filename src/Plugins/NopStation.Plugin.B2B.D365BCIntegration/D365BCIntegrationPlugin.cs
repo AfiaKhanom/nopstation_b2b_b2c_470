@@ -371,5 +371,20 @@ public class D365BCIntegrationPlugin : BasePlugin, IAdminMenuPlugin, IErpIntegra
         return settings.CompanyName;
     }
 
+    public Task<ErpResponseData<string>> GetStatementPdfByteCodeFromErpAsync(ErpGetRequestModel erpRequest)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ErpResponseData<IList<ErpShipToAddressDataModel>>> GetShipToAddressesFromErpAsync(ErpGetRequestModel erpRequest)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ErpResponseData<IList<ErpAccountDataModel>>> GetAllAccountCreditFromErpAsync(ErpGetRequestModel erpRequest)
+    {
+        throw new NotImplementedException();
+    }
+
     #endregion
 }

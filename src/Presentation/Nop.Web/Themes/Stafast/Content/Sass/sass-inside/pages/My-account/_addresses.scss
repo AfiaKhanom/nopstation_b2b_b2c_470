@@ -1,0 +1,71 @@
+.address-list {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 15px 0px;
+
+    @media (min-width: $md) {
+        margin: 15px -7.5px;
+    }
+
+    .address-item {
+        margin-bottom: 15px;
+        background-color: var(--white);
+        border-radius: 10px;
+
+        .title {
+            padding: 5px 20px;
+            background-color: var(--white);
+
+            strong {
+                color: var(--black);
+                font-style: italic;
+                font-weight: 700;
+                font-size: 16px;
+                line-height: 19px;
+            }
+        }
+
+        .address-item-box {
+            position: relative;
+            background-color: rgba(236, 241, 250, 0.5);
+            border-radius: 0 0 10px 10px;
+
+            ul {
+                padding-top: 25px;
+                margin-bottom: 0px;
+                background-color: transparent;
+                min-height: 285px;
+
+                .name {
+                    font-weight: 700;
+                }
+
+                li {
+                    font-size: 16px;
+                    line-height: 19px;
+
+                    label {
+                        font-size: 16px;
+                        line-height: 19px;
+                        font-weight: 400;
+                    }
+                }
+            }
+
+            .address-list-page {
+                top: 15px;
+            }
+        }
+    }
+}
+
+.address-list-page {
+    .add-button {
+        margin-bottom:20px;
+        text-align:center;
+        button {
+            padding: 5px 10px;
+            min-width: 180px;
+        }
+    }
+}

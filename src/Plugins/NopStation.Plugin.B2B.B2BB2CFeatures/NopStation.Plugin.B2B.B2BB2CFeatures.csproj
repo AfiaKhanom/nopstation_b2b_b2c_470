@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Copyright>Copyright © Nop Solutions, Ltd</Copyright>
-    <Company>Nop Solutions, Ltd</Company>
-    <Authors>Nop Solutions, Ltd</Authors>
+    <Copyright>Copyright © Comalytics</Copyright>
+    <Company>Comalytics</Company>
+    <Authors>Comalytics</Authors>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://www.nopcommerce.com/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/nopSolutions/nopCommerce</RepositoryUrl>
@@ -16,6 +16,19 @@
     to ensure that the dlls copied from the NuGet cache to the output of your project-->
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Themes\Emporium\Content\img\**" />
+    <Compile Remove="Themes\Emporium\Home\**" />
+    <EmbeddedResource Remove="Themes\Emporium\Content\img\**" />
+    <EmbeddedResource Remove="Themes\Emporium\Home\**" />
+    <None Remove="Themes\Emporium\Content\img\**" />
+    <None Remove="Themes\Emporium\Home\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Factories\OverrideCheckoutModelFactory.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove="Areas\Admin\Views\B2BB2CFeatures\Configure.cshtml" />
@@ -32,10 +45,12 @@
     <None Remove="Areas\Admin\Views\ErpAccount\_CreateOrUpdateErpAccount.Info.ErpShipToAddresses.cshtml" />
     <None Remove="Areas\Admin\Views\ErpActivityLogs\ErpActivityLogs.cshtml" />
     <None Remove="Areas\Admin\Views\ErpActivityLogs\ErpActivityTypes.cshtml" />
-    <None Remove="Areas\Admin\Views\ErpActivityLog\List.cshtml" />
-    <None Remove="Areas\Admin\Views\ErpActivityLog\View.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpLogs\List.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpLogs\View.cshtml" />
     <None Remove="Areas\Admin\Views\ErpInvoice\_Details.cshtml" />
     <None Remove="Areas\Admin\Views\ErpInvoice\_Details.Info.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpProductPricing\_CreateOrUpdateGroupPrice.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpProductPricing\_GroupPriceEditPopUp.cshtml" />
     <None Remove="Areas\Admin\Views\ErpRegistrationApplication\ApplicationEdit.cshtml" />
     <None Remove="Areas\Admin\Views\ErpRegistrationApplication\Create.cshtml" />
     <None Remove="Areas\Admin\Views\ErpRegistrationApplication\List.cshtml" />
@@ -108,6 +123,7 @@
     <None Remove="Areas\Admin\Views\Shared\Components\ErpOrderInOrderDetailsAdmin\ErpOrderAdditionalDataForB2C.cshtml" />
     <None Remove="Areas\Admin\Views\Shared\Components\ErpOrderItemInOrderDetailsAdmin\ErpOrderItemAdditionalDataForB2B.cshtml" />
     <None Remove="Areas\Admin\Views\Shared\Components\ErpOrderItemInOrderDetailsAdmin\ErpOrderItemAdditionalDataForB2C.cshtml" />
+    <None Remove="Areas\Admin\Views\Shared\Components\NopCustomerErpAccountInfoComponent\Default.cshtml" />
     <None Remove="Areas\Admin\Views\Shared\Confirm.cshtml" />
     <None Remove="Areas\Admin\Views\Shared\Table.cshtml" />
     <None Remove="Areas\Admin\Views\Shared\_EntityHistoricalRecords.cshtml" />
@@ -123,14 +139,29 @@
     <None Remove="Content\scripts\b2bajaxcart.js" />
     <None Remove="Content\scripts\b2bMiniCart.js" />
     <None Remove="Content\scripts\jquery.dataTables.min.js" />
+    <None Remove="Content\scripts\passwordShowHide.js" />
     <None Remove="Content\scripts\quickorder.js" />
     <None Remove="ResourceString\B2BB2CFeatures.Resources.en-us.xml" />
     <None Remove="Themes\DefaultClean\Content\css\erpcheckoutstyles.css" />
     <None Remove="Themes\DefaultClean\Content\css\quicorderkstyles.css" />
+    <None Remove="Themes\DefaultClean\Content\css\styles.css" />
     <None Remove="Themes\DefaultClean\Views\Shared\Components\CheckoutProgress\Default.cshtml" />
     <None Remove="Themes\DefaultClean\Views\Shared\Components\QuickOrderHeaderLink\Default.cshtml" />
+    <None Remove="Themes\DefaultClean\Views\Shared\Head.cshtml" />
     <None Remove="Themes\DefaultClean\Views\_OldInternetExplorerWarning.cshtml" />
     <None Remove="Themes\DefaultClean\Views\_ViewImports.cshtml" />
+    <None Remove="Themes\Emporium\Content\css\styles.css" />
+    <None Remove="Themes\Emporium\Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml" />
+    <None Remove="Themes\Emporium\Views\Customer\Addresses.cshtml" />
+    <None Remove="Themes\Emporium\Views\Order\Details.cshtml" />
+    <None Remove="Themes\Emporium\Views\Shared\Components\CheckoutProgress\Default.cshtml" />
+    <None Remove="Themes\Emporium\Views\Shared\Components\HeaderLinks\Default.cshtml" />
+    <None Remove="Themes\Emporium\Views\Shared\Components\Logo\Default.cshtml" />
+    <None Remove="Themes\Emporium\Views\Shared\Components\OrderSummary\Default.cshtml" />
+    <None Remove="Themes\Emporium\Views\Shared\_Header.cshtml" />
+    <None Remove="Themes\Emporium\Views\Shared\_ProductBox.cshtml" />
+    <None Remove="Themes\Emporium\Views\Shared\_Root.cshtml" />
+    <None Remove="Themes\Emporium\Views\_ViewImports.cshtml" />
     <None Remove="Themes\FreshLand\Content\css\erpstyle.css" />
     <None Remove="Themes\FreshLand\Content\css\freshLand.css" />
     <None Remove="Themes\FreshLand\Content\css\freshLand.min.css" />
@@ -192,18 +223,19 @@
     <None Remove="Themes\FreshLand\Views\ShoppingCart\Cart.cshtml" />
     <None Remove="Themes\FreshLand\Views\ShoppingCart\Wishlist.cshtml" />
     <None Remove="Themes\FreshLand\Views\_ViewImports.cshtml" />
-    <None Remove="Themes\Pavilion\Content\css\styles.css" />
-    <None Remove="Themes\Pavilion\Content\js\script.js" />
-    <None Remove="Themes\Pavilion\Views\_ViewImports.cshtml" />
     <None Remove="Themes\Smart\Content\css\styles.css" />
     <None Remove="Themes\Smart\Content\css\theme-custom.css" />
     <None Remove="Themes\Smart\Content\img\logo.png" />
+    <None Remove="Themes\Smart\Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml" />
+    <None Remove="Themes\Smart\Views\Order\Details.cshtml" />
     <None Remove="Themes\Smart\Views\Shared\Components\CheckoutProgress\Default.cshtml" />
     <None Remove="Themes\Smart\Views\Shared\Components\HeaderLinks\Default.cshtml" />
     <None Remove="Themes\Smart\Views\Shared\Components\Logo\Default.cshtml" />
     <None Remove="Themes\Smart\Views\Shared\Components\OrderSummary\Default.cshtml" />
     <None Remove="Themes\Smart\Views\Shared\_Header.cshtml" />
+    <None Remove="Themes\Smart\Views\Shared\_Root.cshtml" />
     <None Remove="Themes\Smart\Views\_ViewImports.cshtml" />
+    <None Remove="Views\B2BB2CCustomer\Addresses.cshtml" />
     <None Remove="Views\B2BB2CCustomer\B2BRegister.cshtml" />
     <None Remove="Views\B2BB2CCustomer\B2CRegister.cshtml" />
     <None Remove="Views\B2BB2CCustomer\ErpAccountCustomerRegistrationForm.cshtml" />
@@ -216,6 +248,9 @@
     <None Remove="Views\B2BB2CCustomer\_ExternalAuthentication.Errors.cshtml" />
     <None Remove="Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml" />
     <None Remove="Views\Checkout\Completed.cshtml" />
+    <None Remove="Views\Checkout\PaymentInfo.cshtml" />
+    <None Remove="Views\Checkout\PaymentMethod.cshtml" />
+    <None Remove="Views\Checkout\QuoteOrderCompleted.cshtml" />
     <None Remove="Views\Checkout\_PickupPoints.cshtml" />
     <None Remove="Views\CustomerImpersonate\List.cshtml" />
     <None Remove="Views\CustomerImpersonate\List.Multibuyer.cshtml" />
@@ -234,6 +269,7 @@
     <None Remove="Views\ErpCheckout\_CreateOrUpdateErpBillingAddresses.cshtml" />
     <None Remove="Views\ErpCheckout\_CreateOrUpdateErpShiptoAddresses.cshtml" />
     <None Remove="Views\ErpCheckout\_OpcCreateOrUpdateErpShiptoAddresses.cshtml" />
+    <None Remove="Views\Home\Index.cshtml" />
     <None Remove="Views\Order\Details.cshtml" />
     <None Remove="Views\Order\ErpB2bOrderDetails.cshtml" />
     <None Remove="Views\QuickOrder\CreateQuickOrder.cshtml" />
@@ -245,6 +281,7 @@
     <None Remove="Views\QuickOrder\_ProductManufacturers.cshtml" />
     <None Remove="Views\QuickOrder\_ProductTemplate.Simple.cshtml" />
     <None Remove="Views\Shared\Alert.cshtml" />
+    <None Remove="Views\Shared\Components\B2BRootHead\Default.cshtml" />
     <None Remove="Views\Shared\Components\ErpShipToAddressSelector\Default.cshtml" />
     <None Remove="Views\Shared\Components\HeaderLinks\Default.cshtml" />
     <None Remove="Views\Shared\Components\OrderSummaryContentDeals\Default.cshtml" />
@@ -269,12 +306,12 @@
     <Content Include="Areas\Admin\Views\B2BB2CFeatures\_Configure.GoogleMaps.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Areas\Admin\Views\ErpActivityLogs\ERPActivityLogs.cshtml">
+    <Content Include="Areas\Admin\Views\ErpActivityLogs\ErpActivityLogs.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Areas\Admin\Views\ErpActivityLogs\ERPActivityTypes.cshtml">
+    <Content Include="Areas\Admin\Views\ErpActivityLogs\ErpActivityTypes.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -312,12 +349,18 @@
     <Content Include="Areas\Admin\Views\ErpAccount\_CreateOrUpdateErpAccount.Info.Address.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Areas\Admin\Views\ErpActivityLog\List.cshtml">
+    <Content Include="Areas\Admin\Views\ErpLogs\List.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Areas\Admin\Views\ErpActivityLog\View.cshtml">
+    <Content Include="Areas\Admin\Views\ErpLogs\View.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpProductPricing\_CreateOrUpdateGroupPrice.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\ErpProductPricing\_GroupPriceEditPopUp.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Areas\Admin\Views\ErpRegistrationApplication\ApplicationEdit.cshtml">
@@ -390,6 +433,9 @@
     <Content Include="Areas\Admin\Views\Shared\Components\ErpOrderItemInOrderDetailsAdmin\ErpOrderItemAdditionalDataForB2B.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Areas\Admin\Views\Shared\Components\NopCustomerErpAccountInfoComponent\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\css\quickorderstyles.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -397,6 +443,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\img\pencil.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\scripts\passwordShowHide.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\scripts\b2bajaxcart.js">
@@ -639,16 +688,13 @@
     <Content Include="Content\scripts\quickorder.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Model\Checkout\ErpShipToAddressSelectorModel.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Model\Checkout\ErpShipToAddressModel.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="ResourceString\B2BB2CFeatures.Resources.en-us.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
     <Content Include="Themes\DefaultClean\Content\css\quicorderkstyles.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\DefaultClean\Content\css\styles.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Themes\DefaultClean\Views\Shared\Components\CheckoutProgress\Default.cshtml">
@@ -657,8 +703,62 @@
     <Content Include="Themes\DefaultClean\Views\Shared\Components\QuickOrderHeaderLink\Default.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Themes\DefaultClean\Views\Shared\Head.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Include="Themes\DefaultClean\Views\_ViewImports.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\Emporium\Content\css\styles.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\Emporium\Content\css\theme-custom.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Themes\Emporium\Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Themes\Emporium\Views\Customer\Addresses.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\Emporium\Views\Order\Details.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Themes\Emporium\Views\Shared\Components\CheckoutProgress\Default.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Themes\Emporium\Views\Shared\Components\HeaderLinks\Default.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Themes\Emporium\Views\Shared\Components\Logo\Default.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Themes\Emporium\Views\Shared\Components\OrderSummary\Default.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Themes\Emporium\Views\Shared\_Header.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Themes\Emporium\Views\Shared\_ProductBox.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Themes\Emporium\Views\Shared\_Root.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Themes\Emporium\Views\_ViewImports.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="Themes\FreshLand\Content\css\erpstyle.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -843,15 +943,6 @@
     <Content Include="Themes\FreshLand\Views\_ViewImports.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Themes\Pavilion\Content\css\styles.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Themes\Pavilion\Content\js\script.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Themes\Pavilion\Views\_ViewImports.cshtml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Themes\Smart\Content\css\styles.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -860,6 +951,14 @@
     </Content>
     <Content Include="Themes\Smart\Content\img\logo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\Smart\Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Themes\Smart\Views\Order\Details.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="Themes\Smart\Views\Shared\Components\CheckoutProgress\Default.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -876,7 +975,15 @@
     <Content Include="Themes\Smart\Views\Shared\_Header.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Themes\Smart\Views\Shared\_Root.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Themes\Smart\Views\_ViewImports.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\B2BB2CCustomer\Addresses.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\B2BB2CCustomer\B2BRegister.cshtml">
@@ -913,6 +1020,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\Checkout\Completed.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Checkout\PaymentInfo.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Checkout\PaymentMethod.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\Checkout\QuoteOrderCompleted.cshtml">
@@ -974,6 +1089,9 @@
     <Content Include="Views\ErpCheckout\_OpcCreateOrUpdateErpShiptoAddresses.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\Home\Index.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Views\Order\Details.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -1005,6 +1123,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\Shared\Alert.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Shared\Components\B2BRootHead\Default.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\Shared\Components\ErpShipToAddressSelector\Default.cshtml">
@@ -1049,6 +1170,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Content\img\eye-hide-password.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\img\eye-show-password.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="logo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -1058,36 +1185,60 @@
     <None Update="plugin.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Themes\FreshLand\Views\Shared\_GiftCardBox.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="Themes\DefaultClean\Content\css\styles.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Themes\Smart\Views\Product\ProductTemplate.Simple.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Themes\Smart\Views\Shared\Components\Footer\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Themes\Smart\Views\Shared\_ProductBox.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="\Themes\Smart\Views\Shared\Components\Footer\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="\Themes\Smart\Views\Product\ProductTemplate.Simple.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="\Themes\Smart\Views\Shared\_ProductBox.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  
+
   <ItemGroup>
     <ClearPluginAssemblies Include="$(MSBuildProjectDirectory)\..\..\Build\ClearPluginAssemblies.proj" />
   </ItemGroup>
-  
+
   <ItemGroup>
-    <ProjectReference Include="..\Nopstation.Plugin.B2B.ERPIntegrationCore\NopStation.Plugin.B2B.ERPIntegrationCore.csproj">
-      <Private>False</Private>
-      <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
-    </ProjectReference>
+    <ClearPluginAssemblies Include="$(MSBuildProjectDirectory)\..\..\Build\ClearPluginAssemblies.proj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NopStation.Plugin.B2B.ERPIntegrationCore\NopStation.Plugin.B2B.ERPIntegrationCore.csproj" />
     <ProjectReference Include="..\NopStation.Plugin.Misc.Actions\NopStation.Plugin.Misc.Actions.csproj" />
     <ProjectReference Include="..\NopStation.Plugin.Misc.Core\NopStation.Plugin.Misc.Core.csproj" />
-    <ClearPluginAssemblies Include="$(MSBuildProjectDirectory)\..\..\Build\ClearPluginAssemblies.proj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Compile Update="Model\Checkout\ErpBillingAddressModel.cs">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Compile>
+    <Compile Update="Model\Checkout\ErpShipToAddressModel.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Compile>
+    <Compile Update="Model\Checkout\ErpShipToAddressSelectorModel.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Compile>
   </ItemGroup>
-  
+
   <!-- This target execute after "Build" target -->
   <Target Name="NopTarget" AfterTargets="Build">
     <!-- Delete unnecessary libraries from plugins path -->
     <MSBuild Projects="@(ClearPluginAssemblies)" Properties="PluginPath=$(MSBuildProjectDirectory)\$(OutDir)" Targets="NopClear" />
   </Target>
 
-  
+
 </Project>

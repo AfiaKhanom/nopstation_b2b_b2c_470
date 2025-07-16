@@ -4,28 +4,29 @@ using System.Threading.Tasks;
 using Nop.Core;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
 
-namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
+namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services;
+
+public interface IErpGroupPriceService
 {
-    public interface IErpGroupPriceService
-    {
-        Task InsertErpGroupPriceAsync(ErpGroupPrice erpGroupPrice);
+    Task InsertErpGroupPriceAsync(ErpGroupPrice erpGroupPrice);
+    Task InsertErpGroupPricesAsync(IList<ErpGroupPrice> erpGroupPrices);
 
-        Task UpdateErpGroupPriceAsync(ErpGroupPrice erpGroupPrice);
+    Task UpdateErpGroupPriceAsync(ErpGroupPrice erpGroupPrice);
+    Task UpdateErpGroupPricesAsync(IList<ErpGroupPrice> erpGroupPrices);
 
-        Task DeleteErpGroupPriceByIdAsync(int id);
+    Task DeleteErpGroupPriceByIdAsync(int id);
 
-        Task<ErpGroupPrice> GetErpGroupPriceByIdAsync(int id);
+    Task<ErpGroupPrice> GetErpGroupPriceByIdAsync(int id);
 
-        Task<ErpGroupPrice> GetErpGroupPriceByIdWithActiveAsync(int id);
+    Task<ErpGroupPrice> GetErpGroupPriceByIdWithActiveAsync(int id);
 
-        Task<IPagedList<ErpGroupPrice>> GetAllErpGroupPricesAsync(int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, bool getOnlyTotalCount = false, bool? overridePublished = false, int productId = 0, string groupCode = null);
+    Task<IPagedList<ErpGroupPrice>> GetAllErpGroupPricesAsync(int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, bool getOnlyTotalCount = false, bool? overridePublished = false, int productId = 0, string groupCode = null);
 
-        Task<IList<ErpGroupPrice>> GetErpGroupPriceByProductIdAsync(int productId);
+    Task<IList<ErpGroupPrice>> GetErpGroupPriceByProductIdAsync(int productId);
 
-        Task<ErpGroupPrice> GetB2BPriceGroupProductPricingByErpPriceGroupCodeAndProductId(int priceGroupCodeId, int productId);
+    Task<ErpGroupPrice> GetErpGroupPriceByErpPriceGroupCodeAndProductId(int priceGroupCodeId, int productId);
 
-        Task<bool> CheckAnyPriceGroupProductPricingExistWithProductIdAndPriceGroupCodeId(int prouctdId, int priceGroupCodeId);
-        Task InActiveAllOldGroupPrice(DateTime syncStartTime);
-    }
+    Task<bool> CheckAnyErpGroupPriceExistWithProductIdAndErpGroupPriceCodeId(int prouctdId, int priceGroupCodeId);
+    Task InActiveAllOldGroupPrice(DateTime syncStartTime);
 }
 

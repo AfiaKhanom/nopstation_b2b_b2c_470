@@ -1,0 +1,72 @@
+.footer-block {
+
+    @media(min-width: $sm) {
+        width: 50%;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    @media(min-width: $md) {
+        width: 25%;
+        margin-top: 30px;
+    }
+
+    .title {
+        padding: 10px;
+        padding-left: 0px;
+        cursor: pointer;
+
+        strong {
+            font-size: 16px;
+            line-height: 19px;
+            color: var(--white);
+            font-weight: 500;
+        }
+    }
+
+    & > .title {
+        position: relative;
+        text-transform: uppercase;
+
+        &::after {
+            position: absolute;
+            right: 0px;
+            font-family: "icomoon" !important;
+            font-style: normal;
+            font-weight: 600;
+            color: var(--white);
+
+            @media(min-width: $sm) {
+                display: none;
+            }
+        }
+
+        &.plus::after {
+            content: "\e902";
+        }
+
+        &.minus::after {
+            content: "\e965";
+        }
+    }
+
+    .list {
+        display: none;
+        margin: 0 0 15px;
+        padding: 10px;
+
+        a {
+            display: block;
+            font-size: 15px;
+            line-height: 18px;
+            font-weight: 400;
+            color: var(--white);
+            padding: 7px 0;
+        }
+
+        @media(min-width: $sm) {
+            display: block;
+            padding: 0;
+        }
+    }
+}

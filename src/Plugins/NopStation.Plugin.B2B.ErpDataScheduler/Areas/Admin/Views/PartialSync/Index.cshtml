@@ -1,0 +1,63 @@
+@using NopStation.Plugin.B2B.ErpDataScheduler.Areas.Admin.Models.PartialSyncModels
+
+@model PartialSyncModel
+
+@{
+    Layout = "_AdminLayout";
+    //page title
+    ViewBag.PageTitle = T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.PartialSync").Text;
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.ErpDataScheduler.PartialSync");
+
+    var customer = await workContext.GetCurrentCustomerAsync();
+    const string hideErpAccountPartialSyncBlockAttributeName = "NopStation.ErpDataScheduler.PartialSync.HideErpAccountPartialSyncBlock";
+    var hideErpAccountPartialSyncBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideErpAccountPartialSyncBlockAttributeName);
+    
+    const string hideErpGroupPricePartialSyncBlockAttributeName = "NopStation.ErpDataScheduler.PartialSync.hideErpGroupPricePartialSyncBlock";
+    var hideErpGroupPricePartialSyncBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideErpGroupPricePartialSyncBlockAttributeName);
+
+    const string hideErpInvoicePartialSyncBlockAttributeName = "NopStation.ErpDataScheduler.PartialSync.hideErpInvoicePartialSyncBlock";
+    var hideErpInvoicePartialSyncBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideErpInvoicePartialSyncBlockAttributeName);
+
+    const string hideErpProductPartialSyncBlockAttributeName = "NopStation.ErpDataScheduler.PartialSync.hideErpProductPartialSyncBlock";
+    var hideErpProductPartialSyncBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideErpProductPartialSyncBlockAttributeName);
+
+    const string hideErpShipToAddressPartialSyncBlockAttributeName = "NopStation.ErpDataScheduler.PartialSync.hideErpShipToAddressPartialSyncBlock";
+    var hideErpShipToAddressPartialSyncBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideErpShipToAddressPartialSyncBlockAttributeName);
+
+    const string hideErpSpecialPricePartialSyncBlockAttribute = "NopStation.ErpDataScheduler.PartialSync.hideErpSpecialPricePartialSync";
+    var hideErpSpecialPricePartialSyncBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideErpSpecialPricePartialSyncBlockAttribute);
+
+    const string hideErpStockPartialSyncBlockAttributeName = "NopStation.ErpDataScheduler.PartialSync.hideErpStockPartialSyncBlock";
+    var hideErpStockPartialSyncBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideErpStockPartialSyncBlockAttributeName);
+    
+    const string hideErpOrderPartialSyncBlockAttributeName = "NopStation.ErpDataScheduler.PartialSync.hideErpOrderPartialSyncBlock";
+    var hideErpOrderPartialSyncBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideErpOrderPartialSyncBlockAttributeName);
+}
+
+<div class="content-header clearfix">
+    <h1 class="float-left">
+        @T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.PartialSync")
+    </h1>
+    <div class="float-right">
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="form-horizontal">
+            <div class="cards-group">
+                <nop-cards>
+                    <nop-card asp-name="erp-account-sync" asp-icon="fas fa-info" asp-title="@T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.PartialSync.ErpAccount")" asp-hide-block-attribute-name="@hideErpAccountPartialSyncBlockAttributeName" asp-hide="@hideErpAccountPartialSyncBlock" asp-advanced="false">@await Html.PartialAsync("_PartialSync.ErpAccount", Model.AccountPartialSyncModel)</nop-card>
+                    <nop-card asp-name="erp-group-price-sync" asp-icon="fas fa-info" asp-title="@T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.PartialSync.ErpGroupPrice")" asp-hide-block-attribute-name="@hideErpGroupPricePartialSyncBlockAttributeName" asp-hide="@hideErpGroupPricePartialSyncBlock" asp-advanced="false">@await Html.PartialAsync("_PartialSync.ErpGroupPrice", Model.GroupPricePartialSyncModel)</nop-card>
+                    <nop-card asp-name="erp-invoice-sync" asp-icon="fas fa-info" asp-title="@T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.PartialSync.ErpInvoice")" asp-hide-block-attribute-name="@hideErpInvoicePartialSyncBlockAttributeName" asp-hide="@hideErpInvoicePartialSyncBlock" asp-advanced="false">@await Html.PartialAsync("_PartialSync.ErpInvoice", Model.InvoicePartialSyncModel)</nop-card>
+                    <nop-card asp-name="erp-product-sync" asp-icon="fas fa-info" asp-title="@T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.PartialSync.ErpProduct")" asp-hide-block-attribute-name="@hideErpProductPartialSyncBlockAttributeName" asp-hide="@hideErpProductPartialSyncBlock" asp-advanced="false">@await Html.PartialAsync("_PartialSync.ErpProduct", Model.ProductPartialSyncModel)</nop-card>
+                    <nop-card asp-name="erp-ship-to-address-sync" asp-icon="fas fa-info" asp-title="@T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.PartialSync.ErpShipToAddress")" asp-hide-block-attribute-name="@hideErpShipToAddressPartialSyncBlockAttributeName" asp-hide="@hideErpShipToAddressPartialSyncBlock" asp-advanced="false">@await Html.PartialAsync("_PartialSync.ErpShipToAddress", Model.ShipToAddressPartialSyncModel)</nop-card>
+                    <nop-card asp-name="erp-special-price-sync" asp-icon="fas fa-info" asp-title="@T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.PartialSync.ErpSpecialPrice")" asp-hide-block-attribute-name="@hideErpSpecialPricePartialSyncBlockAttribute" asp-hide="@hideErpSpecialPricePartialSyncBlock" asp-advanced="false">@await Html.PartialAsync("_PartialSync.ErpSpecialPrice", Model.SpecialPricePartialSyncModel)</nop-card>
+                    <nop-card asp-name="erp-stock-sync" asp-icon="fas fa-info" asp-title="@T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.PartialSync.ErpStock")" asp-hide-block-attribute-name="@hideErpStockPartialSyncBlockAttributeName" asp-hide="@hideErpStockPartialSyncBlock" asp-advanced="false">@await Html.PartialAsync("_PartialSync.ErpStock", Model.StockPartialSyncModel)</nop-card>
+                    <nop-card asp-name="erp-order-sync" asp-icon="fas fa-info" asp-title="@T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.PartialSync.ErpOrder")" asp-hide-block-attribute-name="@hideErpOrderPartialSyncBlockAttributeName" asp-hide="@hideErpOrderPartialSyncBlock" asp-advanced="false">@await Html.PartialAsync("_PartialSync.ErpOrder", Model.OrderPartialSyncModel)</nop-card>
+                </nop-cards>
+            </div>
+        </div>
+    </div>
+</section>

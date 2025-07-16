@@ -1,0 +1,78 @@
+.html-account-page {
+    .no-data {
+        background: var(--white);
+        padding: 40px 15px;
+    }
+
+    .reward-points-page {
+        .page-body {
+            background: var(--white);
+            padding: 10px 0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+    }
+
+    .table-wrapper {
+        background: var(--white);
+        border-radius: 10px;
+        overflow-x: auto;
+        margin: 15px 0px;
+
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+
+            thead {
+
+                th {
+                    background-color: var(--primary-color);
+                    color: var(--white);
+                    font-weight: 600;
+
+                    &.product {
+                        text-align: left;
+                    }
+                }
+            }
+
+            td, th {
+                border: 1px solid var(--primary-grey_light);
+                padding: 10px;
+                color: var(--black);
+                text-align: center;
+            }
+
+            tr {
+                .date, .order {
+                    min-width: 100px;
+                }
+
+                .download {
+                    a {
+                        color: var(--primary-color);
+                        text-decoration: underline;
+                    }
+                }
+
+                .product {
+                    text-align: left;
+                }
+
+                &:nth-child(even) {
+                    background-color: var(--primary-grey_light);
+                }
+            }
+        }
+    }
+
+    .buttons {
+        text-align: center;
+        margin: 0 auto 10px;
+
+        button.button-1 {
+            padding: 5px 10px;
+            min-width: 180px;
+        }
+    }
+}

@@ -1,0 +1,43 @@
+.table-wrapper {
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    box-shadow: 0px 2px 4px rgba(153, 153, 153, 0.15);
+
+    table.forum-table,
+    table.prices-table,
+    table.data-table {
+        width: 100%;
+        border-collapse: collapse;
+
+        > thead {
+            border: 1px solid var(--primary-color);
+        }
+
+        > tbody {
+            border: 1px solid var(--primary-grey_light);
+        }
+
+        > thead th, > tbody td {
+            border: none;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        thead {
+            th {
+                background: var(--primary-color);
+                color: var(--white);
+                padding: 10px 4px;
+            }
+        }
+
+        tbody {
+
+            td {
+                padding: 7.5px 4px;
+                border-bottom: 1px solid var(--primary-grey_light);
+            }
+        }
+    }
+}

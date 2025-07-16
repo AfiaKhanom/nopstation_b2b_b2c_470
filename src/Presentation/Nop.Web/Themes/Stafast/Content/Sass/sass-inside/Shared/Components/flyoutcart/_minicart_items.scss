@@ -1,0 +1,136 @@
+.mini-shopping-cart {
+    .items {
+        height: calc(100vh - 120px);
+        overflow: auto;
+
+        .item {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 15px 0;
+            font-weight: 400;
+            font-size: 12px;
+            line-height: 14px;
+            border-bottom: 1px solid var(--primary-grey_light);
+
+            .picture {
+                width: 100px;
+                position: relative;
+                overflow: hidden;
+
+                &::before {
+                    content: "";
+                    display: block;
+                    padding-top: 80%;
+                }
+
+                img {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%,-50%);
+                    max-width: calc(100% - 20px);
+                }
+            }
+
+            .name {
+                font-weight: 600;
+            }
+
+            .product {
+                width: calc(100% - 100px);
+
+                > div {
+                    margin-bottom: 4px;
+
+                    span {
+                        &.price-text {
+                            color: var(--primary-color);
+                        }
+
+                        &.price-unit {
+                            color: var(--secondary-color);
+                        }
+                    }
+
+                    &.quantity-wrapper {
+                        display: flex;
+                        align-items: center;
+
+                        .mini-cart--p-qty {
+                            width: 60%;
+                            display: block;
+                            text-align: center;
+                            border: 1px solid #e5eaed;
+                            min-width: 80px;
+                            max-width: 100%;
+                            border-radius: 5px;
+                            position: relative;
+                            height: 35px;
+
+                            input {
+                                display: inline-block;
+                                width: auto;
+                                max-width: 100px;
+                                text-align: center;
+                                padding: 8px 25px;
+                                font-size: 12px;
+                                line-height: 12px;
+                                outline: none;
+                                border: none;
+                            }
+
+                            .qty-button {
+                                font-size: 25px;
+                                height: 25px;
+                                width: 25px;
+                                line-height: 25px;
+                                color: var(--black);
+                                border: 0;
+                                border-radius: 5px;
+                                background: #e3eaf5;
+                                position: absolute;
+                                top: 50%;
+                                transform: translateY(-50%);
+                                display: inline-flex;
+                                justify-content: center;
+                                align-items: center;
+                                cursor: pointer;
+
+                                &.btn-plus {
+                                    left: auto;
+                                    right: 6px;
+                                }
+
+                                &.btn-minus {
+                                    left: 6px;
+                                }
+                            }
+                        }
+
+                        .mini-cart--p-buttons {
+                            width: 20%;
+
+                            .remove-btn {
+                                outline: none;
+                                border: none;
+                                background-color: transparent;
+                                width: 100%;
+                                cursor: pointer;
+
+                                &:before {
+                                    content: "\e995";
+                                    font-family: "icomoon" !important;
+                                    display: inline;
+                                    font-size: 15px;
+                                    line-height: 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

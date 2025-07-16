@@ -1,0 +1,14 @@
+.block-category-navigation {
+    ul {
+        li {
+            a {
+                display: flex;
+                justify-content: space-between;
+            }
+
+            &.active.last > a {
+                color: var(--primary-color);
+            }
+        }
+    }
+}

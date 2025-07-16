@@ -1,6 +1,11 @@
 ﻿@model ErpShipToAddressModelForCheckout
-@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.Checkout;
-@using System.Globalization;
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.Checkout
+@using System.Globalization
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Contexts
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Enums
+@inject IB2BB2CWorkContext workContext
+@inject B2BB2CFeaturesSettings b2BB2CFeaturesSettings
+
 <style>
     .FullLoadRequired-div {
         font-size: 15px;
@@ -141,20 +146,20 @@
 
     @*@if (Model.ErpToDetermineDate)
     {
-    <div id="deliveryDateDropdown" class="inputs">
-    <label asp-for="DeliveryDateString" asp-postfix=":"></label>
-    <h3 class="FullLoadRequired-div FullLoadRequired-div-hide">@T("B2B.DeliveryDate.FullLoadRequired")</h3>
-    <select asp-for="DeliveryDateString" asp-items="Model.AvailableDeliveryDates"></select>
-    <span id="delivery-dates-loading-progress" style="display: none;" class="please-wait">@T("B2B.DeliveryDate.Loading")</span>
-    <nop-required />
-    <span asp-validation-for="DeliveryDate"></span>
-    </div>
+        <div id="deliveryDateDropdown" class="inputs">
+            <label asp-for="DeliveryDateString" asp-postfix=":"></label>
+            <h3 class="FullLoadRequired-div FullLoadRequired-div-hide">@T("B2B.DeliveryDate.FullLoadRequired")</h3>
+            <select asp-for="DeliveryDateString" asp-items="Model.AvailableDeliveryDates"></select>
+            <span id="delivery-dates-loading-progress" style="display: none;" class="please-wait">@T("B2B.DeliveryDate.Loading")</span>
+            <nop-required />
+            <span asp-validation-for="DeliveryDate"></span>
+        </div>
     }*@
 
     @*<div id="quote-special-instruction-popUp" class="inputs">
-    <label asp-for="SpecialInstructions" asp-postfix=":"></label>
-    <input asp-for="SpecialInstructions" class="quote-special-instructions-input" placeholder="@T("Plugins.Payment.B2BCustomerAccount.B2BCheckout.Fields.SpecialInstructions.Hint")" />
-    <span asp-validation-for="SpecialInstructions"></span>
+        <label asp-for="SpecialInstructions" asp-postfix=":"></label>
+        <input asp-for="SpecialInstructions" class="quote-special-instructions-input" placeholder="@T("Plugins.Payment.B2BCustomerAccount.B2BCheckout.Fields.SpecialInstructions.Hint")" />
+        <span asp-validation-for="SpecialInstructions"></span>
     </div>*@
 
     <!---Customer reference added for Quote Order-->

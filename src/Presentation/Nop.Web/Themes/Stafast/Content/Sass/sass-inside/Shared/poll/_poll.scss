@@ -1,0 +1,94 @@
+@import "../../mixins/_layout_width_responsive.scss";
+@import "../../mixins/_common-title.scss";
+@import "../../mixins/_buttons.scss";
+
+.home-page-polls {
+    @include layout_width_responsive;
+    margin: 0 auto 20px;
+
+    @media(min-width: $sm) {
+        margin: 0 auto 50px;
+    }
+
+    .title {
+        @include common-title;
+        text-align: center;
+
+        strong {
+            display: block;
+            width: 340px;
+            margin: auto;
+            border-bottom: 1px solid var(--primary-grey_light);
+            padding-bottom: 13px;
+        }
+    }
+
+    .poll {
+        text-align: center;
+
+        strong {
+            display: block;
+            font-weight: 600;
+            font-size: 18px;
+            line-height: 22px;
+            margin-bottom: 20px;
+            color: var(--black);
+        }
+
+        .poll-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+
+            .answer {
+                margin-left: 10px;
+                margin-right: 10px;
+
+                input[type=radio] ~ label::before {
+                    border: 1px solid var(--black);
+                    height: 20px;
+                    width: 20px;
+                    line-height: 20px;
+                }
+
+                input[type=radio]:checked ~ label::before {
+                    border-color: var(--primary-color);
+                }
+            }
+        }
+
+        .buttons {
+            margin-top: 20px;
+
+            .button-2 {
+                @include buttons( $background: var(--primary-grey_light), $color: var(--primary-grey_dark), $padding: 9px 25px, $hover-background: var(--primary-color), $hover-color: var(--white) );
+            }
+        }
+
+        .poll-results {
+            background: var(--secondary-color);
+            box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
+            margin: auto;
+            padding: 10px;
+            text-align: left;
+            width: 460px;
+            max-width: 100%;
+
+            .answer {
+                font-weight: 400;
+                font-size: 15px;
+                line-height: 17px;
+                color: var(--white);
+                margin: 5px 10px;
+            }
+        }
+
+        .poll-total-votes {
+            font-weight: 600;
+            font-size: 16px;
+            margin: 10px auto;
+            display: block;
+        }
+    }
+}

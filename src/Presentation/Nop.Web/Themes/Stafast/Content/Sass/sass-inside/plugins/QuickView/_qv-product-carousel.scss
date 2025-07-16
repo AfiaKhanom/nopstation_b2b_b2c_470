@@ -1,0 +1,23 @@
+.qv-modal {
+    .qv-details {
+        .product-details-page {
+            background: var(--white);
+
+            .related-carousel {
+                .swiper {
+                    .swiper-wrapper {
+                        .item-box {
+                            .quick-view-btn {
+                                display: none;
+                            }
+
+                            @media (min-width: $lg) {
+                                width: 33.33% !important;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Nop.Core;
+using Nop.Core.Caching;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Messages;
 using Nop.Core.Domain.Orders;
+using Nop.Core.Domain.Tax;
 using Nop.Core.Events;
 using Nop.Services.Customers;
 using Nop.Services.Events;
 using Nop.Services.Messages;
+using Nop.Services.Orders;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Services.Overriden;
+using NopStation.Plugin.B2B.ERPIntegrationCore;
+using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
 
@@ -21,8 +27,10 @@ public class EventConsumer :
     IConsumer<EntityDeletedEvent<Order>>,
     IConsumer<OrderPaidEvent>,
     IConsumer<OrderPlacedEvent>,
+    IConsumer<OrderStatusChangedEvent>,
     IConsumer<EntityTokensAddedEvent<Customer, Token>>,
-    IConsumer<EntityTokensAddedEvent<Order, Token>>
+    IConsumer<EntityTokensAddedEvent<Order, Token>>,
+    IConsumer<EntityInsertedEvent<ErpNopUser>>
 {
     #region Fields
 
@@ -31,6 +39,13 @@ public class EventConsumer :
     private readonly IErpOrderAdditionalDataService _erpOrderAdditionalDataService;
     private readonly IOverriddenOrderProcessingService _overriddenOrderProcessingService;
     private readonly ICustomerService _customerService;
+    private readonly IShoppingCartService _shoppingCartService;
+    private readonly IOrderTotalCalculationService _orderTotalCalculationService;
+    private readonly IErpAccountService _erpAccountService;
+    private readonly IErpNopUserService _erpNopUserService;
+    private readonly IStaticCacheManager _staticCacheManager;
+    private readonly IWorkContext _workContext;
+    private readonly TaxSettings _taxSettings;
 
     #endregion
 
@@ -40,13 +55,27 @@ public class EventConsumer :
         IErpCustomerFunctionalityService erpCustomerFunctionalityService,
         IErpOrderAdditionalDataService erpOrderAdditionalDataService,
         IOverriddenOrderProcessingService overriddenOrderProcessingService,
-        ICustomerService customerService)
+        ICustomerService customerService,
+        IWorkContext workContext,
+        TaxSettings taxSettings,
+        IShoppingCartService shoppingCartService,
+        IOrderTotalCalculationService orderTotalCalculationService,
+        IErpAccountService erpAccountService,
+        IErpNopUserService erpNopUserService,
+        IStaticCacheManager staticCacheManager)
     {
         _b2BB2CFeaturesSettings = b2BB2CFeaturesSettings;
         _erpCustomerFunctionalityService = erpCustomerFunctionalityService;
         _erpOrderAdditionalDataService = erpOrderAdditionalDataService;
         _overriddenOrderProcessingService = overriddenOrderProcessingService;
         _customerService = customerService;
+        _workContext = workContext;
+        _taxSettings = taxSettings;
+        _shoppingCartService = shoppingCartService;
+        _orderTotalCalculationService = orderTotalCalculationService;
+        _erpAccountService = erpAccountService;
+        _erpNopUserService = erpNopUserService;
+        _staticCacheManager = staticCacheManager;
     }
 
     #endregion
@@ -64,7 +93,7 @@ public class EventConsumer :
         if (eventMessage.Order == null)
             return;
 
-        var erpOrder = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByNopOrderIdAsync( eventMessage.Order.Id); 
+        var erpOrder = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByNopOrderIdAsync(eventMessage.Order.Id);
 
         // if order per account is not null && IntegrationStatusType is WaitingForPayment the we will send from here
         if (erpOrder != null)
@@ -76,9 +105,9 @@ public class EventConsumer :
             }
 
             if (erpOrder.IntegrationStatusType == IntegrationStatusType.Queued)
-                await _overriddenOrderProcessingService.RetryPlaceErpOrderAtErpAsync(erpOrder, _b2BB2CFeaturesSettings);
+                await _overriddenOrderProcessingService.RetryPlaceErpOrderAtErpAsync(erpOrder);
         }
-         
+
     }
 
     /// <summary>
@@ -93,6 +122,24 @@ public class EventConsumer :
         await _erpCustomerFunctionalityService.ClearCurrentCustomerAllTimeSavingsCacheAsync(eventMessage.Order.CustomerId);
     }
 
+    /// <summary>
+    /// Handle the order status changed event
+    /// </summary>
+    /// <param name="eventMessage">The event message.</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
+    public async Task HandleEventAsync(OrderStatusChangedEvent eventMessage)
+    {
+        var order = eventMessage.Order;
+
+        var erpOrder = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByNopOrderIdAsync(order.Id);
+
+        if (order.OrderStatusId == (int)OrderStatus.Cancelled && erpOrder != null)
+        {
+            erpOrder.IntegrationStatusTypeId = (int)IntegrationStatusType.Cancelled;
+            await _erpOrderAdditionalDataService.UpdateErpOrderAdditionalDataAsync(erpOrder);
+        }
+    }
+
     public async Task HandleEventAsync(EntityDeletedEvent<Order> eventMessage)
     {
         if (eventMessage.Entity == null)
@@ -101,7 +148,7 @@ public class EventConsumer :
         var order = eventMessage.Entity;
 
         var erpOrder = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByNopOrderIdAsync(order.Id);
-         
+
 
         if (erpOrder != null)
             await _erpOrderAdditionalDataService.DeleteErpOrderAdditionalDataByIdAsync(erpOrder.Id);
@@ -165,6 +212,12 @@ public class EventConsumer :
             eventMessage.Tokens.Add(new Token("ErpOrderAdditionalData.ChangedOnUtc", erpOrderAdditionalData.ChangedOnUtc.HasValue ? erpOrderAdditionalData.ChangedOnUtc.Value.ToString("d") : ""));
             eventMessage.Tokens.Add(new Token("ErpOrderAdditionalData.ChangedById", erpOrderAdditionalData.ChangedById.ToString()));
         }
+    }
+
+    public async Task HandleEventAsync(EntityInsertedEvent<ErpNopUser> eventMessage)
+    {
+        await _staticCacheManager.RemoveAsync(_staticCacheManager.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpNopUserByCustomerCacheKey,
+            eventMessage.Entity.NopCustomerId));
     }
 
     #endregion

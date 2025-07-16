@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Language Name="English" IsRightToLeft="false">
     <!-- Configure Start -->
     <LocaleResource Name="B2BB2CFeatures.Admin.Configure">
@@ -199,14 +199,6 @@
 
     <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.StockDisplayFormat.Hint">
         <Value>Check to display stock format</Value>
-    </LocaleResource>
-
-    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.MaintainUniqueCustomerReference">
-        <Value>Maintain unique customer reference</Value>
-    </LocaleResource>
-
-    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.MaintainUniqueCustomerReference.Hint">
-        <Value>Check to maintain unique customer reference</Value>
     </LocaleResource>
 
     <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.EnableQuoteFunctionality">
@@ -569,7 +561,7 @@
         <Value>Is Active</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Admin.ErpShipToAddresss.Fields.Active.Hint">
+    <LocaleResource Name="Admin.ErpShipToAddress.Fields.Active.Hint">
         <Value>Account branch is active or not?</Value>
     </LocaleResource>
 
@@ -1033,7 +1025,7 @@
     </LocaleResource>
 
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Field.TotalSavingsForthisYearUpdatedOnUtc">
-        <Value></Value>
+        <Value>Total Savings For this Year Updated On Utc</Value>
     </LocaleResource>
 
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Field.TotalSavingsForthisYearUpdatedOnUtc.Hint">
@@ -1041,7 +1033,7 @@
     </LocaleResource>
 
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Field.TotalSavingsForAllTimeUpdatedOnUtc">
-        <Value></Value>
+        <Value>Total Savings For All Time Updated On Utc</Value>
     </LocaleResource>
 
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Field.TotalSavingsForAllTimeUpdatedOnUtc.Hint">
@@ -1426,9 +1418,11 @@
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.RequiredErrMsg.FaxNumber">
         <Value>Fax Number is required</Value>
     </LocaleResource>
+    
     <!-- Erp Account view end-->
 
     <!-- Erp Sales Org view start-->
+    
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.PageTitle.ErpSalesOrgs">
         <Value>ERP Sales Organizations</Value>
     </LocaleResource>
@@ -1544,9 +1538,10 @@
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.WarningMsg.CantDeleted">
         <Value>Can not be deleted. There are ERP accounts with this ERPSalesOrg.</Value>
     </LocaleResource>
+    
     <!-- Erp Sales Org view end-->
 
-    <!-- Erp Sales Org view start-->
+    <!-- Erp Sales Org view start-->    
 
     <LocaleResource Name="NopStation.B2BB2CFeatures.Register.Notification.Description">
         <Value>Do you have an ERP account?</Value>
@@ -1600,11 +1595,9 @@
         <Value>B2B Registration</Value>
     </LocaleResource>
 
-
     <LocaleResource Name="NopStation.ERPIntegrationCore.B2C.Register">
         <Value>B2C Registration</Value>
     </LocaleResource>
-
 
     <LocaleResource Name="B2BB2C.Account.Details">
         <Value>Account Details</Value>
@@ -1721,6 +1714,7 @@
     <!-- Erp Nop User view end-->
 
     <!-- Erp Nop User Search start-->
+    
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUserSearchModel.AccountNumber">
         <Value>Account number</Value>
     </LocaleResource>
@@ -1810,7 +1804,7 @@
     </LocaleResource>
 
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.ErpAccountId.Hint">
-        <Value>Select </Value>
+        <Value>Select Erp Account</Value>
     </LocaleResource>
 
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.ErpAccount">
@@ -1818,7 +1812,7 @@
     </LocaleResource>
 
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.ErpAccount.Hint">
-        <Value>Select </Value>
+        <Value>Select ERP account for the Erp Nop User</Value>
     </LocaleResource>
 
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.ErpSalesOrg">
@@ -1830,7 +1824,7 @@
     </LocaleResource>
 
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.ErpShipToAddressId.Hint">
-        <Value>Select account branchs</Value>
+        <Value>Select account branch</Value>
     </LocaleResource>
 
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.ErpShipToAddress">
@@ -1906,11 +1900,11 @@
     </LocaleResource>
 
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.IsActive">
-        <Value>IsActive</Value>
+        <Value>Is Active</Value>
     </LocaleResource>
 
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.IsActive.Hint">
-        <Value>check if nop user is active</Value>
+        <Value>Nop user active status</Value>
     </LocaleResource>
 
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.SelectedCustomerRoles">
@@ -3442,6 +3436,7 @@
     </LocaleResource>
 
     <!--Shopping Cart Page Order Summery Start -->
+    
     <LocaleResource Name="Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).Weight">
         <Value>Weight</Value>
     </LocaleResource>
@@ -3562,14 +3557,6 @@
 
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.CustomerImpersonate.Card.MappedCustomerLists">
         <Value>Mapped Customers</Value>
-    </LocaleResource>
-
-    <LocaleResource Name="Plugins.Payment.B2BCustomerAccount.AdminArea.Configuration.PreFilterFacetSpecificationAttribute">
-        <Value>Pre filter facet specification attribute</Value>
-    </LocaleResource>
-
-    <LocaleResource Name="Plugins.Payment.B2BCustomerAccount.AdminArea.Configuration.PreFilterFacetSpecificationAttribute.Hint">
-        <Value>Select which specification attribute should be conisered for Pre filter facet </Value>
     </LocaleResource>
 
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesRep.Warning.AlreadyExist">
@@ -3809,9 +3796,9 @@
         <Value>Order already confirmed!</Value>
     </LocaleResource>
 
-    <LocaleResource Name="NopStation.Plugin.NopStation.B2BB2CFeatures.Order.Reprocessed">
-        <Value>Order successfully reprocessed!</Value>
-    </LocaleResource>
+  <LocaleResource Name="NopStation.Plugin.NopStation.B2BB2CFeatures.Order.Reprocessed">
+    <Value>Erp Order reprocessed</Value>
+  </LocaleResource>
 
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpInvoice.Created">
         <Value>ERP Invoice Successfully Created!</Value>
@@ -3829,156 +3816,156 @@
         <Value>Erp Sales Rep - Sales Org Map successfully Updated!</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Title">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Title">
         <Value>Erp Logs</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.PageHeader">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.PageHeader">
         <Value>Erp Logs</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Card.ErpActivityLogs">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Card.ErpLogs">
         <Value>Erp Logs</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ErpLogLevel">
-        <Value>ERP Log Level</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.ErpLogLevel">
+        <Value>Erp Log Level</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ErpSyncLevel">
-        <Value>ERP Sync Label</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.ErpSyncLevel">
+        <Value>Erp Sync Label</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.CreatedOnUtc">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.CreatedOnUtc">
         <Value>Created On</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.CustomerEmail">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.CustomerEmail">
         <Value>Customer Email</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.CustomerId">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.CustomerId">
         <Value>Customer</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ShortMessage">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.ShortMessage">
         <Value>Short Message</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.FullMessage">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.FullMessage">
         <Value>Full Message</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.IpAddress">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.IpAddress">
         <Value>IpAddress</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.IpAddress.Hint">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.IpAddress.Hint">
         <Value>Search by IpAddress</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.PageUrl">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.PageUrl">
         <Value>Page URL</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ReferrerUrl">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.ReferrerUrl">
         <Value>Referrer URL</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ErpLogLevel.Hint">
-        <Value>ERP Log Level represents the log elements type.</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.ErpLogLevel.Hint">
+        <Value>Erp Log Level represents the log elements type</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ErpSyncLevel.Hint">
-        <Value>ERP Sync Label represents the log entity/module type.</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.ErpSyncLevel.Hint">
+        <Value>Erp Sync Label represents the log entity/module type</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.CreatedOnUtc.Hint">
-        <Value>Created On represents the generation date of the log.</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.CreatedOnUtc.Hint">
+        <Value>Created On represents the generation date of the log</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.CustomerEmail.Hint">
-        <Value>Customer Email represents the Nop Customers email address.</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.CustomerEmail.Hint">
+        <Value>Customer Email represents the Nop Customers email address</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.CustomerId.Hint">
-        <Value>Customer represents the Nop customer who does the activity.</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.CustomerId.Hint">
+        <Value>Customer represents the Nop customer who does the activity</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ShortMessage.Hint">
-        <Value>Short Message represents the information in short.</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.ShortMessage.Hint">
+        <Value>Short Message represents the information in short</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.FullMessage.Hint">
-        <Value>Full Message represents the exception details if any issue occures.</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.FullMessage.Hint">
+        <Value>Full Message represents the exception details if any issue occurs</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.PageUrl.Hint">
-        <Value>Page URL represents the requested page, ehere the activity was happening.</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.PageUrl.Hint">
+        <Value>Page URL represents the requested page, here the activity was happening</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ReferrerUrl.Hint">
-        <Value>Referrer URL represents the requested page, ehere the activity was happening.</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.ReferrerUrl.Hint">
+        <Value>Referrer URL represents the requested page, here the activity was happening</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ErpLogLevelId">
-        <Value>ERP Log Level</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.ErpLogLevelId">
+        <Value>Erp Log Level</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ErpLogLevelId.Hint">
-        <Value>Search by ERP Log Level</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.ErpLogLevelId.Hint">
+        <Value>Search by Erp Log Level</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ErpSyncLabelId">
-        <Value>ERP Sync Label</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.ErpSyncLabelId">
+        <Value>Erp Sync Label</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.ErpSyncLabelId.Hint">
-        <Value>Search by ERP Sync Label</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.ErpSyncLabelId.Hint">
+        <Value>Search by Erp Sync Label</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.CreatedFrom">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.CreatedFrom">
         <Value>Created From</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.CreatedFrom.Hint">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.CreatedFrom.Hint">
         <Value>Search by Created From</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.CreatedTo">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.CreatedTo">
         <Value>Created To</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.CreatedTo.Hint">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.CreatedTo.Hint">
         <Value>Search by Created To</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.NopCustomerEmail">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.NopCustomerEmail">
         <Value>Nop Customer Email</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Field.NopCustomerEmail.Hint">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.NopCustomerEmail.Hint">
         <Value>Search by Nop Customer Email</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.DeleteErpActivityLog">
-        <Value>Deleted ERP activity log</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.DeleteErpActivityLog">
+        <Value>Deleted Erp activity log</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.DeleteErpActivityLogs">
-        <Value>Deleted ERP activity logs</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.DeleteErpActivityLogs">
+        <Value>Deleted Erp activity logs</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Cleared">
-        <Value>The ERP activity log has been cleared successfully.</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Cleared">
+        <Value>The Erp Log has been cleared successfully</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.ViewLogDetails">
-        <Value>View ERP activity log details</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.ViewLogDetails">
+        <Value>View Erp Log details</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.BackToList">
-        <Value>back to the ERP activity log list</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.BackToList">
+        <Value>back to the Erp Log list</Value>
     </LocaleResource>
 
     <LocaleResource Name="Plugin.Misc.NopStation.B2BB2CFeatures.Admin.ErpOrderItemInOrderDetails.TableHeader.ERPOrderLineNumber">
@@ -4172,9 +4159,6 @@
     </LocaleResource>
 
     <!-- Quick Order Start -->
-
-
-
 
     <LocaleResource Name="NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.AttributesInfo">
         <Value>Attributes Info</Value>
@@ -5104,7 +5088,7 @@
 
     <!--14-March-2024 Card:113-->
 
-    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLog.Title.ViewDetails">
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Title.ViewDetails">
         <Value>ERP Activity Log details</Value>
     </LocaleResource>
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPriceCode.PageTitle.ErpGroupPriceCode">
@@ -5915,56 +5899,345 @@
         <Value>Please Input County</Value>
     </LocaleResource>
 
-
     <!-- Card:124 - 18-April-2024 -->
-
     <LocaleResource Name="Plugin.Misc.NopStation.B2BB2CFeatures.ErpGroupPriceCode.NoActiveGroupPriceCodeAvailable">
         <Value>No active Group Price Code available to add a new record.</Value>
     </LocaleResource>
 
-
     <!-- Card:136 - 25-June-2024 -->
-
     <LocaleResource Name="B2B.BackOrderProducts.ProductHasBeenAddedToTheCart.Link">
         <Value><![CDATA[The product has been added to your <a href="{0}">shopping cart</a>]]></Value>
     </LocaleResource>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Field.Picture">
+        <Value>Picture</Value>
+    </LocaleResource>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Field.Picture.Hint">
+        <Value>Erp Account Picture</Value>
+    </LocaleResource>
     
-    <!-- Card:2804-Fix-checkout-steps-structure-on-top-of-standard-b2b-4.70  -  29-Aug-2024 -->
-    
+    <!-- Card:2804-Fix-checkout-steps-structure-on-top-of-standard-b2b-4.70  -  29-Aug-2024 -->    
     <LocaleResource Name="Checkout.ShippingAddress.SelectDeliverOrCollect">
         <Value>Select Deliver or Collect</Value>
     </LocaleResource>
-
     <LocaleResource Name="Checkout.ShippingAddress.SelectYourDeliveryAddress">
         <Value>Select your delivery address</Value>
     </LocaleResource>
-
     <LocaleResource Name="Checkout.ShippingAddress.CouldNotLoadShippingAddress">
         <Value>Could not load Shipping Address</Value>
     </LocaleResource>
-
     <LocaleResource Name="Checkout.ShippingAddress.SelectCollectionPoint">
         <Value>Select collection point</Value>
     </LocaleResource>
-
     <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.DeliveryDatesErpFailed.Notice">
         <Value>Notice</Value>
-    </LocaleResource>
-    
+    </LocaleResource>    
     <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.DeliveryDatesErpFailed.Notice.Text">
         <Value>We are unable to connect to the database at this moment in the time, by default the next available delivery date will be selected - please contact your macsteel sales clerk to select a new date once your order is placed.</Value>
-    </LocaleResource>
-    
+    </LocaleResource>    
     <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.DeliveryDatesErpFailedDialog.Close">
         <Value>Close</Value>
     </LocaleResource>
-
-    <LocaleResource Name="Plugin.Misc.NopStation.B2BB2CFeatures.Quote.AccessDenied">
-        <Value>You are not allowed to quote checkout.</Value>
-    </LocaleResource>
-
-    <LocaleResource Name="Plugin.Misc.NopStation.B2BB2CFeatures.Checkout.AccessDenied">
-        <Value>You are not allowed to checkout.</Value>
+    <LocaleResource Name="NopStation.Plugin.B2B.ERPIntegrationCore.ErpGroupPrice.PageTitle.Edit">
+        <Value>Edit Group Price</Value>
+    </LocaleResource>    
+    <LocaleResource Name="NopStation.Plugin.B2B.ERPIntegrationCore.ErpGroupPrice.EditGroupPrice">
+        <Value>Edit Group Price</Value>
     </LocaleResource>
     
+    <!-- Card:2802-jh-group-cr9168-develop-reward-points-functionality   -  10-Sep-2024 -->    
+    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.EnableLiveCreditChecks">
+        <Value>Enable Live Credit Check</Value>
+    </LocaleResource>    
+    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.EnableLiveCreditChecks.Hint">
+        <Value>Check to enable live credit check</Value>
+    </LocaleResource>
+
+    <!-- Card:2834-b2b-plugin-theme-able-for-emporium  -  09-Sep-2024 -->
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Checkout.Start.OrderTotalIsZeroWarning">
+        <Value>Your order total is 0 (Zero), cannot proceed to checkout.</Value>
+    </LocaleResource>
+    <LocaleResource Name="Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).PricingNote">
+        <Value>Pricing Note</Value>
+    </LocaleResource>    
+
+    <!-- Card:2804-clients/groceryexpress/bugfix/2804-bugs-on-nopstation-b2b-plugin-for-47  -  10-Sep-2024 -->
+    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.PreFilterFacetSpecificationAttribute">
+        <Value>Pre filter facet specification attribute</Value>
+    </LocaleResource>    
+    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.PreFilterFacetSpecificationAttribute.Hint">
+        <Value>Select which specification attribute should be considered for Pre filter facet</Value>
+    </LocaleResource>
+    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.UnitOfMeasureSpecificationAttribute">
+        <Value>Unit of measure specification attribute</Value>
+    </LocaleResource>    
+    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.UnitOfMeasureSpecificationAttribute.Hint">
+        <Value>Select which specification attribute should be considered for Unit of measure</Value>
+    </LocaleResource>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.B2BUser">
+        <Value>B2B User</Value>
+    </LocaleResource>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.B2CUser">
+        <Value>B2C User</Value>
+    </LocaleResource>
+    <LocaleResource Name="Plugin.Misc.NopStation.B2BB2CFeatures.QuickOrderTemplate.SearchCreatedOn.Placeholder">
+        <Value>Unit of measure specification attribute</Value>
+    </LocaleResource>
+    <LocaleResource Name="Plugin.Misc.NopStation.B2BB2CFeatures.Account.Register.Button.ApplyRegistration">
+        <Value>Apply Registration</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.QuickOrderTemplate.AddToCartResult">
+        <Value>Total items: {0}, {1} item(s) added to cart and {2} item(s) failed to add</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.QuickOrderTemplate.Warning.ShoppingCartIsDisabled">
+        <Value>Shopping cart is disabled</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.QuickOrderTemplate.Warning.WishlistIsDisabled">
+        <Value>Wishlist is disabled</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.QuickOrderTemplate.Warning.SearchEngineCannotAddToCart">
+        <Value>Search engine cannot add to cart</Value>
+    </LocaleResource>    
+    <LocaleResource Name="B2BB2CFeatures.DownloadInvoice.ErrorMessage.InvoiceData.IdIsNotValid">
+        <Value>Invoice Id cannot be less than 1</Value>
+    </LocaleResource>    
+    <LocaleResource Name="B2BB2CFeatures.DownloadInvoice.ErrorMessage.InvoiceData.NotFound">
+        <Value>Invoice data doesn't exist in db</Value>
+    </LocaleResource>    
+    <LocaleResource Name="B2BB2CFeatures.DownloadInvoice.ErrorMessage.InvoiceData.B2BAccountNotFound">
+        <Value>Associated b2b account with invoice doesn't exist</Value>
+    </LocaleResource>    
+    <LocaleResource Name="B2BB2CFeatures.DownloadInvoice.ErrorMessage.InvoiceData.SalesOrgNotFound">
+        <Value>Associated sales org with b2b account doesn't exist</Value>
+    </LocaleResource>    
+    <LocaleResource Name="B2BB2CFeatures.DownloadInvoice.ErrorMessage.InvoiceData.ExceptionOccured">
+        <Value>Exception occured while trying to parse invoice data or get invoice</Value>
+    </LocaleResource>
+    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.IsShowYearlySavings">
+        <Value>Display yearly savings</Value>
+    </LocaleResource>
+    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.IsShowYearlySavings.Hint">
+        <Value>Display yearly savings</Value>
+    </LocaleResource>
+    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.IsShowAllTimeSavings">
+        <Value>Display all time savings</Value>
+    </LocaleResource> 
+    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.IsShowAllTimeSavings.Hint">
+        <Value>Display all time savings</Value>
+    </LocaleResource>    
+    <LocaleResource Name="Plugin.Misc.NopStation.B2BB2CFeatures.ErpOrderList.PublicView.Title">
+        <Value>Order list</Value>
+    </LocaleResource>
+
+    <!-- Card: 2804 - Bugs on Nopstation B2B plugin for 4.7  - 31-Oct-2024 -->
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Warning.AlreadyExist">
+        <Value>The customer is already a user of this Erp Account</Value>
+    </LocaleResource>
+
+    <!-- Card: 2804 - Bugs on Nopstation B2B plugin for 4.7, 2866 - Support and all changes on top of standard b2b - 07-Nov-2024 -->
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Customer.ErpAccountInfo">
+        <Value>Customer Erp Account Info</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Customer.ErpAccountInfo.Field.NopCustomer">
+        <Value>Nop Customer</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Customer.ErpAccountInfo.Field.NopCustomer.Hint">
+        <Value>Nop Customer Info</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Customer.ErpAccountInfo.Field.SalesOrgName">
+        <Value>Sales Organisation</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Customer.ErpAccountInfo.Field.SalesOrgName.Hint">
+        <Value>Sales Organisation for the Erp Account</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Customer.ErpAccountInfo.Field.ErpAccountInfo">
+        <Value>Erp Account</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Customer.ErpAccountInfo.Field.ErpAccountInfo.Hint">
+        <Value>Erp Account of the Nop Customer</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Customer.ErpAccountInfo.Field.ErpShipToAddressInfo">
+        <Value>Ship To Address</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Customer.ErpAccountInfo.Field.ErpShipToAddressInfo.Hint">
+        <Value>Ship To Address of the Erp Account</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Customer.ErpAccountInfo.Field.ErpUserType">
+        <Value>Erp User Type</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Customer.ErpAccountInfo.Field.ErpUserType.Hint">
+        <Value>Erp User Type of the Nop Customer</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Customer.ErpAccountInfo.Field.ErpUserIsActive">
+        <Value>Is Active</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Customer.ErpAccountInfo.Field.ErpUserIsActive.Hint">
+        <Value>Active status of the Erp Nop User</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Order.AlreadyCancelled">
+        <Value>Order already cancelled!</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.CustomerLogin.ErpAccount.NotActive">
+        <Value>The Erp Account is not activated.</Value>
+    </LocaleResource>
+
+    <!-- Card: 2804 - Bugs on Nopstation B2B plugin for 4.7  - 13-Nov-2024 -->
+    <LocaleResource Name="Admin.Orders.OrderItem.DeleteAssociatedErpOrderItemAdditionalDataRecordError">
+        <Value>This order item is also on the ERP order, please scroll down and delete it there first.</Value>
+    </LocaleResource>
+
+    <!-- Card: 2804 - Bugs on Nopstation B2B plugin for 4.7  - 14-Nov-2024 -->
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Configuration.Fields.MaintainUniqueCustomerReference">
+        <Value>Maintain unique customer reference</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Configuration.Fields.MaintainUniqueCustomerReference.Hint">
+        <Value>Check to maintain unique customer reference</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Configuration.PreventSpecialCharactersInCustomerReference">
+        <Value>Prevent special characters in customer reference</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Configuration.PreventSpecialCharactersInCustomerReference.Hint">
+        <Value>Check to prevent special characters in customer reference</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Configuration.SpecialCharactersToPreventInCustomerReference">
+        <Value>Special Characters to Prevent</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Configuration.SpecialCharactersToPreventInCustomerReference.Hint">
+        <Value>Enter the special characters to prevent</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Configuration.PaymentPopMessageDelayTimeInSec">
+        <Value>After payment waiting show popup message in time (seconds):</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.WaitingPopup.Title">
+        <Value>Delay in placing order</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.WaitingPopup.Message">
+        <Value>We are placing your order and the process needs a little more time to complete. Apologies for the delay.</Value>
+    </LocaleResource>   
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.WaitingPopup.TermsAndConditionAccept.Cancel">
+        <Value>Cancel</Value>
+    </LocaleResource>
+
+    <!-- Card: 2804 - Bugs on Nopstation B2B plugin for 4.7  - 18-Nov-2024 -->
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.CustomerActivityLog.PublicStore.EmailValidation">
+        <Value>Customer email ('{0}') validation successful.</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Customers.Impersonate.ErpAccountNotAvailable">
+        <Value>The assigned customer account is not available.</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Customer.Account.EmailValidation.Validated">
+        <Value>Your email has been verified</Value>
+    </LocaleResource>
+
+    <!-- Card: 2804 - Bugs on Nopstation B2B plugin for 4.7  - 21-Nov-2024 -->
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Configuration.Fields.IsCustomerReferenceRequiredDuringPayment">
+        <Value>Is Customer Reference required during payment</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Configuration.Fields.IsCustomerReferenceRequiredDuringPayment.Hint">
+        <Value>Check to make Customer Reference mandatory during payment</Value>
+    </LocaleResource>
+
+    <!-- Card: 2866 - Support and all changes on top of standard b2b  - 21-Nov-2024 -->
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.PriceSync.PopUp.Message">
+        <Value>We are taking approximately 5 minutes to refresh your prices, you are welcome to shop in the meantime</Value>
+    </LocaleResource>
+
+    <!-- Card: 2804 - Bugs on Nopstation B2B plugin for 4.7  - 21-Nov-2024 -->
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.DeliveryDate.SelectDeliveryDate">
+        <Value>Select your delivery date</Value>
+    </LocaleResource>
+
+    <!-- Card: 2963-2804-Bug-4.7-Basic-B2B-issues  - 23-Dec-2024 -->
+    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.EnableAccountStatementDownload">
+        <Value>Enable account statement download</Value>
+    </LocaleResource>
+    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.EnableAccountStatementDownload.Hint">
+        <Value>Enable account statement download</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Orders.ErpOrderItem.VendorAccessDenied">
+        <Value>Vendors cannot access this functionality</Value>
+    </LocaleResource>
+    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.ShowDiscountPercentageOnCartItems.Hint">
+        <Value>Check to Show Discount Percentage On Cart Items</Value>
+    </LocaleResource>
+
+    <!-- Card: 2933-2804-bug-all-the-scheduler-sync-issues-and-changes - 10-Feb-2025 -->    
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Field.LastErpAccountSyncTimeOnUtc">
+        <Value>Last Erp Accounts Synced On Utc</Value>
+    </LocaleResource>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Field.LastErpAccountSyncTimeOnUtc.Hint">
+        <Value>The last utc time this sales org's erp accounts were synced</Value>
+    </LocaleResource>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Field.LastErpAccountCreditSyncTimeOnUtc">
+        <Value>Last Erp Accounts Credit Synced On Utc</Value>
+    </LocaleResource>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Field.LastErpAccountCreditSyncTimeOnUtc.Hint">
+        <Value>The last utc time this sales org's erp accounts credit were synced</Value>
+    </LocaleResource>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Field.LastErpGroupPriceSyncTimeOnUtc">
+        <Value>Last Erp Group Prices Synced On Utc</Value>
+    </LocaleResource>
+    <LocaleResource Name="Admin.ErpShipToAddress.BackToList">
+        <Value>Back to Erp Ship To Address list</Value>
+    </LocaleResource>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Field.LastErpGroupPriceSyncTimeOnUtc.Hint">
+        <Value>The last utc time this sales org's erp grup prices were synced</Value>
+    </LocaleResource>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Field.LastErpShipToAddressSyncTimeOnUtc">
+        <Value>Last Erp Ship To Addresses Synced On Utc</Value>
+    </LocaleResource>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Field.LastErpShipToAddressSyncTimeOnUtc.Hint">
+        <Value>The last utc time this sales org's erp ship to addresses were synced</Value>
+    </LocaleResource>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Field.LastErpProductSyncTimeOnUtc">
+        <Value>Last Erp Products Synced On Utc</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Orders.ErpOrderItem.AccessDenied">
+        <Value>Access Denied</Value>
+    </LocaleResource>    
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Orders.ErpOrderItem.NoOrderItemFound">
+        <Value>No order item found with the specified id</Value>
+    </LocaleResource>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Field.LastErpProductSyncTimeOnUtc.Hint">
+        <Value>The last utc time products were synced</Value>
+    </LocaleResource>
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Field.LastErpStockSyncTimeOnUtc">
+        <Value>Last Erp Stocks Synced On Utc</Value>
+    </LocaleResource>
+    <LocaleResource Name="Admin.ErpShipToAddress.EditErpShipToAddressDetails">
+        <Value>Erp Ship To Address Details</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.IntegrationMethodFindResult.NoIntegrationMethodFound">
+        <Value>No integration method was found</Value>
+    </LocaleResource>    
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Field.LastErpStockSyncTimeOnUtc.Hint">
+        <Value>The last utc time product stocks were synced</Value>
+    </LocaleResource>
+
+    <!-- Card: 3124-make-erp-order-additional-details-delivery-date-editable - 25-Feb-2025 -->
+    <LocaleResource Name="NopStation.Plugin.NopStation.B2BB2CFeatures.Order.DeliveryDateUpdated">
+        <Value>Delivery date updated</Value>
+    </LocaleResource>
+
+    <!-- Card: 3112 - JH Group - 2804 - Not able to delete lines from an order  - 13-Feb-2025 -->
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Orders.ErpOrderItem.NoOrderFound">
+        <Value>No order found with the specified Id</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Orders.ErpOrderItem.VendorAccessDenied">
+        <Value>Vendors cannot access this functionality</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Orders.ErpOrderItem.AccessDenied">
+        <Value>Access Denied</Value>
+    </LocaleResource>    
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Orders.ErpOrderItem.NoOrderItemFound">
+        <Value>No order item found with the specified id</Value>
+    </LocaleResource>
+
+    <!-- Card: 2963-2804-Bug-4.7-Basic-B2B-issues  - 20-Apr-2025 -->
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.ErpCheckout.ErpUser.NotFound">
+        <Value>Erp User not found</Value>
+    </LocaleResource>
+
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.ErpAccount.ErpAccountNotAvailable">
+        <Value>The account is not available.</Value>
+    </LocaleResource>
 </Language>

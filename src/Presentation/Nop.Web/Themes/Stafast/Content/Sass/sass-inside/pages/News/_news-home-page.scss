@@ -1,0 +1,24 @@
+@import "../../mixins/_layout_width_responsive.scss";
+@import "../../mixins/_common-title.scss";
+
+.news-list-homepage {
+    @include layout_width_responsive;
+    margin: 0 auto 20px;
+
+    @media(min-width: $sm) {
+        margin: 0 auto 50px;
+    }
+
+    .title {
+        @include common-title;
+    }
+
+    .view-all {
+        text-align: center;
+        margin-top: 5px;
+
+        a {
+            @include buttons( $background: var(--primary-grey_light), $color: var(--primary-grey_dark), $padding: 9px 25px, $hover-background: var(--primary-color), $hover-color: var(--white) );
+        }
+    }
+}

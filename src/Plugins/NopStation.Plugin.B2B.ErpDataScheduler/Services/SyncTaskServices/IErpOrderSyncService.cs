@@ -2,5 +2,5 @@
 
 public interface IErpOrderSyncService
 {
-    Task<bool> IsErpOrderSyncSuccessfulAsync();
+    Task<bool> IsErpOrderSyncSuccessfulAsync(string? erpAccountNumber = null, string? orderNumber = null, bool isManualTrigger = false, bool isIncrementalSync = true, CancellationToken cancellationToken = default);
 }

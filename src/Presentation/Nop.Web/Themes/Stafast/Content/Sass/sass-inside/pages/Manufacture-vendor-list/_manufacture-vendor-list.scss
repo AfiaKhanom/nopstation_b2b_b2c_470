@@ -1,0 +1,71 @@
+﻿@import "../../mixins/_before_image_center.scss";
+@import "../../mixins/_show-max-line.scss";
+@import "../../mixins/_item_grid.scss";
+
+.vendor-grid,
+.manufacturer-grid {
+    .item-grid {
+        @include item-grid($justify-content: flex-start);
+
+        .item-box {
+            width: calc(50% - 15px);
+            border: 1px solid var(--primary-grey_light);
+            border-radius: 3px;
+            margin: 15px 7.5px 0px;
+
+            @media(min-width: $sm) {
+                width: calc(33.33% - 15px);
+            }
+
+            @media(min-width: $md) {
+                width: calc(25% - 15px);
+            }
+
+            .vendor-item,
+            .manufacturer-item {
+                display: flex;
+                flex-direction: column-reverse;
+
+                .picture {
+                    a {
+                        position: relative;
+                        display: block;
+                        overflow: hidden;
+
+                        &::before {
+                            content: "";
+                            display: block;
+                            padding-top: 80%;
+                        }
+
+                        img {
+                            @include before-image-center;
+                            mix-blend-mode: multiply;
+                        }
+                    }
+                }
+
+                .title {
+                    text-align: center;
+                    margin: 10px 0px;
+
+                    a {
+                        font-weight: 700;
+                        font-size: 14px;
+                        line-height: 17px;
+                        color: var(--primary-color);
+                        @include show-max-line ($webkit-line-clamp: 1);
+                    }
+                }
+            }
+        }
+    }
+}
+
+.manufacturer-item {
+    background: #fff;
+    box-shadow: 2px 2px 5px 2px #9BAAD033,1px 2px 4px 1px #FFFFFF33;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 0 auto 20px;
+}

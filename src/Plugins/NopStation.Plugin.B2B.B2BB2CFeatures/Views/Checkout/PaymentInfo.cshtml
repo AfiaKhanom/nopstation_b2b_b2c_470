@@ -1,0 +1,125 @@
+﻿@model CheckoutPaymentInfoModel
+
+@using NopStation.Plugin.B2B.B2BB2CFeatures
+@using Nop.Services.Localization
+
+@inject B2BB2CFeaturesSettings b2BB2CFeaturesSettings
+@inject ILocalizationService localizationService
+
+@{
+    Layout = "_ColumnsOne";
+
+    //title
+    NopHtml.AddTitleParts(T("PageTitle.Checkout").Text);
+    //page class
+    NopHtml.AppendPageCssClassParts("html-checkout-page");
+    NopHtml.AppendPageCssClassParts("html-payment-info-page");
+}
+
+<div class="page checkout-page payment-info-page">
+    @await Component.InvokeAsync(typeof(CheckoutProgressViewComponent), new { step = CheckoutProgressStep.Payment })
+    <div class="page-title">
+        <h1>@T("Checkout.PaymentInfo")</h1>
+    </div>
+    <div class="page-body checkout-data">
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutPaymentInfoTop, additionalData = Model })
+        <div class="section payment-info">
+            <form asp-route="CheckoutPaymentInfo" method="post" id="b2bCheckoutPaymentInfo">
+                <div asp-validation-summary="ModelOnly" class="message-error"></div>
+                <div class="info">
+                    @await Component.InvokeAsync(Model.PaymentViewComponent)
+                </div>
+                <div class="section order-summary">
+                    <div class="title">
+                        <strong>@T("Checkout.OrderSummary")</strong>
+                    </div>
+                    @await Component.InvokeAsync(typeof(OrderSummaryViewComponent), "ShoppingCart")
+                    <div class="buttons">
+                        <button type="submit" name="nextstep" class="button-1 payment-info-next-step-button">@T("Checkout.NextButton")</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutPaymentInfoBottom, additionalData = Model })
+
+    </div>
+</div>
+
+<style>
+    .fa-frown-o {
+        color: #000;
+    }
+
+    #waiting-popup {
+        text-align: center;
+    }
+</style>
+
+<div id="waiting-popup" title="@T("NopStation.Plugin.B2B.B2BB2CFeatures.WaitingPopup.Title")" style="display: none;">
+    <div>
+        <h2>
+            <i class="fa fa-frown-o"></i>
+            @T("NopStation.Plugin.B2B.B2BB2CFeatures.WaitingPopup.Message")
+        </h2>
+        <br />
+    </div>
+    <br />
+    <div>
+        <input type="button" name="cancel" onclick="closePopup()" value="@T("NopStation.Plugin.B2B.B2BB2CFeatures.WaitingPopup.TermsAndConditionAccept.Cancel")" class="button-1 bg-red" />
+    </div>
+    <input id="orderId" name="orderId" style="display:none;" />
+
+    <script asp-location="Footer">
+        function closePopup() {
+            $("#waiting-popup").dialog("destroy");
+        }
+    </script>
+</div>
+
+@if (b2BB2CFeaturesSettings.IsCustomerReferenceRequiredDuringPayment)
+{
+    <script asp-location="Footer">
+        $("#CustomerReferenceAsPo").removeAttr("hidden");
+        $(function () {
+            $('.payment-info-next-step-button').on('click', function () {
+                if ($('#CustomerReferenceAsPO').length == 0) {
+                    return;
+                }
+                if ($('#CustomerReferenceAsPO').val()) {
+                    if ($("#CustomerReferenceAsPO-error").val() != undefined) {
+                        displayPopupNotification('@string.Format(
+                            await localizationService.GetResourceAsync("Plugins.Payments.NopStation.B2B.Account.CustomerReferenceAsPO.Invalid"), 
+                            b2BB2CFeaturesSettings.SpecialCharactersToPreventInCustomerReference)', 'error', true);
+                    }
+                    else {
+                        displayAjaxLoading(true);
+                        var delayTimeInSec = parseInt('@b2BB2CFeaturesSettings.PaymentPopupMessageDelayTimeInSec');
+                        setTimeout(function () {
+                            $("#waiting-popup").dialog({
+                                modal: true,
+                                draggable: false,
+                                closeOnEscape: true
+                            });
+                        }, delayTimeInSec * 1000);
+                    }
+                }
+                else {
+                    displayPopupNotification('@T("Plugins.Payments.NopStation.B2B.Account.CustomerReferenceAsPO.CustomerReferenceAsPORequired")', 'error', true);
+                }
+            });
+        });
+    </script>
+}
+
+<script asp-location="Footer">
+    $(document).ready(function () {
+        // Find all request verification tokens in the form
+        var tokens = $('#b2bCheckoutPaymentInfo input[name="__RequestVerificationToken"]');
+
+        // If more than one token exists
+        if (tokens.length > 1) {
+            // Keep first token, remove others
+            tokens.not(':first').remove();
+        }
+    });
+</script>

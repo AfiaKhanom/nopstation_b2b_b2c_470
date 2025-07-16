@@ -1,0 +1,82 @@
+﻿.header-links-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+#B2BB2CErpAccount {
+  margin-top: 5px;
+}
+
+div#checkoutShippingTabs {
+  text-align: center;
+}
+
+.tab-links {
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.checkout-title h1 {
+  font-size: 18px;
+}
+
+.checkout-shipping-tab .modal-content {
+  max-width: initial;
+  top: 5%;
+  width: 80%;
+}
+
+.modal-content h1.product-name {
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.order-confirm-accept-form,
+.price-update-popup-buttons {
+  text-align: center;
+}
+
+.order-confirm-accept-form .order-confirm-buttons button,
+.pdf-invoice-button,
+.edit-ship-to,
+.price-update-popup-buttons input {
+  display: inline-block;
+  min-width: 180px;
+  margin: 5px;
+  border: 0;
+  background-color: #4ab2f1;
+  padding: 10px 20px;
+  font-size: 15px;
+  color: #fff;
+}
+
+.pdf-invoice-button {
+  background-color: #aaa;
+}
+
+.order-confirm-accept-form .order-confirm-buttons button:hover,
+.order-confirm-accept-form .order-confirm-buttons button:focus,
+.edit-ship-to:hover,
+.edit-ship-to:focus,
+.price-update-popup-buttons input:hover,
+.price-update-popup-buttons input:focus {
+  background-color: #248ece;
+}
+
+@media(min-width: 769px) {
+  .order-review-data > div, .order-details-area > div, .shipment-details-area > div {
+    display: flex;
+    width: 100% !important;
+  }
+
+  .billing-shipping-wrapper > div {
+    width: 50%;
+  }
+}
+
+
+@media(min-width: 1001px) {
+  .header-links-wrapper {
+    flex-direction: row;
+  }
+}

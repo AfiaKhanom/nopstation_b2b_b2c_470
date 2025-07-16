@@ -2,5 +2,5 @@
 
 public interface IErpGroupPriceSyncService
 {
-    Task<bool> IsErpGroupPriceSyncSuccessfulAsync();
+    Task<bool> IsErpGroupPriceSyncSuccessfulAsync(string? priceCode, string? stockCode, bool isManualTrigger = false, bool isIncrementalSync = true, CancellationToken cancellationToken = default);
 }

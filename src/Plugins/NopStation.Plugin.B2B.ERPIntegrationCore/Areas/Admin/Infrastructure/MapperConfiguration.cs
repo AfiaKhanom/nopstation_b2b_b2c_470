@@ -2,24 +2,23 @@
 using Nop.Core.Infrastructure.Mapper;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Areas.Admin.Models;
 
-namespace NopStation.Plugin.B2B.ERPIntegrationCore.Areas.Admin.Infrastructure
+namespace NopStation.Plugin.B2B.ERPIntegrationCore.Areas.Admin.Infrastructure;
+
+public class MapperConfiguration : Profile, IOrderedMapperProfile
 {
-    public class MapperConfiguration : Profile, IOrderedMapperProfile
+    #region Ctor
+
+    public MapperConfiguration()
     {
-        #region Ctor
-
-        public MapperConfiguration()
-        {
-            CreateMap<ERPIntegrationCoreSettings, ConfigurationModel>();
-            CreateMap<ConfigurationModel, ERPIntegrationCoreSettings>();
-        }
-
-        #endregion
-
-        #region Properties
-
-        public int Order => 0;
-
-        #endregion
+        CreateMap<ERPIntegrationCoreSettings, ConfigurationModel>();
+        CreateMap<ConfigurationModel, ERPIntegrationCoreSettings>();
     }
+
+    #endregion
+
+    #region Properties
+
+    public int Order => 0;
+
+    #endregion
 }

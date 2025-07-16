@@ -13,17 +13,17 @@ public class ErpPriceGroupViewComponent : NopViewComponent
     #region Fields
 
     private readonly IProductService _productService;
-    private readonly IErpPriceGroupProductPricingModelFactory _erpPriceGroupProductPricingModelFactory;
+    private readonly IErpGroupPriceModelFactory _erpGroupPriceModelFactory;
 
     #endregion
 
     #region Ctor
 
     public ErpPriceGroupViewComponent(IProductService productService,
-        IErpPriceGroupProductPricingModelFactory erpPriceGroupProductPricingModelFactory)
+        IErpGroupPriceModelFactory erpGroupPriceModelFactory)
     {
         _productService = productService;
-        _erpPriceGroupProductPricingModelFactory = erpPriceGroupProductPricingModelFactory;
+        _erpGroupPriceModelFactory = erpGroupPriceModelFactory;
     }
 
     #endregion
@@ -35,7 +35,7 @@ public class ErpPriceGroupViewComponent : NopViewComponent
         try
         {
             var productId = additionalData is int pId ? pId : 0;
-            var searchModel = await _erpPriceGroupProductPricingModelFactory.PrepareErpProductPricingSearchModel(new ErpPriceGroupProductPricingSearchModel(), productId);
+            var searchModel = await _erpGroupPriceModelFactory.PrepareErpProductPricingSearchModel(new ErpPriceGroupProductPricingSearchModel(), productId);
 
             if (productId > 0)
             {

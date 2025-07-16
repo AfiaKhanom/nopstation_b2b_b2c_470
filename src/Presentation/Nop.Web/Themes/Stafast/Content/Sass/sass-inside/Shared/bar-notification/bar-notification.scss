@@ -1,0 +1,104 @@
+@import "../../mixins/icon-font-style";
+.bar-notification {
+    position: fixed;
+    right: 50%;
+    bottom: 80px;
+    transform: translateX(50%);
+    background: #4caf50;
+    color: var(--white);
+    z-index: $top;
+    width: calc(100% - 30px);
+    max-width: 550px;
+    padding: 10px 25px 10px 35px;
+    border-radius: 100px;
+    animation: fade-in 0.3s;
+    font-weight:500;
+
+    &::before {
+        @include icon-font-style;
+        content: "\e920";
+        color: var(--white);
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 10px;
+    }
+
+    &.success {
+        box-shadow: 1px 3px 9px rgba(58, 196, 125, 0.3);
+
+        &::before {
+            content: "\e920";
+        }
+    }
+
+    &.error {
+        background: #f40f00;
+        box-shadow: 1px 3px 9px rgba(244, 15, 0, 0.3);
+
+        &::before {
+            content: "!";
+            font-size: 15px;
+            padding: 3px 8px;
+            border-radius: 100px;
+            background: #fff;
+            color: #f40f00;
+            font-family: 'Lato' !important;
+        }
+    }
+
+    &.warning {
+        background: #eea129;
+        box-shadow: 1px 3px 9px rgba(238, 161, 41, 0.3);
+
+        &::before {
+            content: "\e954";
+            font-weight: 900;
+            font-size: 16px;
+        }
+    }
+
+    .content {
+        max-width: calc(100% - 20px);
+        display: block;
+        vertical-align: top;
+        line-height: 18px;
+
+        a {
+            color: var(--white);
+            font-weight: 900;
+        }
+    }
+
+    .close {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        right: 15px;
+        cursor: pointer;
+
+        &::before {
+            @include icon-font-style;
+            content: "\e928";
+            color: var(--white);
+        }
+    }
+
+    @media (min-width: $md) {
+        animation: slide-up 0.3s;
+        top: auto;
+        right: 80px;
+        bottom: 80px;
+        transform: translateX(0);
+        padding: 12px 30px 12px 45px;
+
+        &::before {
+            left: 15px !important;
+        }
+
+        .close {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    }
+}

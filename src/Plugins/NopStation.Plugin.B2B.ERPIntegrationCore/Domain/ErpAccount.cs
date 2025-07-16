@@ -3,8 +3,8 @@ using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
 
 namespace NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
 
-public partial class ErpAccount: ErpBaseEntity
-{ 
+public partial class ErpAccount : ErpBaseEntity
+{
     public string AccountNumber { get; set; }
 
     public string AccountName { get; set; }
@@ -71,7 +71,5 @@ public partial class ErpAccount: ErpBaseEntity
 
     public int StockDisplayFormatTypeId { get; set; }
 
-    public decimal PercentageOfStockAllowed { get; set; }
-
-    public ErpSalesOrg ErpSalesOrg { get; set; }
+    public decimal? PercentageOfStockAllowed { get; set; }
 }

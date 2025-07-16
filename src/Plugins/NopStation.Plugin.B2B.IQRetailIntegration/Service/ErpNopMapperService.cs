@@ -326,7 +326,7 @@ public class ErpNopMapperService : IErpNopMapperService
                 VendorCode = string.Empty,
                 VendorName = string.Empty,
                 TaxCategoryId = 0,
-                Published = "true",
+                Published = true,
                 ProductCategories = new List<ErpCategoryDataModel>()
                 {
                     new ()

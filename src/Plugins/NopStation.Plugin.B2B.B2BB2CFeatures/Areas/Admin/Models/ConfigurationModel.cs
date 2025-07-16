@@ -1,6 +1,6 @@
 ﻿using System;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Nop.Web.Framework.Models;
 using Nop.Web.Framework.Mvc.ModelBinding;
 
@@ -66,6 +66,14 @@ public record ConfigurationModel : BaseNopModel, ISettingsModel
     public bool IsShowLoginForPrice { get; set; }
     public bool IsShowLoginForPrice_OverrideForStore { get; set; }
 
+    [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.IsShowYearlySavings")]
+    public bool IsShowYearlySavings { get; set; }
+    public bool IsShowYearlySavings_OverrideForStore { get; set; }
+
+    [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.IsShowAllTimeSavings")]
+    public bool IsShowAllTimeSavings { get; set; }
+    public bool IsShowAllTimeSavings_OverrideForStore { get; set; }
+
     [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.LastDateTimeOfTCUpdate")]
     public DateTime LastDateTimeOfTCUpdate { get; set; }
     public bool LastDateTimeOfTCUpdate_OverrideForStore { get; set; }
@@ -77,10 +85,6 @@ public record ConfigurationModel : BaseNopModel, ISettingsModel
     [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.UpdatedById")]
     public int UpdatedById { get; set; }
     public bool UpdatedById_OverrideForStore { get; set; }
-
-    [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.ERPTimeOutMilliseconds")]
-    public int ERPTimeOutMilliseconds { get; set; }
-    public bool ERPTimeOutMilliseconds_OverrideForStore { get; set; }
 
     [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.MaxErpIntegrationOrderPlaceRetries")]
     public int MaxErpIntegrationOrderPlaceRetries { get; set; }
@@ -94,6 +98,10 @@ public record ConfigurationModel : BaseNopModel, ISettingsModel
     public bool EnableLiveStockChecks { get; set; }
     public bool EnableLiveStockChecks_OverrideForStore { get; set; }
 
+    [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.EnableLiveCreditChecks")]
+    public bool EnableLiveCreditChecks { get; set; }
+    public bool EnableLiveCreditChecks_OverrideForStore { get; set; }
+
     [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.EnableLivePriceChecks")]
     public bool EnableLivePriceChecks { get; set; }
     public bool EnableLivePriceChecks_OverrideForStore { get; set; }
@@ -102,21 +110,17 @@ public record ConfigurationModel : BaseNopModel, ISettingsModel
     public int StockDisplayFormatId { get; set; }
     public bool StockDisplayFormat_OverrideForStore { get; set; }
 
-    [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.MaintainUniqueCustomerReference")]
-    public bool MaintainUniqueCustomerReference { get; set; }
-    public bool MaintainUniqueCustomerReference_OverrideForStore { get; set; }
-
     [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.EnableQuoteFunctionality")]
     public bool EnableQuoteFunctionality { get; set; }
     public bool EnableQuoteFunctionality_OverrideForStore { get; set; }
 
-    [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.CustomerRefrenceCheckoutAttributeId")]
-    public int CustomerRefrenceCheckoutAttributeId { get; set; }
-    public bool CustomerRefrenceCheckoutAttributeId_OverrideForStore { get; set; }
-
-    [NopResourceDisplayName("Plugins.Payment.B2BCustomerAccount.AdminArea.Configuration.PreFilterFacetSpecificationAttribute")]
+    [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.PreFilterFacetSpecificationAttribute")]
     public int PreFilterFacetSpecificationAttributeId { get; set; }
     public bool PreFilterFacetSpecificationAttributeId_OverrideForStore { get; set; }
+
+    [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.UnitOfMeasureSpecificationAttribute")]
+    public int UnitOfMeasureSpecificationAttributeId { get; set; }
+    public bool UnitOfMeasureSpecificationAttributeId_OverrideForStore { get; set; }
 
     [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.DisplayAddToQuickListFavouriteButton")]
     public bool DisplayAddToQuickListFavouriteButton { get; set; }
@@ -213,11 +217,11 @@ public record ConfigurationModel : BaseNopModel, ISettingsModel
     [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.DownloadInvoicesPath")]
     public string DownloadInvoicesPath { get; set; }
     public bool DownloadInvoicesPath_OverrideForStore { get; set; }
-    
+
     [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.FtpUserName")]
     public string FtpUserName { get; set; }
     public bool FtpUserName_OverrideForStore { get; set; }
-    
+
     [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.FtpPassword")]
     public string FtpPassword { get; set; }
     public bool FtpPassword_OverrideForStore { get; set; }
@@ -233,7 +237,6 @@ public record ConfigurationModel : BaseNopModel, ISettingsModel
     [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.PercentageOfStockAllowed")]
     public int PercentageOfStockAllowed { get; set; }
     public bool PercentageOfStockAllowed_OverrideForStore { get; set; }
-
 
     [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.IsErpAccountCustomerRegisterAllowed")]
     public bool IsErpAccountCustomerRegisterAllowed { get; set; }
@@ -251,10 +254,37 @@ public record ConfigurationModel : BaseNopModel, ISettingsModel
     public double Longitude { get; set; }
     public bool Longitude_OverrideForStore { get; set; }
 
+    [NopResourceDisplayName("B2BB2CFeatures.Configuration.Fields.EnableAccountStatementDownload")]
+    public bool EnableAccountStatementDownload { get; set; }
+    public bool EnableAccountStatementDownload_OverrideForStore { get; set; }
+
+    #region Checkout settings
+
+    [NopResourceDisplayName("NopStation.Plugin.B2B.B2BB2CFeatures.Configuration.Fields.IsCustomerReferenceRequiredDuringPayment")]
+    public bool IsCustomerReferenceRequiredDuringPayment { get; set; }
+    public bool IsCustomerReferenceRequiredDuringPayment_OverrideForStore { get; set; }
+
+    [NopResourceDisplayName("NopStation.Plugin.B2B.B2BB2CFeatures.Configuration.Fields.MaintainUniqueCustomerReference")]
+    public bool MaintainUniqueCustomerReference { get; set; }
+    public bool MaintainUniqueCustomerReference_OverrideForStore { get; set; }
+
+    [NopResourceDisplayName("NopStation.Plugin.B2B.B2BB2CFeatures.Configuration.PreventSpecialCharactersInCustomerReference")]
+    public bool PreventSpecialCharactersInCustomerReference { get; set; }
+    public bool PreventSpecialCharactersInCustomerReference_OverrideForStore { get; set; }
+
+    [NopResourceDisplayName("NopStation.Plugin.B2B.B2BB2CFeatures.Configuration.SpecialCharactersToPreventInCustomerReference")]
+    public string SpecialCharactersToPreventInCustomerReference { get; set; }
+    public bool SpecialCharactersToPreventInCustomerReference_OverrideForStore { get; set; }
+
+    [NopResourceDisplayName("NopStation.Plugin.B2B.B2BB2CFeatures.Configuration.PaymentPopMessageDelayTimeInSec")]
+    public int PaymentPopupMessageDelayTimeInSec { get; set; }
+    public bool PaymentPopupMessageDelayTimeInSec_OverrideForStore { get; set; }
+
+    #endregion
+
     public IList<SelectListItem> AvailableCountries { get; set; }
     public IList<SelectListItem> AvailableStockDisplayFormats { get; set; }
     public IList<SelectListItem> AvailableSalesOrganizations { get; set; }
     public IList<SelectListItem> AvailableSpecificationAttributes { get; set; }
     public IList<SelectListItem> AvailableProductAvailabilityRanges_DefaultValue { get; set; }
-
 }

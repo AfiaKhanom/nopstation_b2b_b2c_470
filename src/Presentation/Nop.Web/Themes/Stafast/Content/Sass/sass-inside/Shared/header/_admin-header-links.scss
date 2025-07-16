@@ -1,0 +1,11 @@
+.admin-header-links {
+    background: var(--black);
+    text-align: center;
+    padding: 5px;
+
+    a {
+        color: var(--white);
+        text-decoration: none;
+        padding: 0 10px;
+    }
+}

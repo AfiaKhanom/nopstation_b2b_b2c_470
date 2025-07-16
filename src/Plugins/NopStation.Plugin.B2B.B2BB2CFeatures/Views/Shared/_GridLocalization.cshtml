@@ -26,21 +26,21 @@
         @if ((await workContext.GetWorkingLanguageAsync()).Rtl)
         {
             <text>
-                "first":"<i class='k-icon k-i-seek-e'></i>",
-                "last":"<i class='k-icon k-i-seek-w'></i>",
-                "next":"<i class='k-icon k-i-arrow-w'></i>",
-                "previous":"<i class='k-icon k-i-arrow-e'></i>"
+                "first":"<i class='fa fa-angle-double-right'></i>",
+                "last":"<i class='fa fa-angle-double-left'></i>",
+                "next":"<i class='fa fa-angle-left'></i>",
+                "previous":"<i class='fa fa-angle-right'></i>"
             </text>
         }
         else
-        { 
+        {
             <text>
-                "first":"<i class='k-icon k-i-seek-w'></i>",
-                "last":"<i class='k-icon k-i-seek-e'></i>",
-                "next":"<i class='k-icon k-i-arrow-e'></i>",
-                "previous":"<i class='k-icon k-i-arrow-w'></i>"
-            </text>        
-        }
+                "first":"<i class='fa fa-angle-double-left'></i>",
+                "last":"<i class='fa fa-angle-double-right'></i>",
+                "next":"<i class='fa fa-angle-right'></i>",
+                "previous":"<i class='fa fa-angle-left'></i>"
+            </text>
+}
     },
     "aria": {
         "sortAscending":  "@JavaScriptEncoder.Default.Encode(T("Admin.DT.Aria.SortAscending").Text)",

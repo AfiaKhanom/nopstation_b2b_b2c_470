@@ -42,4 +42,7 @@ public class ErpAccountDataModel
     public bool OverrideBackOrderingConfigSetting { get; set; }
     public bool AllowAccountsBackOrdering { get; set; }
     public bool AllowAccountsAddressEditOnCheckout { get; set; }
+    public decimal? LoyaltyBalance { get; set; }
+    public decimal? MinimumOrderValue { get; set; }
+    public string LoyaltyCardNumber { get; set; }
 }

@@ -1,0 +1,17 @@
+
+@mixin common-title() {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 18px;
+    text-transform: uppercase;
+    color: var(--black);
+    text-align: center;
+    margin-bottom: 15px;
+    
+
+    @media(min-width: $md) {
+        font-size: 20px;
+        line-height: 1;
+        margin-bottom: 20px;
+    }
+}

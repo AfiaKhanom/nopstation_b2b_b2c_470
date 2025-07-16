@@ -1,0 +1,88 @@
+﻿@using Nop.Services.Localization
+@using Nop.Core
+@using Nop.Services.Cms
+@inject ILocalizationService localizationService
+@inject IStoreContext storeContext
+@inject ISettingService settingService
+@inject IWidgetPluginManager widgetPluginManager
+
+@{
+    Layout = "_ColumnsOne";
+
+    var homepageTitle = await localizationService.GetLocalizedAsync(await storeContext.GetCurrentStoreAsync(), s => s.HomepageTitle);
+    var isBlogNewsPluginInstalled = await widgetPluginManager.IsPluginActiveAsync("NopStation.Plugin.Widgets.BlogNews");
+
+    //title
+    if (!string.IsNullOrEmpty(homepageTitle))
+    {
+        NopHtml.AddTitleParts(homepageTitle);
+    }
+
+    var homepageDescription = await localizationService.GetLocalizedAsync(await storeContext.GetCurrentStoreAsync(), s => s.HomepageDescription);
+
+    //meta
+    if (!string.IsNullOrEmpty(homepageDescription))
+    {
+        NopHtml.AddMetaDescriptionParts(homepageDescription);
+    }
+    var store = await storeContext.GetCurrentStoreAsync();
+    var showHomePageCategory = true;
+    var showHomePageProduct = true;
+    var showBestSeller = true;
+
+    if (await settingService.GetSettingByKeyAsync<bool>
+           ("StafastSettings.HideHomePageFeaturedCategories", storeId: store.Id, loadSharedValueIfNotFound: true))
+    {
+        showHomePageCategory = false;
+    }
+    if (await settingService.GetSettingByKeyAsync<bool>
+           ("StafastSettings.HideHomePageProducts", storeId: store.Id, loadSharedValueIfNotFound: true))
+    {
+        showHomePageProduct = false;
+    }
+    if (await settingService.GetSettingByKeyAsync<bool>
+           ("StafastSettings.HideHomePageBestSellers", storeId: store.Id, loadSharedValueIfNotFound: true))
+    {
+        showBestSeller = false;
+    }
+
+    //page class
+    NopHtml.AppendPageCssClassParts("html-home-page");
+}
+<div class="page home-page">
+    <div class="page-body">
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageTop })
+        @await Component.InvokeAsync(typeof(TopicBlockViewComponent), new { systemName = "HomepageText" })
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeCategories })
+
+        @if (showHomePageCategory)
+        {
+            @await Component.InvokeAsync(typeof(HomepageCategoriesViewComponent))
+        }
+
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeProducts })
+
+        @if (showHomePageProduct)
+        {
+            @await Component.InvokeAsync(typeof(HomepageProductsViewComponent))
+        }
+
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeBestSellers })
+
+        @if (showBestSeller)
+        {
+            @await Component.InvokeAsync(typeof(HomepageBestSellersViewComponent))
+        }
+
+        @await Component.InvokeAsync(typeof(TopicBlockViewComponent), new { systemName = "AboutStafast" })
+        
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforeNews })
+        @if (!isBlogNewsPluginInstalled)
+        {
+            @await Component.InvokeAsync(typeof(HomepageNewsViewComponent))
+        }
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBeforePoll })
+        @await Component.InvokeAsync(typeof(HomepagePollsViewComponent))
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HomepageBottom })
+    </div>
+</div>

@@ -1,9 +1,8 @@
 ﻿using Nop.Web.Framework.Models;
 
-namespace NopStation.Plugin.B2B.ErpDataScheduler.Areas.Admin.Models
-{
-    public partial record SyncLogListModel : BasePagedListModel<SyncLogModel>
-    {
+namespace NopStation.Plugin.B2B.ErpDataScheduler.Areas.Admin.Models;
 
-    }
+public partial record SyncLogListModel : BasePagedListModel<SyncLogModel>
+{
+
 }

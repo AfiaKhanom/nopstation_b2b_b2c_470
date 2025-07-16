@@ -1,0 +1,16 @@
+.order-overview {
+    text-align: center;
+    margin-bottom: 30px;
+
+    .order-number {
+        font-size: clamp(1rem,3vw,20px);
+        line-height: clamp(16px,3vw,22px);
+        font-style: italic;
+    }
+
+    .order-overview-content {
+        li {
+            line-height: 20px;
+        }
+    }
+}

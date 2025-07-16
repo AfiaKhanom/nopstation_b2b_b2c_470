@@ -66,7 +66,7 @@
                 </div>
                 <div class="col-md-9">
                     <input type="hidden" asp-for="ErpAccountId" />
-                    <a asp-controller="ErpAccount" asp-action="Edit" asp-route-id="@Model.ErpAccountId">@Model.ErpAccountName</a>
+                    <a asp-controller="ErpAccount" asp-action="ErpAccountEdit" asp-route-id="@Model.ErpAccountId">@Model.ErpAccountName</a>
                 </div>
             </div>
             <div class="form-group row">
@@ -75,7 +75,7 @@
                 </div>
                 <div class="col-md-9">
                     <input type="hidden" asp-for="ErpAccountSalesOrganisationId" />
-                    <a asp-controller="ErpSalesOrg" asp-action="Edit" asp-route-id="@Model.ErpAccountSalesOrganisationId">@Model.ErpAccountSalesOrganisationName</a>
+                    <a asp-controller="ErpSalesOrg" asp-action="ErpSalesOrgEdit" asp-route-id="@Model.ErpAccountSalesOrganisationId">@Model.ErpAccountSalesOrganisationName</a>
                 </div>
             </div>
             <div class="form-group row">

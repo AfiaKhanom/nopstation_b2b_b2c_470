@@ -83,44 +83,6 @@
                             <span asp-validation-for="ErpAccountId" id="validationMessageErpAccountId"></span>
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <div class="col-md-3">
-                            <nop-label asp-for="SelectedCustomerRoleIds" />
-                        </div>
-
-                        <div class="col-md-9">
-                            <div class="input-group-append input-group-required">
-                                <div class="input-group">
-                                    <nop-select asp-for="SelectedCustomerRoleIds" asp-items="Model.AvailableCustomerRoles" asp-multiple="true" />
-                                </div>
-                                <div class="input-group-btn">
-                                    <nop-required />
-                                </div>
-                            </div>
-                            <script>
-                                $(document).ready(function () {
-                                    var customerRoleIdsInput = $('#@Html.IdFor(model => model.SelectedCustomerRoleIds)').data("kendoMultiSelect");
-                                    customerRoleIdsInput.setOptions({
-                                        customerRoleIdsInput: false,
-                                        filter: "contains"
-                                    });
-
-                                @if (Model.AvailableCustomerRoles.Count == 0)
-                                {
-                                    <text>
-                                        customerRoleIdsInput.setOptions({
-                                            enable: false,
-                                            placeholder: '@T("Admin.Customers.Customers.Fields.CustomerRoles.NoRoles")'
-                                        });
-                                        customerRoleIdsInput._placeholder();
-                                        customerRoleIdsInput._enable();
-                                    </text>
-                                }
-                                                                                                                                                    });
-                            </script>
-                            <span asp-validation-for="SelectedCustomerRoleIds" id="validationMessageSelectedCustomerRoleIds"></span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

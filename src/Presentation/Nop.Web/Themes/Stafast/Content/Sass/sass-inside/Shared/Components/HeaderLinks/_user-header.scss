@@ -1,0 +1,74 @@
+.user-dropdown {
+    position: relative;
+
+    > a {
+
+        &::before {
+            content: "\e978";
+        }
+    }
+
+    .login-dropdown-menu,
+    .dropdown-list {
+        position: absolute;
+        right: -60px;
+        top: 100%;
+        background: #fff;
+        min-width: 150px;
+        border: 1px solid var(--primary-grey_light);
+        box-shadow: $shadow-style-1;
+        z-index: $top;
+        display: none;
+
+        @media (min-width: $lg) {
+            animation: slide-up 0.5s forwards;
+        }
+
+        li {
+            font-size: 14px;
+
+            &:first-child {
+                border-bottom: 1px solid var(--primary-grey_light);
+            }
+
+            a {
+                display: block;
+                padding: 15px 10px;
+                font-weight: 600;
+
+                &::before {
+                    content: "";
+                    font-family: 'icomoon' !important;
+                    line-height: 1;
+                }
+            }
+
+            &:hover {
+                a {
+                    color: var(--primary-color);
+                }
+            }
+        }
+
+        &.show {
+            display: block;
+        }
+    }
+
+    &.is-loggedin {
+        &:hover {
+            .dropdown-list,
+            .login-dropdown-menu {
+                display: block;
+            }
+        }
+    }
+
+    &.not-loggedin {
+        &:hover {
+            .login-dropdown-menu {
+                display: block;
+            }
+        }
+    }
+}

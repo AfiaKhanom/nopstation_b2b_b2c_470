@@ -1,0 +1,66 @@
+.follow-us {
+    @media (min-width: $lg) {
+        order: 2;
+    }
+
+    .social {
+        margin-bottom: 15px;
+
+        li {
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 3px;
+            margin-bottom: 4px;
+
+            a {
+                font-size: 0;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 35px;
+                height: 35px;
+                background-color: var(--white);
+                border-radius: 100px;
+            }
+
+            a::before {
+                content: "";
+                display: block;
+                width: 16px;
+                height: 16px;
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+
+            &.facebook a::before {
+                background-image: url("../images/facebook.svg");
+            }
+
+            &.youtube a::before {
+                background-image: url("../images/youtube.svg");
+            }
+
+            &.instagram a::before {
+                background-image: url("../images/instagram.svg");
+            }
+
+            &.twitter a::before {
+                background-image: url("../images/twitter.svg");
+            }
+
+            &.rss a::before {
+                background-image: url("../images/rss.svg");
+            }
+
+            &.linkedin a::before {
+                background-image: url("../images/linkedin.svg");
+            }
+
+            &.pinterest a::before {
+                background-image: url("../images/pinterest.svg");
+            }
+        }
+    }
+}

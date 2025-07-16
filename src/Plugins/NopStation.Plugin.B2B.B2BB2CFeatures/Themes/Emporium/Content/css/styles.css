@@ -1,0 +1,590 @@
+.totals {
+  position: relative;
+  padding: 50px 50px;
+}
+
+.cart ~ .common-buttons {
+  display: block;
+}
+
+@media (min-width: 1025px) {
+  .order-details-page .totals {
+    float: right;
+    padding: 50px 50px;
+  }
+}
+
+.ico-loyalty::before {
+  content: url('/icons/icons_0/crown_icon_white.png');
+}
+
+.checkout-title,
+.section.select-delivery-date .title.delivery-date-title strong,
+.section.special-instructions .title.special-instructions-title strong,
+.section.quote-customer-reference .title.quote-customer-reference-title strong {
+  font-size: 18px;
+  color: #254451;
+  margin-bottom: 20px;
+  font-weight: bold !important;
+}
+
+.title.delivery-date-title,
+.title.special-instructions-title,
+.title.quote-customer-reference-title,
+#collect-header-text {
+  text-align: left !important;
+  margin-bottom: 20px !important;
+}
+
+  .title.delivery-date-title strong,
+  .title.special-instructions-title strong,
+  .title.quote-customer-reference-title strong,
+  #collect-header-text {
+    font-size: 36px !important;
+    text-align: left !important;
+    color: #254451 !important;
+    font-weight: bold !important;
+  }
+
+.ddl-erp-account-options {
+  font-size: 15px !important;
+  font-family: 'Roboto', sans-serif !important;
+}
+.admin-header-links {
+  position: relative;
+}
+
+  .admin-header-links + .header .skip {
+    position: absolute;
+    top: -20px;
+  }
+
+.checkout-page .cart,
+.shopping-cart-page .cart {
+  margin: 0 auto;
+}
+
+.table-container {
+  overflow: auto;
+  margin-bottom: 20px;
+}
+
+.checkout-page .checkout-data:after {
+  display: none;
+  justify-content: space-between;
+}
+
+.checkout-page .checkout-data {
+  display: flex;
+  justify-content: space-between;
+}
+
+.checkout-page .checkout-title {
+  border-bottom: 1px solid #121c23;
+  margin-bottom: 30px;
+}
+
+.checkout-page #collect-header-text {
+  border-bottom: 1px solid #121c23;
+  margin-bottom: 30px;
+  display: inline-block;
+  position: relative;
+  border-radius: 5px 5px 0 0;
+  padding: 13px 0;
+  overflow: hidden;
+  text-transform: capitalize;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: bold;
+  font-size: 17px;
+  color: #000;
+  background: none;
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.pickup-point-title {
+  display: none !important;
+}
+
+.checkout-page .pickup-points {
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 30px 15px 15px;
+  padding-top: 0 !important;
+  padding-left: 0;
+}
+
+.pickup-point-body {
+  background: #f6f6f6;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+}
+
+.checkout-page .checkout-title h1, form#ErpShiptoAddressForm h1#delivery-header-text {
+  display: inline-block;
+  position: relative;
+  border-radius: 5px 5px 0 0;
+  padding: 12px 0;
+  overflow: hidden;
+  text-transform: capitalize;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: bold;
+  font-size: 17px;
+  color: #000;
+  background: none;
+}
+
+.title.delivery-date-title, .title.special-instructions-title, .title.quote-customer-reference-title {
+  border-bottom: 1px solid #121c23;
+  margin-bottom: 30px;
+  background: none;
+  color: #000;
+  padding-left: 0;
+  width: 100%;
+  text-align: left;
+}
+
+  .title.delivery-date-title strong, .title.special-instructions-title strong, .title.quote-customer-reference-title strong {
+    background: none;
+    color: #000;
+    padding-left: 0;
+    font-weight: bold;
+  }
+
+form#ErpShiptoAddressForm, .payment-method form, .payment-info form {
+  flex: 1;
+  text-align: left;
+  display: flex;
+}
+
+div#checkoutShippingTabs, ul#payment-method-block, .payment-info .info {
+  flex: 1;
+}
+
+form#ErpShiptoAddressForm .section {
+  position: relative;
+  margin: 0 0 18px 20px;
+}
+
+form#ErpShiptoAddressForm .tab-links {
+  padding: 10px;
+  background: #f6f6f6;
+  margin-bottom: 20px;
+}
+
+form#ErpShiptoAddressForm h1#delivery-header-text {
+}
+
+form#ErpShiptoAddressForm .select-shipping-address .title {
+  display: none;
+}
+
+form#ErpShiptoAddressForm .select-shipping-address .shipping-address-body {
+  text-align: left !important;
+}
+
+form#ErpShiptoAddressForm .select-shipping-address label#shipping-address-select {
+  padding: 10px;
+  background: #f6f6f6;
+  margin-bottom: 10px;
+  width: 100%;
+  display: inline-block;
+}
+
+form#ErpShiptoAddressForm .select-shipping-address button.edit-ship-to {
+  padding: 10px;
+  padding-inline: 20px;
+}
+
+form#ErpShiptoAddressForm div#select-delivery-date {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+  form#ErpShiptoAddressForm div#select-delivery-date .delivery-date-body {
+    width: 100%;
+  }
+
+form#ErpShiptoAddressForm div#deliveryDateDropdown {
+  width: 100%;
+  background: #f6f6f6;
+  text-align: left;
+  margin-left: 0;
+  padding: 2px;
+}
+
+  form#ErpShiptoAddressForm div#deliveryDateDropdown label {
+    margin: 0;
+    text-align: left;
+    margin-left: 10px;
+  }
+
+  form#ErpShiptoAddressForm div#deliveryDateDropdown select#DeliveryDateString {
+    border: none;
+    background: #f6f6f6;
+    width: auto;
+  }
+
+form#ErpShiptoAddressForm .section.special-instructions {
+  display: flex;
+  flex-direction: column;
+  align-items: self-start;
+}
+
+form#ErpShiptoAddressForm .special-instructions-body {
+  width: 100%;
+}
+
+form#ErpShiptoAddressForm textarea#SpecialInstructions {
+  width: 100%;
+}
+
+form#ErpShiptoAddressForm div#specialInstructionsTextarea {
+  margin-inline: 0;
+}
+
+form#ErpShiptoAddressForm .section.quote-customer-reference {
+  display: flex;
+  flex-direction: column;
+  align-items: self-start;
+}
+
+form#ErpShiptoAddressForm .quote-customer-reference-body {
+  width: 100%;
+}
+
+input#CustomerReference {
+  width: 1140px;
+}
+
+form#ErpShiptoAddressForm text#CustomerReference {
+  width: 100%;
+}
+
+form#ErpShiptoAddressForm div#customerReferenceText {
+  margin-inline: 0;
+}
+
+form#ErpShiptoAddressForm .modal-content {
+  max-width: 50%;
+  border-radius: 10px;
+}
+
+  form#ErpShiptoAddressForm .modal-content .edit-address {
+    border: none;
+  }
+
+.checkout-page .checkout-data .order-summary-content .table-wrapper {
+  display: none;
+}
+
+.checkout-page .checkout-data .order-summary .title {
+  display: none;
+}
+
+.checkout-page .order-summary {
+  margin-top: 0;
+}
+
+.checkout-page .order-summary-content {
+  margin-top: 0;
+}
+
+.order-summary-content .cart-footer .totals .title {
+  display: block;
+  font-size: 25px;
+  color: #000;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.checkout-page .checkout-data .section.payment-method {
+  flex: 1;
+}
+
+.checkout-page .checkout-data .section.payment-info {
+  flex: 1;
+}
+
+.checkout-page .checkout-data .section.payment-method .method-list {
+  margin: 0 0 30px;
+}
+
+.checkout-page .checkout-data .section.payment-info .info {
+  margin: 0 0 30px;
+  padding: 10px;
+}
+
+.order-completed-page .page-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.order-completed-page .order-details-area {
+  display: flex;
+  justify-content: space-around;
+  margin-inline: 0;
+}
+
+  .order-completed-page .order-details-area ul.info-list {
+    text-align: left;
+    padding-left: 0;
+    padding-top: 0;
+  }
+
+.order-completed-page .order-details-products {
+  display: flex;
+  gap: 30px;
+}
+
+  .order-completed-page .order-details-products .section.products {
+    flex: 1;
+  }
+
+    .order-completed-page .order-details-products .section.products .table-wrapper {
+      width: 100% !important;
+    }
+
+  .order-completed-page .order-details-products button.button-1.re-order-button {
+    margin-top: 20px;
+  }
+
+.checkout-buttons.hide-checkout-btn {
+  display: flex;
+  gap: 20px;
+}
+
+  .checkout-buttons.hide-checkout-btn .checkout-button {
+    min-width: auto;
+    width: 47%;
+  }
+
+.modal-content h1.product-name {
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 10px;
+  font-size: 16px;
+}
+
+.payment-method-page .method-name img {
+  max-width: 100%;
+  width: 55px;
+}
+
+.payment-method-page .method-name .payment-description {
+  margin-top: 6px;
+}
+
+.payment-info-page .info-block {
+  border: none;
+  padding: 0;
+  margin: 0;
+  background-color: #fff;
+  box-shadow: none;
+}
+
+  .payment-info-page .info-block h2 {
+    padding-bottom: 5px;
+  }
+
+.order-completed .title {
+  display: flex;
+  gap: 6px;
+}
+
+button#shippingaddress-next-button, button.button-1.payment-method-next-step-button, button.button-1.payment-info-next-step-button {
+  margin-top: 20px;
+}
+
+.order-details-page .actions {
+  text-align: center !important;
+}
+
+.header-upper .ddl-erp-account-options {
+  display: none;
+}
+
+.header-links-wrapper.lower {
+  display: flex;
+  gap: 10px;
+}
+
+@media(min-width: 1025px) {
+  .checkout-page .cart-footer, .shopping-cart-page .cart-footer {
+    width: 360px;
+  }
+
+  .checkout-page .table-wrapper,
+  .shopping-cart-page .table-wrapper {
+    width: calc(100% - 400px);
+  }
+
+  .checkout-page .cart-footer .totals,
+  .shopping-cart-page .cart-footer .totals {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .checkout-page .cart .unit-price,
+  .shopping-cart-page .cart .unit-price {
+    white-space: initial;
+  }
+
+  .checkout-page .cart th.unit-price,
+  .shopping-cart-page .cart th.unit-price {
+    white-space: nowrap;
+  }
+
+  .shopping-cart-page .common-buttons button,
+  .shopping-cart-page .common-buttons a {
+    margin: 0 15px 0 0;
+  }
+}
+
+@media(max-width: 1400px) {
+  .header-logo {
+    max-width: 320px;
+    margin: 0;
+  }
+
+    .header-logo a img {
+      max-width: 70%;
+      float: left;
+    }
+}
+
+@media(max-width: 767px) {
+  .checkout-page .checkout-data {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+  }
+
+  form#ErpShiptoAddressForm .modal-content {
+    max-width: 70%;
+    border-radius: 10px;
+  }
+
+  .order-completed-page .order-details-area {
+    flex-direction: column;
+  }
+
+  .order-completed-page .order-details-products {
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .order-completed .title {
+    border: none;
+  }
+
+  .order-completed-page .section {
+    margin-bottom: 0;
+  }
+
+  .order-completed-page .data-table td {
+    padding-inline: 2px;
+  }
+
+  .order-progress {
+    margin-left: unset !important;
+  }
+
+    .order-progress ul {
+      font-size: 0;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+  form#ErpShiptoAddressForm, .payment-method form, .payment-info form {
+    flex: 1;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+  }
+
+  button#shippingaddress-next-button, button.button-1.payment-method-next-step-button, button.button-1.payment-info-next-step-button {
+    margin-left: 10px;
+  }
+
+  .header-lower .center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .header-links-wrapper.lower {
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+    width: 100%;
+    background: #adadad;
+    align-items: center;
+    padding: 12px;
+  }
+
+    .header-links-wrapper.lower .header-links ul {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+      .header-links-wrapper.lower .header-links ul li:first-child {
+        margin: 0;
+      }
+
+        .header-links-wrapper.lower .header-links ul li:first-child a {
+          width: 75px;
+          height: auto;
+        }
+
+      .header-links-wrapper.lower .header-links ul li:nth-child(2) {
+        margin-right: 0;
+      }
+
+        .header-links-wrapper.lower .header-links ul li:nth-child(2) a {
+          width: 54px;
+          height: auto;
+        }
+
+      .header-links-wrapper.lower .header-links ul li a {
+        color: #000;
+      }
+
+  .header-logo a img {
+    max-width: 50%;
+    float: unset;
+  }
+}
+
+.account-info-page .inputs label {
+  display: contents;
+  width: 170px;
+  margin: 0 10px 0 -180px;
+  text-align: right;
+}
+
+@media(max-width: 500px) {
+  .checkout-page .checkout-data {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+  }
+
+  form#ErpShiptoAddressForm .modal-content {
+    max-width: 90%;
+    border-radius: 10px;
+  }
+}
+
+.cart-collaterals {
+  margin: 0 auto 0 !important;
+}

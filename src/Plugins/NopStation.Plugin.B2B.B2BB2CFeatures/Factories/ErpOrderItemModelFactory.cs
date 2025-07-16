@@ -24,14 +24,13 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
         private readonly ILocalizationService _localizationService;
         private readonly B2BB2CFeaturesSettings _b2BB2CFeaturesSettings;
         private readonly IPriceFormatter _priceFormatter;
+        private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
         private readonly IErpAccountService _erpAccountService;
         private readonly IOrderService _orderService;
         private readonly IErpOrderItemAdditionalDataService _erpOrderItemAdditionalDataService;
         private readonly IErpOrderAdditionalDataService _erpOrderAdditionalDataService;
         private readonly IMeasureService _measureService;
         private readonly MeasureSettings _measureSettings;
-        private readonly IWorkContext _workContext;
-
 
         public ErpOrderItemModelFactory(
             IOrderService orderService,
@@ -42,9 +41,8 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
             ILocalizationService localizationService,
             B2BB2CFeaturesSettings b2BB2CFeaturesSettings,
             IPriceFormatter priceFormatter,
-            IErpAccountService erpAccountService,
-            IWorkContext workContext
-            )
+            IB2BB2CWorkContext b2BB2CWorkContext,
+            IErpAccountService erpAccountService)
         {
             _orderService = orderService;
             _erpOrderItemAdditionalDataService = erpOrderItemAdditionalDataService;
@@ -54,13 +52,13 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
             _localizationService = localizationService;
             _b2BB2CFeaturesSettings = b2BB2CFeaturesSettings;
             _priceFormatter = priceFormatter;
+            _b2BB2CWorkContext = b2BB2CWorkContext;
             _erpAccountService = erpAccountService;
-            _workContext = workContext;
         }
 
         public async Task<ErpOrderDetailsModel> PrepareB2BOrderItemDataModelListModelAsync(int nopOrderId, List<string> itemIds)
         {
-            var currentCustomer = await _workContext.GetCurrentCustomerAsync();
+            var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
             var b2BOrderDetailsModel = new ErpOrderDetailsModel();
             var b2BAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(currentCustomer.Id);
             var erpOrder = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByNopOrderIdAsync(nopOrderId);
@@ -168,7 +166,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories
         public async Task<ErpCheckoutCompletedModel> PrepareB2BCheckoutCompletedModelAsync(int nopOrderId)
         {
             var b2BCheckoutCompleted = new ErpCheckoutCompletedModel();
-            var currentCustomer = await _workContext.GetCurrentCustomerAsync();
+            var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
             var b2BOrderDetailsModel = new ErpOrderDetailsModel();
             var b2BAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(currentCustomer.Id);
             var erpOrder = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByNopOrderIdAsync(nopOrderId);

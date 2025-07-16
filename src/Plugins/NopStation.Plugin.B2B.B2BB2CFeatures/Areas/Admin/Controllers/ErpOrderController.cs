@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Nop.Core;
 using Nop.Services.Localization;
 using Nop.Services.Messages;
 using Nop.Services.Security;
@@ -27,7 +27,7 @@ public class ErpOrderController : NopStationAdminController
     private readonly IOverriddenOrderProcessingService _overriddenOrderProcessingService;
     private readonly B2BB2CFeaturesSettings _b2BB2CFeaturesSettings;
     private readonly IErpLogsService _erpLogsService;
-    private readonly IWorkContext _workContext;
+    private readonly IB2BB2CWorkContext _b2BB2CWorkContext;
     private readonly IErpActivityLogsService _erpActivityLogsService;
 
     #endregion
@@ -43,7 +43,7 @@ public class ErpOrderController : NopStationAdminController
         IOverriddenOrderProcessingService overriddenOrderProcessingService,
         B2BB2CFeaturesSettings b2BB2CFeaturesSettings,
         IErpLogsService erpLogsService,
-        IWorkContext workContext,
+        IB2BB2CWorkContext b2BB2CWorkContext,
         IErpActivityLogsService erpActivityLogsService)
     {
         _localizationService = localizationService;
@@ -54,8 +54,8 @@ public class ErpOrderController : NopStationAdminController
         _overriddenOrderProcessingService = overriddenOrderProcessingService;
         _b2BB2CFeaturesSettings = b2BB2CFeaturesSettings;
         _erpLogsService = erpLogsService;
+        _b2BB2CWorkContext = b2BB2CWorkContext;
         _erpActivityLogsService = erpActivityLogsService;
-        _workContext = workContext;
     }
 
     #endregion
@@ -106,11 +106,14 @@ public class ErpOrderController : NopStationAdminController
         if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.AccessAdminPanel))
             return await AccessDeniedDataTablesJson();
 
-        var erpOrder = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(model?.Id ?? 0);
+        if (model == null)
+            return RedirectToAction("List");
+
+        var erpOrder = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(model.Id);
         if (erpOrder == null)
             return RedirectToAction("List");
 
-        var currentCustomer = await _workContext.GetCurrentCustomerAsync();
+        var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
         if (erpOrder.IntegrationStatusType == IntegrationStatusType.Confirmed)
         {
             var msg = await _localizationService.GetResourceAsync("NopStation.Plugin.NopStation.B2BB2CFeatures.Order.AlreadyConfirmed");
@@ -120,15 +123,14 @@ public class ErpOrderController : NopStationAdminController
 
             return RedirectToAction("Edit", new { id = model.Id });
         }
-        var isPlaced = false;
+        var isOrderPlaced = false;
         var errorMsg = "Type of order not found!";
 
-        if (erpOrder.ErpOrderType == ErpOrderType.B2BSalesOrder || erpOrder.ErpOrderType == ErpOrderType.B2BQuote)
-            (isPlaced, errorMsg) = await _overriddenOrderProcessingService.RetryPlaceErpOrderAtErpAsync(erpOrder, _b2BB2CFeaturesSettings);
-        else if (erpOrder.ErpOrderType == ErpOrderType.B2CSalesOrder || erpOrder.ErpOrderType == ErpOrderType.B2CQuote)
-            (isPlaced, errorMsg) = await _overriddenOrderProcessingService.RetryPlaceErpOrderAtErpAsync(erpOrder, _b2BB2CFeaturesSettings);
+        if (erpOrder.ErpOrderType == ErpOrderType.B2BSalesOrder || erpOrder.ErpOrderType == ErpOrderType.B2BQuote || 
+            erpOrder.ErpOrderType == ErpOrderType.B2CSalesOrder || erpOrder.ErpOrderType == ErpOrderType.B2CQuote)
+            (isOrderPlaced, errorMsg) = await _overriddenOrderProcessingService.RetryPlaceErpOrderAtErpAsync(erpOrder);
 
-        if (!isPlaced)
+        if (!isOrderPlaced)
         {
             _notificationService.ErrorNotification(errorMsg);
 
@@ -151,6 +153,30 @@ public class ErpOrderController : NopStationAdminController
         return RedirectToAction("Edit", new { id = model.Id });
     }
 
+    [HttpPost]
+    public async Task<IActionResult> UpdateExpectedDeliveryDate(int id, DateTime expectedDeliveryDate)
+    {
+        try
+        {
+            var erpOrder = await _erpOrderAdditionalDataService.GetErpOrderAdditionalDataByIdAsync(id);
+
+            if (erpOrder == null)
+                return Json(new { success = false, message = "Erp Order not found!" });
+
+            erpOrder.DeliveryDate = expectedDeliveryDate;
+
+            await _erpOrderAdditionalDataService.UpdateErpOrderAdditionalDataAsync(erpOrder);
+            _notificationService.SuccessNotification(
+                await _localizationService.GetResourceAsync("NopStation.Plugin.NopStation.B2BB2CFeatures.Order.DeliveryDateUpdated"));
+
+            return Json(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, message = ex.Message });
+        }
+    }
+
     public async Task<IActionResult> ReProcess(int id)
     {
         if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.AccessAdminPanel))
@@ -160,7 +186,7 @@ public class ErpOrderController : NopStationAdminController
         if (erpOrder == null)
             return RedirectToAction("List");
 
-        var currentCustomer = await _workContext.GetCurrentCustomerAsync();
+        var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
         if (erpOrder.IntegrationStatusType == IntegrationStatusType.Confirmed)
         {
             var msg = await _localizationService.GetResourceAsync("NopStation.Plugin.NopStation.B2BB2CFeatures.Order.AlreadyConfirmed");
@@ -170,16 +196,22 @@ public class ErpOrderController : NopStationAdminController
 
             return RedirectToAction("List");
         }
+        else if (erpOrder.IntegrationStatusType == IntegrationStatusType.Cancelled)
+        {
+            var msg = await _localizationService.GetResourceAsync("NopStation.Plugin.B2B.B2BB2CFeatures.Order.AlreadyCancelled");
+            _notificationService.ErrorNotification(msg);
 
-        var isPlaced = false;
+            await _erpLogsService.ErrorAsync($"{msg}. Order Id: {erpOrder.Id}", ErpSyncLevel.Order, customer: currentCustomer);
+
+            return RedirectToAction("List");
+        }
+
+        var isOrderPlaced = false;
         var errorMsg = "Type of order not found!";
 
-        if (erpOrder.ErpOrderType == ErpOrderType.B2BSalesOrder || erpOrder.ErpOrderType == ErpOrderType.B2BQuote)
-            (isPlaced, errorMsg) = await _overriddenOrderProcessingService.RetryPlaceErpOrderAtErpAsync(erpOrder, _b2BB2CFeaturesSettings);
-        else if (erpOrder.ErpOrderType == ErpOrderType.B2CSalesOrder || erpOrder.ErpOrderType == ErpOrderType.B2CQuote)
-            (isPlaced, errorMsg) = await _overriddenOrderProcessingService.RetryPlaceErpOrderAtErpAsync(erpOrder, _b2BB2CFeaturesSettings);
+        (isOrderPlaced, errorMsg) = await _overriddenOrderProcessingService.RetryPlaceErpOrderAtErpAsync(erpOrder);
 
-        if (!isPlaced)
+        if (!isOrderPlaced || !string.IsNullOrWhiteSpace(errorMsg))
         {
             _notificationService.ErrorNotification(errorMsg);
 

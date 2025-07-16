@@ -12,12 +12,12 @@ using Nop.Services.Orders;
 using Nop.Web.Controllers;
 using Nop.Web.Framework.Mvc;
 using NopStation.Plugin.B2B.B2BB2CFeatures;
-using NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure;
+using NopStation.Plugin.B2B.ERPIntegrationCore.Model;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
 
 namespace Nop.Plugin.Payments.B2BCustomerAccount.Controllers;
 
-public class HandleLiveERPCallController : BasePublicController
+public class HandleLiveErpCallController : BasePublicController
 {
     #region Fields
 
@@ -36,7 +36,7 @@ public class HandleLiveERPCallController : BasePublicController
 
     #region Ctor
 
-    public HandleLiveERPCallController(IGenericAttributeService genericAttributeService,
+    public HandleLiveErpCallController(IGenericAttributeService genericAttributeService,
         IStoreContext storeContext,
         IWorkContext workContext,
         IShoppingCartService shoppingCartService,

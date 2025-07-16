@@ -1,0 +1,125 @@
+.attributes {
+    dt {
+        margin-bottom: 10px;
+
+        label {
+            display: inline;
+        }
+
+        .required {
+            color: var(--red);
+        }
+    }
+
+    dd {
+        margin-bottom: 15px;
+
+        .attribute-squares {
+            li {
+                display: inline-block;
+                position: relative;
+                margin-right: 15px;
+
+                .tooltip-container {
+                    display: none;
+                    position: absolute;
+                    left: 100%;
+                    bottom: 100%;
+                }
+
+                .attribute-square-container {
+
+                    &::after {
+                        content: attr(title);
+                        display: inline;
+                    }
+
+                    .attribute-square {
+                        display: inline-block;
+                        height: 16px;
+                        width: 16px;
+                        border-radius: 3px;
+                        margin-right: 5px;
+                        position: relative;
+                    }
+                }
+
+                &.selected-value {
+                    .attribute-square-container {
+                        .attribute-square {
+                            &::before {
+                                content: "\e984";
+                                font-family: 'icomoon' !important;
+                                display: inline;
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                transform: translate(-50%,-50%);
+                                color: var(--white);
+                                text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+                            }
+                        }
+                    }
+                }
+            }
+
+            &.image-squares {
+                li {
+                    .attribute-square-container {
+                        .attribute-square {
+                            height: 30px;
+                            width: 30px;
+                        }
+                    }
+
+                    &.selected-value {
+                        .attribute-square-container {
+                            .attribute-square {
+                                &::before {
+                                    font-size: 18px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .option-list {
+            margin-bottom: 20px;
+
+            li {
+                margin-right: 15px;
+                display: inline-block;
+
+                input[type="checkbox"],
+                input[type="radio"] {
+                    & ~ label {
+                        border: 1px solid var(--primary-grey);
+                        color: var(--primary-grey);
+                        border-radius: 3px;
+                        padding: 4px 15px;
+                        background: var(--white);
+                        cursor: pointer;
+
+                        &::before {
+                            display: none;
+                        }
+                    }
+
+                    &:checked {
+                        & ~ label {
+                            border-color: var(--primary-color);
+                            background-color: var(--primary-color);
+                            color: var(--white);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    select {
+        width: 100%;
+    }
+}

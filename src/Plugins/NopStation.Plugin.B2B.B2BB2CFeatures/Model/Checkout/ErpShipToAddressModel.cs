@@ -68,10 +68,10 @@ public record ErpShipToAddressModel : BaseNopEntityModel
     public string CountryCode { get; set; }
     public string CountryName { get; set; }
 
-    #endregion
-
     [NopResourceDisplayName("Plugin.Misc.NopStation.B2BB2CFeatures.ErpShipToAddressModel.Fields.ZipPostalCode")]
     public string PostalCode { get; set; }
+
+    #endregion
     public int IsSelected { get; set; }
     public bool IsCustomerOnDeliveryRoute { get; set; }
 }

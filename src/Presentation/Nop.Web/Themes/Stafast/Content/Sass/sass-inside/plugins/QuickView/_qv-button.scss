@@ -1,0 +1,10 @@
+﻿.quick-view-btn {
+    &::before {
+        content: "\e969";
+        font-size: 20px !important;
+    }
+
+    @media (max-width: $md - 1) {
+        display: none !important;
+    }
+}

@@ -1,0 +1,46 @@
+.html-account-page {
+    .customer-info-page {
+        .fieldset {
+            background: var(--white);
+            border-radius: 10px;
+
+            .title {
+                padding: 15px 10px;
+
+                strong {
+                    display: block;
+                    position: relative;
+                    width: 460px;
+                    max-width: 100%;
+                    margin: auto;
+                    color: var(--black);
+                }
+
+                &::after {
+                    content: none;
+                }
+            }
+
+            .inputs {
+                width: 460px;
+                max-width: 100%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+    }
+}
+
+.change-password-page {
+    .fieldset {
+        background: var(--white);
+        border-radius: 10px;
+
+        .inputs {
+            width: 460px;
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+}

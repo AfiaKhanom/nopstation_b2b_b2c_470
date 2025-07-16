@@ -1,22 +1,38 @@
 ﻿@model HeaderLinksModel
 @using Nop.Core
 @using Nop.Core.Domain.Customers
+@using Nop.Services.Security
 @using Nop.Services.Configuration
 @using NopStation.Plugin.B2B.ERPIntegrationCore
 @using NopStation.Plugin.B2B.B2BB2CFeatures
 @using NopStation.Plugin.B2B.B2BB2CFeatures.Contexts
-@inject Nop.Core.IStoreContext _storeContext
-@inject Nop.Core.IWebHelper webHelper
-@inject Nop.Services.Customers.ICustomerService customerService
-@inject Nop.Services.Configuration.ISettingService _settingService
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Services
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Infrastructure
+
+@inject IStoreContext _storeContext
+@inject IWebHelper webHelper
+@inject ICustomerService customerService
+@inject ISettingService _settingService
 @inject B2BB2CFeaturesSettings b2BB2CFeaturesSettings
-@inject IB2BB2CWorkContext b2BB2CWorkContext
+@inject IErpAccountService erpAccountService
+@inject IPermissionService permissionService
 
 @{
     var customer = await workContext.GetCurrentCustomerAsync();
-    var erpCustomer = await b2BB2CWorkContext.GetCurrentERPCustomerAsync();
-    var storeScope = await _storeContext.GetActiveStoreScopeConfigurationAsync();
-    var settings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);      
+    var erpAccount = await erpAccountService.GetActiveErpAccountByCustomerIdAsync(customer.Id);
+
+    var isAllowedToAccessOrderList = await permissionService.AuthorizeAsync(ErpPermissionProvider.DisplayB2BOrders);
+    var isAllowedToAccessQuoteList = await permissionService.AuthorizeAsync(ErpPermissionProvider.DisplayB2BQuotes);
+
+    var myAccountRouteUrl = "ErpAccountInfo";
+    if (isAllowedToAccessOrderList)
+    {
+        myAccountRouteUrl = "ErpAccountOrders";
+    }
+    else if (isAllowedToAccessQuoteList)
+    {
+        myAccountRouteUrl = "ErpQuoteOrderList";
+    }
 }
 
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderLinksBefore, additionalData = Model })
@@ -26,7 +42,7 @@
         {
             @if (await customerService.IsInCustomerRoleAsync(customer, ERPIntegrationCoreDefaults.B2BSalesRepRoleSystemName) == false)
             {
-                <li><a href="@Url.RouteUrl("CustomerInfo")" class="ico-account">@T("Account.MyAccount")@*@Model.CustomerName*@</a></li>
+                <li><a href="@Url.RouteUrl(myAccountRouteUrl)" class="ico-account">@T("Account.MyAccount")</a></li>
             }
             <li><a href="@Url.RouteUrl("Logout")" class="ico-logout">@T("Account.Logout")</a></li>
         }
@@ -39,11 +55,16 @@
             @if (Model.RegistrationType != UserRegistrationType.Disabled)
             {
                 @*<li><a href="@Url.RouteUrl("Register", new { returnUrl })" class="ico-register">@T("Account.Register")</a></li>*@
-
-                <li><a href="@Url.RouteUrl("ErpAccountCustomerRegistrationForm", new { returnUrl })" class="ico-register">@* @T("account.register.button") *@ Apply Registration</a></li>
-
+                @if (b2BB2CFeaturesSettings.IsErpAccountCustomerRegisterAllowed)
+                {
+                    <li>
+                        <a href="@Url.RouteUrl("ErpAccountCustomerRegistrationForm", new { returnUrl })" class="ico-register">
+                            @T("Plugin.Misc.NopStation.B2BB2CFeatures.Account.Register.Button.ApplyRegistration")
+                        </a>
+                    </li>
+                }
                 <li>
-                    @if (settings.IsB2BUserRegisterAllowed && settings.IsB2CUserRegisterAllowed)
+                    @if (b2BB2CFeaturesSettings.IsB2BUserRegisterAllowed && b2BB2CFeaturesSettings.IsB2CUserRegisterAllowed)
                     {
                         <a onclick="registerButtonClick()" data-toggle="modal" data-target="#registrationTypeDialog" class="ico-register">@T("account.register.button")</a>
                         <div id="registrationTypeDialog" class="registration-type-dialog" title='@T("NopStation.B2BB2CFeatures.Register.Notification.Title")' style="display: none;">
@@ -75,11 +96,11 @@
                             }
                         </script>
                     }
-                    else if (settings.IsB2BUserRegisterAllowed)
+                    else if (b2BB2CFeaturesSettings.IsB2BUserRegisterAllowed)
                     {
                         <a href="@Url.RouteUrl("B2BRegister")" class="ico-register">@T("Account.Register")</a>
                     }
-                    else if (settings.IsB2CUserRegisterAllowed)
+                    else if (b2BB2CFeaturesSettings.IsB2CUserRegisterAllowed)
                     {
                         <a href="@Url.RouteUrl("B2CRegister")" class="ico-register">@T("Account.Register")</a>
                     }
@@ -104,7 +125,7 @@
                     </a>
                 </li>
             }
-            @if (Model.WishlistEnabled)
+            @if (Model.IsAuthenticated && Model.WishlistEnabled)
             {
                 <li>
                     <a href="@Url.RouteUrl("Wishlist")" class="ico-wishlist">
@@ -123,9 +144,8 @@
                 </li>
             }
 
-            @if (Model.IsAuthenticated && b2BB2CFeaturesSettings.DisplayAddToQuickListFavouriteButton && erpCustomer.ErpAccount != null)
+            @if (Model.IsAuthenticated && b2BB2CFeaturesSettings.DisplayAddToQuickListFavouriteButton && erpAccount != null)
             {
-
                 <li id="">
                     <a href="@Url.RouteUrl("QuickOrder")" class="ico-cart">@T("Plugin.Misc.NopStation.B2BB2CFeatures.QuickOrder.QuickOrder")</a>
                 </li>

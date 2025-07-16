@@ -1,0 +1,17 @@
+.header-selectors-wrapper {
+    > div {
+        display: inline-block;
+        margin-right: 0;
+
+        @media (min-width: $xs) {
+            margin-right: 10px;
+        }
+
+        select {
+            border: none;
+            color: var(--primary-grey_dark);
+            box-shadow: none;
+            padding: 0 26px 0 0;
+        }
+    }
+}

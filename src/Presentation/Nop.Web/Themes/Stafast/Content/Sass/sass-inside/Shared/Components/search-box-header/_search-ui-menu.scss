@@ -1,0 +1,37 @@
+.store-search-box {
+    position: relative;
+
+    .ui-menu {
+        box-shadow: 0px 2px 5px 4px rgba(153, 153, 153, 0.1);
+        border-radius: 5px;
+        border: 0;
+
+        .ui-menu-item {
+
+            &:not(:last-child) {
+                border-bottom: 1px solid var(--primary-grey_light);
+            }
+
+            a {
+                display: flex;
+                position: relative;
+                padding: 15px 20px;
+                color: var(--black);
+                font-weight: 700;
+                font-size: 14px;
+                line-height: 18px;
+                align-items: center;
+
+                &.ui-state-active {
+                    background: var(--primary-grey_light);
+                    border: none;
+                    border-bottom: 1px solid var(--primary-grey_light);
+                }
+
+                img{
+                    padding-right:5px;
+                }
+            }
+        }
+    }
+}

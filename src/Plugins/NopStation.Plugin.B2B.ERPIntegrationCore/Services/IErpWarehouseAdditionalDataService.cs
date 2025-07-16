@@ -1,27 +1,32 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Nop.Core;
 using Nop.Core.Domain.Catalog;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
 
-namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
+namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services;
+
+public interface IErpWarehouseAdditionalDataService
 {
-    public interface IErpWarehouseAdditionalDataService
-    {
-        Task InsertErpWarehouseAdditionalDataAsync(ErpWarehouseAdditionalData erpWarehouseAdditionalData);
+    Task InsertErpWarehouseAdditionalDataAsync(ErpWarehouseAdditionalData erpWarehouseAdditionalData);
 
-        Task UpdateErpWarehouseAdditionalDataAsync(ErpWarehouseAdditionalData erpWarehouseAdditionalData);
+    Task UpdateErpWarehouseAdditionalDataAsync(ErpWarehouseAdditionalData erpWarehouseAdditionalData);
 
-        Task DeleteErpWarehouseAdditionalDataByIdAsync(int id);
+    Task DeleteErpWarehouseAdditionalDataByIdAsync(int id);
 
-        Task<ErpWarehouseAdditionalData> GetErpWarehouseAdditionalDataByIdAsync(int id);
+    Task<ErpWarehouseAdditionalData> GetErpWarehouseAdditionalDataByIdAsync(int id);
 
-        Task<ErpWarehouseAdditionalData> GetErpWarehouseAdditionalDataByIdWithActiveAsync(int id);
+    Task<ErpWarehouseSalesOrgMap> GetErpWarehouseAdditionalDataByCodeAsync(string code);
 
-        Task<IPagedList<ErpWarehouseAdditionalData>> GetAllErpWarehouseAdditionalDataAsync(int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, bool getOnlyTotalCount = false);
+    Task<ErpWarehouseAdditionalData> GetErpWarehouseAdditionalDataByIdWithActiveAsync(int id);
 
-        Task<ErpWarehouseAdditionalData> GetErpWarehouseAdditionalDataBySalesOrgIdAsync(int salesOrgId);
+    Task<IPagedList<ErpWarehouseAdditionalData>> GetAllErpWarehouseAdditionalDataAsync(int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, bool getOnlyTotalCount = false);
 
-        Task<ErpWarehouseSalesOrgMap> GetErpSalesOrgWarehouseForProductAsync(Product product, int erpSalesOrgId, int quantity);
-    }
+    Task<ErpWarehouseAdditionalData> GetErpWarehouseAdditionalDataBySalesOrgIdAsync(int salesOrgId);
+
+    Task<ErpWarehouseSalesOrgMap> GetErpSalesOrgWarehouseForProductAsync(Product product, int erpSalesOrgId, int quantity);
+
+    Task<List<ErpWarehouseSalesOrgMap>> GetSaleOrgWarehousebySalesOrgIdAsync(int salesOrgId);
+
+    Task<List<ErpWarehouseAdditionalData>> GetErpWarehouseAdditionalDataByIdsAsync(List<int> ids);
 }
-

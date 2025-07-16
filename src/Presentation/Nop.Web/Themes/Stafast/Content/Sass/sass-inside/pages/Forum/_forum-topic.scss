@@ -1,0 +1,167 @@
+﻿.forum-info {
+    margin-top: 15px;
+    margin-bottom: 15px;
+
+    forum-name {
+        margin-bottom: 5px;
+    }
+}
+
+.actions,
+.post-actions,
+.forum-actions {
+    margin-top: 15px;
+    margin-bottom: 15px;
+
+    .quote-post,
+    .edit-post-button,
+    .edit-topic-button,
+    .delete-post-button,
+    .delete-topic-button,
+    .move-topic-button,
+    .reply-topic-button,
+    .watch-topic-button,
+    .watch-forum,
+    .new-topic {
+        display: inline-block;
+        background: var(--secondary-color);
+        color: var(--primary-color);
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 3px;
+
+        &:hover {
+            color: var(--primary-color);
+        }
+    }
+}
+
+.forum-topic-page {
+    .topic-posts {
+        margin: 15px auto;
+        border: 1px solid var(--primary-grey_light);
+        box-shadow: -2px 10px 40px -10px rgba(0,0,0,.1);
+        border-radius: 3px;
+
+        .topic-post {
+            padding: 15px;
+            text-align: center;
+
+            @media(min-width: $sm) {
+                display: flex;
+                text-align: left;
+            }
+
+            &:not(:last-child) {
+                border-bottom: 1px solid var(--primary-grey_light);
+            }
+
+            .post-info {
+                @media(min-width: $sm) {
+                    min-width: 200px;
+                }
+
+                .user-info {
+                    font-size: 18px;
+                    color: var(--primary-color);
+                    padding: 10px;
+                    background: var(--secondary-color);
+                    border: 1px solid var(--secondary-color);
+                    font-weight: 700;
+                }
+
+                .user-stats {
+                    margin: 15px 0px;
+
+                    li {
+                        label {
+                            display: inline-block;
+                        }
+                    }
+                }
+            }
+
+            .post-content {
+                width: 100%;
+
+                .post-head {
+                    @media(min-width: $sm) {
+                        display: flex;
+                        justify-content: space-between;
+                        padding: 10px;
+                        background: var(--secondary-color);
+                        border: 1px solid var(--secondary-color);
+
+                        .post-time {
+                            display: flex;
+                        }
+
+                        .post-actions {
+                            display: flex;
+                            margin: 0;
+
+                            .quote-post,
+                            a {
+                                padding: 0px;
+                                margin: 0px 5px;
+                            }
+                        }
+                    }
+                }
+
+                .post-body {
+                    @media(min-width: $sm) {
+                        display: flex;
+                        justify-content: space-between;
+                    }
+
+                    .post-text {
+                        line-height: 18px;
+
+                        @media(min-width: $sm) {
+                            padding: 10px;
+                            width: 90%;
+                        }
+
+                        .quote {
+                            padding: 10px;
+                            background: var(--primary-grey_light);
+                            font-style: italic;
+                        }
+                    }
+                }
+
+                .post-vote {
+                    @media(min-width: $sm) {
+                        padding: 10px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                    }
+
+                    .vote {
+                        display: block;
+                        margin: 5px auto;
+
+                        &.up {
+                            border-left: 10px solid transparent;
+                            border-right: 10px solid transparent;
+                            border-bottom: 15px solid var(--primary-color);
+                            width: 20px;
+                        }
+
+                        &.down {
+                            border-left: 10px solid transparent;
+                            border-right: 10px solid transparent;
+                            border-top: 15px solid var(--primary-color);
+                            width: 20px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

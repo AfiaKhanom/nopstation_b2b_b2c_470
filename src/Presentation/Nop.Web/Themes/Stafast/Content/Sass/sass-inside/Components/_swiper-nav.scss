@@ -1,0 +1,77 @@
+.carousel-grid,
+.product-tab,
+.deals-products,
+.blog-news-area #blog-list,
+.blog-news-area #news-list {
+    .swiper-button-next,
+    .swiper-button-prev {
+        border-radius: 100px;
+        border: 1px solid var(--primary-color);
+        background: var(--primary-color);
+        color: var(--white);
+        height: 22px;
+        width: 22px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all .3s ease;
+
+        &.swiper-button-disabled {
+            display: none;
+        }
+    }
+
+    .swiper-button-next {
+        transform: translateX(15px);
+
+        @media(max-width: $sm - 1) {
+            transform: translateX(8px);
+        }
+    }
+
+    .swiper-button-prev {
+        transform: translateX(-15px);
+
+        @media(max-width: $sm - 1) {
+            border: none;
+            background: var(--primary-grey_dark);
+            color: var(--white);
+            transform: translateX(-8px);
+        }
+    }
+
+    .swiper-button-prev::after {
+        content: "\ea05";
+        font-family: "icomoon";
+    }
+
+    .swiper-button-next::after {
+        content: "\ea07";
+        font-family: "icomoon";
+    }
+
+    .swiper-button-next::after,
+    .swiper-button-prev::after {
+        font-size: 20px;
+    }
+
+    .swiper-button-next:hover,
+    .swiper-button-prev:hover {
+        background: var(--primary-color);
+        color: var(--white);
+        border: 1px solid var(--primary-color);
+    }
+
+    @media (min-width: $md) {
+        .swiper-button-next,
+        .swiper-button-prev {
+            height: 30px;
+            width: 30px;
+        }
+
+        .swiper-button-next::after,
+        .swiper-button-prev::after {
+            font-size: 20px;
+        }
+    }
+}

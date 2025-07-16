@@ -1,0 +1,43 @@
+@import "../mixins/layout_width_responsive";
+
+html,
+body{
+    overflow-x: hidden;
+}
+
+.collumn-one-page:not(.html-home-page) {
+    .master-wrapper-content {
+        .page-body {
+            @include layout_width_responsive;
+        }
+    }
+}
+.collumn-two-page {
+    .master-wrapper-content {
+        @include layout_width_responsive;
+    }
+}
+
+.eu-cookie-bar-notification .content,
+.newsletter,
+.footer-lower,
+.footer-upper,
+.slider-ad-3,
+.carousel-grid:not(.bg-class),
+.bg-class .carousel-grid-container,
+.product-tabs-container,
+.container,
+.category-grid.home-page-category-grid {
+    @include layout_width_responsive;
+}
+
+.html-active-discussions-page,
+.html-forum-topic-page,
+.html-forum-page,
+.html-forum-group-page,
+.html-forums-main-page {
+    .page {
+        @include layout_width_responsive;
+    }
+} 
+

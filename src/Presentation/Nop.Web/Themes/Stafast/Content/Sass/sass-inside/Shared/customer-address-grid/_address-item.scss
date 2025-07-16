@@ -1,0 +1,84 @@
+.address-grid {
+    display: flex;
+    flex-wrap: wrap;
+
+    margin: 15px 0;
+    @media (min-width: $md) {
+        margin: 15px -7.5px;
+    }
+}
+
+.address-item {
+    width: 350px;
+    max-width: 100%;
+    margin: 0 0 40px;
+    position: relative;
+
+    ul {
+        color: var(--black);
+        box-shadow: 1px 1px 2px rgba(0,0,0,.1);
+        margin: 0 0 15px;
+        padding: 20px;
+
+        li {
+            margin-bottom: 7.5px;
+
+            label {
+                margin-bottom: 0;
+                font-weight: 600;
+                display: inline-block;
+            }
+        }
+    }
+
+    @media (min-width: $xs) {
+        display: inline-block;
+        vertical-align: top;
+        zoom: 1;
+        width: 49%;
+        margin: 0 3px 40px;
+        padding: 7.5px 0 0;
+    }
+
+    @media (min-width: $xl) {
+        width: 32.5%;
+    }
+
+    .address-list-page {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+
+        @media (min-width: $md) {
+            right: 25px;
+        }
+
+        button {
+            border: 0;
+            background: none;
+            margin-left: 10px;
+            color: var(--primary-color);
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0;
+
+            &:hover {
+                color: var(--primary-color);
+            }
+
+            &::before {
+                @include icon-font-style;
+                display: inline;
+                margin-right: 4px;
+            }
+
+            &.edit-address-button::before {
+                content: "\e937";
+            }
+
+            &.delete-address-button::before {
+                content: "\e933";
+            }
+        }
+    }
+}

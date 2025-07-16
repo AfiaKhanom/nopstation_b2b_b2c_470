@@ -1,0 +1,55 @@
+.footer-lower-bg {
+
+    .footer-lower {
+        padding-top: 5px;
+        padding-bottom: 5px;
+
+        @media(max-width: $sm - 1) {
+            margin-bottom: 35px;
+
+            .theme-selector {
+                margin-bottom: 10px;
+            }
+        }
+
+        @media(min-width: $sm) {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 20px;
+            padding-bottom: 43px;
+        }
+
+        @media(min-width: $md) {
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+
+        .footer-disclaimer {
+            font-weight: 400;
+            font-size: 13px;
+            line-height: 16px;
+            color: var(--black);
+            margin: 10px 0px;
+        }
+
+        .footer-powered-by {
+            font-weight: 600;
+            font-size: 13px;
+            line-height: 16px;
+            color: var(--black);
+            margin: 10px 0px;
+            display: flex;
+            align-items: flex-start;
+            gap: 3px;
+            flex-wrap: wrap;
+
+            a {
+                color: #0088cc;
+            }
+
+            @media(min-width: $sm) {
+                margin: 0;
+            }
+        }
+    }
+}

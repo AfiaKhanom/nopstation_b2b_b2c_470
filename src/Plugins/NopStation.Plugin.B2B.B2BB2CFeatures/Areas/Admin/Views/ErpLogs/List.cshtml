@@ -1,0 +1,247 @@
+﻿@using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models.ErpLogs
+@model ErpLogsSearchModel
+
+@{
+    Layout = "_AdminLayout";
+
+    //title
+    NopHtml.AddTitleParts(T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Title").Text);
+    ViewBag.PageTitle = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Title").Text;
+
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("NopStation.B2BB2CFeatures.ErpLogs");
+}
+
+@{
+    var customer = await workContext.GetCurrentCustomerAsync();
+
+    const string hideSearchBlockAttributeName = "ErpLogsListPage.HideSearchBlock";
+    var hideSearchBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideSearchBlockAttributeName);
+
+    const string hideErpLogsBlockAttributeName = "ErpLogsListPage.hideErpLogsBlock";
+    var hideErpLogsBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideErpLogsBlockAttributeName);
+}
+
+<form asp-controller="ErpLogs" asp-action="List" method="post">
+
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.PageHeader")
+        </h1>
+        <div class="float-right">
+            <button type="button" id="delete-selected" name="delete-selected" class="btn btn-danger">
+                <i class="far fa-trash-alt"></i>
+                @T("Admin.System.Log.DeleteSelected")
+            </button>
+            <nop-action-confirmation asp-button-id="delete-selected" />
+            <button type="submit" id="clearall" name="clearall" class="btn btn-danger">
+                <i class="far fa-trash-alt"></i>
+                @T("Admin.System.Log.ClearLog")
+            </button>
+            <nop-action-confirmation asp-button-id="clearall" asp-action="ClearAll" />
+            @await Component.InvokeAsync(typeof(AdminWidgetViewComponent), new { widgetZone = AdminWidgetZones.LogListButtons, additionalData = Model })
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="cards-group">
+                <div class="card card-default card-search form-horizontal">
+                    <div class="card-body">
+                        <div class="row search-row @(!hideSearchBlock ? "opened" : "")" data-hideAttribute="@hideSearchBlockAttributeName">
+                            <div class="search-text">@T("Admin.Common.Search")</div>
+                            <div class="icon-search"><i class="fa fa-search" aria-hidden="true"></i></div>
+                            <div class="icon-collapse"><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+                        </div>
+                        <div class="search-body @(hideSearchBlock ? "closed" : "")">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <nop-label asp-for="ErpSyncLabelId" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <nop-select asp-for="ErpSyncLabelId" asp-items="Model.AvailableErpSyncLabel" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <nop-label asp-for="ErpLogLevelId" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <nop-select asp-for="ErpLogLevelId" asp-items="Model.AvailableLogType" />
+                                        </div>
+                                    </div> 
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <nop-label asp-for="ShortMessage" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <nop-editor asp-for="ShortMessage" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <nop-label asp-for="NopCustomerEmail" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <nop-editor asp-for="NopCustomerEmail" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <nop-label asp-for="CreatedFrom" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <nop-editor asp-for="CreatedFrom" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <nop-label asp-for="CreatedTo" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <nop-editor asp-for="CreatedTo" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="text-center col-md-12">
+                                    <button type="button" id="search-erplogs" class="btn btn-primary btn-search">
+                                        <i class="fas fa-search"></i>
+                                        @T("Admin.Common.Search")
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <nop-card asp-name="ErpActivityLog" asp-icon="fas fa-users" asp-title="@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Card.ErpLogs")" asp-hide-block-attribute-name="@hideErpLogsBlockAttributeName" asp-hide="@hideErpLogsBlock" asp-advanced="true">
+                    <div class="card-body">
+                        <div class="card card-default">
+                            <div class="card-body">
+                                @await Html.PartialAsync("Table", new DataTablesModel
+                                {
+                                    Name = "erplog-grid",
+                                    UrlRead = new DataUrl("ErpLogsList", "ErpLogs", null),
+                                    UrlDelete = new DataUrl("DeleteFromList", "ErpLogs", null),
+                                    Length = Model.PageSize,
+                                    LengthMenu = Model.AvailablePageSizes,
+                                    SearchButtonId = "search-erplogs",
+                                    Filters = new List<FilterParameter>
+                                    {
+                                        new FilterParameter(nameof(Model.ErpSyncLabelId), typeof(string)),
+                                        new FilterParameter(nameof(Model.ErpLogLevelId), typeof(string)),
+                                        new FilterParameter(nameof(Model.CreatedTo), typeof(string)),
+                                        new FilterParameter(nameof(Model.IpAddress), typeof(string)),
+                                        new FilterParameter(nameof(Model.NopCustomerEmail), typeof(string)),
+                                        new FilterParameter(nameof(Model.CreatedFrom), typeof(string)),
+                                        new FilterParameter(nameof(Model.ShortMessage), typeof(string))
+                                    },
+                                    ColumnCollection = new List<ColumnProperty>
+                                    {
+                                        new ColumnProperty(nameof(ErpLogsModel.Id))
+                                        {
+                                            IsMasterCheckBox = true,
+                                            Render = new RenderCheckBox("checkbox_log"),
+                                            ClassName =  NopColumnClassDefaults.CenterAll,
+                                            Width = "50"
+                                        },
+                                        new ColumnProperty(nameof(ErpLogsModel.ErpLogLevel))
+                                        {
+                                            Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.ErpLogLevel").Text,
+                                            Width = "150"
+                                        },
+                                        new ColumnProperty(nameof(ErpLogsModel.ErpSyncLevel))
+                                        {
+                                            Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.ErpSyncLevel").Text,
+                                            Width = "150"
+                                        },
+                                        new ColumnProperty(nameof(ErpLogsModel.ChangedByCustomerEmail))
+                                        {
+                                            Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.CustomerEmail").Text,
+                                            Width = "150" 
+                                        },
+                                        new ColumnProperty(nameof(ErpLogsModel.ShortMessage))
+                                        {
+                                            Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.ShortMessage").Text,
+                                        },
+                                        new ColumnProperty(nameof(ErpLogsModel.CreatedOnUtc))
+                                        {
+                                            Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpLogs.Field.CreatedOnUtc").Text,
+                                            Width = "150",
+                                            Render = new RenderDate()
+                                        },
+                                        new ColumnProperty(nameof(ErpLogsModel.Id))
+                                        {
+                                            Title = T("Admin.Common.View").Text,
+                                            Width = "100",
+                                            ClassName =  NopColumnClassDefaults.Button,
+                                            Render = new RenderButtonView(new DataUrl("View"))
+                                        },
+                                        new ColumnProperty(nameof(ErpLogsModel.Id))
+                                        {
+                                            Title = T("Admin.Common.Delete").Text,
+                                            Width = "100",
+                                            ClassName = NopColumnClassDefaults.Button,
+                                            Render = new RenderButtonRemove(T("Admin.Common.Delete").Text)
+                                        }
+                                    }
+                                })
+                                <script>
+                                    $(document).ready(function () {
+                                        //"delete selected" button
+                                        $("#delete-selected-action-confirmation-submit-button").bind("click", function () {
+                                            var postData = {
+                                                selectedIds: selectedIds
+                                            };
+                                            addAntiForgeryToken(postData);
+                                            $.ajax({
+                                                cache: false,
+                                                type: "POST",
+                                                url: "@(Url.Action("DeleteSelected", "ErpLogs"))",
+                                                data: postData,
+                                                traditional: true,
+                                                error: function (jqXHR, textStatus, errorThrown) {
+                                                    showAlert('deleteSelectedFailed', errorThrown);
+                                                },
+                                                complete: function (jqXHR, textStatus) {
+                                                    if (jqXHR.status === 204) {
+                                                        showAlert('nothingSelectedAlert', '@T("Admin.Common.Alert.NothingSelected")');
+                                                        return;
+                                                    }
+                                                    updateTable('#erplog-grid');
+                                                }
+                                            });
+                                            $('#delete-selected-action-confirmation').modal('toggle');
+                                            return false;
+                                        });
+                                    });
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </nop-card>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    function formatText(data, type, row, meta) {
+        if (data != null)
+            return data.replace(/\\n/g, '<br>');
+    }
+</script>
+
+<nop-alert asp-alert-id="deleteSelectedFailed" />
+<nop-alert asp-alert-id="nothingSelectedAlert" />
+
+<style>
+    .button-column {
+        text-align: center !important;
+    }
+</style>

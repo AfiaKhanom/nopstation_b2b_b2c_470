@@ -1,0 +1,17 @@
+.link-rss {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0 !important;
+
+    &::before {
+        content: "";
+        background-image: url(../images/rss.svg);
+        display: block;
+        height: 15px;
+        width: 15px;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+}

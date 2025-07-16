@@ -1,0 +1,110 @@
+@import "../../mixins/_buttons.scss";
+
+.login-page {
+    .message-error {
+        display: block;
+        text-align: left;
+        font-size: 13px;
+        color: var(--red);
+    }
+
+    .fieldset {
+        .title {
+            padding-top: 20px;
+            padding-bottom: 20px;
+            text-align: center;
+
+            strong {
+                text-transform: capitalize;
+            }
+        }
+
+        border-radius:5px;
+    }
+
+    .returning-wrapper {
+        .reversed {
+            display: flex;
+            justify-content: space-between;
+            margin: 18px 5px 0px;
+
+            label {
+                line-height: 1;
+            }
+
+            .forgot-password {
+                a {
+                    color: var(--black);
+                }
+            }
+
+            &::after {
+                content: none;
+            }
+        }
+
+        .buttons {
+            padding: 0px 10px;
+            margin-top: 0px;
+
+            .login-button {
+                width: 100%;
+            }
+        }
+    }
+
+    .new-wrapper {
+        .text {
+            padding: 15px 10px;
+            font-weight: 600;
+            font-size: 13px;
+            line-height: 16px;
+            color: var(--black);
+
+            .topic-block {
+                margin: 0;
+            }
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+            margin-top: 0;
+
+            .checkout-as-guest-button {
+                display: block;
+                width: 49%;
+                margin: 0px 0px 10px;
+                @include buttons( $background: var(--primary-grey_dark), $color: var(--white), $hover-background: var(--primary-color), $hover-color: var(--white), $hover-border-color: var(--primary-color) );
+            }
+
+            .register-button {
+                display: block;
+                width: 100%;
+                margin: 0px 0px 10px;
+            }
+
+            .checkout-as-guest-button ~ .register-button {
+                width: 49%;
+            }
+        }
+    }
+
+    .topic-block {
+        .topic-block-title {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        color: var(--black);
+        margin: 20px auto 30px;
+        max-width: 460px;
+
+        .topic-block-body {
+            padding: 15px;
+            background: var(--white);
+            border-radius: 5px;
+        }
+    }
+}

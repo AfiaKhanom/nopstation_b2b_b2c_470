@@ -1,20 +1,21 @@
 @model ShoppingCartModel
 
-@using Nop.Core
-@using Nop.Core.Domain.Catalog
-@using Nop.Core.Domain.Orders
-@using Nop.Core.Domain.Tax
 @using Microsoft.AspNetCore.Mvc.ViewComponents
+@using Nop.Core
+@using Nop.Core.Domain.Tax
+@using Nop.Core.Domain.Media
+@using Nop.Core.Domain.Orders
+@using Nop.Core.Domain.Catalog
+@using Nop.Services.Orders
+@using Nop.Services.Security
 @using NopStation.Plugin.B2B.B2BB2CFeatures
 @using NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure
 @using NopStation.Plugin.B2B.B2BB2CFeatures.Services.Customers
-@using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality;
-@using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpPriceSyncFunctionality;
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpPriceSyncFunctionality
 @using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
-@using Nop.Services.Security;
-@using NopStation.Plugin.B2B.ERPIntegrationCore.Infrastructure;
-@using Nop.Core.Domain.Media
-@using Nop.Services.Orders
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Infrastructure
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Enums
 
 @inject IWebHelper webHelper
 @inject IWorkContext workContext
@@ -50,9 +51,9 @@
         isConvertedQuoteToOrder = await erpCustomerFunctionalityService.CheckAndUpdateGenericAttributeOfB2CQuoteOrder(b2COrderId, shoppingCartItems);
     }
     var erpNopUser = await erpCustomerFunctionalityService.GetActiveErpNopUserByCustomerAsync(currCustomer);
-    var isB2BCustomer = erpNopUser != null ? erpNopUser.ErpUserType == NopStation.Plugin.B2B.ERPIntegrationCore.Enums.ErpUserType.B2BUser : false;
-   
-    var isAllowedToPlaceQuote = await permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BOrder);
+    var isB2BCustomer = erpNopUser != null && erpNopUser.ErpUserType == ErpUserType.B2BUser;
+
+    var isAllowedToPlaceQuote = await permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BQuote);
     var isAllowedToPlaceOrder = await permissionService.AuthorizeAsync(ErpPermissionProvider.PlaceB2BOrder);
     var isAllowedToAddQuickOrder = await permissionService.AuthorizeAsync(B2BB2CPermissionProvider.EnableQuickOrder);
 
@@ -125,13 +126,11 @@
                             <col width="1" />
                         }
                         <col width="1" />
-
                         <col width="1" />
                         @if (Model.ShowVendorName)
                         {
                             <col width="1" />
                         }
-                        <col width="1" />
                         <col width="1" />
                         <col width="1" />
                         <col width="1" />
@@ -152,15 +151,13 @@
                                 <th class="product-picture">@T("ShoppingCart.Image")</th>
                             }
                             <th class="product" data-hide="w410, w480, w580, w768">@T("ShoppingCart.Product(s)")</th>
-
+                            <th class="stock">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).Stock")</th>                            
                             @if (Model.ShowVendorName)
                             {
                                 <th class="vendor" data-hide="w410, w480, w580, w768">@T("ShoppingCart.VendorName")</th>
                             }
-                            @*<th class="unit-price wrap-text" data-hide="w410, w480">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).UnitPriceWithOutDiscount")</th>
-                            <th class="stock">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).Stock")</th>
+                            <th class="unit-price wrap-text" data-hide="w410, w480">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).UnitPriceWithOutDiscount")</th>
                             <th class="unit-price discounted-price wrap-text" data-hide="w410, w480">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).UnitPriceWithDiscount")</th>
-                            <th class="uom">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).UOM")</th>*@
                             <th class="quantity">@T("ShoppingCart.Quantity")</th>
                             <th class="subtotal wrap-text">@T("ShoppingCart.ItemTotal")</th>
                             @if (Model.IsEditable)
@@ -172,7 +169,6 @@
                         </tr>
                     </thead>
                     <tbody>
-
                         @foreach (var item in Model.Items)
                         {
                             <tr>
@@ -190,11 +186,11 @@
                                             @if (viewComponentSelector.SelectComponent("LazyLoadImage") != null)
                                             {
                                                 @await Component.InvokeAsync("LazyLoadImage", new (string Key, string Value)[]
-                                {
-                                ("src", item.Picture.ImageUrl),
-                                ("alt", item.Picture.AlternateText),
-                                ("title", item.Picture.Title)
-                                })
+                                                {
+                                                    ("src", item.Picture.ImageUrl),
+                                                    ("alt", item.Picture.AlternateText),
+                                                    ("title", item.Picture.Title)
+                                                })
                                             }
                                             else
                                             {
@@ -243,12 +239,10 @@
                                         </div>
                                     }
                                 </td>
-
                                 <td class="stock" id="productStok_@item.ProductId">
                                     <label class="td-title">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).Stock"):</label>
                                     <span class="product-stock"></span>
                                 </td>
-
                                 @if (Model.ShowVendorName)
                                 {
                                     <td class="vendor">
@@ -264,7 +258,6 @@
                                     <label class="td-title">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).UnitPriceWithDiscount"):</label>
                                     <span class="product-unit-price">@item.UnitPrice</span>
                                 </td>
-
                                 <td class="quantity">
                                     <label class="td-title" for="itemquantity@(item.Id)">@T("ShoppingCart.Quantity"):</label>
                                     @if (Model.IsEditable)
@@ -290,18 +283,12 @@
                                                     $('#quantity-up-@(item.Id)').on('click',
                                                         function (e) {
                                                             var input = $(document).find('#itemquantity@(item.Id)');
-                                                            var oldValue = parseInt(input.val());
-                                                            var newVal = oldValue + 1;
-                                                            input.val(newVal.toString());
                                                             input.trigger("change");
                                                         });
 
                                                     $('#quantity-down-@(item.Id)').on('click',
                                                         function (e) {
                                                             var input = $(document).find('#itemquantity@(item.Id)');
-                                                            var oldValue = parseInt(input.val());
-                                                            var newVal = oldValue - 1;
-                                                            input.val(newVal.toString());
                                                             input.trigger("change");
                                                         });
                                                 });
@@ -651,7 +638,7 @@
                         return;
                     }
                     else {
-        @*alert(response.message);
+                        @*alert(response.message);
                         var msg = '@T("Plugin.Misc.NopStation.B2BB2CFeatures.LivePriceSync.PriceUpdatedProductSku")';
                         msg = msg + response.data;
                         alert(msg);

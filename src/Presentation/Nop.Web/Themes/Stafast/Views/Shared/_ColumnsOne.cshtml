@@ -1,0 +1,13 @@
+﻿@{
+    Layout = "_Root";
+    NopHtml.AppendPageCssClassParts("collumn-one-page");
+}
+@section Breadcrumb {
+    @await RenderSectionAsync("Breadcrumb", false)
+}
+
+<div class="center-1">
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.MainColumnBefore })
+    @RenderBody()
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.MainColumnAfter })
+</div>

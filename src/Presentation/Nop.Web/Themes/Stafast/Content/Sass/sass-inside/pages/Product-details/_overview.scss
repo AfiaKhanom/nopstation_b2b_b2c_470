@@ -1,0 +1,83 @@
+.overview {
+    .short-description {
+        line-height: 1.6;
+        font-size: 15px;
+    }
+
+    .page-title {
+        padding-left: 0 !important;
+
+        @media(max-width: $xs) {
+            h1 {
+                font-size: 16px !important;
+                font-weight: 700;
+            }
+        }
+    }
+
+    .product-overview-content {
+        > div {
+            margin-bottom: 20px;
+
+            &.manufacturers {
+                margin-bottom: 5px;
+                padding: 8px 0;
+                border-bottom: 1px solid var(--input-border);
+            }
+
+            &.availibility-delivery-wrap {
+                margin-bottom: 5px;
+                padding: 8px 0;
+                border-bottom: 1px solid var(--input-border);
+                border-top: 1px solid var(--input-border);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                .free-shipping {
+                    font-weight: 500;
+                    font-size: 16px;
+
+                    @media(max-width: $xs) {
+                        font-size: 14px;
+                    }
+
+                    &:before {
+                        content: "\e92d";
+                        font-family: "icomoon" !important;
+                        font-size: 14px;
+                        line-height: 14px;
+                        display: inline;
+                        font-weight: 600;
+                        padding-right: 5px;
+                    }
+                }
+            }
+
+            &.additional-details {
+                > div {
+                    margin-bottom: 10px;
+
+                    &.sku {
+                        margin-bottom: 5px;
+                        padding: 8px 0;
+                        border-bottom: 1px solid var(--input-border);
+                    }
+                }
+            }
+
+            label, .label {
+                font-weight: 600;
+            }
+
+            .value, a {
+                color: var(--primary-color);
+                font-weight: 600;
+            }
+        }
+    }
+
+    > div {
+        margin-bottom: 20px;
+    }
+}

@@ -20,7 +20,7 @@ public class ErpProductDataModel
     public List<KeyValuePair<string, string>> ProductAttributes { get; set; } = new List<KeyValuePair<string, string>>();
     public int TaxCategoryId { get; set; }
     public string TaxCategoryName { get; set; }
-    public string Published { get; set; }
+    public bool Published { get; set; }
     public string ManufacturerName { get; set; }
     public string ManufacturerCode { get; set; }
     public string VendorCode { get; set; }
@@ -28,4 +28,6 @@ public class ErpProductDataModel
     public string ProductTags { get; set; }
     public DateTime? LastChangedDate { get; set; }
     public string WarehouseNameOrCode { get; set; }
+    public string Gtin { get; set; }
+    public decimal? ProductCost { get; set; }
 }

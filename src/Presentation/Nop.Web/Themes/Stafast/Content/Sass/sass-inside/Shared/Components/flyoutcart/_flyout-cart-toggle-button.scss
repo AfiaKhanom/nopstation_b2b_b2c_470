@@ -1,0 +1,19 @@
+.flyout-cart-toggle-button {
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: var(--primary-color);
+    color: var(--white);
+    padding: 15px 2px;
+    cursor: pointer;
+    display: none;
+}
+.flyout-cart.active {
+    .mini-shopping-cart {
+        .flyout-cart-toggle-button {
+            display: block;
+        }
+    }
+}

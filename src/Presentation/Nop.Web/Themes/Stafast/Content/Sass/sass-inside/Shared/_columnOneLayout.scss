@@ -1,0 +1,21 @@
+.collumn-one-page:not(.html-home-page) {
+    .page {
+        @media (max-width: $md - 1) {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+    }
+}
+
+.master-wrapper-page {
+    .master-column-wrapper {
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+
+    .breadcrumb ~ .master-wrapper-content {
+        .master-column-wrapper {
+            margin-top: 0;
+        }
+    }
+}

@@ -1,0 +1,21 @@
+.back-in-stock-subscription-list-page {
+    .page-body {
+        padding: 10px 0;
+        margin-bottom: 20px;
+
+        .description {
+            margin: 20px 0;
+            font-size: clamp(1rem,3vw,20px);
+            line-height: clamp(17px,3vw,25px);
+            text-align: center;
+        }
+
+        label {
+            margin-bottom: 0;
+        }
+
+        .buttons {
+            padding: 0 10px 5px;
+        }
+    }
+}

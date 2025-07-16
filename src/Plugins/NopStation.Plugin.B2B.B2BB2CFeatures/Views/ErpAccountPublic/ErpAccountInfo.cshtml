@@ -1,7 +1,8 @@
-﻿@using NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure;
-@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.ErpAccountPublic;
-@using NopStation.Plugin.B2B.ERPIntegrationCore.Infrastructure;
-@using Nop.Services.Security;
+﻿@using NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.ErpAccountPublic
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Infrastructure
+@using Nop.Services.Security
+
 @model ErpAccountInfoModel
 @inject IPermissionService permissionService
 
@@ -20,11 +21,17 @@
 }
 
 @section left
-    {
+{
     @await Component.InvokeAsync(typeof(CustomerNavigationViewComponent), new { selectedTabId = B2BB2CFeaturesDefaults.ErpCustomerNavigationEnum_ErpAccountInfo })
 }
 
-<div class="page account-page account-transaction-page">
+<style>
+    a {
+        color: inherit;
+    }
+</style>
+
+<div class="page account-page account-info-page">
     <div class="page-title">
         <h1>@T("Plugin.Misc.NopStation.B2BB2CFeatures.PageTitle.ErpAccount")</h1>
     </div>
@@ -66,14 +73,6 @@
                     <div class="inputs">
                         <label asp-for="AvailableCredit" asp-postfix=":"></label>
                         <label id="AvailableCredit">@Model.AvailableCredit</label>
-                    </div>
-                    <div class="inputs">
-                        <label asp-for="LastPaymentAmount" asp-postfix=":"></label>
-                        <label id="LastPaymentAmount">@Model.LastPaymentAmount</label>
-                    </div>
-                    <div class="inputs">
-                        <label asp-for="LastPaymentDate" asp-postfix=":"></label>
-                        <label id="LastPaymentDate">@Model.LastPaymentDate</label>
                     </div>
                 }
             </div>

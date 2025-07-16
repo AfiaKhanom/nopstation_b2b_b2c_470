@@ -1,0 +1,9 @@
+.sub-category-grid {
+    margin: 20px auto 20px;
+    padding-left: 0;
+    padding-right: 0;
+
+    @media(min-width: $md) {
+        margin: 20px auto 20px;
+    }
+}

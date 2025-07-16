@@ -89,5 +89,14 @@ input[type="text"], input[type="password"], input[type="email"], input[type="tel
     max-width: 190px;
   }
 
-
+.password-toggle {
+  background: url('/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Content/img/eye-hide-password.png') center no-repeat;
+  display: block;
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  top: 38px;
+  right: 12px;
+  cursor: pointer;
+}
 

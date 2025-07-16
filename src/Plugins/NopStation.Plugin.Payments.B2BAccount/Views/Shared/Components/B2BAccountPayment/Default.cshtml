@@ -1,0 +1,81 @@
+@model NopStation.Plugin.Payments.B2BAccount.Models.B2BAccountPaymentInfoModel
+@inherits Nop.Web.Framework.Mvc.Razor.NopRazorPage<TModel>
+
+<div class="info-block">
+    <table id="b2bPaymentTable" width="100%" cellpadding="0" cellspacing="0">
+        <input type="hidden" asp-for="ErpAccountId" />
+        <tr>
+            <td>
+                <label>@T("Plugins.Payments.NopStation.B2B.Account.Title.CreditLimit"):</label>
+            </td>
+            <td>
+                <p id="CreditLimit">@Model.CreditLimitStr</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>@T("Plugins.Payments.NopStation.B2B.Account.Title.CreditLimitAvailable"):</label>
+            </td>
+            <td>
+                <p id="AvailableCredit">@Model.CreditLimitAvailableStr</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>@T("Plugins.Payments.NopStation.B2B.Account.Title.CurrentBalance"):</label>
+            </td>
+            <td>
+                <p id="CurrentBalance">@Model.CurrentBalanceStr</p>
+            </td>
+        </tr>
+        <tr id="CustomerReferenceAsPo" hidden>
+            <td>
+                <label asp-for="CustomerReferenceAsPO">@T("Plugins.Payments.NopStation.B2B.Account.PaymentInfo.CustomerReferenceAsPO"):</label>
+            </td>
+            <td>
+                <input type="text" asp-for="CustomerReferenceAsPO" style="width:165px;" autocomplete="off" required />
+                <span asp-validation-for="CustomerReferenceAsPO" id="Customer-Ref-Validation"></span>
+            </td>
+        </tr>
+    </table>
+</div>
+<style>
+    .info-block {
+        padding: 20px;
+        background-color: #f5f5f5;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+
+        .info-block td:first-child {
+            text-align: left !important;
+        }
+
+    #b2bPaymentTable {
+        border: 0px solid #eee !important;
+        border-radius: 3px !important;
+        margin: 0 !important;
+    }
+
+        #b2bPaymentTable label {
+            font-size: 16px;
+        }
+
+    h2 {
+        color: #333;
+    }
+
+    p {
+        color: #666;
+    }
+
+    #CustomerReferenceAsPO {
+        border-radius: 10px;
+        font-size: 16px;
+        font-family: 'Source Sans Pro', sans-serif;
+        color: #111;
+    }
+
+    #Customer-Ref-Validation {
+        width: 250px;
+    }
+</style>

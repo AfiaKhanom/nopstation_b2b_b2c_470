@@ -326,5 +326,20 @@ public class IQRetailIntegrationPlugin : BasePlugin, IAdminMenuPlugin, IErpInteg
         return settings.CompanyId;
     }
 
+    public Task<ErpResponseData<string>> GetStatementPdfByteCodeFromErpAsync(ErpGetRequestModel erpRequest)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ErpResponseData<IList<ErpShipToAddressDataModel>>> GetShipToAddressesFromErpAsync(ErpGetRequestModel erpRequest)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ErpResponseData<IList<ErpAccountDataModel>>> GetAllAccountCreditFromErpAsync(ErpGetRequestModel erpRequest)
+    {
+        throw new NotImplementedException();
+    }
+
     #endregion
 }

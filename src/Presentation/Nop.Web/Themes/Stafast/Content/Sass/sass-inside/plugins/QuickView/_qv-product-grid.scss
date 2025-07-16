@@ -1,0 +1,33 @@
+@import '../../variables/_breakpoint.scss';
+@import '../../mixins/_item_grid.scss';
+@import '../../mixins/_vertical-productbox-column.scss';
+
+
+.qv-modal {
+    display: none;
+
+    .product-grid {
+        margin-bottom: 15px;
+        padding-left: 10px;
+        padding-right: 10px;
+
+        .item-grid {
+            margin-left: 0;
+            margin-right: 0;
+
+            .item-box {
+                @include vertical-productbox-column($grid-column: 4, $width: 50%, $padding: 0);
+
+                .add-to-cart {
+                    display: none !important;
+                }
+
+                &:hover {
+                    box-shadow: 0 2px 10px var(--primary-grey_light);
+                    position: relative;
+                    transition: all .4s;
+                }
+            }
+        }
+    }
+}

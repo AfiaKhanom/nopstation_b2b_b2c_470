@@ -19,61 +19,6 @@
         <h1 class="float-left">
             @T("Admin.Catalog.Products")
         </h1>
-
-        <div class="float-right">
-            @*<div class="btn-group">
-            <button type="button" class="btn btn-success">
-            <i class="fas fa-download"></i>
-            @T("Admin.Common.Export")
-            </button>
-            <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-            <span class="caret"></span>
-            <span class="sr-only">&nbsp;</span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-            <li>
-            <button type="submit" name="b2bPerAccountProductPricing-exportexcel-all" id="PerAccountProductPricing-all">
-            <i class="fa fa-file-code-o"></i>
-            @T("NopStation.Plugin.B2B.B2BB2CFeatures.PerAccountProductPricing.All")
-            </button>
-            </li>
-            <li>
-            <button type="button" id="PerAccountProductPricing-selected">
-            <i class="fa fa-file-code-o"></i>
-            @T("NopStation.Plugin.B2B.B2BB2CFeatures.PerAccountProductPricing.Selected")
-            </button>
-            </li>
-            <li class="divider"></li>
-            <li>
-            <button type="submit" name="b2bPriceGroupProductPricing-exportexcel-all"  id="PriceGroupProductPricing-all">
-            <i class="fa fa-file-excel-o"></i>
-            @T("NopStation.Plugin.B2B.B2BB2CFeatures.PriceGroupProductPricing.All")
-            </button>
-            </li>
-            <li>
-            <button type="button" id="PriceGroupProductPricing-selected">
-            <i class="fa fa-file-excel-o"></i>
-            @T("NopStation.Plugin.B2B.B2BB2CFeatures.PriceGroupProductPricing.Selected")
-            </button>
-            </li>
-            </ul>
-            </div>*@
-            @*@if (!Model.IsLoggedInAsVendor || Model.AllowVendorsToImportProducts)
-            {
-            //a vendor cannot import products
-            <button type="button" name="importexcel-PerAccountProductPricing" class="btn bg-olive" data-toggle="modal" data-target="#importexcel-window-PerAccountProductPricing">
-            <i class="fa fa-upload"></i>
-            @T("NopStation.Plugin.B2B.B2BB2CFeatures.PerAccountProductPricing.Import")
-            </button>
-
-            <button type="button" name="importexcel-PriceGroupProductPricing" class="btn bg-olive" data-toggle="modal" data-target="#importexcel-window-PriceGroupProductPricing">
-            <i class="fa fa-upload"></i>
-            @T("NopStation.Plugin.B2B.B2BB2CFeatures.PriceGroupProductPricing.Import")
-            </button>
-            }
-            @await Component.InvokeAsync("AdminWidget", new { widgetZone = AdminWidgetZones.ProductListButtons })*@
-        </div>
-
     </div>
     <div class="content">
         <div class="container-fluid">
@@ -195,79 +140,79 @@
                         <div class="card-body">
                             @{
                                 var gridModel = new DataTablesModel
-            {
-                Name = "products-grid",
-                UrlRead = new DataUrl("ProductList", "Product", null),
-                SearchButtonId = "search-products",
-                Length = Model.PageSize,
-                LengthMenu = Model.AvailablePageSizes,
-                Filters = new List<FilterParameter>
-                            {
-                            new FilterParameter(nameof(Model.SearchProductName)),
-                            new FilterParameter(nameof(Model.SearchCategoryId)),
-                            new FilterParameter(nameof(Model.SearchIncludeSubCategories), typeof(bool)),
-                            new FilterParameter(nameof(Model.SearchManufacturerId)),
-                            new FilterParameter(nameof(Model.SearchStoreId)),
-                            new FilterParameter(nameof(Model.SearchWarehouseId)),
-                            new FilterParameter(nameof(Model.SearchVendorId)),
-                            new FilterParameter(nameof(Model.SearchProductTypeId)),
-                            new FilterParameter(nameof(Model.SearchPublishedId))
-                            }
-            };
+                                {
+                                    Name = "products-grid",
+                                    UrlRead = new DataUrl("ProductList", "Product", null),
+                                    SearchButtonId = "search-products",
+                                    Length = Model.PageSize,
+                                    LengthMenu = Model.AvailablePageSizes,
+                                    Filters = new List<FilterParameter>
+                                    {
+                                        new FilterParameter(nameof(Model.SearchProductName)),
+                                        new FilterParameter(nameof(Model.SearchCategoryId)),
+                                        new FilterParameter(nameof(Model.SearchIncludeSubCategories), typeof(bool)),
+                                        new FilterParameter(nameof(Model.SearchManufacturerId)),
+                                        new FilterParameter(nameof(Model.SearchStoreId)),
+                                        new FilterParameter(nameof(Model.SearchWarehouseId)),
+                                        new FilterParameter(nameof(Model.SearchVendorId)),
+                                        new FilterParameter(nameof(Model.SearchProductTypeId)),
+                                        new FilterParameter(nameof(Model.SearchPublishedId))
+                                    }
+                                };
                                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ProductModel.PictureThumbnailUrl))
-            {
-                Title = T("Admin.Catalog.Products.Fields.PictureThumbnailUrl").Text,
-                Width = "100",
-                Render = new RenderPicture()
-            });
+                                {
+                                    Title = T("Admin.Catalog.Products.Fields.PictureThumbnailUrl").Text,
+                                    Width = "100",
+                                    Render = new RenderPicture()
+                                });
                                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ProductModel.Name))
-            {
-                Title = T("Admin.Catalog.Products.Fields.Name").Text,
-                Width = "300",
-                Render = new RenderLink(new DataUrl("~/Admin/Product/Edit/", nameof(ProductModel.Id))),
-            });
+                                {
+                                    Title = T("Admin.Catalog.Products.Fields.Name").Text,
+                                    Width = "300",
+                                    Render = new RenderLink(new DataUrl("~/Admin/Product/Edit/", nameof(ProductModel.Id))),
+                                });
                                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ProductModel.Sku))
-            {
-                Title = T("Admin.Catalog.Products.Fields.Sku").Text,
-                Width = "100"
-            });
+                                {
+                                    Title = T("Admin.Catalog.Products.Fields.Sku").Text,
+                                    Width = "100"
+                                });
                                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ProductModel.Price))
-            {
-                Title = T("Admin.Catalog.Products.Fields.Price").Text,
-                Width = "100",
-                Render = new RenderCustom("renderColumnPrice")
-            });
+                                {
+                                    Title = T("Admin.Catalog.Products.Fields.Price").Text,
+                                    Width = "100",
+                                    Render = new RenderCustom("renderColumnPrice")
+                                });
                                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ProductModel.ProductTypeName))
-            {
-                Title = T("Admin.Catalog.Products.Fields.ProductType").Text,
-                Width = "100"
-            });
+                                {
+                                    Title = T("Admin.Catalog.Products.Fields.ProductType").Text,
+                                    Width = "100"
+                                });
                                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ProductModel.Published))
-            {
-                Title = T("Admin.Catalog.Products.Fields.Published").Text,
-                Width = "100",
-                ClassName = NopColumnClassDefaults.CenterAll,
-                Render = new RenderBoolean()
-            });
+                                {
+                                    Title = T("Admin.Catalog.Products.Fields.Published").Text,
+                                    Width = "100",
+                                    ClassName = NopColumnClassDefaults.CenterAll,
+                                    Render = new RenderBoolean()
+                                });
                                 var specialPriceCountPropertyName = nameof(ProductModel.CustomProperties) + ".specialPriceCount";
                                 gridModel.ColumnCollection.Add(new ColumnProperty(specialPriceCountPropertyName)
-            {
-                Title = T("Admin.Catalog.Products.Fields.specialPriceCount").Text,
-                Width = "100"
-            });
+                                {
+                                    Title = T("Admin.Catalog.Products.Fields.specialPriceCount").Text,
+                                    Width = "100"
+                                });
                                 var groupPriceCountCountPropertyName = nameof(ProductModel.CustomProperties) + ".groupPriceCount";
                                 gridModel.ColumnCollection.Add(new ColumnProperty(groupPriceCountCountPropertyName)
-            {
-                Title = T("Admin.Catalog.Products.Fields.groupPriceCount").Text,
-                Width = "100"
-            });
+                                {
+                                    Title = T("Admin.Catalog.Products.Fields.groupPriceCount").Text,
+                                    Width = "100"
+                                });
                                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ProductModel.Id))
-            {
-                Title = T("Admin.Common.Edit").Text,
-                Width = "80",
-                Render = new RenderCustom("renderEditProductPrice"),
-                ClassName = NopColumnClassDefaults.Button
-            });
+                                {
+                                    Title = T("Admin.Common.Edit").Text,
+                                    Width = "80",
+                                    Render = new RenderCustom("renderEditProductPrice"),
+                                    ClassName = NopColumnClassDefaults.Button
+                                });
                             }
                             @await Html.PartialAsync("Table", gridModel)
                             <script>
@@ -301,7 +246,6 @@
 </form>
 
 
-@*import products form*@
 <div id="importexcel-window-PerAccountProductPricing" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="importexcel-window-title">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -384,25 +328,6 @@
         </div>
     </div>
 </div>
-@*export selected (XML). We don't use GET approach because it's limited to 2K-4K chars and won't work for large number of entities*@
-<form asp-controller="B2BProductPricing" asp-action="PerAccountProductPricingSelected" method="post" id="PerAccountProductPricing-selected-form">
-    <input type="hidden" id="selectedIds" name="selectedIds" value="" />
-</form>
-
-
-@*export selected (Excel). We don't use GET approach because it's limited to 2K-4K chars and won't work for large number of entities*@
-<form asp-controller="B2BProductPricing" asp-action="PriceGroupProductPricingSelected" method="post" id="PriceGroupProductPricing-selected-form">
-    <input type="hidden" id="selectedIds" name="selectedIds" value="" />
-</form>
-
-@*export selected (Excel). We don't use GET approach because it's limited to 2K-4K chars and won't work for large number of entities*@
-@*<form asp-controller="B2BProductPricing" asp-action="PerAccountProductPricingAll" method="post" id="PerAccountProductPricing-all-form">
-        <input type="hidden"  value="" />
-    </form>*@
-@*export selected (Excel). We don't use GET approach because it's limited to 2K-4K chars and won't work for large number of entities*@
-@*<form asp-controller="B2BProductPricing" asp-action="PriceGroupProductPricingAll" method="post" id="PriceGroupProductPricing-all-form">
-    <input type="hidden" value="" />
-</form>*@
 
 <script>
     $(document).ready(function () {
@@ -424,18 +349,6 @@
             updateTable('#products-grid');
             return false;
         });
-
-        //$('#PerAccountProductPricing-all').click(function (e) {
-        //    e.preventDefault();
-        //    $('#PerAccountProductPricing-all-form').submit();
-        //    return false;
-        //});
-
-        //$('#PriceGroupProductPricing-all').click(function (e) {
-        //    e.preventDefault();
-        //    $('#PriceGroupProductPricing-all-form').submit();
-        //    return false;
-        //});
     });
 </script>
 

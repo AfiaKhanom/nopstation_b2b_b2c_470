@@ -11,8 +11,8 @@
 @{
     var customer = await workContext.GetCurrentCustomerAsync();
 
-    const string hideSyncFromDateBlockAttributeName = "Configure.HideSyncFromDateBlock";
-    var hideSyncFromDateBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideSyncFromDateBlockAttributeName);
+    const string hideGeneralBlockAttributeName = "Configure.HideGeneralBlock";
+    var hideGeneralBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideGeneralBlockAttributeName);
 }
 
 <form asp-controller="ErpDataScheduler" asp-action="Configure" method="post">
@@ -31,7 +31,14 @@
         <div class="container-fluid">
             <div class="form-horizontal">
                 <nop-cards id="configure-cards">
-                    <nop-card asp-name="configure-sync-from-date" asp-icon="fas fa-info" asp-title="@T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.Configure.Block.SyncFromDate")" asp-hide-block-attribute-name="@hideSyncFromDateBlockAttributeName" asp-hide="@hideSyncFromDateBlock" asp-advanced="false">@await Html.PartialAsync("_Configure.SyncFromDate", Model)</nop-card>
+                    <nop-card 
+                        asp-name="configure-general" 
+                        asp-icon="fas fa-info" 
+                        asp-title="@T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.Configure.Block.General")" 
+                        asp-hide-block-attribute-name="@hideGeneralBlockAttributeName" 
+                        asp-hide="@hideGeneralBlock" 
+                        asp-advanced="false">@await Html.PartialAsync("_Configure.General.cshtml", Model)
+                    </nop-card>
                  </nop-cards>
             </div>
         </div>

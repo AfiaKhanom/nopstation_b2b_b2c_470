@@ -1,0 +1,20 @@
+@import "../../../mixins/_layout_width_responsive";
+@import "../../../mixins/_item_grid";
+@import "../../../mixins/_vertical-productbox-column";
+
+
+.center-1 {
+    .product-grid {
+        @include layout_width_responsive;
+
+        .item-grid {
+            @include item-grid($margin-left: -10px, $margin-right: -10px, $justify-content: flex-start);
+
+            .item-box {
+                @include vertical-productbox-column($grid-column: 5, $width: 100%, $padding: 10px);
+
+            }
+        }
+    }
+}
+

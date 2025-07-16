@@ -31,7 +31,6 @@
 <div class="page quick-order-page quick-order-details-page">
     <div class="page-body">
         <div class="float-right">
-
             <button class="btn btn-primary import-excel" id="importFromExcelButton">
                 @T("Admin.Common.ImportFromExcel")
             </button>
@@ -39,21 +38,14 @@
         </div>
         <div class="quick-order-head">
             <a asp-route="QuickOrder" id="quick-order-back-to-list" class="btn btn-primary back-to-list">@T("NopStation.B2BB2CFeatures.BackToList")</a>
-
-
-
             <div class="quick-order-header-div">
                 <h3 class="quick-order-heading">@Model.Name</h3>
                 <button class="btn-edit-quick-order-head " onclick="showTemplateNameEditField()">@T("common.edit")</button>
             </div>
-
         </div>
-
-
-
         <div class="quick-order-heading-input-div">
             <input type="text" class="quick-order-heading-input" name="name" asp-for="@Model.Name" />
-            <button class="btn btn-primary heading-save-btn"> Save </button>
+            <button class="btn btn-primary heading-save-btn">@T("Common.Save")</button>
         </div>
         <div class="card card-default">
             <div class="card-body  quick-order-card-body">
@@ -62,7 +54,6 @@
                         <div class="col-md-3 form-group ProductId">
                             <div class="row form-inline" style="">
                                 <div class="col-md-4">
-
                                     <nop-label asp-for="@Model.AddQuickOrderItem.ProductId" />
                                 </div>
                                 <div class="col-md-8">
@@ -78,7 +69,6 @@
                                                     $('#@Html.IdFor(model => model.AddQuickOrderItem.ProductId)').val(ui.item.productid);
                                                     $('#@Html.IdFor(model => model.AddQuickOrderItem.ProductSku)').val(ui.item.productsku);
                                                     $('#search-product-friendly-name').text(ui.item.label);
-
                                                     $('#search-product-clear').show();
                                                     return false;
                                                 }
@@ -100,7 +90,6 @@
                                     </script>
                                 </div>
                             </div>
-
                         </div>
                         <div class="col-md-3 form-group">
                             <div class="row">
@@ -125,14 +114,10 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="col-md-2 form-group">
                             <button type="button" id="addOrderItem" class="btn btn-primary add-new-record">@T("Admin.Common.AddNewRecord")</button>
                         </div>
-
                     </div>
-
-
                 </div>
             </div>
             <div class="form-inline row">
@@ -142,7 +127,6 @@
         </div>
     </div>
     <div class="card-body">
-
         @{
             var gridModel = new DataTablesModel
             {
@@ -160,20 +144,19 @@
             gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.Name))
             {
                 Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.Name").Text,
-                Width = "600"
+                Width = "400"
             });
-
-            gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.AttributesInfo))
+            /*gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.AttributesInfo))
             {
                 Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.AttributesInfo").Text,
                 Width = "600",
                 Render = new RenderCustom("renderColumnAttributesInfo")
-            });
+            });*/
             gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.StockAvailability))
             {
                 Title = string.IsNullOrEmpty(Model.DisplayNameForPrimaryStock) ?
-            T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.StockAvailability").Text :
-            Model.DisplayNameForPrimaryStock,
+                T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.StockAvailability").Text :
+                Model.DisplayNameForPrimaryStock,
                 Width = "100"
             });
             gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.Price))
@@ -182,12 +165,12 @@
                 Width = "100",
                 ClassName = "price-value-column"
             });
-            gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.PricingNotes))
+            /*gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.PricingNotes))
             {
                 Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.PricingNotes").Text,
                 Width = "100",
                 ClassName = "pricing-notes-column"
-            });
+            });*/
             gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.UOM))
             {
                 Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.UOM").Text,
@@ -221,10 +204,8 @@
         @await Html.PartialAsync("Table", gridModel)
     </div>
 </div>
-</div>
 
 <div id="updateQuickOrderTemplateDialog" class="modal" title="@T("NopStation.B2BB2CFeatures.QuickOrderTemplate.UpdateTemplateDialog.Title")" style="display: none;">
-
     <div class="modal-content">
         <form asp-controller="OverridenOrder" asp-action="ReOrder" class="quote-order-confirm-accept-form" method="post" enctype="multipart/form-data">
             <div>
@@ -245,6 +226,7 @@
         </form>
     </div>
 </div>
+
 <script asp-location="Footer">
     function renderColumnInfo(data, type, row, meta) {
         return '<a class="btn btn-info" href=/' + data + '><i class="fa fa-eye"></i>Info</a>';
@@ -464,7 +446,6 @@
 
         <div id="modal-content">
             <form asp-controller="QuickOrder" asp-action="QuickOrderAddToCart" class="quick-order-confirm-accept-form" method="post" enctype="multipart/form-data">
-
                 <div style="text-align:center">
                     <button id="quickOrderPopupClearCartButton" type="button" value="@T("NopStation.B2BB2CFeatures.ConfirmAcceptDialog.TermsAndCondition.ClearCart")"
                             class="btn btn-primary bg-green" onclick="popUpPlaceOrder(this, @Model.Id);">
@@ -480,9 +461,7 @@
                     </button>
                 </div>
                 <script asp-location="Footer">
-
                     function renderColumnAttributesInfo(data, type, row, meta) {
-
                         return data;
                     }
 
@@ -530,17 +509,17 @@
                     </div>
                 </div>
                 <div class="row form-horizontal" style="display: flex;flex-direction: row-reverse;padding:10px;">
-
                     <button type="submit" class="btn btn-primary float-right" onclick="displayAjaxLoading(true)">
                         @T("Admin.Common.ImportFromExcel")
                     </button>
-
                 </div>
 
             </form>
         </div>
     </div>
 </div>
+
+
 <script asp-location="Footer">
     $(document).ready(function () {
         $('.header').on('mouseenter', '#topcartlink', function () {

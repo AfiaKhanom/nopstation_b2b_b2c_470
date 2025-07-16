@@ -1,0 +1,12 @@
+{
+  "Group": "Nop-Station",
+  "FriendlyName": "B2B Account",
+  "SystemName": "NopStation.Plugin.Payments.B2BAccount",
+  "Version": "4.70.2.1",
+  "SupportedVersions": [ "4.70" ],
+  "Author": "nopstation team",
+  "DisplayOrder": 1,
+  "FileName": "NopStation.Plugin.Payments.B2BAccount.dll",
+  "Description": "This plugin allows to buy using credit amount for b2b customer",
+  "DependsOnSystemNames": [ "NopStation.Core" ]
+}

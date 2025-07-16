@@ -1,0 +1,46 @@
+.html-checkout-page:not(.html-order-confirm-page) {
+    .checkout-data {
+
+        .order-progress {
+
+            & ~ .order-summary {
+
+                @media (min-width: $lg) {
+                    .title {
+                        margin-bottom: 0;
+                        padding-bottom: 10px;
+                    }
+
+                    .table-wrapper {
+                        width: 100%;
+                        box-shadow: none;
+
+                        .cart {
+                            tbody {
+                                border: none;
+
+                                td {
+                                    border-width: 0 0 1px;
+                                    padding: 15px 4px;
+
+                                    & > :not(.product) {
+                                        font-size: 13px;
+                                        line-height: 18px;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .cart-footer {
+                    width: 100%;
+                    margin: 0;
+                    border: none;
+                    padding: 0;
+                    box-shadow: none;
+                }
+            }
+        }
+    }
+}

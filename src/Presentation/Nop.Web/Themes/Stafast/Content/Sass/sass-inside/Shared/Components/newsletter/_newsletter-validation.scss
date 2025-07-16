@@ -1,0 +1,18 @@
+#subscribe-loading-progress {
+    display: block;
+    padding: 5px 20px 5px;
+    text-align: center;
+}
+
+.newsletter-result {
+    display: none;
+    padding: 0px 20px 20px;
+    text-align: center;
+
+    @media(min-width: $sm) {
+        padding: 0;
+        text-align: center;
+        width: 400px;
+        margin:0 auto;
+    }
+}

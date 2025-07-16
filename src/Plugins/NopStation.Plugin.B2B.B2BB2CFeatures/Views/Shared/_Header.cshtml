@@ -1,13 +1,18 @@
 ﻿@{
-    var hasSalesRepRole = await customerService.IsInCustomerRoleAsync(await workContext.GetCurrentCustomerAsync(), ERPIntegrationCoreDefaults.B2BSalesRepRoleSystemName);
+    var currentCustomer = await workContext.GetCurrentCustomerAsync();
+    var hasSalesRepRole = await customerService.IsInCustomerRoleAsync(currentCustomer, ERPIntegrationCoreDefaults.B2BSalesRepRoleSystemName);
+    var isCustomerRegistered = await customerService.IsRegisteredAsync(currentCustomer);
 }
 
 <div class="header">
-    <a class="skip" href="#main">@T("Header.SkipNavigation.Text")</a>
+    @* <a class="skip" href="#main">@T("Header.SkipNavigation.Text")</a> *@
     @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderBefore })
     <div class="header-upper">
         <div class="header-selectors-wrapper">
-            @await Component.InvokeAsync(typeof(TaxTypeSelectorViewComponent))
+            @if (isCustomerRegistered)
+            {
+                @await Component.InvokeAsync(typeof(TaxTypeSelectorViewComponent))
+            }
             @await Component.InvokeAsync(typeof(CurrencySelectorViewComponent))
             @await Component.InvokeAsync(typeof(LanguageSelectorViewComponent))
             @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderSelectors })

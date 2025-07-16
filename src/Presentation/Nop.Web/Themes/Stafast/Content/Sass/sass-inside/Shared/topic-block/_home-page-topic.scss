@@ -1,0 +1,23 @@
+﻿.html-home-page {
+    .topic-block {
+        background: #fff;
+        box-shadow: $shadow-material-1;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 0 auto 20px;
+
+
+        .topic-block-title {
+            h2 {
+
+                @include common-title;
+            }
+        }
+
+        .topic-block-body {
+            font-size: 15px;
+            line-height: 24px;
+            color: var(--black);
+        }
+    }
+}

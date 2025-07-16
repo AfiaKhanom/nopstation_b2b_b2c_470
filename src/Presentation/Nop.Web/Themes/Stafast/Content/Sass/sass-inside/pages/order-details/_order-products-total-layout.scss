@@ -1,0 +1,31 @@
+.order-details-page {
+    .order-summary-content {
+
+        @media (min-width: $md) {
+            padding: 15px;
+
+
+            .table-wrapper {
+                width: 100%;
+            }
+
+
+            .order-footer {
+                width: 300px;
+                margin-left: auto;
+                margin-top: 10px;
+                border: none;
+                box-shadow: none;
+            }
+        }
+
+        @media (min-width: $lg) {
+
+
+            .order-footer {
+                width: 365px;
+                padding: 0 15px 15px;
+            }
+        }
+    }
+}

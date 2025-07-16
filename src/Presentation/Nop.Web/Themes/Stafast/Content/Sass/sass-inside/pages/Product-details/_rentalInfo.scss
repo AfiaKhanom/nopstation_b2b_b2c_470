@@ -1,0 +1,56 @@
+.attributes {
+
+    .attribute-item {
+        > div {
+            margin: 0px 5px 13px;
+
+            label {
+                display: inline-block;
+            }
+
+            .required {
+                color: var(--red);
+            }
+        }
+    }
+
+    .message-error,
+    .field-validation-error,
+    .username-not-available-status,
+    .poll-vote-error,
+    .password-error {
+        display: block;
+        text-align: left;
+        font-size: 13px;
+        color: var(--red);
+        margin-top: 5px;
+    }
+
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"],
+    select,
+    textarea {
+        border: 1px solid var(--primary-grey_light);
+        box-shadow: none;
+        border-radius: 3px;
+        height: 35px;
+        width: 100%;
+        padding: 5px 10px;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 14px;
+        color: var(--primary-grey_dark);
+
+        &:hover, &:focus {
+            border-color: var(--primary-color);
+        }
+    }
+
+    textarea {
+        height: auto;
+        min-height: 100px;
+    }
+}

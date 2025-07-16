@@ -1,17 +1,18 @@
-﻿namespace NopStation.Plugin.B2B.ERPIntegrationCore.Enums
+﻿namespace NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
+
+public enum IntegrationStatusType
 {
-    public enum IntegrationStatusType
-    {
-        WaitingForPayment = 5,
+    WaitingForPayment = 5,
 
-        Queued = 10,
+    Queued = 10,
 
-        Sent = 20,
+    Sent = 20,
 
-        Confirmed = 30,
+    Confirmed = 30,
 
-        Failed = 40,
+    Failed = 40,
 
-        Processing = 50
-    }
+    Processing = 50,
+
+    Cancelled = 60
 }

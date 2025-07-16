@@ -1,0 +1,40 @@
+.flyout-cart {
+    .count {
+        position: relative;
+
+        a {
+            font-weight: 700;
+            color: var(--white);
+            text-decoration: none;
+
+            i {
+                margin-right: 5px;
+                font-size: 20px;
+                font-weight: 500;
+                vertical-align: middle;
+
+                &.icon-shopping-cart-1:before {
+                    content: "\e979";
+                }
+            }
+        }
+
+        .close-flyout-cart {
+            float: right;
+            font-weight: 300;
+            font-size: 28px;
+            position: absolute;
+            right: 10px;
+            top: 20px;
+            transform: translateY(-50%);
+        }
+    }
+
+    .flyoutcart-footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        text-align: center;
+    }
+}

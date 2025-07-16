@@ -1,21 +1,20 @@
-﻿@using Nop.Core.Domain.Catalog;
-@*@model OrderDetailsModel*@
-@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.OrderSummary
-@model ErpOrderDetailsModel
+﻿@model ErpOrderDetailsModel
+
 @using Newtonsoft.Json
 @using Nop.Core
 @using Nop.Core.Domain.Orders
-@using NopStation.Plugin.B2B.B2BB2CFeatures
-@using NopStation.Plugin.B2B.ERPIntegrationCore.Services
+@using Nop.Core.Domain.Catalog
 @using NopStation.Plugin.B2B.ERPIntegrationCore.Enums
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Services
+@using NopStation.Plugin.B2B.B2BB2CFeatures
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.OrderSummary
 
-@inject IWorkContext workContext
+@inject OrderSettings orderSettings
+@inject AddressSettings AddressSettings
 @inject IErpAccountService erpAccountService
 @inject IErpNopUserService erpNopUserService
 @inject B2BB2CFeaturesSettings b2BB2CFeaturesSettings
 @inject IErpOrderAdditionalDataService erpOrderService
-@inject OrderSettings orderSettings
-@inject AddressSettings AddressSettings
 
 @{
     var currCustomer = await workContext.GetCurrentCustomerAsync();
@@ -31,13 +30,29 @@
     var hasQuoteExpireDate = false;
     var isQuoteRejectedorFailed = true;
 
-    if (isB2BUser)
+    var b2bOrder = await erpOrderService.GetErpOrderAdditionalDataByNopOrderIdAsync(Model.Id);
+    if (b2bOrder != null)
     {
-        var b2bOrder = await erpOrderService.GetErpOrderAdditionalDataByNopOrderIdAsync(Model.Id);
-        if (b2bOrder != null && (b2bOrder.ErpOrderType == ErpOrderType.B2BSalesOrder || b2bOrder.ErpOrderType == ErpOrderType.B2BQuote))
+        if (b2bOrder.ErpOrderType == ErpOrderType.B2BSalesOrder || b2bOrder.ErpOrderType == ErpOrderType.B2BQuote)
         {
             isERPOrder = b2bOrder.ErpOrderOriginType == ErpOrderOriginType.ERPOrder ? true : false;
             isQuoteOrder = b2bOrder.ErpOrderType == ErpOrderType.B2BSalesOrder ? false : true;
+            if (isQuoteOrder)
+            {
+                checkQuoteOrderStatus = await erpOrderService.CheckQuoteOrderStatusAsync(b2bOrder);
+                if (b2bOrder.QuoteExpiryDate != null)
+                {
+                    isQuoteExpired = DateTime.UtcNow.Date >= b2bOrder.QuoteExpiryDate.Value.Date ? true : false;
+                    hasQuoteExpireDate = true;
+                }
+                isQuoteRejectedorFailed = b2bOrder.ERPOrderStatus == "Failed" || b2bOrder.ERPOrderStatus == "Rejected";
+                isQuoteAlreadyConverted = b2bOrder.QuoteSalesOrderId.HasValue && b2bOrder.QuoteSalesOrderId.Value > 0;
+            }
+        }
+        else if (b2bOrder.ErpOrderType == ErpOrderType.B2CSalesOrder || b2bOrder.ErpOrderType == ErpOrderType.B2CQuote)
+        {
+            isERPOrder = b2bOrder.ErpOrderOriginType == ErpOrderOriginType.ERPOrder ? true : false;
+            isQuoteOrder = b2bOrder.ErpOrderType == ErpOrderType.B2CSalesOrder ? false : true;
             if (isQuoteOrder)
             {
                 checkQuoteOrderStatus = await erpOrderService.CheckQuoteOrderStatusAsync(b2bOrder);
@@ -54,22 +69,20 @@
 }
 
 @{
-
     Layout = "_ColumnsOne";
-
 
     NopHtml.AddTitleParts(T("PageTitle.QuoteOrderDetails").Text);
     //page class
     NopHtml.AppendPageCssClassParts("html-order-details-page");
+    NopHtml.AppendScriptParts(ResourceLocation.Footer, "~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Content/scripts/b2bajaxcart.js");
 }
-<div class="page order-details-page">
 
+<div class="page order-details-page">
     <div class="page checkout-page order-completed-page">
         @if (!orderSettings.OnePageCheckoutEnabled)
         {
             @* @await Component.InvokeAsync(typeof(CheckoutProgressViewComponent),  new { step = CheckoutProgressStep.Complete })*@
         }
-
         @if (isQuoteOrder)
         {
             <div class="page-title">
@@ -77,7 +90,6 @@
             </div>
         }
         <div class="page-body checkout-data">
-
             <div class="section order-completed">
                 <div class="title">
                     @if (isQuoteOrder)
@@ -159,18 +171,25 @@
                                         @Model.ErpBillingAddressModel.Address2
                                     </li>
                                 }
-                                @if (Model.ErpBillingAddressModel.CityEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.City) ||
-                                Model.ErpBillingAddressModel.CountyEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.County) ||
-                                Model.ErpBillingAddressModel.StateProvinceEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.StateProvinceName) ||
-                                Model.ErpBillingAddressModel.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.ZipPostalCode))
+                                @if (Model.ErpBillingAddressModel.CityEnabled && 
+                                    !string.IsNullOrEmpty(Model.ErpBillingAddressModel.City) ||
+                                    Model.ErpBillingAddressModel.CountyEnabled && 
+                                    !string.IsNullOrEmpty(Model.ErpBillingAddressModel.County) ||
+                                    Model.ErpBillingAddressModel.StateProvinceEnabled && 
+                                    !string.IsNullOrEmpty(Model.ErpBillingAddressModel.StateProvinceName) ||
+                                    Model.ErpBillingAddressModel.ZipPostalCodeEnabled && 
+                                    !string.IsNullOrEmpty(Model.ErpBillingAddressModel.ZipPostalCode))
                                 {
                                     <li class="city-state-zip">
                                         @if (Model.ErpBillingAddressModel.CityEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.City))
                                         {
                                             @Model.ErpBillingAddressModel.City
-                                            @if (Model.ErpBillingAddressModel.CountyEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.County) ||
-                                           Model.ErpBillingAddressModel.StateProvinceEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.StateProvinceName) ||
-                                           Model.ErpBillingAddressModel.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.ZipPostalCode))
+                                            @if (Model.ErpBillingAddressModel.CountyEnabled && 
+                                                !string.IsNullOrEmpty(Model.ErpBillingAddressModel.County) || 
+                                                Model.ErpBillingAddressModel.StateProvinceEnabled && 
+                                                !string.IsNullOrEmpty(Model.ErpBillingAddressModel.StateProvinceName) ||
+                                                Model.ErpBillingAddressModel.ZipPostalCodeEnabled && 
+                                                !string.IsNullOrEmpty(Model.ErpBillingAddressModel.ZipPostalCode))
                                             {
                                                 <text>,</text>
                                             }
@@ -178,21 +197,26 @@
                                         @if (Model.ErpBillingAddressModel.CountyEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.County))
                                         {
                                             @Model.ErpBillingAddressModel.County
-                                            @if (Model.ErpBillingAddressModel.StateProvinceEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.StateProvinceName) ||
-                                           Model.ErpBillingAddressModel.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.ZipPostalCode))
+                                            @if (Model.ErpBillingAddressModel.StateProvinceEnabled && 
+                                                !string.IsNullOrEmpty(Model.ErpBillingAddressModel.StateProvinceName) || 
+                                                Model.ErpBillingAddressModel.ZipPostalCodeEnabled && 
+                                                !string.IsNullOrEmpty(Model.ErpBillingAddressModel.ZipPostalCode))
                                             {
                                                 <text>,</text>
                                             }
                                         }
-                                        @if (Model.ErpBillingAddressModel.StateProvinceEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.StateProvinceName))
+                                        @if (Model.ErpBillingAddressModel.StateProvinceEnabled && 
+                                            !string.IsNullOrEmpty(Model.ErpBillingAddressModel.StateProvinceName))
                                         {
                                             @Model.ErpBillingAddressModel.StateProvinceName
-                                            @if (Model.ErpBillingAddressModel.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.ZipPostalCode))
+                                            @if (Model.ErpBillingAddressModel.ZipPostalCodeEnabled && 
+                                                !string.IsNullOrEmpty(Model.ErpBillingAddressModel.ZipPostalCode))
                                             {
                                                 <text>,</text>
                                             }
                                         }
-                                        @if (Model.ErpBillingAddressModel.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpBillingAddressModel.ZipPostalCode))
+                                        @if (Model.ErpBillingAddressModel.ZipPostalCodeEnabled && 
+                                            !string.IsNullOrEmpty(Model.ErpBillingAddressModel.ZipPostalCode))
                                         {
                                             @Model.ErpBillingAddressModel.ZipPostalCode
                                         }
@@ -280,7 +304,6 @@
                             </div>
                         }
                     </div>
-
                     <div class="shipping-info-wrap">
                         <div class="shipping-info">
                             <div class="title">
@@ -351,18 +374,19 @@
                                             @Model.ErpShippingAddressModel.Address2
                                         </li>
                                     }
-                                    @if (AddressSettings.CityEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.City) ||
-                                   AddressSettings.CountyEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.County) ||
-
-                                   AddressSettings.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.ZipPostalCode))
+                                    @if (AddressSettings.CityEnabled && 
+                                        !string.IsNullOrEmpty(Model.ErpShippingAddressModel.City) ||
+                                        AddressSettings.CountyEnabled && 
+                                        !string.IsNullOrEmpty(Model.ErpShippingAddressModel.County) ||
+                                        AddressSettings.ZipPostalCodeEnabled && 
+                                        !string.IsNullOrEmpty(Model.ErpShippingAddressModel.ZipPostalCode))
                                     {
                                         <li class="city-state-zip">
                                             @if (AddressSettings.CityEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.City))
                                             {
                                                 @Model.ErpShippingAddressModel.City
                                                 @if (AddressSettings.CountyEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.County) ||
-
-                                               AddressSettings.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.ZipPostalCode))
+                                                AddressSettings.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.ZipPostalCode))
                                                 {
                                                     <text>,</text>
                                                 }
@@ -370,13 +394,11 @@
                                             @if (AddressSettings.CountyEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.County))
                                             {
                                                 @Model.ErpShippingAddressModel.County
-                                                @if (
-                                               AddressSettings.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.ZipPostalCode))
+                                                @if (AddressSettings.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.ZipPostalCode))
                                                 {
                                                     <text>,</text>
                                                 }
                                             }
-
                                             @if (AddressSettings.ZipPostalCodeEnabled && !string.IsNullOrEmpty(Model.ErpShippingAddressModel.ZipPostalCode))
                                             {
                                                 @Model.ErpShippingAddressModel.ZipPostalCode
@@ -393,17 +415,17 @@
                                         </li>
                                     }
                                     if (!string.IsNullOrEmpty(Model.ErpPickUpAddressModel.City) ||
-                                    !string.IsNullOrEmpty(Model.ErpPickUpAddressModel.County) ||
-                                    !string.IsNullOrEmpty(Model.ErpPickUpAddressModel.StateProvinceName) ||
-                                    !string.IsNullOrEmpty(Model.ErpPickUpAddressModel.ZipPostalCode))
+                                        !string.IsNullOrEmpty(Model.ErpPickUpAddressModel.County) ||
+                                        !string.IsNullOrEmpty(Model.ErpPickUpAddressModel.StateProvinceName) ||
+                                        !string.IsNullOrEmpty(Model.ErpPickUpAddressModel.ZipPostalCode))
                                     {
                                         <li class="city-state-zip">
                                             @if (!string.IsNullOrEmpty(Model.ErpPickUpAddressModel.City))
                                             {
                                                 @Model.ErpPickUpAddressModel.City
                                                 @if (!string.IsNullOrEmpty(Model.ErpPickUpAddressModel.County) ||
-                                               !string.IsNullOrEmpty(Model.ErpPickUpAddressModel.StateProvinceName) ||
-                                               !string.IsNullOrEmpty(Model.ErpPickUpAddressModel.ZipPostalCode))
+                                                    !string.IsNullOrEmpty(Model.ErpPickUpAddressModel.StateProvinceName) ||
+                                                    !string.IsNullOrEmpty(Model.ErpPickUpAddressModel.ZipPostalCode))
                                                 {
                                                     <text>,</text>
                                                 }
@@ -412,7 +434,7 @@
                                             {
                                                 @Model.ErpPickUpAddressModel.County
                                                 @if (!string.IsNullOrEmpty(Model.ErpPickUpAddressModel.StateProvinceName) ||
-                                               !string.IsNullOrEmpty(Model.ErpPickUpAddressModel.ZipPostalCode))
+                                                    !string.IsNullOrEmpty(Model.ErpPickUpAddressModel.ZipPostalCode))
                                                 {
                                                     <text>,</text>
                                                 }
@@ -616,7 +638,6 @@
                 }
 
                 <div class="order-summary-content">
-
                     <div class="section products">
                         <div class="title">
                             <strong>@T("Order.Product(s)")</strong>
@@ -691,7 +712,8 @@
                                                         @Html.Raw(item.RentalInfo)
                                                     </div>
                                                 }
-                                                @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderDetailsProductLine, additionalData = item })
+                                                @await Component.InvokeAsync(typeof(WidgetViewComponent), 
+                                                new { widgetZone = PublicWidgetZones.OrderDetailsProductLine, additionalData = item })
                                             </td>
                                             <td class="unit-price">
                                                 <span class="product-unit-price">@item.UnitPriceWithOutDiscountExcTax</span>
@@ -735,16 +757,13 @@
                                 </div>
                             }
                         </div>
-
                         <div class="row">
                             <div class="float-left" style="float: left">
-
                                 <div class="cart-collaterals">
                                     <div class="deals">
                                         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderSummaryContentDeals, additionalData = Model })
                                     </div>
                                 </div>
-
                             </div>
                             <div class="float-right" style="float:right">
                                 <div class="total-info">
@@ -769,7 +788,6 @@
                                                     </td>
                                                 </tr>
                                             }
-
                                             <tr>
                                                 <td class="cart-total-left">
                                                     <label>@T("Order.Shipping"):</label>
@@ -778,7 +796,6 @@
                                                     <span>@Model.OrderShipping</span>
                                                 </td>
                                             </tr>
-
                                             @if (!string.IsNullOrEmpty(Model.PaymentMethodAdditionalFee))
                                             {
                                                 <tr>
@@ -878,7 +895,6 @@
                                             }
                                             else if (isQuoteExpired)
                                             {
-
                                                 <input type="button" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpQuoteOrder.Reorder.Requote")" class="button-1 re-order-button quote-order-details-reorder-button" onclick="CheckItemsInCart('@Model.Id')" />
                                             }
                                             else
@@ -904,24 +920,19 @@
                                         }
                                     }
 
-                                    @*     @if (orderSettings.IsReturnRequestAllowed && !isQuoteOrder)
-                                {
-                                <input type="button" value="@T("Order.ReturnItems")" class="button-2 return-items-button" onclick="setLocation('@Url.RouteUrl("ReturnRequest", new { orderId=Model.Id }) ')" />
-                                }*@
+                                    @*@if (orderSettings.IsReturnRequestAllowed && !isQuoteOrder)
+                                    {
+                                        <input type="button" value="@T("Order.ReturnItems")" class="button-2 return-items-button" onclick="setLocation('@Url.RouteUrl("ReturnRequest", new { orderId=Model.Id }) ')" />
+                                    }*@
 
-                                    @*  <button type="button" class="button-1 re-order-button" onclick="setLocation('@Url.RouteUrl("ReOrder", new { orderId = Model.Id })')">@T("Order.Reorder")</button>
-
-                                <button type="button" class="button-2 return-items-button" onclick="setLocation('@Url.RouteUrl("ReturnRequest", new { orderId = Model.Id })')">@T("Order.ReturnItems")</button>
-                                *@
+                                    @*<button type="button" class="button-1 re-order-button" onclick="setLocation('@Url.RouteUrl("ReOrder", new { orderId = Model.Id })')">@T("Order.Reorder")</button>
+                                    <button type="button" class="button-2 return-items-button" onclick="setLocation('@Url.RouteUrl("ReturnRequest", new { orderId = Model.Id })')">@T("Order.ReturnItems")</button>*@
                                 </div>
-
                             </div>
-
                         </div>
                     </div>
                 </div>
             }
-
         </div>
     </div>
 
@@ -954,13 +965,12 @@
                     $("#orderId").val("")
                 }
 
-
                 function clearCartAndReoder() {
                     var orderId = $("#orderId").val();
                     B2BAjaxCart.disableAddToCartButton(orderId);
                     B2BAjaxCart.disablePopUpAddToCartButton();
                     displayAjaxLoading(true);
-                    B2BAjaxCart.b2bClearCart()
+                    B2BAjaxCart.b2BClearCart();
                     var reorderActionUrl = "/ReOrder/" + orderId + "";
                     setLocation(reorderActionUrl);
                 }
@@ -972,7 +982,7 @@
                     displayAjaxLoading(true);
 
                     if ($(popUpData).attr('id') == 'quoteOrderDetailsPopupClearCartButton') {
-                        B2BAjaxCart.b2BClearCart(false)
+                        B2BAjaxCart.b2BClearCart(false);
                     }
 
                     var reorderActionUrl = "/ReOrder/" + orderId + "";
@@ -981,13 +991,9 @@
             </script>
         </form>
     </div>
-
 </div>
 
-
-
 <script asp-location="Footer">
-
     function reOrderLinkGenerator(orderId) {
         $.ajax({
             cache: false,
@@ -995,7 +1001,6 @@
             dataType: "json",
             url: "/IsItemsInCart/",
             success: function (response) {
-
                 if (!response.success) {
                     B2BAjaxCart.disableReorderButton(orderId);
                     var reorderActionUrl = "/ReOrder/" + orderId + "";
@@ -1017,7 +1022,6 @@
     }
 
     function CheckItemsInCart(orderId) {
-        console.log("dskmf")
         $.ajax({
             cache: false,
             type: "GET",

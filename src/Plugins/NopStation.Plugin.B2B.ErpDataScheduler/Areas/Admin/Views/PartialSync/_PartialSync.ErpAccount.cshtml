@@ -1,0 +1,82 @@
+@using NopStation.Plugin.B2B.ErpDataScheduler.Areas.Admin.Models.PartialSyncModels
+
+@model ErpAccountPartialSyncModel
+
+<div class="card-body">
+    <form id="syncErpAccount">
+        <div class="row">
+            <div class="col-12 erp-account-sync-notification"></div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="ErpAccountNumber" />
+            </div>
+            <div class="col-md-9">
+                <nop-editor asp-for="ErpAccountNumber" />
+            </div>
+        </div>
+        <div class="form-gorup row">
+            <div class="col-md-3"></div>
+            <div class="col-md-9">
+                <button class="btn btn-primary" type="submit">@T("Plugin.Misc.NopStation.ErpDataScheduler.PartialSync.SyncNow")</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script asp-location="Footer">
+    $(function(){
+        $("#syncErpAccount").on("submit", function (e) {
+            e.preventDefault();
+
+            let elem = this;
+
+            let postData = {
+                ErpAccountNumber: $(this).find("[name=@Html.IdFor(model => model.ErpAccountNumber)]").val()
+            }
+
+            if (postData.ErpAccountNumber === '') {
+                $(".erp-account-sync-notification").html(``);
+                $(".erp-account-sync-notification")
+                    .html(`<div class="alert alert-danger mb-2" role="alert">@T("Plugin.Misc.NopStation.ErpDataScheduler.PartialSync.Error.ErpAccountNumberEmptyInputError")</div>`);
+                setTimeout(() => {
+                    $(".erp-account-sync-notification").fadeOut('slow', function() {
+                        $(this).html('').show();
+                    });
+                }, 3000);
+                return;
+            }
+
+            addAntiForgeryToken(postData);
+
+            $.ajax({
+                url: '@Url.Action("SyncErpAccount", "PartialSync", new { area = "Admin" })',
+                method: "POST",
+                cache: false,
+                data: postData,
+                beforeSend: function () {
+                    $(elem).find("button").prepend(`<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" style="margin-bottom: 3px;">
+                                <path fill="currentColor" d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" opacity="0.25"></path>
+                                <path fill="currentColor" d="M10.14,1.16a11,11,0,0,0-9,8.92A1.59,1.59,0,0,0,2.46,12,1.52,1.52,0,0,0,4.11,10.7a8,8,0,0,1,6.66-6.61A1.42,1.42,0,0,0,12,2.69h0A1.57,1.57,0,0,0,10.14,1.16Z">
+                                    <animateTransform attributeName="transform" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"></animateTransform>
+                                </path>
+                            </svg>`);
+                    $(elem).find("button").attr("disabled", true);
+                }
+            }).done(function (res) {
+                if (res.Success) {
+                    $(".erp-account-sync-notification").html(`<div class="alert alert-success mb-2" role="alert">${res.Message}</div>`);
+                    $(elem).trigger("reset");
+                }
+                else {
+                    $(".erp-account-sync-notification").html(`<div class="alert alert-danger mb-2" role="alert">${res.Message}</div>`);
+                }
+            }).fail(function (err) {
+                console.error(err);
+            }).always(function () {
+                $(elem).find("button").find('svg').remove();
+                $(elem).find("button").attr("disabled", false);
+            });
+        });
+    });
+</script>

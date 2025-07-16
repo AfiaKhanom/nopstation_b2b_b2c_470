@@ -2,20 +2,13 @@
 using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
 
-namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Factories
+namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Factories;
+
+public interface IErpSpecialPriceModelFactory
 {
-    public interface IErpSpecialPriceModelFactory
-    {
-        Task<ErpSpecialPriceSearchModel> PrepareErpProductPricingSearchModel(ErpSpecialPriceSearchModel searchModel, int productId);
+    Task<ErpSpecialPriceSearchModel> PrepareErpProductSpecialPriceSearchModel(ErpSpecialPriceSearchModel searchModel, int productId);
 
-        Task<ErpSpecialPriceListModel> PrepareErpProductPricingListModel(ErpSpecialPriceSearchModel searchModel);
+    Task<ErpSpecialPriceListModel> PrepareErpProductSpecialPriceListModel(ErpSpecialPriceSearchModel searchModel);
 
-        Task<ErpSpecialPriceModel> PrepareErpProductPricingModel(ErpSpecialPriceModel model, ErpSpecialPrice erpProductPricing);
-
-        //byte[] ExportB2BPriceGroupProductPricingToXlsx(List<int> ids);
-
-        //byte[] ExportB2BPriceGroupProductPricingToXlsxAll(ProductSearchModel searchModel);
-
-        //void ImportB2BPriceGroupProductPricingFromXlsx(Stream stream);
-    }
+    Task<ErpSpecialPriceModel> PrepareErpProductSpecialPriceModel(ErpSpecialPriceModel model, ErpSpecialPrice erpProductPricing);
 }

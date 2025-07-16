@@ -25,4 +25,6 @@ public class ErpGetRequestModel
     public string UrlExtention { get; set; }
 
     public bool SkipTransform { get; set; }
+
+    public string CompanyPassword { get; set; }
 }

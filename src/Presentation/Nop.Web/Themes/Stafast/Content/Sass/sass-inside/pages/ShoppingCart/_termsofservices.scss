@@ -1,0 +1,11 @@
+
+.terms-of-service {
+    margin: 10px 0;
+    text-align:left;
+    input[type=checkbox] {
+        & ~ label {
+            display: inline;
+            font-weight: 500;
+        }
+    }
+}

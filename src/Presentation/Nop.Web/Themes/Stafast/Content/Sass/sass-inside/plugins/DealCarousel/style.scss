@@ -1,0 +1,223 @@
+﻿@import "../../variables/_breakpoint.scss";
+@import "Deals_Carousel_Countdown";
+
+.dealoftheday-container {
+
+    .dealoftheday-content {
+        display: flex;
+        position: relative;
+
+        @media (max-width: $sm - 1) {
+            flex-wrap: wrap;
+
+            .deals-left-contents,
+            .deals-right-contents {
+                width: 100%;
+            }
+        }
+
+        @media (min-width: $sm) {
+            .deals-left-contents {
+                width: 30%;
+                margin-right: 10px;
+            }
+
+            .deals-right-contents {
+                width: 67%;
+            }
+        }
+
+        @media (min-width: $lg) {
+            .deals-left-contents {
+                width: 24%;
+            }
+
+            .deals-right-contents {
+                width: 74.5%;
+            }
+
+            flex-direction: row;
+            position: unset;
+            gap: 13px;
+        }
+
+        .deals-products {
+            position: relative;
+
+            @media (min-width: $md) {
+                margin: 0 -10px;
+            }
+
+            .see-more {
+                background: var(--white);
+                padding: 2px 5px;
+                border-radius: 3px;
+                margin-top: 4px;
+                display: inline-block;
+                color: var(--primary-color);
+
+                &::after {
+                    content: "...";
+                }
+            }
+
+            > .title {
+                padding: 20px 0;
+
+                @media (min-width: $md) {
+                    padding: 0;
+                    padding-bottom: 20px;
+                }
+
+                strong {
+                    font-size: 16px;
+                    font-weight: 700;
+                    line-height: 21px;
+                    letter-spacing: 0em;
+                    text-align: left;
+                    color: var(--white);
+
+                    @media (min-width: $xs) {
+                        text-transform: uppercase;
+                        font-size: 24px;
+                    }
+                }
+            }
+
+            .swiper-slide {
+                width: 100%;
+
+                @media (min-width: $xs) {
+                    width: 50%;
+                }
+
+                @media (min-width: $lg) {
+                    width: 33.3333%;
+                }
+
+                .product-item {
+                    position: relative;
+                    border: none;
+                    border-radius: 10px;
+                    padding: 15px 10px;
+                    text-align: left;
+                    display: flex;
+                    flex-wrap: wrap;
+                    margin: 0 7px 12px;
+
+                    &:nth-child(even) {
+                        margin-bottom: 0;
+                    }
+
+                    .picture {
+                        width: 40%;
+                        margin-bottom: 0;
+
+                        a::before {
+                            padding-top: 100%;
+                        }
+
+
+                        img {
+                            top: 0;
+                            transform: translate(-50%,0);
+                            object-fit: scale-down;
+                            bottom: 0;
+                            object-position: top center;
+                            height: 100%;
+                        }
+                    }
+
+                    .details {
+                        width: 60%;
+                        padding: 0 0 0 10px;
+                        text-align: left;
+
+                        .sku {
+                            font-size: 12px;
+                        }
+
+                        .product-title {
+                            font-size: 14px;
+                            height: 28px;
+                            font-weight: 500;
+                            margin-bottom: 10px;
+                        }
+
+                        .prices {
+                            justify-content: start;
+                            flex-wrap: wrap;
+
+                            .price {
+                                font-size: 14px;
+                                font-weight: 600;
+
+                                @media (max-width: $sm - 1) {
+                                    font-size: 12px;
+                                }
+                            }
+                        }
+
+                        .rating {
+                            margin: 0 0 10px;
+                        }
+
+                        .buy-quantity-wrapper {
+                            .buynow-btn {
+                                width: 90%;
+                                font-size: 14px;
+                                font-weight: 500;
+                                padding: 10px 5px;
+                                border-radius: 5px;
+                            }
+
+                            .qty-wrapper {
+                                display: none;
+                            }
+                        }
+                    }
+
+                    .buttons {
+                        display: none;
+                    }
+                    
+                    .button-wrapper {
+
+                        .add-to-cart {
+                            position: absolute;
+                            bottom: 20px;
+                        }
+                    }
+
+                    &::after {
+                        content: "";
+                        display: block;
+                        clear: both;
+                    }
+
+                    &:hover {
+                        .buttons {
+                            opacity: 0;
+                        }
+                    }
+                }
+            }
+
+            .swiper-button-next {
+                transform: translate(20px, 12px);
+            }
+
+            .swiper-button-prev {
+                transform: translate(-20px, 12px);
+            }
+        }
+    }
+}
+
+.dealoftheday-container.right {
+    .dealoftheday-content {
+        @media (min-width: $md) {
+            flex-direction: row-reverse;
+        }
+    }
+}

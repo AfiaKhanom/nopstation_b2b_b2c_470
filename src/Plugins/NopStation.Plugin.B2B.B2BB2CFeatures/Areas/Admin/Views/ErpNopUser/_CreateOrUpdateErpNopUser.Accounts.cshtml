@@ -89,39 +89,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-7">
-                            <div class="form-group row">
-                                <div class="col-md-4">
-                                    <nop-label asp-for="CustomerRoleIds" />
-                                </div>
-                                <div class="col-md-8">
-                                    <nop-select asp-for="CustomerRoleIds" asp-items="Model.AvailableCustomerRoles" asp-multiple="true" />
-                                    <script>
-                                        $(document).ready(function () {
-                                            var rolesIdsInput =
-                                                $('#@Html.IdFor(model => model.CustomerRoleIds)')
-                                                    .data("kendoMultiSelect");
-                                            rolesIdsInput.setOptions({
-                                                customerRoleIdsInput: false,
-                                                filter: "contains"
-                                            });
-
-                                        @if (Model.AvailableCustomerRoles.Count == 0)
-                                        {
-                                            <text>
-                                                rolesIdsInput.setOptions({
-                                                    enable: false,
-                                                    placeholder: '@T("Admin.Catalog.Products.CustomerRoles.NoCustomerRolesAvailable")'
-                                                });
-                                                rolesIdsInput._placeholder();
-                                                rolesIdsInput._enable();
-                                            </text>
-                                        }
-                                                                                                                                                                                                                                                                                                                                });
-                                    </script>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="form-group row">
@@ -147,8 +114,7 @@
                     Filters = new List<FilterParameter> 
                     {
                         new FilterParameter(nameof(ErpNopUserSearchModel.AccountId),typeof(string)),
-                        new FilterParameter(nameof(ErpNopUserSearchModel.Email)),
-                        new FilterParameter(nameof(ErpNopUserSearchModel.CustomerRoleIds)),
+                        new FilterParameter(nameof(ErpNopUserSearchModel.Email))
                     },
                     ColumnCollection = new List<ColumnProperty>
                     {

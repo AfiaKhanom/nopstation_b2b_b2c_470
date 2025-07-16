@@ -1,25 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Nop.Core;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
 
-namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services.QuickOrderServices
+namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services.QuickOrderServices;
+
+public interface IQuickOrderTemplateService
 {
-    public interface IQuickOrderTemplateService
-    {
-        Task<IPagedList<QuickOrderTemplate>> GetAllQuickOrderTemplatesAsync(string name = null, int customerId = 0, DateTime? createdOnUtc = null,
-            int pageIndex = 0, int pageSize = int.MaxValue);
+    Task<IPagedList<QuickOrderTemplate>> GetAllQuickOrderTemplatesAsync(string name = null, int customerId = 0, DateTime? createdOnUtc = null,
+        int pageIndex = 0, int pageSize = int.MaxValue);
 
-        Task<QuickOrderTemplate> GetQuickOrderTemplateByIdAsync(int templateId);
+    Task<IList<QuickOrderTemplate>> GetAllQuickOrderTemplatesByCustomerIdAsync(int customerId = 0);
 
-        Task<QuickOrderTemplate> GetQuickOrderTemplateByIdWithoutTrackingAsync(int templateId);
+    Task<QuickOrderTemplate> GetQuickOrderTemplateByIdAsync(int templateId);
 
-        Task InsertQuickOrderTemplateAsync(QuickOrderTemplate quickOrderTemplate);
+    Task<QuickOrderTemplate> GetQuickOrderTemplateByIdWithoutTrackingAsync(int templateId);
 
-        Task UpdateQuickOrderTemplateAsync(QuickOrderTemplate quickOrderTemplate);
+    Task InsertQuickOrderTemplateAsync(QuickOrderTemplate quickOrderTemplate);
 
-        Task DeleteQuickOrderTemplateAsync(QuickOrderTemplate quickOrderTemplate);
+    Task UpdateQuickOrderTemplateAsync(QuickOrderTemplate quickOrderTemplate);
 
-       /* Task<bool> UpdateTotalPriceOfItemsUsingSqlAsync(int templateId);*/
-    }
+    Task DeleteQuickOrderTemplateAsync(QuickOrderTemplate quickOrderTemplate);
 }

@@ -279,7 +279,7 @@ public class D365BCService : ID365BCService
             new KeyValuePair<string, string>("Costing_Method", p.Costing_Method),
             new KeyValuePair<string, string>("Unit_Cost", p.Unit_Cost.ToString())
         },
-                Published = (!p.Blocked).ToString(),
+                Published = (!p.Blocked),
                 VendorCode = p.Vendor_No,
                 LastChangedDate = DateTime.Parse(p.Last_Date_Modified),
                 WarehouseNameOrCode = p.Shelf_No
@@ -338,7 +338,7 @@ public class D365BCService : ID365BCService
                     new KeyValuePair<string, string>("Costing_Method", product.Costing_Method ?? string.Empty)
                 },
                 TaxCategoryName = product.VAT_Prod_Posting_Group ?? string.Empty,
-                Published = (!product.Blocked).ToString().ToLower(),
+                Published = (!product.Blocked),
                 VendorCode = product.Vendor_No ?? string.Empty,
                 VendorName = string.Empty, // You might want to add vendor name lookup if needed
                 LastChangedDate = DateTime.TryParse(product.Last_Date_Modified, out var date) ? date : null,

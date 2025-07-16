@@ -106,7 +106,7 @@ public class ErpNopMapperService : IErpNopMapperService
                 new KeyValuePair<string, string>("Shelf_No", product.Shelf_No ?? string.Empty)
             },
             TaxCategoryName = product.VAT_Prod_Posting_Group ?? string.Empty,
-            Published = (!product.Blocked).ToString().ToLower(),
+            Published = (!product.Blocked),
             VendorCode = product.Vendor_No ?? string.Empty,
             LastChangedDate = DateTime.TryParse(product.Last_Date_Modified, out var date) ? date : null,
             WarehouseNameOrCode = product.Location_Filter ?? string.Empty

@@ -7,7 +7,6 @@ using Nop.Core.Infrastructure;
 using Nop.Services.Catalog;
 using Nop.Services.Customers;
 using Nop.Services.Orders;
-using Nop.Services.Security;
 using Nop.Web.Controllers;
 using Nop.Web.Factories;
 using NopStation.Plugin.B2B.B2BB2CFeatures.ActionFilters;
@@ -26,121 +25,111 @@ using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpSpecificationAttributeSer
 using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpWorkflowMessage;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ExportManager;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Services.Overriden;
-using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services.QuickOrderServices;
 using NopStation.Plugin.Misc.Core.Infrastructure;
 using Nop.Services.Common;
+using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpAccountCreditSyncFunctionality;
 
-namespace NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure
+namespace NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure;
+
+public class NopStartup : INopStartup
 {
-    public class NopStartup : INopStartup
+    /// <summary>
+    /// Add and configure any of the middleware
+    /// </summary>
+    /// <param name="services">Collection of service descriptors</param>
+    /// <param name="configuration">Configuration of the application</param>
+    public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
-        /// <summary>
-        /// Add and configure any of the middleware
-        /// </summary>
-        /// <param name="services">Collection of service descriptors</param>
-        /// <param name="configuration">Configuration of the application</param>
-        public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+        services.AddNopStationServices("NopStation.Plugin.B2B.B2BB2CFeatures");
+
+        //add view location expander
+        services.Configure<RazorViewEngineOptions>(options =>
         {
-            services.AddNopStationServices("NopStation.Plugin.B2B.B2BB2CFeatures");
+            options.ViewLocationExpanders.Add(new ViewLocationExpander());
+        });
 
-            //add view location expander
-            services.Configure<RazorViewEngineOptions>(options =>
-            {
-                options.ViewLocationExpanders.Add(new ViewLocationExpander());
-            });
+        //register services
+        services.AddScoped<ICommonHelper, CommonHelper>();
+        services.AddScoped<IB2BB2CWorkContext, B2BB2CWebWorkContext>();
+        services.AddScoped<ICustomerRegistrationService, B2BB2CCustomerRegistrationService>();
+        services.AddScoped<ICommonHelperService, CommonHelperService>();
+        services.AddScoped<IErpCustomerFunctionalityService, ErpCustomerFunctionalityService>();
+        services.AddScoped<IErpPriceSyncFunctionalityService, ErpPriceSyncFunctionalityService>();
+        services.AddScoped<IPriceCalculationService, OverridenPriceCalculationService>();
+        services.AddScoped<IProductService, OverridenProductService>();
+        services.AddScoped<IErpSpecificationAttributeService, ErpSpecificationAttributeService>();
 
-            //register services
-            services.AddScoped<ICommonHelper, CommonHelper>();
-            services.AddScoped<IB2BB2CWorkContext, B2BB2CWebWorkContext>();
-            services.AddScoped<ICustomerRegistrationService, B2BB2CCustomerRegistrationService>();
-            services.AddScoped<ICommonHelperService, CommonHelperService>();
-            services.AddScoped<IErpCustomerFunctionalityService, ErpCustomerFunctionalityService>();
-            services.AddScoped<IErpPriceSyncFunctionalityService, ErpPriceSyncFunctionalityService>();
-            services.AddScoped<IPriceCalculationService, OverridenPriceCalculationService>();
-            services.AddScoped<IProductService, OverridenProductService>();
-            services.AddScoped<IErpSpecificationAttributeService, ErpSpecificationAttributeService>();
+        services.AddScoped<IOverriddenOrderProcessingService, OverriddenOrderProcessingService>();
+        services.AddScoped<IOrderProcessingService, OverriddenOrderProcessingService>();
+        services.AddScoped<IAddressService, OverridenAddressService>();
 
+        services.AddScoped<IB2BRegisterModelFactory, B2BRegisterModelFactory>();
+        services.AddScoped<IErpShipToAddressModelFactory, ErpShipToAddressModelFactory>();
+        services.AddScoped<IErpAccountModelFactory, ErpAccountModelFactory>();
+        services.AddScoped<IErpSalesOrgModelFactory, ErpSalesOrgModelFactory>();
+        services.AddScoped<IErpNopUserModelFactory, ErpNopUserModelFactory>();
+        services.AddScoped<IErpInvoiceModelFactory, ErpInvoiceModelFactory>();
+        services.AddScoped<ISalesRepUserModelFactory, SalesRepUserModelFactory>();
 
-            services.AddScoped<IOverriddenOrderProcessingService, OverriddenOrderProcessingService>();
-            services.AddScoped<IOrderProcessingService, OverriddenOrderProcessingService>();
-            services.AddScoped<IAddressService, OverridenAddressService>();
-            services.AddScoped<IB2BB2CWorkContext, B2BB2CWebWorkContext>();
+        services.AddScoped<CustomerController, B2BB2CCustomerController>();
+        services.AddScoped<IErpGroupPriceCodeModelFactory, ErpGroupPriceCodeModelFactory>();
+        services.AddScoped<IErpGroupPriceModelFactory, ErpGroupPriceModelFactory>();
+        services.AddScoped<IErpSpecialPriceModelFactory, ErpSpecialPriceModelFactory>();
+        services.AddScoped<IErpOrderModelFactory, ErpOrderModelFactory>();
+        services.AddScoped<IErpSalesRepModelFactory, ErpSalesRepModelFactory>();
 
+        services.AddScoped<IErpAccountPublicModelFactory, ErpAccountPublicModelFactory>();
+        services.AddScoped<ICustomerModelFactory, Factories.OverridenCustomerModelFactory>();
+        services.AddScoped<IProductModelFactory, OverridenProductModelFactory>();
+        services.AddScoped<Nop.Web.Areas.Admin.Factories.ICustomerModelFactory, Areas.Admin.Factories.OverridenCustomerModelFactory>();
+        services.AddScoped<IErpLogsModelFactory, ErpLogsModelFactory>();
+        services.AddScoped<IErpCheckoutModelFactory, ErpCheckoutModelFactory>();
+        services.AddScoped<IErpOrderItemModelFactory, ErpOrderItemModelFactory>();
+        services.AddScoped<IErpProductModelFactory, ErpProductModelFactory>();
 
-            //register factories
-            services.AddScoped<IB2BRegisterModelFactory, B2BRegisterModelFactory>();
-            services.AddScoped<IErpShipToAddressModelFactory, ErpShipToAddressModelFactory>();
-            services.AddScoped<IErpAccountModelFactory, ErpAccountModelFactory>();
-            services.AddScoped<IErpSalesOrgModelFactory, ErpSalesOrgModelFactory>();
-            services.AddScoped<IErpNopUserModelFactory, ErpNopUserModelFactory>();
-            services.AddScoped<IErpInvoiceModelFactory, ErpInvoiceModelFactory>();
-            services.AddScoped<ISalesRepUserModelFactory, SalesRepUserModelFactory>();
+        services.AddScoped<IErpRegistrationApplicationModelFactory, ErpRegistrationApplicationModelFactory>();
 
-            services.AddScoped<CustomerController, B2BB2CCustomerController>();
-            services.AddScoped<IErpGroupPriceCodeModelFactory, ErpGroupPriceCodeModelFactory>();
-            services.AddScoped<IErpPriceGroupProductPricingModelFactory, ErpPriceGroupProductPricingModelFactory>();
-            services.AddScoped<IErpSpecialPriceModelFactory, ErpSpecialPriceModelFactory>();
-            services.AddScoped<IErpOrderModelFactory, ErpOrderModelFactory>();
-            services.AddScoped<IErpSalesRepModelFactory, ErpSalesRepModelFactory>();
+        services.AddScoped<OrderController, Controllers.OverridenOrderController>();
+        services.AddScoped<ShoppingCartController, OverridenShoppingCartController>();
 
-            services.AddScoped<IErpAccountPublicModelFactory, ErpAccountPublicModelFactory>();
-            services.AddScoped<ICustomerModelFactory, Factories.OverridenCustomerModelFactory>();
-            services.AddScoped<Nop.Web.Areas.Admin.Factories.ICustomerModelFactory, Areas.Admin.Factories.OverridenCustomerModelFactory>();
-            services.AddScoped<IErpActivityLogModelFactory, ErpActivityLogModelFactory>();
-            services.AddScoped<IErpCheckoutModelFactory, ErpCheckoutModelFactory>();
-            services.AddScoped<IErpOrderItemModelFactory, ErpOrderItemModelFactory>();
-            services.AddScoped<IErpProductModelFactory, ErpProductModelFactory>();
+        services.AddScoped<CheckoutController, ErpCheckoutController>();
+        services.AddScoped<Nop.Web.Areas.Admin.Controllers.ProductController, OverridenProductController>();
+        services.AddScoped<Nop.Web.Areas.Admin.Controllers.CustomerController, OverridenCustomerController>();
+        services.AddScoped<Nop.Web.Areas.Admin.Controllers.OrderController, Areas.Admin.Controllers.OverridenOrderController>();
 
-            services.AddScoped<IErpRegistrationApplicationModelFactory, ErpRegistrationApplicationModelFactory>();
+        services.AddScoped<IQuickOrderTemplateService, QuickOrderTemplateService>();
+        services.AddScoped<IQuickOrderItemService, QuickOrderItemService>();
+        services.AddScoped<IQuickOrderTemplateModelFactory, QuickOrderTemplateModelFactory>();
+        services.AddScoped<IQuickOrderItemModelFactory, QuickOrderItemModelFactory>();
 
-            //register controllers
-            services.AddScoped<OrderController, OverridenOrderController>();
-            services.AddScoped<ShoppingCartController, OverridenShoppingCartController>();
+        services.AddScoped<IErpOrderDetailsModelFactory, ErpOrderDetailsModelFactory>();
 
-            services.AddScoped<CheckoutController, ErpCheckoutController>();
-            services.AddScoped<Nop.Web.Areas.Admin.Controllers.ProductController, OverridenProductController>();
-            services.AddScoped<Nop.Web.Areas.Admin.Controllers.CustomerController, OverridenCustomerController>();
+        services.AddScoped<ICategoryProductsExportManager, CategoryProductsExportManager>();
 
-            // Quick Order 
-            services.AddScoped<IQuickOrderTemplateService, QuickOrderTemplateService>();
-            services.AddScoped<IQuickOrderItemService, QuickOrderItemService>();
-            services.AddScoped<IQuickOrderTemplateModelFactory, QuickOrderTemplateModelFactory>();
-            services.AddScoped<IQuickOrderItemModelFactory, QuickOrderItemModelFactory>();
-
-            services.AddScoped<IErpOrderDetailsModelFactory, ErpOrderDetailsModelFactory>();
-
-            // Permission 
-            services.AddScoped<IPermissionService, OverriddenPermissionService>();
-
-            //Export to excel
-            services.AddScoped<ICategoryProductsExportManager, CategoryProductsExportManager>();
-
-            // add custom action filter
-            services.Configure<MvcOptions>(options =>
-            {
-                options.Filters.Add<ErpSalesRepActionFilterAttribute>();
-                options.Filters.Add<ErpNopUserActionFilterAttribute>();
-            });
-
-            // Erp workflow message
-            services.AddScoped<IErpWorkflowMessageService, ErpWorkflowMessageService>();
-
-            services.AddScoped<IErpActivityLogsModelFactory, ErpActivityLogsModelFactory>();
-        }
-
-        /// <summary>
-        /// Configure the using of added middleware
-        /// </summary>
-        /// <param name="application">Builder for configuring an application's request pipeline</param>
-        public void Configure(IApplicationBuilder application)
+        // add custom action filter
+        services.Configure<MvcOptions>(options =>
         {
-
-        }
-
-        /// <summary>
-        /// Gets order of this startup configuration implementation
-        /// </summary>
-        public int Order => 30000;
+            options.Filters.Add<ErpSalesRepActionFilterAttribute>();
+            options.Filters.Add<ErpNopUserActionFilterAttribute>();
+        });
+        
+        services.AddScoped<IErpWorkflowMessageService, ErpWorkflowMessageService>();
+        services.AddScoped<IErpActivityLogsModelFactory, ErpActivityLogsModelFactory>();
+        services.AddScoped<IErpAccountCreditSyncFunctionality, ErpAccountCreditSyncFunctionality>();
     }
+
+    /// <summary>
+    /// Configure the using of added middleware
+    /// </summary>
+    /// <param name="application">Builder for configuring an application's request pipeline</param>
+    public void Configure(IApplicationBuilder application)
+    {
+
+    }
+
+    /// <summary>
+    /// Gets order of this startup configuration implementation
+    /// </summary>
+    public int Order => 30000;
 }

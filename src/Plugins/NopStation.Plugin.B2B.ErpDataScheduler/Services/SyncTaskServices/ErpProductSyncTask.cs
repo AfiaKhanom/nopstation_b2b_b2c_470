@@ -1,8 +1,10 @@
-﻿using NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskScheduler;
+﻿using NopStation.Plugin.B2B.ErpDataScheduler.Areas.Admin.Models.PartialSyncModels;
+using Quartz;
 
 namespace NopStation.Plugin.B2B.ErpDataScheduler.Services.SyncTaskServices;
 
-public partial class ErpProductSyncTask : ISyncTask
+[DisallowConcurrentExecution]
+public class ErpProductSyncTask : IJob
 {
     #region Fields
 
@@ -21,9 +23,22 @@ public partial class ErpProductSyncTask : ISyncTask
 
     #region Methods
 
-    public virtual async Task ExecuteAsync()
+    public async Task Execute(IJobExecutionContext context)
     {
-        await _erpProductSyncService.IsErpProductSyncSuccessfulAsync();
+        if (context.JobDetail.JobDataMap.TryGetBooleanValue(ErpDataSchedulerDefaults.JobShouldExecute, out var shouldExecute) && shouldExecute)
+        {
+            context.MergedJobDataMap.TryGetBoolean(ErpDataSchedulerDefaults.IsManualTrigger, out var isManualTrigger);
+            context.MergedJobDataMap.TryGetString(nameof(ErpProductPartialSyncModel.StockCode), out var stockCode);
+
+            var isIncrementalSync = false;
+
+            if (string.IsNullOrWhiteSpace(stockCode))
+            {
+                context.JobDetail.JobDataMap.TryGetBooleanValue(ErpDataSchedulerDefaults.IsIncrementalSync, out isIncrementalSync);
+            }
+
+            await _erpProductSyncService.IsErpProductSyncSuccessfulAsync(stockCode, isManualTrigger, isIncrementalSync, context.CancellationToken);
+        }
     }
 
     #endregion

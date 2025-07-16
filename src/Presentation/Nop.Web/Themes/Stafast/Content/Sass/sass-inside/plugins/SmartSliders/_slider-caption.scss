@@ -1,0 +1,55 @@
+﻿.swiper {
+    .swiper-slide {
+        position: relative;
+
+        .slider-caption {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translate(-50%, 0);
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+
+            .title {
+                font-size: clamp(20px, 4vw, 50px);
+                line-height: clamp(20px, 4vw, 50px);
+                font-weight: 700;
+                color: var(--primary-color);
+                margin-bottom: 10px;
+            }
+
+            .description {
+                font-size: clamp(12px, 2vw, 18px);
+                line-height: clamp(12px, 2vw, 18px);
+                font-weight: 700;
+                color: var(--primary-color);
+                margin-bottom: 10px;
+            }
+
+            .slider-button {
+                font-size: 16px;
+                padding: 7.5px 20px;
+                border-radius: 50px;
+                font-weight: 700;
+                display: inline-block;
+                color: var(--white);
+                background: var(--primary-color);
+            }
+
+            @media(min-width: $sm) {
+                top: 50%;
+                left: 7.5%;
+                transform: translate(0, -50%);
+
+                .title {
+                    margin-bottom: 15px;
+                }
+
+                .description {
+                    margin-bottom: 20px;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,114 @@
+.product-selectors {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 15px;
+
+    @media (max-width: $sm - 1) {
+        margin-left: -7.5px;
+        margin-right: -7.5px;
+    }
+
+    > div {
+        order: 0;
+
+        &.product-viewmode {
+            display: none;
+            order: 1;
+            margin-left: auto;
+            border: 2px solid var(--primary-color);
+            background: var(--white);
+            border-radius: 3px;
+            overflow: hidden;
+            letter-spacing: 0;
+
+            @media (min-width: $sm) {
+                display: block;
+
+                > span {
+                    display: none;
+                }
+            }
+
+            a {
+                font-size: 0;
+                line-height: 0;
+                padding: 8px 10px;
+                display: inline-block;
+                color: var(--primary-grey);
+
+                &.selected {
+                    background: var(--primary-color);
+                    color: var(--white);
+                }
+
+                &.list::before {
+                    content: "\e947";
+                }
+
+                &::before {
+                    font-family: 'icomoon' !important;
+                    content: "\e92a";
+                    font-size: 16px;
+                    display: inline-block;
+                    line-height: 1;
+                }
+            }
+        }
+
+        &.product-sorting,
+        &.product-page-size {
+            width: 50%;
+            padding: 7.5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            select {
+                box-shadow: none;
+                background-color: transparent;
+                text-align: center;
+            }
+
+            @media (max-width: $sm - 1) {
+                span:last-child {
+                    display: none;
+                }
+
+                span:first-child {
+                    display: block;
+                    margin-bottom: 4px;
+                    font-size: 12px;
+                    white-space: nowrap;
+                }
+
+                select {
+                    display: block;
+                    width: 100%;
+                }
+            }
+
+            @media (min-width: $sm) {
+                width: auto;
+                background: #fff;
+                margin-right: 10px;
+                box-shadow: 0 2px 4px #ddd;
+                border-radius: 5px;
+
+                span:first-child {
+                    margin-right: 4px;
+
+                    &::after {
+                        content: ":";
+                        display: inline;
+                    }
+                }
+
+                select {
+                    margin-right: 4px;
+                    padding-right: 40px;
+                }
+            }
+        }
+    }
+}

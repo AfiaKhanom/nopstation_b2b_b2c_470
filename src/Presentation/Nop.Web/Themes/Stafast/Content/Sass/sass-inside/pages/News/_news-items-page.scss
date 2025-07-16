@@ -1,0 +1,24 @@
+.html-news-item-page,
+.html-news-list-page {
+    .master-column-wrapper {
+        flex-direction: row-reverse;
+    }
+
+    .master-wrapper-page {
+        margin: 15px 0;
+    }
+}
+
+.news-list-page {
+    .news-item {
+        margin: 15px 0 0;
+
+        @media(min-width: $sm) {
+            width: calc(50% - 7.5px);
+        }
+
+        @media(min-width: $xl) {
+            width: calc(33.33% - 10px);
+        }
+    }
+}

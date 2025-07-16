@@ -1,0 +1,22 @@
+.mfp-container {
+    @media(max-width:$sm) {
+        .mfp-content {
+            top: 2% !important;
+            max-height: 95vh !important;
+            overflow: hidden auto;
+        }
+    }
+}
+
+@media(max-width:$sm) {
+    .mfp-bg {
+        position: fixed !important;
+        height: 100% !important;
+    }
+
+    .mfp-wrap {
+        top: 0 !important;
+        height: 100% !important;
+        position: fixed !important;
+    }
+}

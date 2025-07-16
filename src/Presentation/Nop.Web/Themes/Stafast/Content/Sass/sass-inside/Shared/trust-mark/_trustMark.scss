@@ -1,0 +1,113 @@
+.shipping-types-wrapper {
+    .shipping-types {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-column-gap: 8px;
+        grid-row-gap: 10px;
+        text-align: center;
+
+        @media (min-width: $md) {
+            grid-template-columns: repeat(4, 1fr);
+            grid-column-gap: 12px;
+        }
+
+        @media (max-width: $xs) {
+            grid-template-columns: repeat(1, 1fr);
+            text-align: left;
+        }
+
+        & > div {
+            display: flex;
+            text-align: center;
+
+            .shipping-type {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+                background-color: transparent;
+                padding: 12px 0;
+                width: 100%;
+                border-radius: 3px;
+
+                @media (max-width: $xs) {
+                    flex-direction: row;
+                    gap: 15px;
+                    margin-bottom: 15px;
+                }
+
+                @media (min-width: $sm) {
+                    padding: 12px 12px;
+                }
+
+                @media (min-width: $md) {
+                    flex-direction: row;
+                    padding: 28px 24px 28px 0;
+                    justify-content: flex-start;
+                    gap: 10px;
+                }
+
+                .shipping-type--icon {
+                    padding-bottom: 12px;
+
+                    @media (max-width: $xs) {
+                        width: 20%;
+                        padding-bottom: 0;
+                    }
+
+                    @media (min-width: $md) {
+                        width: 45px;
+                    }
+                }
+
+                .shipping-type--info {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-direction: column;
+                    text-align: center;
+
+                    @media (max-width: $xs) {
+                        justify-content: start;
+                        align-items: start;
+                        text-align: left;
+                        width: 80%;
+                    }
+
+                    @media (min-width: $md) {
+                        text-align: left;
+                        align-items: flex-start;
+                        padding-left: 8px;
+                        width: 100%;
+                    }
+
+                    h3 {
+                        text-align: center;
+                        font-size: 15px;
+                        display: -webkit-box;
+                        -webkit-box-orient: vertical;
+                        -webkit-line-clamp: 1;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+
+                        @media (min-width: $sm) {
+                            text-align: left;
+                        }
+                    }
+
+                    .shipping-type--desc {
+                        margin-top: 5px;
+
+                        @media (min-width: $sm) {
+                            display: -webkit-box;
+                            -webkit-box-orient: vertical;
+                            -webkit-line-clamp: 2;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

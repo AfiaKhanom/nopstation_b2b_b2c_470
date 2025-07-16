@@ -1,4 +1,6 @@
 ﻿@model ErpNopUserModel
+@using NopStation.Plugin.B2B.ERPIntegrationCore
+@using Nop.Core.Domain.Customers
 
 <div class="card-body">
 
@@ -6,7 +8,7 @@
         <div class="col-md-3">
             <nop-label asp-for="NopCustomerId" />
         </div>
-        @if (Model?.Id > 0)
+        @if (Model.Id > 0)
         {
             <div class="col-md-9 justify-content-center align-self-center">
                 <input type="hidden" id="NopCustomerId" name="NopCustomerId" value=@Model.NopCustomerId />
@@ -25,15 +27,62 @@
 
     <div class="form-group row">
         <div class="col-md-3">
+            <nop-label asp-for="ErpUserTypeId" />
+        </div>
+        <div class="col-md-9">
+            <nop-Select asp-for="ErpUserTypeId" asp-items="Model.AvailableErpUserTypes" asp-required="true" />
+            <span asp-validation-for="ErpUserTypeId"></span>
+        </div>
+    </div>
+
+    <div class="form-group row" id="customerRoleSection" hidden>
+        <div class="col-md-3">
+            <nop-label asp-for="SelectedCustomerRoleIds" />
+        </div>
+        <div class="col-md-9">
+            <div class="input-group-append input-group-required">
+                <div class="input-group">
+                    <nop-select asp-for="SelectedCustomerRoleIds" asp-items="Model.AvailableCustomerRoles" asp-multiple="true" />
+                </div>
+                <div class="input-group-btn">
+                    <nop-required />
+                </div>
+            </div>
+            <span asp-validation-for="SelectedCustomerRoleIds"></span>
+            <script>
+                $(document).ready(function () {
+                    var customerRoleIdsInput = $('#@Html.IdFor(model => model.SelectedCustomerRoleIds)');
+                    customerRoleIdsInput.setOptions({
+                        customerRoleIdsInput: false,
+                        filter: "contains"
+                    });
+
+                    @if (Model.AvailableCustomerRoles.Count == 0)
+                    {
+                        <text>
+                            customerRoleIdsInput.setOptions({
+                                enable: false,
+                                placeholder: '@T("Admin.Customers.Customers.Fields.CustomerRoles.NoRoles")'
+                            });
+                            customerRoleIdsInput._placeholder();
+                            customerRoleIdsInput._enable();
+                        </text>
+                    }
+                });
+            </script>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
             <nop-label asp-for="ErpAccountId" />
         </div>
-
 
         @if (Model.ErpAccountId > 0)
         {
             <div class="col-md-9">
                 <input type="hidden" id="ErpAccountId" name="ErpAccountId" value="@Model.ErpAccountId" />
-                <a asp-controller="ErpAccount" asp-action="ErpAccountEdit" asp-route-id="@Model.ErpAccountId">@Model.ErpAccount</a>
+                <a asp-controller="ErpAccount" asp-action="ErpAccountEdit" asp-route-id="@Model.ErpAccountId">@Model.ErpAccountInfo</a>
             </div>
         }
         else
@@ -96,8 +145,6 @@
                 <span asp-validation-for="ErpAccountId" id="validationMessageErpAccountId"></span>
             </div>
         }
-
-
     </div>
 
     <div class="form-group row">
@@ -107,54 +154,6 @@
         <div class="col-md-9">
             <nop-Select asp-for="ErpShipToAddressId" asp-items="Model.AvailableAddresses" asp-required="true" />
             <span asp-validation-for="ErpShipToAddressId"></span>
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <div class="col-md-3">
-            <nop-label asp-for="SelectedCustomerRoleIds" />
-        </div>
-
-        <div class="col-md-9">
-            <div class="input-group-append input-group-required">
-                <div class="input-group">
-                    <nop-select asp-for="SelectedCustomerRoleIds" asp-items="Model.AvailableCustomerRoles" asp-multiple="true" />
-                </div>
-                <div class="input-group-btn">
-                    <nop-required />
-                </div>
-            </div>
-            <span asp-validation-for="SelectedCustomerRoleIds"></span>
-            <script>
-                $(document).ready(function () {
-                    var customerRoleIdsInput = $('#@Html.IdFor(model => model.SelectedCustomerRoleIds)').data("kendoMultiSelect");
-                    customerRoleIdsInput.setOptions({
-                        customerRoleIdsInput: false,
-                        filter: "contains"
-                    });
-
-                @if (Model.AvailableCustomerRoles.Count == 0)
-                {
-                    <text>
-                        customerRoleIdsInput.setOptions({
-                            enable: false,
-                            placeholder: '@T("Admin.Customers.Customers.Fields.CustomerRoles.NoRoles")'
-                        });
-                        customerRoleIdsInput._placeholder();
-                        customerRoleIdsInput._enable();
-                    </text>
-                }});
-            </script>
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <div class="col-md-3">
-            <nop-label asp-for="ErpUserTypeId" />
-        </div>
-        <div class="col-md-9">
-            <nop-Select asp-for="ErpUserTypeId" asp-items="Model.AvailableErpUserTypes" asp-required="true" />
-            <span asp-validation-for="ErpUserTypeId"></span>
         </div>
     </div>
 
@@ -193,14 +192,13 @@
 
 <nop-alert asp-alert-id="statesAlert" asp-alert-message="@T("Admin.Common.Alert.States.Failed")" />
 
-
 <script>
     // Function to update the ErpShipToAddressId dropdown
     function updateErpShipToAddresses(accountId) {
         $.ajax({
             type: 'GET',
-            url: '@Url.Action("ShipToAddressDropdownList", "ErpNopUser")', // Replace with the actual controller and action names if necessary
-            data: { erpAccountId: accountId },
+            url: '@Url.Action("ShipToAddressDropdownList", "ErpNopUser")',
+            data: { erpAccountId: accountId, customerId: @Model.NopCustomerId },
             success: function (data) {
                 // Clear existing options in the ErpShipToAddressId dropdown
                 $('#ErpShipToAddressId').empty();
@@ -228,11 +226,119 @@
         updateErpShipToAddresses(selectedAccountId);
     });
 
+    // Store all available roles with their original state
+    var allAvailableRoles = [];
+    var registeredRoleId = null;
+
     // Initialize the ErpShipToAddressId dropdown with the initial value of AccountId
     $(document).ready(function () {
         // Get the initial value of AccountId
         var initialAccountId = $('#ErpAccountId').val();
         // Call the method to update the ErpShipToAddressId dropdown
         updateErpShipToAddresses(initialAccountId);
+
+        // Store all available roles from the select element
+        var customerRoleSelect = $('#@Html.IdFor(model => model.SelectedCustomerRoleIds)');
+        customerRoleSelect.find('option').each(function() {
+            var option = $(this);
+            allAvailableRoles.push({
+                value: option.val(),
+                text: option.text()
+            });
+
+            // Find and store registered role ID
+            if (option.text().includes('@NopCustomerDefaults.RegisteredRoleName')) {
+                registeredRoleId = option.val();
+            }
+        });
+
+        // Add event listener for customer selection change
+        $('#@Html.IdFor(model => model.NopCustomerId)').on('change', handleCustomerChange);
+
+        // Trigger the user type change handler with a slight delay
+        setTimeout(function() {
+            handleUserTypeChange(true); // true indicates initial load
+        }, 100);
     });
+
+    // Handle customer dropdown change
+    function handleCustomerChange() {
+        var customerId = $('#@Html.IdFor(model => model.NopCustomerId)').val();
+
+        if (!customerId || customerId === '0') {
+            // If no customer is selected, reset the customer role selection
+            var customerRoleSelect = $('#@Html.IdFor(model => model.SelectedCustomerRoleIds)');
+            customerRoleSelect.val(null).trigger('change');
+        } else {
+            // If a customer is selected, ensure the handleUserTypeChange function is called
+            // which will ensure the Registered role is selected
+            handleUserTypeChange(false);
+        }
+    }
+
+    // Attach the change event handler for user type
+    $('#ErpUserTypeId').on('change', function() {
+        handleUserTypeChange(false);
+    });
+
+    // Handle ErpUserTypeId change
+    function handleUserTypeChange(isInitialLoad) {
+        var selectedUserType = $('#ErpUserTypeId').val();
+        var customerRoleSelect = $('#@Html.IdFor(model => model.SelectedCustomerRoleIds)');
+        var customerId = $('#@Html.IdFor(model => model.NopCustomerId)').val();
+
+        // If no user type is selected or it's the default "0" value, hide the customer role section
+        if (!selectedUserType || selectedUserType === '0') {
+            $('#customerRoleSection').attr('hidden', 'hidden');
+            return;
+        }
+
+        // Show the customer roles section by removing the hidden attribute
+        $('#customerRoleSection').removeAttr('hidden');
+
+        // Ensure Select2 container has 100% width
+        $('.select2-container').css('width', '100%');
+
+        // Get currently selected role IDs
+        var selectedRoleIds = customerRoleSelect.val() || [];
+
+        // Filter roles based on user type without recreating the dropdown
+        var filteredRoles = allAvailableRoles.filter(function(role) {
+            if (selectedUserType === '@((int)ErpUserType.B2BUser)') {
+                return !role.text.includes('@ERPIntegrationCoreDefaults.B2CCustomerRole');
+            } else if (selectedUserType === '@((int)ErpUserType.B2CUser)') {
+                return !role.text.includes('@ERPIntegrationCoreDefaults.B2BCustomerRole');
+            }
+            return true;
+        });
+
+        // Clear the dropdown and add filtered options
+        customerRoleSelect.empty();
+        filteredRoles.forEach(function(role) {
+            customerRoleSelect.append(new Option(role.text, role.value, false, selectedRoleIds.includes(role.value)));
+        });
+
+        // Ensure registered role is selected if we have a customer
+        if (customerId && customerId !== '0' && registeredRoleId) {
+            // Get current selections after filtering
+            var currentSelections = customerRoleSelect.val() || [];
+
+            // Add registered role if not already selected
+            if (!currentSelections.includes(registeredRoleId)) {
+                currentSelections.push(registeredRoleId);
+                customerRoleSelect.val(currentSelections);
+            }
+        }
+
+        // If no roles are selected, select registered role by default
+        if ((!customerRoleSelect.val() || customerRoleSelect.val().length === 0) && registeredRoleId) {
+            customerRoleSelect.val([registeredRoleId]);
+        }
+
+        // Only trigger change if this isn't the initial load
+        // This prevents the Select2 from re-rendering unnecessarily
+        if (!isInitialLoad) {
+            customerRoleSelect.trigger('change');
+        }
+    }
 </script>

@@ -1,0 +1,25 @@
+.rating {
+    background: url(../images/rating-1.png) repeat-x;
+    width: 50px;
+    height: 10px;
+    background-size: 10px;
+    margin-bottom: 5px;
+
+    div {
+        background: url(../images/rating-2.png) repeat-x;
+        height: 10px;
+        background-size: 10px;
+        font-size:0;
+    }
+
+    @media (min-width: $md) {
+        width: 65px;
+        height: 13px;
+        background-size: 13px;
+
+        div {
+            height: 13px;
+            background-size: 13px;
+        }
+    }
+}

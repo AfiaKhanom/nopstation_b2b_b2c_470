@@ -1,0 +1,40 @@
+.quickview-popup {
+    z-index: 9999 !important;
+}
+
+.quickview-popup {
+
+    .mfp-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .mfp-content {
+            max-width: 745px;
+            max-height: 90vw;
+            top: 10%;
+            left: 50%;
+            position: absolute !important;
+            transform: translate(-50%, 0);
+
+            .qv-modal {
+                position: relative;
+
+                .mfp-close {
+                    top: 0;
+                    height: 34px;
+                    line-height: 1;
+                    color: var(--white);
+                    font-weight: 500;
+                    font-family: 'Lato';
+                }
+            }
+
+            #product-details-form {
+                max-height: calc(100vh - 200px);
+                overflow: auto;
+                padding: 0 7.5px;
+            }
+        }
+    }
+}

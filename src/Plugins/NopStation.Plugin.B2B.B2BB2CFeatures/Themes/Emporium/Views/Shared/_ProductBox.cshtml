@@ -1,0 +1,300 @@
+﻿@model ProductOverviewModel
+
+@using Nop.Core
+@using Nop.Core.Domain.Catalog
+@using Nop.Core.Domain.Orders
+@using Nop.Core.Domain.Tax
+
+@inject CatalogSettings catalogSettings
+@inject IViewComponentSelector viewComponentSelector
+@inject IWorkContext workContext
+
+@{
+    //prepare "Add to cart" AJAX link
+    var addtocartlink = "";
+    var shoppingCartTypeId = (int)ShoppingCartType.ShoppingCart;
+    var quantity = 1;
+    if (Model.ProductPrice.ForceRedirectionAfterAddingToCart)
+    {
+        addtocartlink = Url.RouteUrl("AddProductToCart-Catalog", new { productId = Model.Id, shoppingCartTypeId = shoppingCartTypeId, quantity = quantity, forceredirection = Model.ProductPrice.ForceRedirectionAfterAddingToCart });
+    }
+    else
+    {
+        addtocartlink = Url.RouteUrl("AddProductToCart-Catalog", new { productId = Model.Id, shoppingCartTypeId = shoppingCartTypeId, quantity = quantity });
+    }
+}
+<div class="product-item" data-productid="@Model.Id">
+    @if (catalogSettings.ShowSkuOnCatalogPages && !string.IsNullOrEmpty(Model.Sku))
+    {
+        <div class="sku">
+            @Model.Sku
+        </div>
+    }
+    <div class="picture">
+        @if (Model.PictureModels.Count > 1)
+        {
+            <div class="swiper" id="swiper-@Model.Id" dir="@Html.GetUIDirection(!await Html.ShouldUseRtlThemeAsync())">
+                <div class="swiper-wrapper">
+                    @foreach (var picture in Model.PictureModels)
+                    {
+                        <a class="swiper-slide" href="@(Url.RouteUrl<Product>(new { SeName = Model.SeName }))" title="@picture.Title">
+                            @if (viewComponentSelector.SelectComponent("LazyLoadImage") != null)
+                            {
+                                @await Component.InvokeAsync("LazyLoadImage", new (string Key, string Value)[]
+                                {
+                                    ("src", picture.ImageUrl),
+                                    ("alt", picture.AlternateText),
+                                    ("title", picture.Title)
+                                })
+                            }
+                            else
+                            {
+                                <img alt="@picture.AlternateText" src="@picture.ImageUrl" title="@picture.Title" />
+                            }
+                        </a>
+                    }
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
+            <script asp-location="Footer">
+                new Swiper('#swiper-@(Model.Id)', {
+                    pagination: {
+                        clickable: true,
+                        el: '.swiper-pagination',
+                    },
+                });
+            </script>
+        }
+        else
+        {
+            var picture = Model.PictureModels.FirstOrDefault();
+            <a href="@(Url.RouteUrl<Product>(new { SeName = Model.SeName }))" title="@picture?.Title">
+                @if (viewComponentSelector.SelectComponent("LazyLoadImage") != null)
+                {
+                    @await Component.InvokeAsync("LazyLoadImage", new (string Key, string Value)[]
+                    {
+                        ("src", picture.ImageUrl),
+                        ("alt", picture.AlternateText),
+                        ("title", picture.Title)
+                    })
+                }
+                else
+                {
+                    <img alt="@picture?.AlternateText" src="@picture?.ImageUrl" title="@picture?.Title" />
+                }
+            </a>
+        }
+    </div>
+    <div class="details">
+        <h2 class="product-title">
+            <a href="@(Url.RouteUrl<Product>(new {SeName = Model.SeName }))">@Model.Name</a>
+        </h2>
+        @if (Model.ReviewOverviewModel.AllowCustomerReviews)
+        {
+            var ratingPercent = 0;
+            if (Model.ReviewOverviewModel.TotalReviews != 0)
+            {
+                ratingPercent = ((Model.ReviewOverviewModel.RatingSum * 100) / Model.ReviewOverviewModel.TotalReviews) / 5;
+            }
+            <div class="product-rating-box" title="@string.Format(T("Reviews.TotalReviews").Text, Model.ReviewOverviewModel.TotalReviews)">
+                <div class="rating">
+                    <div style="width: @(ratingPercent)%">
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="description" @(catalogSettings.ShowShortDescriptionOnCatalogPages ? "" : "data-short-description=none")>
+            @Html.Raw(Model.ShortDescription)
+        </div>
+        <div class="add-info">
+            @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductBoxAddinfoBefore, additionalData = Model })
+            <div class="prices">
+                @if (!string.IsNullOrEmpty(Model.ProductPrice.OldPrice))
+                {
+                    <span class="price old-price">@Model.ProductPrice.OldPrice</span>
+                }
+                <span class="price actual-price">@Model.ProductPrice.Price</span>
+                @if (Model.ProductPrice.DisplayTaxShippingInfo)
+                {
+                    var inclTax = await workContext.GetTaxDisplayTypeAsync() == TaxDisplayType.IncludingTax;
+                    //tax info is already included in the price (incl/excl tax). that's why we display only shipping info here
+                    //of course, you can modify appropriate locales to include VAT info there
+                    <span class="tax-shipping-info">
+                        @T(inclTax ? "Products.Price.TaxShipping.InclTax" : "Products.Price.TaxShipping.ExclTax", Url.RouteTopicUrl("shippinginfo"))
+                    </span>
+                }
+                @if (!string.IsNullOrEmpty(Model.ProductPrice.BasePricePAngV))
+                {
+                    <div class="base-price-pangv">
+                        @Model.ProductPrice.BasePricePAngV
+                    </div>
+                }
+            </div>
+            @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductBoxAddinfoMiddle, additionalData = Model })
+            <div class="buttons">
+                @if (!Model.ProductPrice.DisableBuyButton)
+                {
+                    var addToCartText = T("ShoppingCart.AddToCart").Text;
+                    if (Model.ProductPrice.IsRental)
+                    {
+                        addToCartText = T("ShoppingCart.Rent").Text;
+                    }
+                    if (Model.ProductPrice.AvailableForPreOrder)
+                    {
+                        addToCartText = T("ShoppingCart.PreOrder").Text;
+                    }
+
+                    <div class="add-to-cart-quantity-update-buttons">
+                        <div class="add-to-cart-qty-wrapper">
+                            <input type="text" id="quantity_@Model.Id" name="quantity" min="1" value="1" class="quantity-input" />
+                            <span class="plus">i</span>
+                            <span class="minus">h</span>
+                        </div>
+                        <div class="add-to-cart-button-wrapper">
+                            <button type="button" class="button-2 product-box-add-to-cart-button" data-addtocartlink="@addtocartlink">@(addToCartText)</button>
+                        </div>
+                    </div>
+
+                    <style>
+                        .add-to-cart-quantity-update-buttons {
+                            display: flex;
+                        }
+
+                        .add-to-cart-qty-wrapper {
+                            width: 30% !important;
+                            border-radius: 10px !important;
+                            margin-right: 3px !important;
+                            display: flex;
+                            align-items: center;
+                        }
+
+                        .quantity-input {
+                            width: 100% !important;
+                            height: 100% !important;
+                            border-radius: 10px !important;
+                        }
+
+                        .plus, .minus {
+                            border-radius: 10px !important;
+                            margin: 3px !important;
+                            height: 16px !important;
+                            line-height: 16px !important;
+                            cursor: pointer;
+                        }
+
+                        .add-to-cart-button-wrapper {
+                            width: 70%;
+                        }
+
+                        .button-2.product-box-add-to-cart-button {
+                            border-radius: 20px;
+                            width: 100%;
+                        }
+
+                        .item-box {
+                            border-radius: 10px !important;
+                        }
+                    </style>
+                }
+            </div>
+            @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductBoxAddinfoAfter, additionalData = Model })
+        </div>
+    </div>
+
+    <script>
+        function increaseQuantity(button) {
+            var quantityInput = $(button).closest('.add-to-cart-quantity-update-buttons').find('input.quantity-input');
+            var currentValue = parseInt(quantityInput.val());
+
+            if (!isNaN(currentValue)) {
+                currentValue += 1;
+                quantityInput.val(currentValue);
+            } else {
+                quantityInput.val(1);
+            }
+
+            //console.log("Current value after increasing: " + currentValue + "\n");
+        }
+
+        function decreaseQuantity(button) {
+            var quantityInput = $(button).closest('.add-to-cart-quantity-update-buttons').find('input.quantity-input');
+            var currentValue = parseInt(quantityInput.val());
+
+            if (!isNaN(currentValue) && currentValue > 1) {
+                currentValue -= 1;
+                quantityInput.val(currentValue);
+            } else {
+                quantityInput.val(1);
+            }
+
+            //console.log("Current value after decreasing: " + currentValue + "\n");
+        }
+
+        // Initialize quantity handlers once document is ready
+        $(document).ready(function () {
+            // Use event delegation to handle quantity updates
+            $(document).off('click', '.plus, .minus').on('click', '.plus, .minus', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const $button = $(this);
+                const $quantityInput = $button.closest('.add-to-cart-qty-wrapper').find('.quantity-input');
+                const currentValue = parseInt($quantityInput.val()) || 1;
+
+                // Determine whether to increase or decrease
+                if ($button.hasClass('plus')) {
+                    $quantityInput.val(Math.max(1, currentValue + 1));
+                    //console.log('Quantity increased to:', $quantityInput.val());
+                } else if ($button.hasClass('minus')) {
+                    $quantityInput.val(Math.max(1, currentValue - 1));
+                    //console.log('Quantity decreased to:', $quantityInput.val());
+                }
+            });
+
+            // Handle add to cart button clicks
+            $(document).off('click', '.product-box-add-to-cart-button').on('click', '.product-box-add-to-cart-button', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const $button = $(this);
+                const baseLink = $button.data('addtocartlink');
+
+                if (!baseLink) {
+                    //console.error('Add to cart link is undefined.');
+                    return false;
+                }
+
+                const $quantityInput = $button.closest('.add-to-cart-quantity-update-buttons')
+                    .find('.quantity-input');
+                const quantity = parseInt($quantityInput.val()) || 1;
+
+                // Update the cart link with new quantity
+                const parts = baseLink.split('/');
+                parts[parts.length - 1] = quantity.toString();
+                const updatedLink = parts.join('/');
+
+                //console.log('Adding to cart with quantity:', quantity);
+                //console.log('Updated cart link:', updatedLink);
+
+                // Call the AjaxCart function with the updated link
+                AjaxCart.addproducttocart_catalog(updatedLink);
+            });
+
+            // Prevent form submission on enter key
+            $(document).on('keypress', '.quantity-input', function(e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // Validate input to ensure only positive numbers
+            $(document).on('input', '.quantity-input', function() {
+                let value = $(this).val();
+                value = value.replace(/[^0-9]/g, '');
+                value = parseInt(value) || 1;
+                $(this).val(value);
+            });
+        });
+    </script>
+</div>

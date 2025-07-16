@@ -82,11 +82,11 @@
         if (checkedTimeSlots.length > 0) {
             // If any time slot is checked, check the weekday checkbox
             weekdayCheckbox.prop('checked', true);
-            console.log('Checked the day');
+            //console.log('Checked the day');
         } else {
             // If no time slots are checked, uncheck the weekday checkbox
             weekdayCheckbox.prop('checked', false);
-            console.log('Unchecked the day');
+            //console.log('Unchecked the day');
         }
 
 
@@ -140,7 +140,7 @@
             }
         }
         str += ';';
-        console.log('Current Data: ' + str + '\n');
+        //console.log('Current Data: ' + str + '\n');
     });
 
 
@@ -175,29 +175,38 @@
         });
 
         var ContinueEditing = ($(this).attr('id') === 'save-continue');
+        let jobName = $("#@Html.IdFor(model => model.QuartzJobName)").val();
 
         // Prepare the data for submission
-        var selectedData = { DayOfWeekData: dataToSubmit, ContinueEditing: ContinueEditing };
+        let id = $("#@Html.IdFor(model => model.Id)").val();
+        let postUrl = "@Url.Action("Edit", "SyncTasks")";
+
+        var selectedData = { 
+            DayOfWeekData: dataToSubmit, 
+            ContinueEditing: ContinueEditing,
+            QuartzJobName: jobName
+        };
         addAntiForgeryToken(selectedData);
 
         $.ajax({
             type: 'POST',
-            url: '@Html.Raw(Url.Action("Edit", "SyncTasks"))',
+            url: `${postUrl}?id=${id}`,
             data: selectedData,
             success: function (data) {
                 // Handle success response
-                console.log('Data saved successfully.');
-                alert('You need to restart the application after every save!');
+                //console.log('Data saved successfully.');
+                //alert('You need to restart the application after every save!');
 
                 if (!ContinueEditing) {
-                    window.location.href = '@Html.Raw(Url.Action("List", "SyncTasks"))';
+                    var redirectUrl = "@Url.Action("List", "SyncTasks")";
+                    window.location.href = `${redirectUrl}?jobIdentity=${jobName}`;
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 alert('Error saving data: ' + textStatus);
-                console.log(jqXHR);
-                console.log(textStatus);
-                console.log(errorThrown);
+                //console.log(jqXHR);
+                //console.log(textStatus);
+                //console.log(errorThrown);
             }
         });
     });

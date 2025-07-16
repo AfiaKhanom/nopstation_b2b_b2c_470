@@ -1,0 +1,13 @@
+.responsive-spacing {
+    margin-bottom: 20px !important;
+
+    @media (min-width: $lg) {
+        margin-bottom: 50px !important;
+    }
+
+    @media (max-width: $xs) {
+        .container{
+            padding:0;
+        }
+    }
+}

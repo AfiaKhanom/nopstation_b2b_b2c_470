@@ -1,7 +1,8 @@
-﻿@using NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure;
-@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.ErpAccountPublic;
-@using NopStation.Plugin.B2B.ERPIntegrationCore.Infrastructure;
-@using Nop.Services.Security;
+﻿@using NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure
+@using NopStation.Plugin.B2B.B2BB2CFeatures.Model.ErpAccountPublic
+@using NopStation.Plugin.B2B.ERPIntegrationCore.Infrastructure
+@using Nop.Services.Security
+
 @model ErpAccountInfoModel
 @inject IPermissionService permissionService
 
@@ -20,20 +21,25 @@
     var accountNo = Model.AccountNumber;
     var displayErpAccountStatements = await permissionService.AuthorizeAsync(ErpPermissionProvider.DisplayB2BAccountStatements);
     var displayErpFinancialTransactions = await permissionService.AuthorizeAsync(ErpPermissionProvider.DisplayB2BFinancialTransactions);
-
 }
 
 @section left
-    {
-    @await Component.InvokeAsync(typeof(CustomerNavigationViewComponent), new { selectedTabId = B2BB2CFeaturesDefaults.ErpCustomerNavigationEnum_ErpAccountTransactionsInfo })
+{
+    @await Component.InvokeAsync(typeof(CustomerNavigationViewComponent), 
+    new { selectedTabId = B2BB2CFeaturesDefaults.ErpCustomerNavigationEnum_ErpAccountTransactionsInfo })
 }
+
+<style>
+    a {
+        color: inherit;
+    }
+</style>
 
 <div class="page account-page account-transaction-page">
     <div class="page-title">
         <h1>@T("Plugin.Misc.NopStation.B2BB2CFeatures.PageTitle.ErpInvoices")</h1>
     </div>
     <div class="page-body">
-
         @if (displayErpAccountStatements && Model.IsShowAccountStatementDownloadEnabled)
         {
             <div class="fieldset account-statement-section">
@@ -70,28 +76,18 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <div class="col-md-6 text-right">
+                            <div class="col-md-12 text-left">
                                 <div class="my-inputs">
-                                    <label asp-for="SearchDocumentNumberOrName" asp-postfix=":"></label>
-                                </div>
-                            </div>
-                            <div class="col-md-6 text-left">
-                                <div class="my-inputs">
-                                    <input asp-for="SearchDocumentNumberOrName" />
+                                    <input asp-for="SearchDocumentNumberOrName" placeholder="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.Fields.SearchDocumentNumberOrName")" />
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <div class="col-md-6 text-right">
-                                <div class="my-inputs">
-                                    <label asp-for="SearchOrderNumberOrName" asp-postfix=":"></label>
-                                </div>
-                            </div>
                             <div class="col-md-6 text-left">
                                 <div class="my-inputs">
-                                    <input asp-for="SearchOrderNumberOrName" type="text" />
+                                    <input asp-for="SearchOrderNumberOrName" type="text" placeholder="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.Fields.SearchCustomerOrder")" />
                                 </div>
                             </div>
                         </div>
@@ -100,28 +96,18 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <div class="col-md-6 text-right">
+                            <div class="col-md-12 text-left">
                                 <div class="my-inputs">
-                                    <label asp-for="SearchTransactionFromDate" asp-postfix=":"></label>
-                                </div>
-                            </div>
-                            <div class="col-md-6 text-left">
-                                <div class="my-inputs">
-                                    <input asp-for="SearchTransactionFromDate" type="date" />
+                                    <input asp-for="SearchTransactionFromDate" type="text" placeholder="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.Fields.SearchTransactionFromDate")" onfocus="(this.type='date')" onblur="(this.type='text')" />
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <div class="col-md-6 text-right">
+                            <div class="col-md-12 text-left">
                                 <div class="my-inputs">
-                                    <label asp-for="SearchTransactionToDate" asp-postfix=":"></label>
-                                </div>
-                            </div>
-                            <div class="col-md-6 text-left">
-                                <div class="my-inputs">
-                                    <input asp-for="SearchTransactionToDate" type="date" />
+                                    <input asp-for="SearchTransactionToDate" type="text"   placeholder="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.Fields.SearchTransactionToDate")" onfocus="(this.type='date')" onblur="(this.type='text')" />
                                 </div>
                             </div>
                         </div>
@@ -161,50 +147,50 @@
                                 Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.PostingDate").Text,
                                 Width = "200",
                                 Render = new RenderDate(),
-                                ClassName = NopColumnClassDefaults.CenterAll,
+                                ClassName = NopColumnClassDefaults.CenterAll + " PostingDate",
                             },
                             new ColumnProperty(nameof(RecentTransactionModel.CustomerOrder))
                             {
                                 Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.CustomerOrder").Text,
-                                Render = new RenderLink(new DataUrl("~/OrderDetails", nameof(RecentTransactionModel.NopOrderId))),
+                                //Render = new RenderLink(new DataUrl("~/OrderDetails", nameof(RecentTransactionModel.NopOrderId))),
                                 Width = "200",
-                                ClassName = NopColumnClassDefaults.CenterAll,
+                                ClassName = NopColumnClassDefaults.CenterAll + " CustomerOrder",
                             },
                             new ColumnProperty(nameof(RecentTransactionModel.DocumentDisplayName))
                             {
                                 Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.DocumentType").Text,
                                 Width = "200",
-                                ClassName = NopColumnClassDefaults.CenterAll,
+                                ClassName = NopColumnClassDefaults.CenterAll + " DocumentDisplayName",
                             },
                             new ColumnProperty(nameof(RecentTransactionModel.DocumentNo))
                             {
                                 Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.DocumentNo").Text,
                                 Width = "200",
-                                ClassName = "download-invoices",
-                                Render = new RenderLink(new DataUrl("/ErpAccountPublic/DownloadInvoice/", nameof(RecentTransactionModel.DocumentNo))),
+                                ClassName = "download-invoices DocumentNo",
+                                Render = new RenderLink(new DataUrl("/ErpAccountPublic/DownloadInvoice/", nameof(RecentTransactionModel.Id))),
                             },
                             new ColumnProperty(nameof(RecentTransactionModel.Remaining))
                             {
                                 Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.Remaining").Text,
                                 Width = "200",
-                                ClassName = NopColumnClassDefaults.CenterAll,
+                                ClassName = NopColumnClassDefaults.CenterAll + " Remaining",
                             },
                             new ColumnProperty(nameof(RecentTransactionModel.AmountExVat))
                             {
                                 Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.AmountExVat").Text,
                                 Width = "200",
-                                ClassName = NopColumnClassDefaults.CenterAll,
+                                ClassName = NopColumnClassDefaults.CenterAll + " AmountExVat",
                             },
                             new ColumnProperty(nameof(RecentTransactionModel.DocumentNo))
                             {
                                 Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.PoDDownload").Text,
                                 Width = "100",
-                                ClassName = NopColumnClassDefaults.Button,
+                                ClassName = NopColumnClassDefaults.Button + " Download-DocumentNo",
                                 Render = new RenderButtonCustom("download-pod", "Download")
                                 {
                                     Url = Url.Content("~/ErpAccountPublic/DownloadInvoiceFromFtp/")
                                 }
-                            },
+                            }
                         }
                     })
                 </div>
@@ -248,5 +234,7 @@
                 }
             });
         });
+        
     </script>
+
 </div>

@@ -1,0 +1,241 @@
+﻿@model HeaderLinksModel
+@using Nop.Core.Domain.Customers
+@inject Nop.Core.IWebHelper webHelper
+@inject IWidgetPluginManager widgetPluginManager
+@inject ISettingService settingService
+@inject IStoreContext storeContext
+@{
+    var returnUrl = Context.Request.Query.TryGetValue("returnUrl", out var url) && !StringValues.IsNullOrEmpty(url)
+                ? url.ToString()
+                : webHelper.GetRawUrl(Context.Request);
+
+    var store = await storeContext.GetCurrentStoreAsync();
+    var enableLoginBox = false;
+    if (await widgetPluginManager.IsPluginActiveAsync("NopStation.Plugin.Theme.Stafast"))
+    {
+        if (await settingService.GetSettingByKeyAsync<bool>("StafastSettings.EnableLoginBoxAtHeader", storeId: store.Id, loadSharedValueIfNotFound: true))
+            enableLoginBox = true;
+    }
+
+}
+<div class="header-links">
+    <ul>
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderLinksBefore, additionalData = Model })
+       
+        
+        @if (Model.AllowPrivateMessages)
+        {
+            <li>
+                <a href="@Url.RouteUrl("PrivateMessages", new { tab = "" })" class="ico-inbox">
+                    <span class="inbox-label">@T("PrivateMessages.Inbox")</span>
+                    <span class="inbox-unread">@Model.UnreadPrivateMessages</span>
+                </a>
+            </li>
+        }
+        @if (Model.WishlistEnabled)
+        {
+            <li>
+                <a href="@Url.RouteUrl("Wishlist")" class="ico-wishlist">
+                    <label>
+                        <span class="wishlist-label faded">@T("nopstation.theme.Stafast.header.Wishlist.Product")</span>
+                        <span class="wishlist-label">@T("Wishlist")</span>
+
+                    </label>
+                    <span class="wishlist-qty">@T("Wishlist.HeaderQuantity", Model.WishlistItems)</span>
+                </a>
+            </li>
+        }
+        <li class="user-dropdown dropdown user-account @(Model.IsAuthenticated ? " is-loggedin" : "not-loggedin" )">
+            @if (Model.IsAuthenticated)
+            {
+                <a href="#" class="ico-account" aria-label="user account">
+                    <label>
+                        <span class="faded">@T("nopstation.theme.Stafast.customer.hello")</span>
+                        <span>@Model.CustomerName</span>
+                    </label>
+                </a>
+            }
+            else
+            {
+                NopHtml.AppendPageCssClassParts("not-authenticated");
+                <a href="@Url.RouteUrl("Login", new { returnUrl })" class="ico-login" aria-label="login link">
+                    <label>
+                        <span class="faded">@T("nopstation.theme.Stafast.customer.login")</span>
+                        <span>@T("Account.Login")</span>
+                    </label>
+                </a>
+            }
+            <ul class="@(enableLoginBox ? "dropdown-list" : "login-dropdown-menu") @(Model.IsAuthenticated ? " " : "login-form-popup")">
+                @if (Model.IsAuthenticated)
+                {
+                    <li><a href="@Url.RouteUrl("CustomerInfo")" class="ico-account">@T("Account.MyAccount")@*@Model.CustomerName*@</a></li>
+                    <li><a href="@Url.RouteUrl("Logout")" class="ico-logout">@T("Account.Logout")</a></li>
+                }
+                else if (enableLoginBox)
+                {
+                    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = "header_links_middle", additionalData = Model })
+                }
+                else
+                {
+
+                    @if (Model.RegistrationType != UserRegistrationType.Disabled)
+                    {
+                        <li><a href="@Url.RouteUrl("Register", new { returnUrl })" class="ico-register">@T("Account.Register")</a></li>
+                    }
+                    <li><a href="@Url.RouteUrl("Login", new { returnUrl })" class="ico-login">@T("Account.Login")</a></li>
+                }
+            </ul>
+        </li>
+        @if (Model.ShoppingCartEnabled)
+        {
+            <li id="topcartlink">
+                <a href="@Url.RouteUrl("ShoppingCart")" class="ico-cart" aria-label="cart link">
+                    <label>
+                        <span class="faded">@T("ShoppingCart")</span>
+                        <span class="cart-qty">@T("ShoppingCart.HeaderQuantity", Model.ShoppingCartItems)</span>
+                    </label>
+                </a>
+            </li>
+        }
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderLinksAfter, additionalData = Model })
+    </ul>
+    @if (Model.AllowPrivateMessages && !string.IsNullOrEmpty(Model.AlertMessage))
+    {
+        //new private message notification
+        <script asp-location="Footer">
+            $(document).ready(function () {
+                displayPopupNotification('@Html.Raw(JavaScriptEncoder.Default.Encode(Model.AlertMessage))', 'success', false);
+            });
+        </script>
+    }
+    @if (Model.ShoppingCartEnabled)
+    {
+        <script asp-location="Footer">
+            $(document).ready(function () {
+                $('.header').on('click', '#topcartlink a', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    $('#flyout-cart').addClass('active');
+                    $('html').addClass('flyout-cart-open');
+                });
+                $('.close-flyout-cart').on('click', function (e) {
+                    e.stopPropagation();
+                    $('#flyout-cart').removeClass('active');
+                    $('html').removeClass('flyout-cart-open');
+                });
+                $('html,body').on('click', '#flyout-cart .mini-shopping-cart', function (e) {
+                    e.stopPropagation();
+                });
+                $('html,body').on('click', function (e) {
+                    $('#flyout-cart').removeClass('active');
+                    $('html').removeClass('flyout-cart-open');
+                });
+              
+            });
+        </script>
+    }
+</div>
+
+
+<div id="mobile-bottom-navigation">
+    <ul>
+        <li class="mobile-user-dropdown dropdown">
+            @if (Model.IsAuthenticated)
+            {
+                <a href="@Url.RouteUrl("CustomerInfo")" class="ico-account">@T("Account.MyAccount")@*@Model.CustomerName*@</a>
+            }
+            else
+            {
+                <a href="@Url.RouteUrl("Login", new { returnUrl })" class="ico-login">@T("Account.Login")</a>
+            }
+            <ul class="mobile-login-dropdown-menu">
+                @if (Model.IsAuthenticated)
+                {
+                    <li><a href="@Url.RouteUrl("CustomerInfo")" class="ico-account">@T("Account.MyAccount")@*@Model.CustomerName*@</a></li>
+                    <li><a href="@Url.RouteUrl("Logout")" class="ico-logout">@T("Account.Logout")</a></li>
+                }
+                else
+                {
+
+                    @if (Model.RegistrationType != UserRegistrationType.Disabled)
+                    {
+                        <li><a href="@Url.RouteUrl("Register", new { returnUrl })" class="ico-register">@T("Account.Register")</a></li>
+                    }
+                    <li><a href="@Url.RouteUrl("Login", new { returnUrl })" class="ico-login">@T("Account.Login")</a></li>
+                }
+            </ul>
+        </li>
+
+        @if (Model.WishlistEnabled)
+        {
+            <li class="wishlist-item">
+                <a href="@Url.RouteUrl("Wishlist")" class="ico-wishlist">
+                    <span class="wishlist-label">@T("Wishlist")</span>
+                </a>
+            </li>
+        }
+
+        <li class="checkout-item">
+            <a href="#" class="checkout-link">
+                <span>@T("Checkout.Button")</span>
+            </a>
+        </li>
+        @if (Model.ShoppingCartEnabled)
+        {
+            <li class="cart-item" id="topcartlink-mobile">
+                <a href="@Url.RouteUrl("ShoppingCart")" class="ico-cart">
+                    <span class="cart-label">@T("ShoppingCart")</span>
+                </a>
+            </li>
+        }
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderLinksAfter, additionalData = Model })
+    </ul>
+</div>
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        var elementToReplace = document.getElementById('mobile-bottom-navigation');
+        document.body.appendChild(elementToReplace);
+    });
+</script>
+
+<script asp-location="Footer">
+    var mobileDropdownDialog = $("#mobile-bottom-navigation  .mobile-login-dropdown-menu").dialog({
+        autoOpen: false,
+        modal: true,
+        open: function (event, ui) {
+            $("body").css("overflow","hidden");
+            $('.ui-widget-overlay').on('click', function (e) {
+                e.stopPropagation();
+                console.log("clicked");
+                mobileDropdownDialog.dialog('close');
+            });
+        },
+        close: function (event, ui) {
+            $("body").removeAttr("style");
+        },
+        classes: {
+            "ui-dialog": "mobile-account-dropdown"
+        },
+        show: {
+            effect: "fade",
+            duration: 300
+        },
+        hide: {
+            effect: "fade",
+            duration: 300
+        }
+    });
+    $(document).ready(function(){
+        $("#mobile-bottom-navigation .mobile-user-dropdown > a").on("click", function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            mobileDropdownDialog.dialog("open")
+        })
+        $("#topcartlink-mobile > a").on("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $('#flyout-cart').addClass('active');
+            $('html').addClass('flyout-cart-open');
+        })
+    })
+</script>

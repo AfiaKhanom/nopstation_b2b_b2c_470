@@ -8,14 +8,6 @@
     NopHtml.SetActiveMenuItemSystemName("NopStation.ErpDataScheduler.SyncTaskList");
 }
 
-<script>
-    $(document).ready(function () {
-        $("#sync-tasks-grid").on("click", ".run-now", function (e) {
-            showThrobber('@Html.Raw(JavaScriptEncoder.Default.Encode(T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.RunNow.Progress").Text))');
-        });
-    });
-</script>
-
 <div class="content-header clearfix">
     <h1 class="float-left">
         @T("Plugin.Misc.NopStation.ErpDataScheduler.Admin.SyncTaskList")
@@ -25,96 +17,167 @@
 </div>
 <section class="content">
     <div class="container-fluid">
-    <div class="form-horizontal">
-        <div class="cards-group">
-            <div class="card card-default">
-                <div class="card-body">                    
-                    <p>
-                        <strong>@T("Admin.System.ScheduleTasks.RestartApplication")</strong>
-                    </p>
-
-                    @await Html.PartialAsync("Table", new DataTablesModel
-                    {
-                        Name = "sync-tasks-grid",
-                        UrlRead = new DataUrl("List", "SyncTasks", null),
-                        UrlUpdate = new DataUrl("TaskUpdate", "SyncTasks", null),
-                        Length = Model.PageSize,
-                        LengthMenu = Model.AvailablePageSizes,
-                        ColumnCollection = new List<ColumnProperty>
+        <div class="form-horizontal">
+            <div class="cards-group">
+                <div class="card card-default">
+                    <div class="card-body">
+                        @await Html.PartialAsync("Table", new DataTablesModel
                         {
-                            new ColumnProperty(nameof(SyncTaskModel.Name))
+                            Name = "sync-tasks-grid",
+                            UrlRead = new DataUrl("List", "SyncTasks", null),
+                            UrlUpdate = new DataUrl("TaskUpdate", "SyncTasks", null),
+                            Length = Model.PageSize,
+                            LengthMenu = Model.AvailablePageSizes,
+                            ColumnCollection = new List<ColumnProperty>
                             {
-                                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.Name").Text,
-                                Width = "300"
-                            },
-                            new ColumnProperty(nameof(SyncTaskModel.Enabled))
-                            {
-                                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.Enabled").Text,
-                                Width = "100",
-                                ClassName = NopColumnClassDefaults.CenterAll,
-                                Render = new RenderBoolean(),
-                                Editable = true,
-                                EditType = EditType.Checkbox
-                            },
-                            new ColumnProperty(nameof(SyncTaskModel.StopOnError))
-                            {
-                                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.StopOnError").Text,
-                                Width = "100",
-                                ClassName = NopColumnClassDefaults.CenterAll,
-                                Render = new RenderBoolean(),
-                                Editable = true,
-                                EditType = EditType.Checkbox
-                            },
-                            new ColumnProperty(nameof(SyncTaskModel.LastStartUtc))
-                            {
-                                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.LastStart").Text,
-                                Width = "200"
-                            },
-                            new ColumnProperty(nameof(SyncTaskModel.LastEndUtc))
-                            {
-                                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.LastEnd").Text,
-                                Width = "200"
-                            },
-                            new ColumnProperty(nameof(SyncTaskModel.LastSuccessUtc))
-                            {
-                                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.LastSuccess").Text,
-                                Width = "200"
-                            },
-                            new ColumnProperty(nameof(SyncTaskModel.Id))
-                            {
-                                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.RunNow").Text,
-                                Width = "100",
-                                ClassName =  NopColumnClassDefaults.Button,
-                                Render = new RenderCustom("renderColumnRunNow")
-                            },
-                            new ColumnProperty(nameof(SyncTaskModel.Id))
-                            {
-                                Title = T("Admin.Common.Edit").Text,
-                                Width = "200",
-                                ClassName =  NopColumnClassDefaults.Button,
-                                Render = new RenderButtonsInlineEdit()
-                            },
-                            new ColumnProperty(nameof(SyncTaskModel.Id))
-                            {
-                                Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.SlotsAndLogs").Text,
-                                Width = "200",
-                                ClassName =  NopColumnClassDefaults.Button,
-                                Render = new RenderCustom("renderColumnEditSlots")
+                                new ColumnProperty(nameof(SyncTaskModel.Name))
+                                {
+                                    Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.Name").Text,
+                                    Width = "300",
+                                    Render = new RenderCustom("renderSyncTaskName")
+                                },
+                                new ColumnProperty(nameof(SyncTaskModel.Enabled))
+                                {
+                                    Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.Enabled").Text,
+                                    Width = "100",
+                                    ClassName = NopColumnClassDefaults.CenterAll,
+                                    Render = new RenderBoolean(),
+                                    Editable = true,
+                                    EditType = EditType.Checkbox
+                                },
+                                new ColumnProperty(nameof(SyncTaskModel.IsIncremental))
+                                {
+                                    Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.IsIncremental").Text,
+                                    Width = "100",
+                                    ClassName = NopColumnClassDefaults.CenterAll,
+                                    Render = new RenderBoolean(),
+                                    Editable = true,
+                                    EditType = EditType.Checkbox
+                                },
+                                /*new ColumnProperty(nameof(SyncTaskModel.StopOnError))
+                                {
+                                    Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.StopOnError").Text,
+                                    Width = "100",
+                                    ClassName = NopColumnClassDefaults.CenterAll,
+                                    Render = new RenderBoolean(),
+                                    Editable = true,
+                                    EditType = EditType.Checkbox
+                                },*/
+                                new ColumnProperty(nameof(SyncTaskModel.LastStartUtc))
+                                {
+                                    Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.LastStart").Text,
+                                    Width = "200"
+                                },
+                                new ColumnProperty(nameof(SyncTaskModel.LastEndUtc))
+                                {
+                                    Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.LastEnd").Text,
+                                    Width = "200"
+                                },
+                                new ColumnProperty(nameof(SyncTaskModel.LastSuccessUtc))
+                                {
+                                    Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.LastSuccess").Text,
+                                    Width = "200"
+                                },
+                                new ColumnProperty(nameof(SyncTaskModel.Id))
+                                {
+                                    Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.RunNow").Text,
+                                    Width = "100",
+                                    ClassName =  NopColumnClassDefaults.Button,
+                                    Render = new RenderCustom("renderColumnRunNow")
+                                },
+                                new ColumnProperty(nameof(SyncTaskModel.Id))
+                                {
+                                    Title = T("Admin.Common.Edit").Text,
+                                    Width = "200",
+                                    ClassName =  NopColumnClassDefaults.Button,
+                                    Render = new RenderButtonsInlineEdit()
+                                },
+                                new ColumnProperty(nameof(SyncTaskModel.Id))
+                                {
+                                    Title = T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.SlotsAndLogs").Text,
+                                    Width = "200",
+                                    ClassName =  NopColumnClassDefaults.Button,
+                                    Render = new RenderCustom("renderColumnEditSlots")
+                                }
                             }
-                        }
-                    })
-
-                    <script>
-                        function renderColumnRunNow(data, type, row, meta) {
-                            return '<a href="@Url.Content("~/Admin/SyncTasks/RunNow/")' + row.Id +'" class="btn btn-success">@T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.RunNow")</a>';
-                        }
-                        function renderColumnEditSlots(data, type, row, meta) {
-                            return '<a href="@Url.Content("~/Admin/SyncTasks/Edit/")' + row.Id +'" class="btn btn-primary">@T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.SlotsAndLogs")</a>';
-                        }
-                    </script>
+                        })
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    </div>
 </section>
+
+<script asp-location="Footer">
+    function renderSyncTaskName(data, type, row, meta) {
+        if (row.IsRunning) {
+            return `
+                <p>${data}&nbsp;
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" opacity="0.25" />
+                        <path fill="currentColor" d="M10.14,1.16a11,11,0,0,0-9,8.92A1.59,1.59,0,0,0,2.46,12,1.52,1.52,0,0,0,4.11,10.7a8,8,0,0,1,6.66-6.61A1.42,1.42,0,0,0,12,2.69h0A1.57,1.57,0,0,0,10.14,1.16Z">
+                            <animateTransform attributeName="transform" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12" />
+                        </path>
+                    </svg>
+                </p>`;
+        }
+
+        return data;
+    }
+
+    function renderColumnRunNow(data, type, row, meta) {
+        let url = "@Url.Action("Execute", "SyncTasks")";
+
+        if (row.IsRunning) {
+            return `<button class="btn btn-secondary" onclick="stopExecution(${row.Id})">Cancel</button>`;
+        }
+        else {
+            return `<a href="${url}/${row.Id}" class="btn btn-primary">@T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.RunNow")</a>`;
+        }
+
+    }
+
+    function renderColumnEditSlots(data, type, row, meta) {
+        let url = "@Url.Action("Edit", "SyncTasks")";
+
+        return `<a href="${url}/${row.Id}" class="btn btn-success">@T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.SlotsAndLogs")</a>`;
+    }
+
+    function stopExecution(id) {
+        if (id == 0 || id == "")
+            return;
+
+        let url = "@Url.Action("Terminate", "SyncTasks")";
+
+        $.ajax({
+            url: `${url}/${id}`,
+            method: 'GET',
+            cache: false,
+        }).done(function (res) {
+            if (res.Success) {
+                updateTable("#sync-tasks-grid");
+            }
+        }).error(function (err) {
+
+        });
+    }
+</script>
+
+<script asp-location="Footer">
+    $(document).ready(function () {
+        $("#sync-tasks-grid").on("click", ".run-now", function (e) {
+            showThrobber('@Html.Raw(JavaScriptEncoder.Default.Encode(
+                    T("Plugin.Misc.NopStation.ErpDataScheduler.Tasks.RunNow.Progress").Text))');
+            });
+
+        async function ServerConnection() {
+            const eventSource = new EventSource("@Url.Action("JobStatus", "SyncTasks", new { area = "Admin" })");
+
+            eventSource.onmessage = (event) => {
+                updateTable("#sync-tasks-grid");
+            }
+        }
+
+        ServerConnection();
+    });
+</script>

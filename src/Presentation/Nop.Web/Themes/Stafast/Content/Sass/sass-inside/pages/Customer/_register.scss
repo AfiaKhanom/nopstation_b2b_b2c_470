@@ -1,0 +1,67 @@
+.registration-page {
+    .message-error {
+        text-align: center;
+        color: var(--red);
+        margin: 10px 0px;
+    }
+}
+
+.gender-container {
+    display: flex;
+    align-items: center;
+
+    & > label {
+        margin-right: 15px;
+    }
+    .gender {
+        display: flex;
+        align-items: center;
+
+        .male,
+        .female {
+            width: 80px;
+        }   
+    }
+}
+
+.date-picker-wrapper {
+    select {
+        &[name="DateOfBirthDay"] {
+            border-radius: 3px 0px 0px 3px;
+            width: 25%;
+        }
+
+        &[name="DateOfBirthMonth"] {
+            border-radius: 0px;
+            width: 45%;
+        }
+
+        &[name="DateOfBirthYear"] {
+            border-radius: 0px 3px 3px 0px;
+            width: 30%;
+        }
+
+        @media(min-width: $xs) {
+            width: 33%!important;
+        }
+    }
+}
+
+.fieldset {
+    .title {
+        position: relative;
+
+        &::after {
+            content: "";
+            position: absolute;
+            font-family: "icomoon";
+            right: 15px;
+            top: 50%;
+            font-weight: 600;
+            font-size: 15px;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+        }
+
+    }
+}

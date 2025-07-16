@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Copyright>Copyright © Nop Solutions, Ltd</Copyright>
-    <Company>Nop Solutions, Ltd</Company>
-    <Authors>Nop Solutions, Ltd</Authors>
+    <Copyright>Copyright © Comalytics</Copyright>
+    <Company>Comalytics</Company>
+    <Authors>Comalytics</Authors>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://www.nopcommerce.com/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/nopSolutions/nopCommerce</RepositoryUrl>
@@ -14,12 +14,20 @@
     <OutputPath>..\..\Presentation\Nop.Web\Plugins\NopStation.Plugin.B2B.ErpDataScheduler</OutputPath>
     <OutDir>$(OutputPath)</OutDir>
     <!--Set this parameter to true to get the dlls copied from the NuGet cache to the output of your    project. You need to set this parameter to true if your plugin has a nuget package to ensure that   the dlls copied from the NuGet cache to the output of your project-->
-    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup> 
 
   <ItemGroup>
     <None Remove="Areas\Admin\Views\ErpDataScheduler\Configure.cshtml" />
-    <None Remove="Areas\Admin\Views\ErpDataScheduler\_Configure.SyncFromDate.cshtml" />
+    <None Remove="Areas\Admin\Views\PartialSync\Index.cshtml" />
+    <None Remove="Areas\Admin\Views\PartialSync\_PartialSync.ErpAccount.cshtml" />
+    <None Remove="Areas\Admin\Views\PartialSync\_PartialSync.ErpGroupPrice.cshtml" />
+    <None Remove="Areas\Admin\Views\PartialSync\_PartialSync.ErpInvoice.cshtml" />
+    <None Remove="Areas\Admin\Views\PartialSync\_PartialSync.ErpOrder.cshtml" />
+    <None Remove="Areas\Admin\Views\PartialSync\_PartialSync.ErpProduct.cshtml" />
+    <None Remove="Areas\Admin\Views\PartialSync\_PartialSync.ErpShipToAddress.cshtml" />
+    <None Remove="Areas\Admin\Views\PartialSync\_PartialSync.ErpSpecialPrice.cshtml" />
+    <None Remove="Areas\Admin\Views\PartialSync\_PartialSync.ErpStock.cshtml" />
     <None Remove="Areas\Admin\Views\SyncTasks\_CreateOrUpdate.SyncLogs.cshtml" />
     <None Remove="Areas\Admin\Views\_ViewImports.cshtml" />
   </ItemGroup>
@@ -36,7 +44,34 @@
     <Content Include="Areas\Admin\Views\ErpDataScheduler\Configure.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Areas\Admin\Views\ErpDataScheduler\_Configure.SyncFromDate.cshtml">
+    <Content Include="Areas\Admin\Views\ErpDataScheduler\_Configure.General.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\PartialSync\Index.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\PartialSync\_PartialSync.ErpOrder.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\PartialSync\_PartialSync.ErpAccount.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\PartialSync\_PartialSync.ErpGroupPrice.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\PartialSync\_PartialSync.ErpInvoice.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\PartialSync\_PartialSync.ErpProduct.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\PartialSync\_PartialSync.ErpShipToAddress.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\PartialSync\_PartialSync.ErpSpecialPrice.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\PartialSync\_PartialSync.ErpStock.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Areas\Admin\Views\SyncTasks\_CreateOrUpdate.SchedulerSettings.cshtml">
@@ -74,16 +109,29 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Quartz.AspNetCore" Version="3.13.1" />
+    <PackageReference Include="Quartz.Serialization.Json" Version="3.13.1" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\Presentation\Nop.Web.Framework\Nop.Web.Framework.csproj" />
-    <ProjectReference Include="..\Nopstation.Plugin.B2B.B2BB2CFeatures\NopStation.Plugin.B2B.B2BB2CFeatures.csproj">
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Nopstation.Plugin.B2B.ERPIntegrationCore\NopStation.Plugin.B2B.ERPIntegrationCore.csproj">
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\NopStation.Plugin.Misc.Core\NopStation.Plugin.Misc.Core.csproj">
-      <Private>False</Private>
-    </ProjectReference>
+    <ProjectReference Include="..\NopStation.Plugin.B2B.B2BB2CFeatures\NopStation.Plugin.B2B.B2BB2CFeatures.csproj" />
+    <ProjectReference Include="..\NopStation.Plugin.B2B.ERPIntegrationCore\NopStation.Plugin.B2B.ERPIntegrationCore.csproj" />
+    <ProjectReference Include="..\NopStation.Plugin.Misc.Core\NopStation.Plugin.Misc.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="..\packages\quartz.aspnetcore\3.13.0\lib\net8.0\Quartz.AspNetCore.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="..\packages\quartz.serialization.json\3.13.1\lib\net462\Quartz.Serialization.Json.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="..\packages\quartz.serialization.json\3.13.1\lib\net472\Quartz.Serialization.Json.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Update="logo.png">

@@ -1,0 +1,17 @@
+﻿.apply-vendor-page {
+    .message-error {
+        display: block;
+        text-align: left;
+        font-size: 13px;
+        color: var(--red);
+        margin: 5px 15px;
+    }
+}
+
+.vendor-page {
+    .contact-vendor,
+    .vendor-description {
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+}

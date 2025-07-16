@@ -1,0 +1,20 @@
+.product-reviews-overview {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+
+    .product-review-box {
+        margin-right:10px;
+        .rating {
+            margin-bottom: 0;
+        }
+    }
+
+    .product-no-reviews,
+    .product-review-links {
+        a {
+            color: var(--primary-color);
+        }
+    }
+}

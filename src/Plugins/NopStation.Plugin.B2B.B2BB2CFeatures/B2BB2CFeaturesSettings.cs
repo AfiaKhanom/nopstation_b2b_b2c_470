@@ -52,13 +52,29 @@ public partial class B2BB2CFeaturesSettings : ISettings
 
     public bool IsShowLoginForPrice { get; set; }
 
+    public bool IsShowYearlySavings { get; set; }
+
+    public bool IsShowAllTimeSavings { get; set; }
+
     public DateTime LastDateTimeOfTCUpdate { get; set; }
 
     public DateTime UpdatedOnUtc { get; set; }
 
     public int UpdatedById { get; set; }
 
-    public int ERPTimeOutMilliseconds { get; set; }
+    #region Checkout
+
+    public bool IsCustomerReferenceRequiredDuringPayment { get; set; }
+
+    public bool MaintainUniqueCustomerReference { get; set; }
+
+    public bool PreventSpecialCharactersInCustomerReference { get; set; }
+
+    public string SpecialCharactersToPreventInCustomerReference { get; set; }
+
+    public int PaymentPopupMessageDelayTimeInSec { get; set; }
+
+    #endregion
 
     public int MaxErpIntegrationOrderPlaceRetries { get; set; }
 
@@ -68,17 +84,21 @@ public partial class B2BB2CFeaturesSettings : ISettings
 
     public bool EnableLivePriceChecks { get; set; }
 
-    public StockDisplayFormat StockDisplayFormat { get; set; }
+    public bool EnableLiveCreditChecks { get; set; }
+
+    public StockDisplayFormat StockDisplayFormat
+    {
+        get => (StockDisplayFormat)StockDisplayFormatId;
+        set => StockDisplayFormatId = (int)value;
+    }
 
     public int StockDisplayFormatId { get; set; }
 
-    public bool MaintainUniqueCustomerReference { get; set; }
-
     public bool EnableQuoteFunctionality { get; set; }
 
-    public int CustomerRefrenceCheckoutAttributeId { get; set; }
-
     public int PreFilterFacetSpecificationAttributeId { get; set; }
+
+    public int UnitOfMeasureSpecificationAttributeId { get; set; }
 
     public bool DisplayAddToQuickListFavouriteButton { get; set; }
 
@@ -126,9 +146,5 @@ public partial class B2BB2CFeaturesSettings : ISettings
 
     public bool IsErpAccountCustomerRegisterAllowed { get; set; }
 
-    public string GoogleMapsApiKey { get; set; }
-
-    public double Latitude { get; set; }
-
-    public double Longitude { get; set; }
+    public bool EnableAccountStatementDownload { get; internal set; }
 }
