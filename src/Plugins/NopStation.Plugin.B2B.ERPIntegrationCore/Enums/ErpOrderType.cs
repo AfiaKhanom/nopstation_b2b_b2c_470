@@ -2,7 +2,7 @@
 
 public enum ErpOrderType
 {
-    B2BSalesOrder = 10,
+    B2BSalesOrder = 5,
 
     B2BQuote = 20,
 

@@ -102,7 +102,7 @@ public class ErpGroupPriceSyncService : IErpGroupPriceSyncService
 
     public virtual async Task<bool> IsErpGroupPriceSyncSuccessfulAsync(string? priceCode, string? stockCode, bool isManualTrigger = false, bool isIncrementalSync = true, CancellationToken cancellationToken = default)
     {
-        var erpIntegrationPlugin = await _erpIntegrationPluginService.LoadActiveERPIntegrationPlugin();
+        var erpIntegrationPlugin = await _erpIntegrationPluginService.LoadActiveERPIntegrationPlugin(ErpSyncLevel.GroupPrice);
 
         if (erpIntegrationPlugin is null)
         {

@@ -172,7 +172,7 @@ public class ErpAccountController : NopStationAdminController
 
             if (b2BB2CFeaturesSettings.UseERPIntegration)
             {
-                var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin();
+                var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin(ErpSyncLevel.Account);
                 if (erpIntegrationPlugin == null)
                 {
                     ModelState.AddModelError("", await _localizationService.GetResourceAsync("B2BB2C.Account.Registration.AccountNotCreated"));

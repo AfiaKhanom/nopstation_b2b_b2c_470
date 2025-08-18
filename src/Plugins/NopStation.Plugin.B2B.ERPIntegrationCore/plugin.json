@@ -2,7 +2,7 @@
   "Group": "Nop-Station",
   "FriendlyName": "Nopstation b2b b2c ERPIntegrationCore",
   "SystemName": "NopStation.Plugin.B2B.ERPIntegrationCore",
-  "Version": "4.70.2.71",
+  "Version": "4.70.2.74",
   "SupportedVersions": [ "4.70" ],
   "Author": "nopstation team",
   "DisplayOrder": -10,

@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Nop.Core;
 using Nop.Services.Configuration;
 using Nop.Services.Customers;
 using Nop.Services.Plugins;
+using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
 
 namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
 {
@@ -16,7 +18,7 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
         private readonly IPluginService _pluginService;
         private readonly ISettingService _settingService;
         private readonly ERPIntegrationCoreSettings _settings;
-
+        private readonly IStoreContext _storeContext;
         #endregion
 
         #region Ctor
@@ -24,12 +26,14 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
         public ErpIntegrationPluginManager(ICustomerService customerService,
             IPluginService pluginService,
             ISettingService settingService,
-            ERPIntegrationCoreSettings settings) : base(customerService, pluginService)
+            ERPIntegrationCoreSettings settings,
+            IStoreContext storeContext) : base(customerService, pluginService)
         {
             _customerService = customerService;
             _pluginService = pluginService;
             _settingService = settingService;
             _settings = settings;
+            _storeContext = storeContext;
         }
 
         #endregion
@@ -43,12 +47,33 @@ namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services
             return IsPluginActive(IntegrationMethod, new List<string> { _settings.SelectedErpIntegrationPlugin });
         }
 
-        public virtual async Task<IErpIntegrationPlugin> LoadActiveERPIntegrationPlugin()
+        public virtual async Task<IErpIntegrationPlugin> LoadActiveERPIntegrationPlugin(ErpSyncLevel erpSyncLevel)
         {
-            if (string.IsNullOrEmpty(_settings.SelectedErpIntegrationPlugin))
+            var defaultIntegrationPlugin=_settings.SelectedErpIntegrationPlugin;
+            var enableUseSinglePlugin = _settings.UseSingleIntegrationPluginForAllSync;
+            if (enableUseSinglePlugin)
+            {
+                if (string.IsNullOrEmpty(defaultIntegrationPlugin))
+                    return null;
+                return await LoadPluginBySystemNameAsync(defaultIntegrationPlugin);
+            }
+            var pluginSystemName = erpSyncLevel switch
+            {
+                ErpSyncLevel.Order => _settings.SelectedErpIntegrationPluginForOrder,
+                ErpSyncLevel.Product => _settings.SelectedErpIntegrationPluginForProduct,
+                ErpSyncLevel.Account => _settings.SelectedErpIntegrationPluginForAccount,
+                ErpSyncLevel.SpecialPrice => _settings.SelectedErpIntegrationPluginForSpecialPrice,
+                ErpSyncLevel.Invoice => _settings.SelectedErpIntegrationPluginForInvoice,
+                ErpSyncLevel.ShipToAddress => _settings.SelectedErpIntegrationPluginForShiptoAddress,
+                ErpSyncLevel.GroupPrice => _settings.SelectedErpIntegrationPluginForGroupPrice,
+                ErpSyncLevel.Stock => _settings.SelectedErpIntegrationPluginForStock,
+                _ => null
+            };
+            if (string.IsNullOrEmpty(pluginSystemName) && string.IsNullOrEmpty(defaultIntegrationPlugin))
                 return null;
-
-          return  await LoadPluginBySystemNameAsync(_settings.SelectedErpIntegrationPlugin);  
+            if (string.IsNullOrEmpty(pluginSystemName))
+                pluginSystemName = defaultIntegrationPlugin;
+            return  await LoadPluginBySystemNameAsync(pluginSystemName);  
         }
 
         #endregion

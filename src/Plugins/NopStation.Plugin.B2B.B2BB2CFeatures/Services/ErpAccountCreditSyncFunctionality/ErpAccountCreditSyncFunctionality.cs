@@ -44,7 +44,7 @@ public class ErpAccountCreditSyncFunctionality : IErpAccountCreditSyncFunctional
     {
         if (_b2BB2CFeaturesSettings.EnableLiveCreditChecks && erpAccount != null)
         {
-            var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin();
+            var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin(ErpSyncLevel.Account);
 
             if (erpIntegrationPlugin is not null)
             {

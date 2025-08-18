@@ -3,6 +3,7 @@
 <div class="card-body">
     <div class="form-group row">
         <div class="col-md-3">
+			<nop-override-store-checkbox asp-for="GoogleMapsApiKey_OverrideForStore" asp-input="GoogleMapsApiKey" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
             <nop-label asp-for="GoogleMapsApiKey" />
         </div>
         <div class="col-md-9">
@@ -12,6 +13,7 @@
     </div>
     <div class="form-group row">
         <div class="col-md-3">
+			<nop-override-store-checkbox asp-for="Latitude_OverrideForStore" asp-input="Latitude" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
             <nop-label asp-for="Latitude" />
         </div>
         <div class="col-md-9">
@@ -21,6 +23,7 @@
     </div>
     <div class="form-group row">
         <div class="col-md-3">
+			<nop-override-store-checkbox asp-for="Longitude_OverrideForStore" asp-input="Longitude" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
             <nop-label asp-for="Longitude" />
         </div>
         <div class="col-md-9">

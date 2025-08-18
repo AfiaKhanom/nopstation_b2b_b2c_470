@@ -516,7 +516,7 @@ public class B2BB2CCustomerController : CustomerController
                     }
                     else
                     {
-                        var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin();
+                        var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin(ErpSyncLevel.Account);
                         if (erpIntegrationPlugin == null)
                         {
                             ModelState.AddModelError("", await _localizationService.GetResourceAsync("B2BB2C.Account.Registration.AccountNotCreated"));
@@ -1197,6 +1197,7 @@ public class B2BB2CCustomerController : CustomerController
     [CheckAccessPublicStore(ignore: true)]
     public override async Task<IActionResult> Login(bool? checkoutAsGuest)
     {
+        
         var model = await _customerModelFactory.PrepareLoginModelAsync(checkoutAsGuest);
         var customer = await _workContext.GetCurrentCustomerAsync();
 

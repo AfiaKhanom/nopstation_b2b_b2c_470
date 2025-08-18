@@ -1,0 +1,39 @@
+﻿@{
+    var currentCustomer = await workContext.GetCurrentCustomerAsync();
+    var hasSalesRepRole = await customerService.IsInCustomerRoleAsync(currentCustomer, ERPIntegrationCoreDefaults.B2BSalesRepRoleSystemName);
+    var isCustomerRegistered = await customerService.IsRegisteredAsync(currentCustomer);
+}
+
+<div class="header">
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderBefore })
+    <div class="header-upper">
+        <div class="header-logo">
+            <button type="button" class="mobile-nav-toggle" aria-label="mobile nav toggle">
+                <span class="icon icon-nav"></span>
+            </button>
+            @await Component.InvokeAsync(typeof(LogoViewComponent))
+        </div>
+        <div class="header-right">
+            <div class="header-selectors-wrapper">
+                @if (isCustomerRegistered)
+                {
+                    @await Component.InvokeAsync(typeof(TaxTypeSelectorViewComponent))
+                }
+                @await Component.InvokeAsync(typeof(CurrencySelectorViewComponent))
+                @await Component.InvokeAsync(typeof(LanguageSelectorViewComponent))
+                @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderSelectors })
+            </div>
+            <div class="header-links-wrapper">
+                @await Component.InvokeAsync(typeof(HeaderLinksViewComponent))
+            </div>
+        </div>
+        @if (!hasSalesRepRole)
+        {
+            <div class="search-box store-search-box">
+                @await Component.InvokeAsync(typeof(SearchBoxViewComponent))
+            </div>
+        }
+    </div>
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderMiddle })
+    @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderAfter })
+</div>

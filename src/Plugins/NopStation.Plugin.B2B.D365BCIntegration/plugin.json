@@ -1,5 +1,5 @@
 {
-  "Group": "NopStation",
+  "Group": "NopStation_ERPIntegration",
   "FriendlyName": "NopStation Dynamic 365 Business Central Integration",
   "SystemName": "NopStation.Plugin.B2B.D365BCIntegration",
   "Version": "4.70.1",

@@ -32,7 +32,7 @@ public class ErpAccountSyncService : IErpAccountSyncService
     private readonly IValidator<ErpAccount> _validator;
     private readonly ISyncWorkflowMessageService _syncWorkflowMessageService;
 
-    #endregion
+    #endregion Fields
 
     #region Ctor
 
@@ -63,7 +63,7 @@ public class ErpAccountSyncService : IErpAccountSyncService
         _syncWorkflowMessageService = syncWorkflowMessageService;
     }
 
-    #endregion
+    #endregion Ctor
 
     #region Utilities
 
@@ -87,14 +87,13 @@ public class ErpAccountSyncService : IErpAccountSyncService
         return validationResult.IsValid;
     }
 
-    #endregion
+    #endregion Utilities
 
     #region Method
 
     public virtual async Task<bool> IsErpAccountSyncSuccessfulAsync(string? erpAccountNumber, bool isManualTrigger = false, bool isIncrementalSync = true, CancellationToken cancellationToken = default)
     {
-        var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin();
-
+        var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin(ErpSyncLevel.Account);
         if (erpIntegrationPlugin is null)
         {
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
@@ -129,7 +128,7 @@ public class ErpAccountSyncService : IErpAccountSyncService
             var stateProvinceId = 0;
             //var syncStartTime = DateTime.UtcNow.AddMinutes(-10);
 
-            #endregion
+            #endregion Data collections
 
             await _erpSyncLogService.SyncLogSaveOnFileAsync(
                 ErpDataSchedulerDefaults.ErpAccountSyncTaskName,
@@ -449,5 +448,5 @@ public class ErpAccountSyncService : IErpAccountSyncService
         }
     }
 
-    #endregion
+    #endregion Method
 }

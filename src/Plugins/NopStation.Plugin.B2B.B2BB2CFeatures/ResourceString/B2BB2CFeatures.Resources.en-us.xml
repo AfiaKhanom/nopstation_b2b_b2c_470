@@ -4,7 +4,9 @@
     <LocaleResource Name="B2BB2CFeatures.Admin.Configure">
         <Value>B2BB2C Features Configure</Value>
     </LocaleResource>
-
+    <LocaleResource Name="B2BB2CFeatures.Configuration.Fields.ValidationMsg.StockDisplayFormatId">
+        <Value>Stock Display Format is Missing</Value>
+    </LocaleResource>
     <LocaleResource Name="B2BB2CFeatures.Admin.Configure.Block.General">
         <Value>General</Value>
     </LocaleResource>
@@ -6239,5 +6241,17 @@
 
     <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.ErpAccount.ErpAccountNotAvailable">
         <Value>The account is not available.</Value>
+    </LocaleResource>
+    <LocaleResource Name="nopstation.theme.stafast.customer.hello">
+        <Value>Hello</Value>
+    </LocaleResource>
+    <LocaleResource Name="nopstation.theme.stafast.header.wishlist.product">
+        <Value>WishList</Value>
+    </LocaleResource>
+    <LocaleResource Name="nopstation.theme.stafast.useraccount">
+        <Value>Account</Value>
+    </LocaleResource>
+     <LocaleResource Name="nopstation.theme.stafast.newsletter.subtitle">
+        <Value>Subtitle</Value>
     </LocaleResource>
 </Language>

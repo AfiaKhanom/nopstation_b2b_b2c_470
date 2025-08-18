@@ -85,7 +85,7 @@ public class ErpSpecialPriceSyncService : IErpSpecialPriceSyncService
 
     public virtual async Task<bool> IsErpSpecialPriceSyncSuccessfulAsync(string? erpAccountNumber, string? stockCode, bool isManualTrigger = false, bool isIncrementalSync = true, CancellationToken cancellationToken = default)
     {
-        var erpIntegrationPlugin = await _erpIntegrationPluginService.LoadActiveERPIntegrationPlugin();
+        var erpIntegrationPlugin = await _erpIntegrationPluginService.LoadActiveERPIntegrationPlugin(ErpSyncLevel.SpecialPrice);
 
         if (erpIntegrationPlugin is null)
         {

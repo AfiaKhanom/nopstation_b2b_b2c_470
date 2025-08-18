@@ -21,6 +21,7 @@ using NopStation.Plugin.B2B.ERPIntegrationCore;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
 using NopStation.Plugin.Misc.Core.Controllers;
+using NopStation.Plugin.Misc.Core.Extensions;
 
 namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Controllers;
 
@@ -153,7 +154,78 @@ public class B2BB2CFeaturesController : NopStationAdminController
 
         await _commonHelper.PrepareDefaultItemAsync(model.AvailableProductAvailabilityRanges_DefaultValue, true);
     }
-
+    private async Task PrepareOverrideForStore(ConfigurationModel model, int storeScope, B2BB2CFeaturesSettings settings)
+    {
+        model.ActiveStoreScopeConfiguration = storeScope;
+        if (storeScope > 0)
+        {
+            model.Override_AllowBackInStockSubscriptions = await _settingService.SettingExistsAsync(settings, x => x.AllowBackInStockSubscriptions_DefaultValue, storeScope);
+            model.Override_LowStockActivityId = await _settingService.SettingExistsAsync(settings, x => x.LowStockActivityId_DefaultValue, storeScope);
+            model.Override_BackorderModeId = await _settingService.SettingExistsAsync(settings, x => x.BackorderModeId_DefaultValue, storeScope);
+            model.Override_TrackInventoryMethodId = await _settingService.SettingExistsAsync(settings, x => x.TrackInventoryMethodId, storeScope);
+            model.Override_ProductAvailabilityRangeId = await _settingService.SettingExistsAsync(settings, x => x.ProductAvailabilityRangeId_DefaultValue, storeScope);
+            model.Override_AvailableForPreOrder = await _settingService.SettingExistsAsync(settings, x => x.AvailableForPreOrder_DefaultValue, storeScope);
+            model.Override_DisplayStockAvailability = await _settingService.SettingExistsAsync(settings, x => x.DisplayStockAvailability_DefaultValue, storeScope);
+            model.Override_DisplayStockQuantity = await _settingService.SettingExistsAsync(settings, x => x.DisplayStockQuantity_DefaultValue, storeScope);
+            model.Override_AllowOverspend = await _settingService.SettingExistsAsync(settings, x => x.AllowOverspend, storeScope);
+            model.EnableLiveCreditChecks_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.EnableLiveCreditChecks, storeScope);
+            model.OrderMaximumQuantity_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.OrderMaximumQuantity, storeScope);
+            model.DefaultCountryId_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.DefaultCountryId, storeScope);
+            model.IsB2CUserRegisterAllowed_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.IsB2CUserRegisterAllowed, storeScope);
+            model.EnableAccountPayment_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.EnableAccountPayment, storeScope);
+            model.UsePrefilterFacet_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.UsePrefilterFacet, storeScope);
+            model.UseDefaultAccountForB2CUser_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.UseDefaultAccountForB2CUser, storeScope);
+            model.DefaultB2CErpAccountId_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.DefaultB2CErpAccountId, storeScope);
+            model.UseERPIntegration_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.UseERPIntegration, storeScope);
+            model.UseMultiSalesOrg_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.UseMultiSalesOrg, storeScope);
+            model.UsePercentageOfAllocatedStock_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.UsePercentageOfAllocatedStock, storeScope);
+            model.PercentageOfStockAllowed_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.PercentageOfStockAllowed, storeScope);
+            model.IsErpAccountCustomerRegisterAllowed_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.IsErpAccountCustomerRegisterAllowed, storeScope);
+            model.DownloadInvoicesPath_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.DownloadInvoicesPath, storeScope);
+            model.FtpUserName_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.FtpUserName, storeScope);
+            model.FtpPassword_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.FtpPassword, storeScope);
+            model.EnableAccountStatementDownload_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.EnableAccountStatementDownload, storeScope);
+            model.IsCustomerReferenceRequiredDuringPayment_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.IsCustomerReferenceRequiredDuringPayment, storeScope);
+            model.MaintainUniqueCustomerReference_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.MaintainUniqueCustomerReference, storeScope);
+            model.PreventSpecialCharactersInCustomerReference_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.PreventSpecialCharactersInCustomerReference, storeScope);
+            model.SpecialCharactersToPreventInCustomerReference_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.SpecialCharactersToPreventInCustomerReference, storeScope);
+            model.PaymentPopupMessageDelayTimeInSec_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.PaymentPopupMessageDelayTimeInSec, storeScope);
+            model.GoogleMapsApiKey_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.GoogleMapsApiKey, storeScope);
+            model.Latitude_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.Latitude, storeScope);
+            model.Longitude_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.Longitude, storeScope);
+            model.IsActive_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.IsActive, storeScope);
+            model.EnableWarehouse_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.EnableWarehouse, storeScope);
+            model.PlaceB2BOrder_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.PlaceB2BOrder, storeScope);
+            model.PlaceB2COrder_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.PlaceB2COrder, storeScope);
+            model.UseNopProductPrice_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.UseNopProductPrice, storeScope);
+            model.UseProductGroupPrice_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.UseProductGroupPrice, storeScope);
+            model.UseProductSpecialPrice_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.UseProductSpecialPrice, storeScope);
+            model.UseProductCombinedPrice_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.UseProductCombinedPrice, storeScope);
+            model.AllowBackOrderingForAll_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.AllowBackOrderingForAll, storeScope);
+            model.IsB2BUserRegisterAllowed_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.IsB2BUserRegisterAllowed, storeScope);
+            model.IsShowLoginForPrice_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.IsShowLoginForPrice, storeScope);
+            model.IsShowYearlySavings_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.IsShowYearlySavings, storeScope);
+            model.IsShowAllTimeSavings_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.IsShowAllTimeSavings, storeScope);
+            model.LastDateTimeOfTCUpdate_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.LastDateTimeOfTCUpdate, storeScope);
+            model.UpdatedOnUtc_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.UpdatedOnUtc, storeScope);
+            model.UpdatedById_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.UpdatedById, storeScope);
+            model.MaxERPIntegrationOrderPlaceReties_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.MaxErpIntegrationOrderPlaceRetries, storeScope);
+            model.EnableLogOnErpCall_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.EnableLogOnErpCall, storeScope);
+            model.EnableLiveStockChecks_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.EnableLiveStockChecks, storeScope);
+            model.EnableLivePriceChecks_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.EnableLivePriceChecks, storeScope);
+            model.StockDisplayFormat_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.StockDisplayFormat, storeScope);
+            model.EnableQuoteFunctionality_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.EnableQuoteFunctionality, storeScope);
+            model.PreFilterFacetSpecificationAttributeId_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.PreFilterFacetSpecificationAttributeId, storeScope);
+            model.UnitOfMeasureSpecificationAttributeId_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.UnitOfMeasureSpecificationAttributeId, storeScope);
+            model.DisplayAddToQuickListFavouriteButton_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.DisplayAddToQuickListFavouriteButton, storeScope);
+            model.AllowAddressEditOnCheckoutForAll_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.AllowAddressEditOnCheckoutForAll, storeScope);
+            model.DeliveryDays_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.DeliveryDays, storeScope);
+            model.CutoffTime_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.CutoffTime, storeScope);
+            model.ERPToDetermineDate_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.ERPToDetermineDate, storeScope);
+            model.OverSpendWarningText_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.OverSpendWarningText, storeScope);
+            model.DefaultB2COrganizationId_OverrideForStore = await _settingService.SettingExistsAsync(settings, x => x.DefaultB2COrganizationId, storeScope);
+        }
+    }
     #endregion
 
     #region Methods
@@ -170,7 +242,8 @@ public class B2BB2CFeaturesController : NopStationAdminController
         var settings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);
         if (settings != null)
             model = settings.ToSettingsModel<ConfigurationModel>();
-
+        model.ActiveStoreScopeConfiguration = storeScope;
+        await PrepareOverrideForStore(model, storeScope, settings);
         await PrepareAvailableCountriesAsync(model);
         await PrepareAvailableStockDisplayFormatsAsync(model);
         await PrepareAvailableSalesOrganizationsAsync(model);
@@ -180,11 +253,15 @@ public class B2BB2CFeaturesController : NopStationAdminController
         return View(model);
     }
 
+    
+
     [HttpPost]
     public async Task<IActionResult> Configure(ConfigurationModel model)
     {
         if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManagePlugins))
             return AccessDeniedView();
+        var storeScope = await _storeContext.GetActiveStoreScopeConfigurationAsync();
+        var b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);
         if (ModelState.IsValid)
         {
             model.UpdatedById = (await _workContext.GetCurrentCustomerAsync()).Id;
@@ -192,15 +269,12 @@ public class B2BB2CFeaturesController : NopStationAdminController
             model.PreFilterFacetSpecificationAttributeId = !model.UsePrefilterFacet ? 0 : model.PreFilterFacetSpecificationAttributeId;
 
             //load settings for a chosen store scope
-            var storeScope = await _storeContext.GetActiveStoreScopeConfigurationAsync();
-            var b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);
             var settings = model.ToSettings(b2BB2CFeaturesSettings);
-
+            await _settingService.SaveSettingAsync(settings, storeScope);
             if (!settings.UseDefaultAccountForB2CUser)
             {
                 settings.DefaultB2CErpAccountId = 0;
             }
-
             if (!settings.IsCustomerReferenceRequiredDuringPayment || !settings.PreventSpecialCharactersInCustomerReference)
             {
                 if (!settings.IsCustomerReferenceRequiredDuringPayment)
@@ -210,7 +284,6 @@ public class B2BB2CFeaturesController : NopStationAdminController
                 }
                 settings.SpecialCharactersToPreventInCustomerReference = string.Empty;
             }
-
             await _settingService.SaveSettingOverridablePerStoreAsync(settings, x => x.IsActive, model.IsActive_OverrideForStore, storeScope, false);
             await _settingService.SaveSettingOverridablePerStoreAsync(settings, x => x.EnableWarehouse, model.EnableWarehouse_OverrideForStore, storeScope, false);
             await _settingService.SaveSettingOverridablePerStoreAsync(settings, x => x.PlaceB2BOrder, model.PlaceB2BOrder_OverrideForStore, storeScope, false);
@@ -281,7 +354,9 @@ public class B2BB2CFeaturesController : NopStationAdminController
             await _settingService.SaveSettingOverridablePerStoreAsync(settings, x => x.PreventSpecialCharactersInCustomerReference, model.PreventSpecialCharactersInCustomerReference_OverrideForStore, storeScope, false);
             await _settingService.SaveSettingOverridablePerStoreAsync(settings, x => x.SpecialCharactersToPreventInCustomerReference, model.SpecialCharactersToPreventInCustomerReference_OverrideForStore, storeScope, false);
             await _settingService.SaveSettingOverridablePerStoreAsync(settings, x => x.PaymentPopupMessageDelayTimeInSec, model.PaymentPopupMessageDelayTimeInSec_OverrideForStore, storeScope, false);
-
+            await _settingService.SaveSettingOverridablePerStoreAsync(settings, x => x.GoogleMapsApiKey, model.GoogleMapsApiKey_OverrideForStore, storeScope, false);
+            await _settingService.SaveSettingOverridablePerStoreAsync(settings, x => x.Latitude, model.Latitude_OverrideForStore, storeScope, false);
+            await _settingService.SaveSettingOverridablePerStoreAsync(settings, x => x.Longitude, model.Longitude_OverrideForStore, storeScope, false);
             //now clear settings cache
             await _settingService.ClearCacheAsync();
 
@@ -296,7 +371,7 @@ public class B2BB2CFeaturesController : NopStationAdminController
             //erp activity log
             await _erpActivityLogsService.InsertErpActivityAsync("Erp_EditSettings", await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.ErpActivityLogs.EditConfigurations"));
         }
-
+        await PrepareOverrideForStore(model, storeScope, b2BB2CFeaturesSettings);
         await PrepareAvailableCountriesAsync(model);
         await PrepareAvailableStockDisplayFormatsAsync(model);
         await PrepareAvailableSalesOrganizationsAsync(model);

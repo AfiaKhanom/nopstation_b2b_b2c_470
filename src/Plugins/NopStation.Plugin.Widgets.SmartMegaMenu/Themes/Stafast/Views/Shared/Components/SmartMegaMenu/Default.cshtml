@@ -1,0 +1,27 @@
+﻿@model List<MegaMenuModel>
+@using Nop.Web.Models.Catalog
+
+@using Nop.Core
+@inject IWorkContext workContext
+
+@{
+    var supportRtl = (await workContext.GetWorkingLanguageAsync()).Rtl;
+
+    if (supportRtl)
+    {
+        NopHtml.AddCssFileParts("~/Plugins/NopStation.Plugin.Widgets.SmartMegaMenu/Themes/Stafast/Contents/css/styles.rtl.css", string.Empty);
+
+    }
+    else
+    {
+
+        NopHtml.AddCssFileParts("~/Plugins/NopStation.Plugin.Widgets.SmartMegaMenu/Themes/Stafast/Contents/css/styles.css");
+
+    }
+    NopHtml.AppendScriptParts(ResourceLocation.Footer, "~/Plugins/NopStation.Plugin.Widgets.SmartMegaMenu/Themes/Stafast/Contents/js/smartmegamenu.js");
+}
+
+@foreach (var model in Model)
+{
+    @await Html.PartialAsync("Default.Menu.cshtml", model)
+}

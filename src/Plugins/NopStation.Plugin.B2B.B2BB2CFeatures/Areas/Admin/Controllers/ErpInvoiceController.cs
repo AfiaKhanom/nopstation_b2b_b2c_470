@@ -145,7 +145,7 @@ public class ErpInvoiceController : NopStationAdminController
             return RedirectToAction("List");
         }
 
-        var erpIntegrationPlugin = await _erpIntegrationPluginService.LoadActiveERPIntegrationPlugin();
+        var erpIntegrationPlugin = await _erpIntegrationPluginService.LoadActiveERPIntegrationPlugin(ErpSyncLevel.Invoice);
         if (erpIntegrationPlugin is null)
         {
             _notificationService.ErrorNotification(await _localizationService.GetResourceAsync("NopStation.Plugin.B2B.B2BB2CFeatures.IntegrationMethodFindResult.NoIntegrationMethodFound"));

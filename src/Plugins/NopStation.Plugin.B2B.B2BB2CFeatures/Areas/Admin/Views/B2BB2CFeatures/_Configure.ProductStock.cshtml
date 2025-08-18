@@ -25,6 +25,7 @@
 <div class="card-body"> 
     <div class="form-group row">
         <div class="col-md-3">
+			<nop-override-store-checkbox asp-for="EnableLiveStockChecks_OverrideForStore" asp-input="EnableLiveStockChecks" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
             <nop-label asp-for="EnableLiveStockChecks" />
         </div>
         <div class="col-md-9">
@@ -34,6 +35,7 @@
     </div>
     <div class="form-group row">
         <div class="col-md-3">
+			<nop-override-store-checkbox asp-for="StockDisplayFormat_OverrideForStore" asp-input="StockDisplayFormatId" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
             <nop-label asp-for="StockDisplayFormatId" />
         </div>
         <div class="col-md-9">
@@ -43,6 +45,7 @@
     </div>    
     <div class="form-group row">
         <div class="col-md-3">
+			<nop-override-store-checkbox asp-for="Override_TrackInventoryMethodId" asp-input="TrackInventoryMethodId" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
             <nop-label asp-for="TrackInventoryMethodId" />
         </div>
         <div class="col-md-9">
@@ -52,6 +55,7 @@
     </div>        
     <div class="form-group row">
         <div class="col-md-3">
+			<nop-override-store-checkbox asp-for="Override_ProductAvailabilityRangeId" asp-input="ProductAvailabilityRangeId_DefaultValue" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
             <nop-label asp-for="ProductAvailabilityRangeId_DefaultValue" />
         </div>
         <div class="col-md-9">
@@ -61,6 +65,7 @@
     </div>    
     <div class="form-group row">
         <div class="col-md-3">
+			<nop-override-store-checkbox asp-for="Override_LowStockActivityId" asp-input="LowStockActivityId_DefaultValue" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
             <nop-label asp-for="LowStockActivityId_DefaultValue" />
         </div>
         <div class="col-md-9">
@@ -70,6 +75,7 @@
     </div>    
     <div class="form-group row">
         <div class="col-md-3">
+			<nop-override-store-checkbox asp-for="Override_DisplayStockAvailability" asp-input="DisplayStockAvailability_DefaultValue" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
             <nop-label asp-for="DisplayStockAvailability_DefaultValue" />
         </div>
         <div class="col-md-9">
@@ -79,6 +85,7 @@
     </div>    
     <div class="form-group row">
         <div class="col-md-3">
+			<nop-override-store-checkbox asp-for="Override_DisplayStockQuantity" asp-input="DisplayStockQuantity_DefaultValue" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
             <nop-label asp-for="DisplayStockQuantity_DefaultValue" />
         </div>
         <div class="col-md-9">
@@ -88,6 +95,7 @@
     </div>
     <div class="form-group row">
         <div class="col-md-3">
+			<nop-override-store-checkbox asp-for="UsePercentageOfAllocatedStock_OverrideForStore" asp-input="UsePercentageOfAllocatedStock" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
             <nop-label asp-for="UsePercentageOfAllocatedStock" />
         </div>
         <div class="col-md-9">
@@ -98,6 +106,7 @@
     <nop-nested-setting asp-for="UsePercentageOfAllocatedStock" disable-auto-generation="true">
         <div class="form-group row" id="pnlPercentageOfStockAllowed">
             <div class="col-md-3">
+				<nop-override-store-checkbox asp-for="PercentageOfStockAllowed_OverrideForStore" asp-input="PercentageOfStockAllowed" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
                 <nop-label asp-for="PercentageOfStockAllowed" />
             </div>
             <div class="col-md-9">

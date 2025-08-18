@@ -1,0 +1,85 @@
+﻿@using Nop.Core.Domain.Topics
+@using Nop.Web.Framework.Mvc.Routing
+@using NopStation.Plugin.Widgets.SmartMegaMenu.Domain
+@model MegaMenuModel.MenuTreeItemModel
+
+@{
+    string url;
+
+    if (Model.MenuItemType == MenuItemType.Topic)
+    {
+        url = Url.RouteUrl<Topic>(new { SeName = Model.SeName });
+    }
+    else if (Model.MenuItemType != MenuItemType.CustomLink)
+    {
+        url = Url.RouteUrl(Model.RouteName, Model.RouteParameter);
+    }
+    else
+    {
+        url = Model.Url;
+    }
+
+    var target = "";
+    if (Model.OpenInNewTab)
+    {
+        target = "target=_blank";
+    }
+}
+@if (Model.Children.Count > 0)
+{
+    <li class="has-children">
+        <a href="@url">
+            @if (!string.IsNullOrEmpty(@Model.PictureModel.ImageUrl))
+            {
+                <span class="image-container">
+                    <img src="@Model.PictureModel.ImageUrl" alt="@(@Model.PictureModel.AlternateText + " " + "icon")" />
+                </span>
+            }
+
+            <span class="category-name">
+                @Model.Title
+            </span>
+            @if (!string.IsNullOrEmpty(@Model.RibbonText))
+            {
+                <span style="background-color: @Model.RibbonBackgroundColor; color: @Model.RibbonTextColor" class="ribbon-container">@Model.RibbonText</span>
+            }
+        </a>
+        <span class="sublist-toggle icon icon-flex-right-caret"></span>
+        <ul class="sublist">
+            <li class="parent-back-link">
+                <span class="parent-link-name">
+                    <span class="icon icon-flex-left-caret"></span>
+                    @if (!string.IsNullOrEmpty(@Model.PictureModel.ImageUrl))
+                    {
+                        <img src="@Model.PictureModel.ImageUrl" height="600" width="800" alt="@(@Model.PictureModel.AlternateText + " " + "icon")" />
+                    }
+                    @Model.Title
+                </span>
+            </li>
+            @foreach (var category in Model.Children)
+            {
+                @await Html.PartialAsync("_MenuItem.MegaMenu.cshtml", category)
+            }
+        </ul>
+    </li>
+}
+else
+{
+    <li>
+        <a href="@url">
+            @if (!string.IsNullOrEmpty(@Model.PictureModel.ImageUrl))
+            {
+                <span class="image-container">
+                    <img class="image-container" src="@Model.PictureModel.ImageUrl" alt="Image" />
+                </span>
+            }
+            <span class="category-name">
+                @Model.Title
+            </span>
+            @if (!string.IsNullOrEmpty(@Model.RibbonText))
+            {
+                <span style="background-color: @Model.RibbonBackgroundColor; color: @Model.RibbonTextColor" class="ribbon-container">@Model.RibbonText</span>
+            }
+        </a>
+    </li>
+}

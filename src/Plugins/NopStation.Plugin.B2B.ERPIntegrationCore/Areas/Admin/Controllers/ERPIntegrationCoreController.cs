@@ -57,6 +57,15 @@ public class ERPIntegrationCoreController : NopStationAdminController
 
         //save setting
         await _settingService.SaveSettingOverridablePerStoreAsync(erpIntegrationCoreSettings, x => x.SelectedErpIntegrationPlugin, model.SelectedErpIntegrationPlugin_OverrideForStore, storeScope, false);
+        await _settingService.SaveSettingOverridablePerStoreAsync(erpIntegrationCoreSettings, x => x.SelectedErpIntegrationPluginForOrder, model.SelectedErpIntegrationPluginForOrder_OverrideForStore, storeScope, false);
+        await _settingService.SaveSettingOverridablePerStoreAsync(erpIntegrationCoreSettings, x => x.SelectedErpIntegrationPluginForProduct, model.SelectedErpIntegrationPluginForProduct_OverrideForStore, storeScope, false);
+        await _settingService.SaveSettingOverridablePerStoreAsync(erpIntegrationCoreSettings, x => x.SelectedErpIntegrationPluginForAccount, model.SelectedErpIntegrationPluginForAccount_OverrideForStore, storeScope, false);
+        await _settingService.SaveSettingOverridablePerStoreAsync(erpIntegrationCoreSettings, x => x.SelectedErpIntegrationPluginForInvoice, model.SelectedErpIntegrationPluginForInvoice_OverrideForStore, storeScope, false);
+        await _settingService.SaveSettingOverridablePerStoreAsync(erpIntegrationCoreSettings, x => x.SelectedErpIntegrationPluginForShiptoAddress, model.SelectedErpIntegrationPluginForShiptoAddress_OverrideForStore, storeScope, false);
+        await _settingService.SaveSettingOverridablePerStoreAsync(erpIntegrationCoreSettings, x => x.SelectedErpIntegrationPluginForSpecialPrice, model.SelectedErpIntegrationPluginForSpecialPrice_OverrideForStore, storeScope, false);
+        await _settingService.SaveSettingOverridablePerStoreAsync(erpIntegrationCoreSettings, x => x.SelectedErpIntegrationPluginForGroupPrice, model.SelectedErpIntegrationPluginForGroupPrice_OverrideForStore, storeScope, false);
+        await _settingService.SaveSettingOverridablePerStoreAsync(erpIntegrationCoreSettings, x => x.SelectedErpIntegrationPluginForStock, model.SelectedErpIntegrationPluginForStock_OverrideForStore, storeScope, false);
+        await _settingService.SaveSettingOverridablePerStoreAsync(erpIntegrationCoreSettings, x => x.UseSingleIntegrationPluginForAllSync, model.UseSingleIntegrationPluginForAllSync_OverrideForStore, storeScope, false);
 
         await _settingService.ClearCacheAsync();
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Nop.Core;
 using Nop.Core.Caching;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Customers;
@@ -10,6 +11,7 @@ using Nop.Core.Domain.Discounts;
 using Nop.Core.Domain.Stores;
 using Nop.Services.Catalog;
 using Nop.Services.Common;
+using Nop.Services.Configuration;
 using Nop.Services.Customers;
 using Nop.Services.Directory;
 using Nop.Services.Discounts;
@@ -32,8 +34,10 @@ public class OverridenPriceCalculationService : PriceCalculationService
     private readonly IErpGroupPriceService _erpGroupPriceService;
     private readonly IErpSpecialPriceService _erpSpecialPriceService;
     private readonly IErpProductService _erpProductService;
-    private readonly B2BB2CFeaturesSettings _b2BB2CFeaturesSettings;
+    protected readonly B2BB2CFeaturesSettings _b2BB2CFeaturesSettings;
     private readonly IErpAccountService _erpAccountService;
+    private readonly IStoreContext _storeContext;
+    private readonly ISettingService _settingService;
 
     #endregion
 
@@ -57,7 +61,9 @@ public class OverridenPriceCalculationService : PriceCalculationService
         IErpSpecialPriceService erpSpecialPriceService,
         IErpProductService erpProductService,
         B2BB2CFeaturesSettings b2BB2CFeaturesSettings,
-        IErpAccountService erpAccountService) :
+        IErpAccountService erpAccountService,
+        IStoreContext storeContext,
+        ISettingService settingService) :
         base(catalogSettings,
             currencySettings,
             categoryService,
@@ -78,6 +84,8 @@ public class OverridenPriceCalculationService : PriceCalculationService
         _erpProductService = erpProductService;
         _b2BB2CFeaturesSettings = b2BB2CFeaturesSettings;
         _erpAccountService = erpAccountService;
+        _storeContext = storeContext;
+        _settingService = settingService;
     }
 
     #endregion
@@ -138,7 +146,6 @@ public class OverridenPriceCalculationService : PriceCalculationService
     {
         if (product == null)
             throw new ArgumentNullException(nameof(product));
-
         var cacheKey = _staticCacheManager.PrepareKeyForDefaultCache(NopCatalogDefaults.ProductPriceCacheKey,
             product,
             overriddenProductPrice,

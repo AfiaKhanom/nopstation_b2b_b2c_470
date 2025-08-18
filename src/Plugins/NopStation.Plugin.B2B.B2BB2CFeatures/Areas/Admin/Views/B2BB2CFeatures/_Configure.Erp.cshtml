@@ -1,49 +1,47 @@
 @model ConfigurationModel
 
 <div class="card-body">
-    <div class="form-group row">
-        <div class="col-md-3">
-            <nop-label asp-for="UseERPIntegration" />
-        </div>
-        <div class="col-md-9">
-            <nop-editor asp-for="UseERPIntegration" />
-            <span asp-validation-for="UseERPIntegration"></span>
-        </div>
-    </div>
-    @* <div class="form-group row">
-        <div class="col-md-3">
-            <nop-label asp-for="ERPTimeOutMilliseconds" />
-        </div>
-        <div class="col-md-9">
-            <nop-editor asp-for="ERPTimeOutMilliseconds" />
-            <span asp-validation-for="ERPTimeOutMilliseconds"></span>
-        </div>
-    </div> *@
-    <div class="form-group row">
-        <div class="col-md-3">
-            <nop-label asp-for="MaxErpIntegrationOrderPlaceRetries" />
-        </div>
-        <div class="col-md-9">
-            <nop-editor asp-for="MaxErpIntegrationOrderPlaceRetries" />
-            <span asp-validation-for="MaxErpIntegrationOrderPlaceRetries"></span>
-        </div>
-    </div>
-    <div class="form-group row">
-        <div class="col-md-3">
-            <nop-label asp-for="EnableLogOnErpCall" />
-        </div>
-        <div class="col-md-9">
-            <nop-editor asp-for="EnableLogOnErpCall" />
-            <span asp-validation-for="EnableLogOnErpCall"></span>
-        </div>
-    </div>
-    <div class="form-group row">
-        <div class="col-md-3">
-            <nop-label asp-for="ERPToDetermineDate" />
-        </div>
-        <div class="col-md-9">
-            <nop-editor asp-for="ERPToDetermineDate" />
-            <span asp-validation-for="ERPToDetermineDate"></span>
-        </div>
-    </div>
+	<div class="form-group row">
+		<div class="col-md-3">
+			<nop-override-store-checkbox asp-for="UseERPIntegration_OverrideForStore" asp-input="UseERPIntegration" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+			<nop-label asp-for="UseERPIntegration" />
+		</div>
+		<div class="col-md-9">
+			<nop-editor asp-for="UseERPIntegration" />
+			<span asp-validation-for="UseERPIntegration"></span>
+		</div>
+	</div>
+
+	<div class="form-group row">
+		<div class="col-md-3">
+			<nop-override-store-checkbox asp-for="MaxERPIntegrationOrderPlaceReties_OverrideForStore" asp-input="MaxErpIntegrationOrderPlaceRetries" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+			<nop-label asp-for="MaxErpIntegrationOrderPlaceRetries" />
+		</div>
+		<div class="col-md-9">
+			<nop-editor asp-for="MaxErpIntegrationOrderPlaceRetries" />
+			<span asp-validation-for="MaxErpIntegrationOrderPlaceRetries"></span>
+		</div>
+	</div>
+
+	<div class="form-group row">
+		<div class="col-md-3">
+			<nop-override-store-checkbox asp-for="EnableLogOnErpCall_OverrideForStore" asp-input="EnableLogOnErpCall" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+			<nop-label asp-for="EnableLogOnErpCall" />
+		</div>
+		<div class="col-md-9">
+			<nop-editor asp-for="EnableLogOnErpCall" />
+			<span asp-validation-for="EnableLogOnErpCall"></span>
+		</div>
+	</div>
+
+	<div class="form-group row">
+		<div class="col-md-3">
+			<nop-override-store-checkbox asp-for="ERPToDetermineDate_OverrideForStore" asp-input="ERPToDetermineDate" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+			<nop-label asp-for="ERPToDetermineDate" />
+		</div>
+		<div class="col-md-9">
+			<nop-editor asp-for="ERPToDetermineDate" />
+			<span asp-validation-for="ERPToDetermineDate"></span>
+		</div>
+	</div>
 </div>

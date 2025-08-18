@@ -41,14 +41,15 @@ public class OverridenProductService : ProductService
     private readonly IActionContextAccessor _actionContextAccessor;
     private readonly IErpAccountService _erpAccountService;
     private readonly IPermissionService _permissionService;
-    private readonly B2BB2CFeaturesSettings _b2BB2CFeaturesSettings;
+    private B2BB2CFeaturesSettings _b2BB2CFeaturesSettings;
     private readonly IErpSpecificationAttributeService _erpSpecificationAttributeService;
     private readonly ISpecificationAttributeService _specificationAttributeService;
     private readonly ICategoryService _categoryService;
     private readonly IErpNopUserService _erpNopUserService;
     private readonly IErpWarehouseSalesOrgMapService _erpWarehouseSalesOrgMapService;
     private readonly IGenericAttributeService _genericAttributeService;
-
+    private readonly ISettingService _settingService;
+    private readonly IStoreContext _storeContext;
     #endregion
 
     #region Ctor
@@ -102,7 +103,8 @@ public class OverridenProductService : ProductService
         IErpSpecialPriceService erpSpecialPriceService,
         IErpNopUserService erpNopUserService,
         IErpWarehouseSalesOrgMapService erpWarehouseSalesOrgMapService,
-        IGenericAttributeService genericAttributeService) : base(catalogSettings,
+        IGenericAttributeService genericAttributeService
+        ) : base(catalogSettings,
             commonSettings,
             aclService,
             customerService,
@@ -150,6 +152,8 @@ public class OverridenProductService : ProductService
         _erpNopUserService = erpNopUserService;
         _erpWarehouseSalesOrgMapService = erpWarehouseSalesOrgMapService;
         _genericAttributeService = genericAttributeService;
+        _settingService = settingService;
+        _storeContext = storeContext;
     }
 
     #endregion
@@ -349,7 +353,7 @@ public class OverridenProductService : ProductService
         bool? overridePublished = null)
     {
         #region Default Nop
-
+        _b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeId);
         //some databases don't support int.MaxValue
         if (pageSize == int.MaxValue)
             pageSize = int.MaxValue - 1;
@@ -661,6 +665,8 @@ public class OverridenProductService : ProductService
     /// <returns>Products</returns>
     public override async Task<IList<Product>> GetAllProductsDisplayedOnHomepageAsync()
     {
+        var store = await _storeContext.GetCurrentStoreAsync();
+        _b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(store.Id);
         IList<int> filteredSpecs = null;
         IList<int> excludeFilteredSpecs = null;
 
@@ -741,6 +747,8 @@ public class OverridenProductService : ProductService
     /// <returns>Product</returns>
     public override async Task<Product> GetProductByIdAsync(int productId)
     {
+        var store = await _storeContext.GetCurrentStoreAsync();
+        _b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(store.Id);
         if (productId == 0)
             return null;
 
@@ -810,6 +818,8 @@ public class OverridenProductService : ProductService
     /// <returns>Products</returns>
     public override async Task<IList<Product>> GetProductsByIdsAsync(int[] productIds)
     {
+        var store = await _storeContext.GetCurrentStoreAsync();
+        _b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(store.Id);
         if (productIds == null || productIds.Length == 0)
             return new List<Product>();
 
@@ -912,6 +922,8 @@ public class OverridenProductService : ProductService
     /// 
     public override async Task<int> GetTotalStockQuantityAsync(Product product, bool useReservedQuantity = true, int warehouseId = 0)
     {
+        var store = await _storeContext.GetCurrentStoreAsync();
+        _b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(store.Id);
         if (product == null)
             throw new ArgumentNullException(nameof(product));
         
@@ -995,6 +1007,8 @@ public class OverridenProductService : ProductService
     /// </returns>
     public override async Task<IList<Product>> GetCategoryFeaturedProductsAsync(int categoryId, int storeId = 0)
     {
+        var store = await _storeContext.GetCurrentStoreAsync();
+        _b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(store.Id);
         IList<Product> featuredProducts = new List<Product>();
 
         if (categoryId == 0)
@@ -1115,6 +1129,8 @@ public class OverridenProductService : ProductService
     /// </returns>
     public override async Task<IList<Product>> GetManufacturerFeaturedProductsAsync(int manufacturerId, int storeId = 0)
     {
+        var store = await _storeContext.GetCurrentStoreAsync();
+        _b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(store.Id);
         IList<Product> featuredProducts = new List<Product>();
 
         if (manufacturerId == 0)
@@ -1234,6 +1250,8 @@ public class OverridenProductService : ProductService
     /// </returns>
     public override async Task<IPagedList<Product>> GetProductsMarkedAsNewAsync(int storeId = 0, int pageIndex = 0, int pageSize = int.MaxValue)
     {
+        var store = await _storeContext.GetCurrentStoreAsync();
+        _b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(store.Id);
         var query = from p in _productRepository.Table
                     where p.Published && p.VisibleIndividually && p.MarkAsNew && !p.Deleted &&
                           DateTime.UtcNow >= (p.MarkAsNewStartDateTimeUtc ?? SqlDateTime.MinValue.Value) &&
@@ -1336,6 +1354,8 @@ public class OverridenProductService : ProductService
     /// </returns>
     public override async Task<Product> GetProductBySkuAsync(string sku)
     {
+        var store = await _storeContext.GetCurrentStoreAsync();
+        _b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(store.Id);
         if (string.IsNullOrEmpty(sku))
             return null;
 

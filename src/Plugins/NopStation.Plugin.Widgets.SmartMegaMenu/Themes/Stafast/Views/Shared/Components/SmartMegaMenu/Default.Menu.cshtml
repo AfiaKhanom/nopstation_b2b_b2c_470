@@ -1,0 +1,63 @@
+﻿@model MegaMenuModel
+@using Nop.Web.Models.Catalog
+
+@{
+    NopHtml.AppendPageCssClassParts("smart-megamenu-active");
+    var viewType = "list-view";
+    var imageView = "show-image";
+
+    if (Model.ViewType == ViewType.GridView)
+    {
+        viewType = "grid-view";
+    }
+
+    if (Model.WithoutImages)
+    {
+        imageView = "no-view";
+    }
+}
+
+@if (Model.ViewType != ViewType.GridView)
+{
+    <div class="mm-outer-wrapper @viewType">
+        <div class="megamenu-trigger">
+            <span>@Model.Name</span>
+        </div>
+        <div class="menu-overlay"></div>
+        <nav class="mm-navbar navbar @Model.CssClass">
+            <div class="mobile-menu-head">
+                <div class="mobile-menu-close">&times;</div>
+            </div>
+            <ul class="nav-menu nav-center">
+                @foreach (var menu in Model.MenuItems)
+                {
+                    @await Html.PartialAsync("_MenuItem.MegaMenu.cshtml", menu)
+                }
+            </ul>
+        </nav>
+    </div>
+
+}
+else
+{
+    <div class="mm-outer-wrapper @viewType">
+        <div class="mobile-menu-trigger">
+            <span></span>
+        </div>
+        <div class="menu-overlay"></div>
+        <nav class="mm-navbar navbar @Model.CssClass">
+            <div class="mobile-menu-head">
+                <div class="mobile-menu-close">&times;</div>
+            </div>
+            <ul class="nav-menu nav-center">
+                @foreach (var menu in Model.MenuItems)
+                {
+                    @await Html.PartialAsync("_MenuItem.MegaMenu.cshtml", menu)
+                }
+            </ul>
+        </nav>
+    </div>
+
+}
+
+

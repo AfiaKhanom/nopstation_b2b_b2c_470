@@ -187,7 +187,7 @@ public class ErpAccountPublicController : BasePluginController
 
     public async Task<IActionResult> DownloadInvoice(int invoiceId)
     {
-        var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin();
+        var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin(ErpSyncLevel.Invoice);
 
         if (erpIntegrationPlugin is null)
         {

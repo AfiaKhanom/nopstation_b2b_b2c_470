@@ -83,7 +83,7 @@ public class ErpInvoiceSyncService : IErpInvoiceSyncService
 
     public virtual async Task<bool> IsErpInvoiceSyncSuccessfulAsync(string? erpAccountNumber, bool isManualTrigger = false, bool isIncrementalSync = true, CancellationToken cancellationToken = default)
     {
-        var erpIntegrationPlugin = await _erpIntegrationPluginService.LoadActiveERPIntegrationPlugin();
+        var erpIntegrationPlugin = await _erpIntegrationPluginService.LoadActiveERPIntegrationPlugin(ErpSyncLevel.Invoice);
 
         if (erpIntegrationPlugin is null)
         {

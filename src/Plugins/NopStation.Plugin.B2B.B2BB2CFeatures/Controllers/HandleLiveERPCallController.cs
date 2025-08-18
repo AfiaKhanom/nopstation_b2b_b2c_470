@@ -12,6 +12,7 @@ using Nop.Services.Orders;
 using Nop.Web.Controllers;
 using Nop.Web.Framework.Mvc;
 using NopStation.Plugin.B2B.B2BB2CFeatures;
+using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Model;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
 
@@ -101,7 +102,7 @@ public class HandleLiveErpCallController : BasePublicController
         var productIds = cart.Select(x => x.ProductId).ToList();
         var products = await _productService.GetProductsByIdsAsync(productIds.ToArray());
 
-        var erpIntegrationPlugin = await _erpIntegrationPluginService.LoadActiveERPIntegrationPlugin();
+        var erpIntegrationPlugin = await _erpIntegrationPluginService.LoadActiveERPIntegrationPlugin(ErpSyncLevel.Stock);
 
         if (erpIntegrationPlugin is null)
         {

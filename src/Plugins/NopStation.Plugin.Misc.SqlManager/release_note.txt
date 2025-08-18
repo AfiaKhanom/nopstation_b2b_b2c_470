@@ -1,0 +1,4 @@
+﻿4.70.1.2: Export file missing value issue resolve.
+4.70.1.1: Bug fix.
+4.70.1.0: Version upgrade
+4.60.1.0: Initial release

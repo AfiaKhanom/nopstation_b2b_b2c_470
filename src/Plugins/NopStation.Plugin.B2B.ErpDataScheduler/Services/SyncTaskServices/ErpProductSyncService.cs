@@ -201,7 +201,7 @@ public class ErpProductSyncService : IErpProductSyncService
 
     public virtual async Task<bool> IsErpProductSyncSuccessfulAsync(string? stockCode, bool isManualTrigger = false, bool isIncrementalSync = true, CancellationToken cancellationToken = default)
     {
-        var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin();
+        var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin(ErpSyncLevel.Product);
 
         if (erpIntegrationPlugin is null)
         {

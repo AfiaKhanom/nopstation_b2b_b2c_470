@@ -88,7 +88,7 @@ public class ErpShipToAddressSyncService : IErpShipToAddressSyncService
 
     public virtual async Task<bool> IsErpShipToAddressSyncSuccessfulAsync(string? erpAccountNumber, bool isManualTrigger = false, bool isIncrementalSync = true, CancellationToken cancellationToken = default)
     {
-        var erpIntegrationPlugin = await _erpIntegrationPluginService.LoadActiveERPIntegrationPlugin();
+        var erpIntegrationPlugin = await _erpIntegrationPluginService.LoadActiveERPIntegrationPlugin(ErpSyncLevel.ShipToAddress);
 
         if (erpIntegrationPlugin is null)
         {

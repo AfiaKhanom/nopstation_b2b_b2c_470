@@ -541,7 +541,7 @@ public class ErpPriceSyncFunctionalityService : IErpPriceSyncFunctionalityServic
 
     public async Task ExecuteAllProductsLivePriceSync()
     {
-        var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin();
+        var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin(ErpSyncLevel.Invoice);
         if (erpIntegrationPlugin is null)
         {
             await _erpLogsService.ErrorAsync("No integration plugin found to sync price.", ErpSyncLevel.Account);

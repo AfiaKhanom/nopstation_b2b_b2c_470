@@ -61,7 +61,7 @@ public class B2BAccountPaymentViewComponent : NopViewComponent
 
         if (nopErpUser != null && nopErpUser.ErpUserType == ErpUserType.B2BUser && _b2BB2CFeaturesSettings.EnableLiveCreditChecks && b2BAccount != null)
         {
-            var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin();
+            var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin(ErpSyncLevel.Account);
 
             if (erpIntegrationPlugin is not null)
             {

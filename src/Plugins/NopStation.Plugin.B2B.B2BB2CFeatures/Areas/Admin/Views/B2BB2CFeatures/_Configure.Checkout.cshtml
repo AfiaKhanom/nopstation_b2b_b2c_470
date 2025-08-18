@@ -1,112 +1,121 @@
 @model ConfigurationModel
 
 <div class="card-body">
-    <div class="form-group row">
-        <div class="col-md-3">
-            <nop-label asp-for="AllowAddressEditOnCheckoutForAll" />
-        </div>
-        <div class="col-md-9">
-            <nop-editor asp-for="AllowAddressEditOnCheckoutForAll" />
-            <span asp-validation-for="AllowAddressEditOnCheckoutForAll"></span>
-        </div>
-    </div>
-    <div class="form-group row">
-        <div class="col-md-3">
-            <nop-label asp-for="DeliveryDays" />
-        </div>
-        <div class="col-md-9">
-            <nop-editor asp-for="DeliveryDays" />
-            <span asp-validation-for="DeliveryDays"></span>
-        </div>
-    </div>
-    <div class="form-group row">
-        <div class="col-md-3">
-            <nop-label asp-for="CutoffTime" />
-        </div>
-        <div class="col-md-9">
-            <nop-editor asp-for="CutoffTime" />
-            <span asp-validation-for="CutoffTime"></span>
-        </div>
-    </div>
-    <div class="form-group row">
-        <div class="col-md-3">
-            <nop-override-store-checkbox asp-for="IsCustomerReferenceRequiredDuringPayment_OverrideForStore" asp-input="IsCustomerReferenceRequiredDuringPayment" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
-            <nop-label asp-for="IsCustomerReferenceRequiredDuringPayment" />
-        </div>
-        <div class="col-md-9">
-            <nop-editor asp-for="IsCustomerReferenceRequiredDuringPayment" />
-            <span asp-validation-for="IsCustomerReferenceRequiredDuringPayment"></span>
-        </div>
-    </div>
-    <nop-nested-setting asp-for="IsCustomerReferenceRequiredDuringPayment" id="pnlIsCustomerReferenceRequiredDuringPayment">
-        <div class="form-group row">
-            <div class="col-md-3">
-                <nop-override-store-checkbox asp-for="MaintainUniqueCustomerReference_OverrideForStore" asp-input="MaintainUniqueCustomerReference" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
-                <nop-label asp-for="MaintainUniqueCustomerReference" />
-            </div>
-            <div class="col-md-9">
-                <nop-editor asp-for="MaintainUniqueCustomerReference" />
-                <span asp-validation-for="MaintainUniqueCustomerReference"></span>
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-md-3">
-                <nop-override-store-checkbox asp-for="PreventSpecialCharactersInCustomerReference_OverrideForStore" asp-input="PreventSpecialCharactersInCustomerReference" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
-                <nop-label asp-for="PreventSpecialCharactersInCustomerReference" />
-            </div>
-            <div class="col-md-9">
-                <nop-editor asp-for="PreventSpecialCharactersInCustomerReference" />
-                <span asp-validation-for="PreventSpecialCharactersInCustomerReference"></span>
-            </div>
-        </div>
-        <nop-nested-setting asp-for="PreventSpecialCharactersInCustomerReference">
-            <div class="form-group row" id="pnlPreventSpecialCharactersInCustomerReference">
-                <div class="col-md-3">
-                    <nop-override-store-checkbox asp-for="SpecialCharactersToPreventInCustomerReference_OverrideForStore" asp-input="SpecialCharactersToPreventInCustomerReference" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
-                    <nop-label asp-for="SpecialCharactersToPreventInCustomerReference" />
-                </div>
-                <div class="col-md-9">
-                    <nop-editor asp-for="SpecialCharactersToPreventInCustomerReference" />
-                    <span asp-validation-for="SpecialCharactersToPreventInCustomerReference"></span>
-                </div>
-            </div>
-        </nop-nested-setting>
-    </nop-nested-setting>
-    <div class="form-group row">
-        <div class="col-md-3">
-            <nop-override-store-checkbox asp-for="PaymentPopupMessageDelayTimeInSec_OverrideForStore" asp-input="PaymentPopupMessageDelayTimeInSec" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
-            <nop-label asp-for="PaymentPopupMessageDelayTimeInSec" />
-        </div>
-        <div class="col-md-9">
-            <nop-editor asp-for="PaymentPopupMessageDelayTimeInSec" />
-            <span asp-validation-for="PaymentPopupMessageDelayTimeInSec"></span>
-        </div>
-    </div>
+	<div class="form-group row">
+		<div class="col-md-3">
+			<nop-override-store-checkbox asp-for="AllowAddressEditOnCheckoutForAll_OverrideForStore" asp-input="AllowAddressEditOnCheckoutForAll" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+			<nop-label asp-for="AllowAddressEditOnCheckoutForAll" />
+		</div>
+		<div class="col-md-9">
+			<nop-editor asp-for="AllowAddressEditOnCheckoutForAll" />
+			<span asp-validation-for="AllowAddressEditOnCheckoutForAll"></span>
+		</div>
+	</div>
+
+	<div class="form-group row">
+		<div class="col-md-3">
+			<nop-override-store-checkbox asp-for="DeliveryDays_OverrideForStore" asp-input="DeliveryDays" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+			<nop-label asp-for="DeliveryDays" />
+		</div>
+		<div class="col-md-9">
+			<nop-editor asp-for="DeliveryDays" />
+			<span asp-validation-for="DeliveryDays"></span>
+		</div>
+	</div>
+
+	<div class="form-group row">
+		<div class="col-md-3">
+			<nop-override-store-checkbox asp-for="CutoffTime_OverrideForStore" asp-input="CutoffTime" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+			<nop-label asp-for="CutoffTime" />
+		</div>
+		<div class="col-md-9">
+			<nop-editor asp-for="CutoffTime" />
+			<span asp-validation-for="CutoffTime"></span>
+		</div>
+	</div>
+
+	<div class="form-group row">
+		<div class="col-md-3">
+			<nop-override-store-checkbox asp-for="IsCustomerReferenceRequiredDuringPayment_OverrideForStore" asp-input="IsCustomerReferenceRequiredDuringPayment" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+			<nop-label asp-for="IsCustomerReferenceRequiredDuringPayment" />
+		</div>
+		<div class="col-md-9">
+			<nop-editor asp-for="IsCustomerReferenceRequiredDuringPayment" />
+			<span asp-validation-for="IsCustomerReferenceRequiredDuringPayment"></span>
+		</div>
+	</div>
+
+	<nop-nested-setting asp-for="IsCustomerReferenceRequiredDuringPayment" id="pnlIsCustomerReferenceRequiredDuringPayment">
+		<div class="form-group row">
+			<div class="col-md-3">
+				<nop-override-store-checkbox asp-for="MaintainUniqueCustomerReference_OverrideForStore" asp-input="MaintainUniqueCustomerReference" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+				<nop-label asp-for="MaintainUniqueCustomerReference" />
+			</div>
+			<div class="col-md-9">
+				<nop-editor asp-for="MaintainUniqueCustomerReference" />
+				<span asp-validation-for="MaintainUniqueCustomerReference"></span>
+			</div>
+		</div>
+
+		<div class="form-group row">
+			<div class="col-md-3">
+				<nop-override-store-checkbox asp-for="PreventSpecialCharactersInCustomerReference_OverrideForStore" asp-input="PreventSpecialCharactersInCustomerReference" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+				<nop-label asp-for="PreventSpecialCharactersInCustomerReference" />
+			</div>
+			<div class="col-md-9">
+				<nop-editor asp-for="PreventSpecialCharactersInCustomerReference" />
+				<span asp-validation-for="PreventSpecialCharactersInCustomerReference"></span>
+			</div>
+		</div>
+
+		<nop-nested-setting asp-for="PreventSpecialCharactersInCustomerReference">
+			<div class="form-group row" id="pnlPreventSpecialCharactersInCustomerReference">
+				<div class="col-md-3">
+					<nop-override-store-checkbox asp-for="SpecialCharactersToPreventInCustomerReference_OverrideForStore" asp-input="SpecialCharactersToPreventInCustomerReference" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+					<nop-label asp-for="SpecialCharactersToPreventInCustomerReference" />
+				</div>
+				<div class="col-md-9">
+					<nop-editor asp-for="SpecialCharactersToPreventInCustomerReference" />
+					<span asp-validation-for="SpecialCharactersToPreventInCustomerReference"></span>
+				</div>
+			</div>
+		</nop-nested-setting>
+	</nop-nested-setting>
+
+	<div class="form-group row">
+		<div class="col-md-3">
+			<nop-override-store-checkbox asp-for="PaymentPopupMessageDelayTimeInSec_OverrideForStore" asp-input="PaymentPopupMessageDelayTimeInSec" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+			<nop-label asp-for="PaymentPopupMessageDelayTimeInSec" />
+		</div>
+		<div class="col-md-9">
+			<nop-editor asp-for="PaymentPopupMessageDelayTimeInSec" />
+			<span asp-validation-for="PaymentPopupMessageDelayTimeInSec"></span>
+		</div>
+	</div>
 </div>
 
-
 <script>
-    $(document).ready(function () {
-        $("#@Html.IdFor(model => model.PreventSpecialCharactersInCustomerReference)").click(togglePreventSpecialCharactersInCustomerReference);
-        togglePreventSpecialCharactersInCustomerReference();
+	$(document).ready(function () {
+		$("#@Html.IdFor(model => model.PreventSpecialCharactersInCustomerReference)").click(togglePreventSpecialCharactersInCustomerReference);
+		togglePreventSpecialCharactersInCustomerReference();
 
-        $("#@Html.IdFor(model => model.IsCustomerReferenceRequiredDuringPayment)").click(toggleIsCustomerReferenceRequiredDuringPayment);
-        toggleIsCustomerReferenceRequiredDuringPayment();
-    });
+		$("#@Html.IdFor(model => model.IsCustomerReferenceRequiredDuringPayment)").click(toggleIsCustomerReferenceRequiredDuringPayment);
+		toggleIsCustomerReferenceRequiredDuringPayment();
+	});
 
-    function togglePreventSpecialCharactersInCustomerReference() {
-        if ($('#@Html.IdFor(model => model.PreventSpecialCharactersInCustomerReference)').is(':checked')) {
-            $('#pnlPreventSpecialCharactersInCustomerReference').show();
-        } else {
-            $('#pnlPreventSpecialCharactersInCustomerReference').hide();
-        }
-    }
+	function togglePreventSpecialCharactersInCustomerReference() {
+		if ($('#@Html.IdFor(model => model.PreventSpecialCharactersInCustomerReference)').is(':checked')) {
+			$('#pnlPreventSpecialCharactersInCustomerReference').show();
+		} else {
+			$('#pnlPreventSpecialCharactersInCustomerReference').hide();
+		}
+	}
 
-    function toggleIsCustomerReferenceRequiredDuringPayment() {
-        if ($('#@Html.IdFor(model => model.IsCustomerReferenceRequiredDuringPayment)').is(':checked')) {
-            $('#pnlIsCustomerReferenceRequiredDuringPayment').show();
-        } else {
-            $('#pnlIsCustomerReferenceRequiredDuringPayment').hide();
-        }
-    }
+	function toggleIsCustomerReferenceRequiredDuringPayment() {
+		if ($('#@Html.IdFor(model => model.IsCustomerReferenceRequiredDuringPayment)').is(':checked')) {
+			$('#pnlIsCustomerReferenceRequiredDuringPayment').show();
+		} else {
+			$('#pnlIsCustomerReferenceRequiredDuringPayment').hide();
+		}
+	}
 </script>

@@ -1,13 +1,109 @@
 ﻿@model ConfigurationModel
 
 <div class="card-body">
-    <div class="form-group row">
-        <div class="col-md-3">
-            <nop-override-store-checkbox asp-for="SelectedErpIntegrationPlugin_OverrideForStore" asp-input="SelectedErpIntegrationPlugin" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
-            <nop-label asp-for="SelectedErpIntegrationPlugin" />
-        </div>
-        <div class="col-md-9">
-            <nop-Select asp-for="SelectedErpIntegrationPlugin" asp-items="Model.AvailableErpIntegrationPlugins" />
-        </div>
-    </div>
+	<div class="form-group row advanced-setting mb-3">
+		<div class="col-md-3">
+			<nop-override-store-checkbox asp-for="UseSingleIntegrationPluginForAllSync_OverrideForStore" asp-input="UseSingleIntegrationPluginForAllSync" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+			<nop-label asp-for="UseSingleIntegrationPluginForAllSync" />
+		</div>
+		<div class="col-md-9">
+			<nop-editor asp-for="UseSingleIntegrationPluginForAllSync" />
+			<span asp-validation-for="UseSingleIntegrationPluginForAllSync"></span>
+		</div>
+	</div>
+
+	<nop-nested-setting asp-for="UseSingleIntegrationPluginForAllSync" disable-auto-generation="true">
+		<div class="form-group row advanced-setting mb-3 pb-2 border-bottom" id="singleIntegrationPlutin">
+			<div class="col-md-3">
+				<nop-override-store-checkbox asp-for="SelectedErpIntegrationPlugin_OverrideForStore" asp-input="SelectedErpIntegrationPlugin" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+				<nop-label asp-for="SelectedErpIntegrationPlugin" />
+			</div>
+			<div class="col-md-9">
+				<nop-select asp-for="SelectedErpIntegrationPlugin" asp-items="Model.AvailableErpIntegrationPlugins" />
+			</div>
+		</div>
+
+		<div class="form-group row advanced-setting mt-4" id="usedifferentintegration">
+			<div class="col-md-3">
+				<nop-override-store-checkbox asp-for="SelectedErpIntegrationPluginForAccount_OverrideForStore" asp-input="SelectedErpIntegrationPluginForAccount" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+				<nop-label asp-for="SelectedErpIntegrationPluginForAccount" />
+			</div>
+			<div class="col-md-9 mb-3">
+				<nop-select asp-for="SelectedErpIntegrationPluginForAccount" asp-items="Model.AvailableErpIntegrationPlugins" />
+			</div>
+
+			<div class="col-md-3">
+				<nop-override-store-checkbox asp-for="SelectedErpIntegrationPluginForShiptoAddress_OverrideForStore" asp-input="SelectedErpIntegrationPluginForShiptoAddress" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+				<nop-label asp-for="SelectedErpIntegrationPluginForShiptoAddress" />
+			</div>
+			<div class="col-md-9 mb-3">
+				<nop-select asp-for="SelectedErpIntegrationPluginForShiptoAddress" asp-items="Model.AvailableErpIntegrationPlugins" />
+			</div>
+
+			<div class="col-md-3">
+				<nop-override-store-checkbox asp-for="SelectedErpIntegrationPluginForProduct_OverrideForStore" asp-input="SelectedErpIntegrationPluginForProduct" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+				<nop-label asp-for="SelectedErpIntegrationPluginForProduct" />
+			</div>
+			<div class="col-md-9 mb-3">
+				<nop-select asp-for="SelectedErpIntegrationPluginForProduct" asp-items="Model.AvailableErpIntegrationPlugins" />
+			</div>
+
+			<div class="col-md-3">
+				<nop-override-store-checkbox asp-for="SelectedErpIntegrationPluginForStock_OverrideForStore" asp-input="SelectedErpIntegrationPluginForStock" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+				<nop-label asp-for="SelectedErpIntegrationPluginForStock" />
+			</div>
+			<div class="col-md-9 mb-3">
+				<nop-select asp-for="SelectedErpIntegrationPluginForStock" asp-items="Model.AvailableErpIntegrationPlugins" />
+			</div>
+
+			<div class="col-md-3">
+				<nop-override-store-checkbox asp-for="SelectedErpIntegrationPluginForOrder_OverrideForStore" asp-input="SelectedErpIntegrationPluginForOrder" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+				<nop-label asp-for="SelectedErpIntegrationPluginForOrder" />
+			</div>
+			<div class="col-md-9 mb-3">
+				<nop-select asp-for="SelectedErpIntegrationPluginForOrder" asp-items="Model.AvailableErpIntegrationPlugins" />
+			</div>
+
+			<div class="col-md-3">
+				<nop-override-store-checkbox asp-for="SelectedErpIntegrationPluginForInvoice_OverrideForStore" asp-input="SelectedErpIntegrationPluginForInvoice" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+				<nop-label asp-for="SelectedErpIntegrationPluginForInvoice" />
+			</div>
+			<div class="col-md-9 mb-3">
+				<nop-select asp-for="SelectedErpIntegrationPluginForInvoice" asp-items="Model.AvailableErpIntegrationPlugins" />
+			</div>
+
+			<div class="col-md-3">
+				<nop-override-store-checkbox asp-for="SelectedErpIntegrationPluginForGroupPrice_OverrideForStore" asp-input="SelectedErpIntegrationPluginForGroupPrice" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+				<nop-label asp-for="SelectedErpIntegrationPluginForGroupPrice" />
+			</div>
+			<div class="col-md-9 mb-3">
+				<nop-select asp-for="SelectedErpIntegrationPluginForGroupPrice" asp-items="Model.AvailableErpIntegrationPlugins" />
+			</div>
+
+			<div class="col-md-3">
+				<nop-override-store-checkbox asp-for="SelectedErpIntegrationPluginForSpecialPrice_OverrideForStore" asp-input="SelectedErpIntegrationPluginForSpecialPrice" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+				<nop-label asp-for="SelectedErpIntegrationPluginForSpecialPrice" />
+			</div>
+			<div class="col-md-9">
+				<nop-select asp-for="SelectedErpIntegrationPluginForSpecialPrice" asp-items="Model.AvailableErpIntegrationPlugins" />
+			</div>
+		</div>
+	</nop-nested-setting>
 </div>
+
+<script>
+	$(function () {
+		$("#@Html.IdFor(model => model.UseSingleIntegrationPluginForAllSync)").click(toggleSearchPagePageSize);
+		toggleSearchPagePageSize();
+	});
+
+	function toggleSearchPagePageSize() {
+		if ($('#@Html.IdFor(model => model.UseSingleIntegrationPluginForAllSync)').is(':checked')) {
+			$('#singleIntegrationPlutin').showElement();
+			$('#usedifferentintegration').hideElement();
+		} else {
+			$('#singleIntegrationPlutin').hideElement();
+			$('#usedifferentintegration').showElement();
+		}
+	}
+</script>

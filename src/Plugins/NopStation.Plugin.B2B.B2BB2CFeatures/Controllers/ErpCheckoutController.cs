@@ -2630,7 +2630,10 @@ public class ErpCheckoutController : CheckoutController
                     {
                         var erpNopUser = b2BUser ?? b2CUser;
                         var erpOrderTypeId = (int)erpNopUser.ErpUserType;
-
+                        if(erpNopUser.ErpUserType == ErpUserType.B2BUser)
+                            erpOrderTypeId = (int)ErpOrderType.B2CSalesOrder;
+                        else if (erpNopUser.ErpUserType == ErpUserType.B2CUser)
+                            erpOrderTypeId = (int)ErpOrderType.B2CSalesOrder;
                         await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, (ErpOrderType)Enum.ToObject(typeof(ErpOrderType), erpOrderTypeId));
 
                         await _erpLogsService.InformationAsync($"B2B Order placed successfully! Order-Id: {placeOrderResult.PlacedOrder.Id}, Erp Order Number: {placeOrderResult.PlacedOrder.CustomOrderNumber}", ErpSyncLevel.Order, customer: currCustomer);

@@ -346,7 +346,7 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
 
     private async Task PlaceOrderOrQuoteOnERPAsync(ErpPlaceOrderDataModel erpPlaceOrderDataModel, ErpOrderAdditionalData erpOrderAdditionalData, Order order)
     {
-        var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin();
+        var erpIntegrationPlugin = await _erpIntegrationPluginManager.LoadActiveERPIntegrationPlugin(ErpSyncLevel.Order);
 
         if (erpIntegrationPlugin == null)
         {
