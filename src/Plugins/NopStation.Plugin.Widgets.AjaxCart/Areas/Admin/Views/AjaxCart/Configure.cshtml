@@ -1,0 +1,135 @@
+﻿@model ConfigurationModel
+
+@{
+    NopHtml.SetActiveMenuItemSystemName("AjaxCart.Configuration");
+    ViewBag.PageTitle = T("Admin.NopStation.AjaxCart.Configuration").Text;
+}
+
+<form asp-controller="AjaxCart" asp-action="Configure" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Admin.NopStation.AjaxCart.Configuration")
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.Save")
+            </button>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="form-horizontal">
+                @await Component.InvokeAsync(typeof(StoreScopeConfigurationViewComponent))
+                <div asp-validation-summary="All"></div>
+                <div class="cards-group">
+                    <div class="card card-default">
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkbox asp-for="EnableAjaxCartPlugin_OverrideForStore" asp-input="EnableAjaxCartPlugin" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="EnableAjaxCartPlugin" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="EnableAjaxCartPlugin" />
+                                    <span asp-validation-for="EnableAjaxCartPlugin"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkbox asp-for="ShoppingCartFormSelector_OverrideForStore" asp-input="ShoppingCartFormSelector" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="ShoppingCartFormSelector" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="ShoppingCartFormSelector" asp-required="true" />
+                                    <span asp-validation-for="ShoppingCartFormSelector"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkbox asp-for="ShoppingCartInputQuantitySelector_OverrideForStore" asp-input="ShoppingCartInputQuantitySelector" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="ShoppingCartInputQuantitySelector" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="ShoppingCartInputQuantitySelector" asp-required="true" />
+                                    <span asp-validation-for="ShoppingCartInputQuantitySelector"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkbox asp-for="ShoppingCartSelectQuantitySelector_OverrideForStore" asp-input="ShoppingCartSelectQuantitySelector" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="ShoppingCartSelectQuantitySelector" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="ShoppingCartSelectQuantitySelector" asp-required="true" />
+                                    <span asp-validation-for="ShoppingCartSelectQuantitySelector"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkbox asp-for="ApplyDiscountCouponCodeButtonSelector_OverrideForStore" asp-input="ApplyDiscountCouponCodeButtonSelector" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="ApplyDiscountCouponCodeButtonSelector" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="ApplyDiscountCouponCodeButtonSelector" asp-required="true" />
+                                    <span asp-validation-for="ApplyDiscountCouponCodeButtonSelector"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkbox asp-for="ApplyDiscountCouponCodeInputSelector_OverrideForStore" asp-input="ApplyDiscountCouponCodeInputSelector" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="ApplyDiscountCouponCodeInputSelector" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="ApplyDiscountCouponCodeInputSelector" asp-required="true" />
+                                    <span asp-validation-for="ApplyDiscountCouponCodeInputSelector"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkbox asp-for="ApplyGiftCardCouponCodeButtonSelector_OverrideForStore" asp-input="ApplyGiftCardCouponCodeButtonSelector" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="ApplyGiftCardCouponCodeButtonSelector" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="ApplyGiftCardCouponCodeButtonSelector" asp-required="true" />
+                                    <span asp-validation-for="ApplyGiftCardCouponCodeButtonSelector"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkbox asp-for="ApplyGiftCardCouponCodeInputSelector_OverrideForStore" asp-input="ApplyGiftCardCouponCodeInputSelector" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="ApplyGiftCardCouponCodeInputSelector" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="ApplyGiftCardCouponCodeInputSelector" asp-required="true" />
+                                    <span asp-validation-for="ApplyGiftCardCouponCodeInputSelector"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkbox asp-for="OrderSummaryContainerSelector_OverrideForStore" asp-input="OrderSummaryContainerSelector" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="OrderSummaryContainerSelector" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="OrderSummaryContainerSelector" asp-required="true" />
+                                    <span asp-validation-for="OrderSummaryContainerSelector"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkbox asp-for="UpdateShoppingCartButtonSelector_OverrideForStore" asp-input="UpdateShoppingCartButtonSelector" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="UpdateShoppingCartButtonSelector" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="UpdateShoppingCartButtonSelector" asp-required="true" />
+                                    <span asp-validation-for="UpdateShoppingCartButtonSelector"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>

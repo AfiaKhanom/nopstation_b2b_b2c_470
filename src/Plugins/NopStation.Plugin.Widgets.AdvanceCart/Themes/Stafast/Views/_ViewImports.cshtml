@@ -1,0 +1,25 @@
+﻿@inherits Nop.Web.Framework.Mvc.Razor.NopRazorPage<TModel>
+@inject INopHtmlHelper NopHtml
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Nop.Web.Framework
+@addTagHelper *, NopStation.Plugin.Misc.Actions
+
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
+@using Microsoft.AspNetCore.Routing
+@using Nop.Core
+@using Nop.Core.Domain.Catalog
+@using Nop.Core.Domain.Common
+@using Nop.Core.Domain.Orders
+@using Nop.Core.Infrastructure
+@using Nop.Services.Customers
+@using Nop.Services.Events
+@using Nop.Web.Framework.Events
+@using Nop.Web.Framework.Extensions
+@using Nop.Web.Framework.UI
+@using Nop.Web.Models.Catalog
+@using Nop.Web.Models.ShoppingCart
+@using NopStation.Plugin.Widgets.AdvanceCart
+@using NopStation.Plugin.Widgets.AdvanceCart.Models
+@using System.Text.Encodings.Web

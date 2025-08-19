@@ -1,0 +1,16 @@
+﻿@model AdvanceCartProductDetailsModel
+
+@if (Model.EnableBuyNowButton)
+{
+    <div class="buynow-wrapper">
+        <button type="button" class="buynow-btn" onclick="NopAdvanceCart.addproducttocart_details(@Model.Id, '#product-details-form', true);return false;">@T("NopStation.AdvanceCart.BuyNow")</button>
+    </div>
+}
+
+<input name="productid" type="hidden" value="@Model.Id" />
+
+<script asp-location="Footer">
+    $(document).ready(function() {
+        $('#add-to-cart-button-@Model.Id').attr('onclick', "NopAdvanceCart.addproducttocart_details(@Model.Id, '#product-details-form', false);return false;");
+    });
+</script>

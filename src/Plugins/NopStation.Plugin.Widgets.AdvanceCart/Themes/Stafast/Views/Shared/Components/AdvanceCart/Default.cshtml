@@ -1,0 +1,60 @@
+﻿@inject IWebHelper webHelper
+@inject AdvanceCartSettings advanceCartSettings
+
+@{
+    var storeLocation = webHelper.GetStoreLocation();
+
+    NopHtml.AppendCssFileParts("~/Plugins/NopStation.Plugin.Widgets.AdvanceCart/Themes/Stafast/Content/css/styles.css", string.Empty);
+    NopHtml.AddScriptParts(ResourceLocation.Footer, "~/Plugins/NopStation.Plugin.Widgets.AdvanceCart/Contents/js/public.advancecart.js");
+}
+
+<script asp-location="Footer">
+    $(document).ready(function () {
+        var localized_data = {};
+        localized_data.AdvanceCartFailure = '@T("NopStation.AdvanceCart.AdvanceCartFailure")';
+
+        NopAdvanceCart.init(@advanceCartSettings.AllowCustomersToSelectQuantityFromProductBox.ToString().ToLowerInvariant(),
+            '@Html.Raw(@advanceCartSettings.ProductBoxSelector)',
+            '@Html.Raw(@advanceCartSettings.TopCartSelector)',
+            '@Html.Raw(@advanceCartSettings.FlyoutCartSelector)',
+            '@Html.Raw(Url.Action("AddProductToCart_Catalog", "AdvanceCart"))',
+            '@Html.Raw(Url.Action("AddProductToCart_Details", "AdvanceCart"))',
+            localized_data);
+
+        initAdvanceCartPrimaryData();
+
+        $(document).ajaxStop(function () {
+            initAdvanceCartPrimaryData();
+        });
+        $(document).on('swiper_initialized', function () {
+            initAdvanceCartPrimaryData();
+        });
+    });
+
+    function initAdvanceCartPrimaryData() {
+        $.each($('@Html.Raw(advanceCartSettings.ProductBoxAddToCartButtonSelector)'), function (i, val) {
+            if (!$(this).data('advancecart')) {
+                var productId = $(val).closest('@Html.Raw(@advanceCartSettings.ProductBoxSelector)').data('productid');
+                $(this).attr('onclick', 'NopAdvanceCart.addproducttocart_catalog(' + productId + ', false, this); return false;');
+                $(this).attr('data-advancecart', true);
+            }
+        });
+    }
+
+    function decreaseProductQty(btn) {
+        var qtyInput = $(btn).siblings("input");
+        var value = parseInt(qtyInput.val());
+
+        if (value > 1) {
+            qtyInput.val(value - 1);
+        }
+    }
+
+    function increaseProductQty(btn) {
+        var qtyInput = $(btn).siblings("input");
+        var value = parseInt(qtyInput.val());
+        qtyInput.val(value + 1);
+    }
+
+</script>
+

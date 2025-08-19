@@ -1,0 +1,299 @@
+﻿@media (max-width: 768px) {
+  .mfp-container .mfp-content {
+    top: 2% !important;
+    max-height: 95vh !important;
+    overflow: hidden auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .mfp-bg {
+    position: fixed !important;
+    height: 100% !important;
+  }
+
+  .mfp-wrap {
+    top: 0 !important;
+    height: 100% !important;
+    position: fixed !important;
+  }
+}
+
+.flyout-cart .count {
+  position: relative;
+}
+
+.flyout-cart .count a {
+  font-weight: 700;
+  color: var(--white);
+  text-decoration: none;
+}
+
+.flyout-cart .count a i {
+  margin-right: 5px;
+  font-size: 20px;
+  font-weight: 500;
+  vertical-align: middle;
+}
+
+.flyout-cart .count a i.icon-shopping-cart-1:before {
+  content: "\e979";
+}
+
+.flyout-cart .count .close-flyout-cart {
+  float: right;
+  font-weight: 300;
+  font-size: 28px;
+  position: absolute;
+  right: 10px;
+  top: 20px;
+  transform: translateY(-50%);
+}
+
+.flyout-cart .flyoutcart-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.buy-quantity-wrapper {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+
+.buy-quantity-wrapper .buynow-btn {
+  width: calc(56% - 3px);
+  margin-right: 0;
+  padding: 6px 3px;
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  border: 0;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: capitalize;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+}
+
+.buy-quantity-wrapper .buynow-btn::before {
+  content: "\e979";
+  font-family: "icomoon" !important;
+  display: block;
+  font-weight: 400;
+}
+
+@media (min-width: 556px) {
+  .buy-quantity-wrapper .buynow-btn {
+    width: calc(56% - 3px);
+    padding: 12px 5px;
+    text-transform: uppercase;
+  }
+
+  .buy-quantity-wrapper .buynow-btn {
+    font-size: 14px;
+    height: 40px;
+  }
+}
+
+.buy-quantity-wrapper .qty-wrapper {
+  width: 42%;
+  display: flex;
+  position: relative;
+  margin: 0;
+}
+
+@media (min-width: 556px) {
+  .buy-quantity-wrapper .qty-wrapper {
+    width: 42%;
+  }
+}
+
+.buy-quantity-wrapper .qty-wrapper .qty-input {
+  width: 100%;
+  height: 24px;
+  border: 1px solid rgba(149, 148, 152, .30);
+  text-align: center;
+  font-size: 12px;
+  font-weight: 400;
+  border-radius: 2px;
+  color: #959498;
+}
+
+@media (min-width: 556px) {
+  .buy-quantity-wrapper .qty-wrapper .qty-input {
+    height: 40px;
+    font-size: 18px;
+  }
+}
+
+.buy-quantity-wrapper .qty-wrapper button {
+  border: none;
+  background: transparent;
+  color: #959498;
+  width: 18px;
+  height: 18px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+@media (min-width: 556px) {
+  .buy-quantity-wrapper .qty-wrapper button {
+    width: 25px;
+    height: 30px;
+  }
+}
+
+.buy-quantity-wrapper .qty-wrapper button.btn-decrease:before, .buy-quantity-wrapper .qty-wrapper button.btn-increase:before {
+  font-family: "icomoon" !important;
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+@media (min-width: 556px) {
+  .buy-quantity-wrapper .qty-wrapper button.btn-decrease:before, .buy-quantity-wrapper .qty-wrapper button.btn-increase:before {
+    font-size: 18px;
+  }
+}
+
+.buy-quantity-wrapper .qty-wrapper button.btn-decrease {
+  left: 4px;
+}
+
+.buy-quantity-wrapper .qty-wrapper button.btn-decrease:before {
+  content: "\e965";
+}
+
+.buy-quantity-wrapper .qty-wrapper button.btn-increase {
+  right: 4px;
+}
+
+.buy-quantity-wrapper .qty-wrapper button.btn-increase:before {
+  content: "\e902";
+}
+
+.product-details-page .add-to-cart:has(.buynow-wrapper) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+}
+
+@media (max-width: 556px) {
+  .product-details-page .add-to-cart:has(.buynow-wrapper) {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 1600px) and (min-width: 1200px) {
+  .product-details-page .add-to-cart:has(.buynow-wrapper) {
+    flex-wrap: wrap;
+  }
+}
+
+.product-details-page .add-to-cart:has(.buynow-wrapper) .add-to-cart-panel {
+  width: 70%;
+}
+
+@media (max-width: 1600px) and (min-width: 1200px) {
+  .product-details-page .add-to-cart:has(.buynow-wrapper) .add-to-cart-panel {
+    width: 100%;
+  }
+}
+
+@media (max-width: 556px) {
+  .product-details-page .add-to-cart:has(.buynow-wrapper) .add-to-cart-panel {
+    width: 100%;
+  }
+}
+
+.product-details-page .add-to-cart:has(.buynow-wrapper) .add-to-cart-panel .add-to-cart-button {
+  margin-left: 0;
+}
+
+.product-details-page .add-to-cart:has(.buynow-wrapper) .add-to-cart-panel .qty-input-wrap {
+  width: 40%;
+}
+
+.product-details-page .buynow-wrapper {
+  width: 100%;
+  flex-grow: 1;
+  max-width: 100%;
+  margin: 10px auto 0;
+}
+
+@media (max-width: 1600px) and (min-width: 1200px) {
+  .product-details-page .buynow-wrapper {
+    width: 100%;
+  }
+}
+
+@media (min-width: 556px) {
+  .product-details-page .buynow-wrapper {
+    margin: 0;
+    width: 25%;
+  }
+}
+
+.product-details-page .buynow-wrapper button.buynow-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
+  font-size: 18px;
+  line-height: 12px;
+  font-weight: 500;
+  vertical-align: top;
+  background: var(--secondary-color);
+  border: none;
+  height: 40px;
+  color: var(--primary-color);
+  border-radius: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+@media (max-width: 555px) {
+  .buy-quantity-wrapper .buynow-btn {
+    width: calc(100% - 50px - 7px);
+    height: 36px;
+  }
+
+  .buy-quantity-wrapper .qty-wrapper {
+    width: 50px;
+  }
+
+  .buy-quantity-wrapper .qty-wrapper button.btn-decrease {
+    left: auto;
+    right: 0px;
+    bottom: 0px;
+  }
+
+  .buy-quantity-wrapper .qty-wrapper button.btn-increase {
+    left: auto;
+    right: 0px;
+    top: 0px;
+  }
+
+  .buy-quantity-wrapper .qty-wrapper .qty-input {
+    height: 36px;
+    text-align: left;
+    padding-left: 7px;
+  }
+
+  .buy-quantity-wrapper .qty-wrapper button {
+    transform: none;
+  }
+}

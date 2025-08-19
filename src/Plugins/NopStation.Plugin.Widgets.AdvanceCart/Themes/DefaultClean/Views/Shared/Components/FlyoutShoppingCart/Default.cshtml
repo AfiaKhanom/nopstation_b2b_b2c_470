@@ -1,0 +1,117 @@
+﻿@model MiniShoppingCartModel
+@using Nop.Core
+@using Nop.Core.Domain.Catalog
+@using Nop.Web.Framework.Mvc.Routing;
+@using Nop.Services.Configuration;
+@inject ISettingService settingService
+@inject IStoreContext storeContext
+@{
+    NopHtml.AppendScriptParts(ResourceLocation.Footer, $"/Plugins/NopStation.Plugin.Widgets.AdvanceCart/Contents/js/public.advancecart.js");
+    var store = await storeContext.GetCurrentStoreAsync();
+    var showAdditionalButtons = true;
+    var shouldHideGoToCart = false;
+    var currentController = Url.ActionContext.RouteData.Values["controller"].ToString();
+    var currentAction = Url.ActionContext.RouteData.Values["action"].ToString();
+
+    if (!await settingService.GetSettingByKeyAsync<bool>("AdvanceCartSettings.EnableAdvanceFlyoutCart", storeId: store.Id, loadSharedValueIfNotFound: true))
+    {
+        showAdditionalButtons = false;
+    }
+    if (currentController.Equals("shoppingcart", StringComparison.InvariantCultureIgnoreCase) &&
+        currentAction.Equals("cart", StringComparison.InvariantCultureIgnoreCase))
+    {
+        showAdditionalButtons = false;
+        shouldHideGoToCart = true;
+    }
+    if (currentController.Equals("checkout", StringComparison.InvariantCultureIgnoreCase))
+    {
+        showAdditionalButtons = false;
+    }
+}
+
+<div id="flyout-cart" class="flyout-cart">
+    <div class="mini-shopping-cart">
+        <div class="count">
+            <a href="@Url.RouteUrl("ShoppingCart")"><i class="icon icon-shopping-cart-1"></i>@T("ShoppingCart.Mini.Items", Model.Items.Count)</a>
+            <a class="close-flyout-cart" href="#">×</a>
+        </div>
+
+        @if (Model.Items.Count > 0)
+        {
+            <div class="items" id="miniCartWithProduct">
+                @for (var i = 0; i < Model.Items.Count; i++)
+                {
+                    var item = Model.Items[i];
+                    <div class="item @(i == 0 ? "first" : null)" id="shoppingCartItem_@item.Id">
+                        @if (Model.ShowProductImages)
+                        {
+                            <div class="picture">
+                                <a href="@(Url.RouteUrl<Product>(new { SeName = item.ProductSeName }))" title="@item.Picture.Title">
+                                    <img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
+                                </a>
+                            </div>
+                        }
+                        <div class="product">
+                            <div class="name">
+                                <a href="@(Url.RouteUrl<Product>(new { SeName = item.ProductSeName }))">@item.ProductName</a>
+                            </div>
+                            @if (!string.IsNullOrEmpty(item.AttributeInfo))
+                            {
+                                <div class="attributes">
+                                    @Html.Raw(item.AttributeInfo)
+                                </div>
+                            }
+                            <div class="price"><span class="price-text">@T("ShoppingCart.Mini.UnitPrice"): </span><span class="price-unit" id="itemunitpriceflyout@(item.Id)">@item.UnitPrice</span></div>
+                            @if (showAdditionalButtons)
+                            {
+                                <div class="quantity-wrapper">
+                                    <div class="mini-cart--p-qty">
+                                        <button class="btn qty-button btn-minus @(item.Quantity > 1 ? "": "btn-disabled")" type="button" onclick="NopAdvanceCart.flyOutCartQuantityChange(@item.Id, false, false)">
+                                            -
+                                        </button>
+                                        <input name="itemquantity@(item.Id)" id="itemquantity@(item.Id)" type="text" value="@item.Quantity" class="qty-input">
+                                        <button class="btn qty-button btn-plus" type="button" onclick="NopAdvanceCart.flyOutCartQuantityChange(@item.Id, true, false)">
+                                            +
+                                        </button>
+                                    </div>
+                                    <div class="mini-cart--p-buttons">
+                                        <div class="delete-item">
+                                            <button type="button" class="remove-btn" onclick="NopAdvanceCart.flyOutCartDeleteItem(@item.Id, false)">
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="quantity">@T("ShoppingCart.Mini.Quantity"): <span>@item.Quantity</span></div>
+                            }
+
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="flyoutcart-footer">
+                <div class="totals">@T("ShoppingCart.Totals.SubTotal"): <strong id="miniCartSubTotal">@Model.SubTotal</strong></div>
+                <div class="buttons">
+                    @if (!shouldHideGoToCart)
+                    {
+                        <button type="button" class="button-1 cart-button" onclick="setLocation('@(Url.RouteUrl("ShoppingCart"))')">@T("ShoppingCart.Mini.ViewCart")</button>
+                    }
+                    <button type="button" class="button-1 checkout-button" onclick="setLocation('@Url.RouteUrl("Checkout")')">@T("Checkout.Button")</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<script asp-location="Footer">
+    $(document).ready(function () {
+        $(".header-links-wrapper #flyout-cart").appendTo("body");
+        $('.close-flyout-cart').on('click', function (e) {
+            e.stopPropagation();
+            $('#flyout-cart').removeClass('active');
+            $('html').removeClass('flyout-cart-open');
+        });
+    })
+</script>
+

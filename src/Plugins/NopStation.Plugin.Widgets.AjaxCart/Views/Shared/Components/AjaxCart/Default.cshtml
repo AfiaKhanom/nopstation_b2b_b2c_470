@@ -1,0 +1,85 @@
+﻿@using Nop.Core
+@inject AjaxCartSettings ajaxCartSettings
+@inject IWebHelper webHelper
+
+@{
+    var storeLocation = webHelper.GetStoreLocation();
+
+    NopHtml.AppendCssFileParts("~/Plugins/NopStation.Plugin.Widgets.AjaxCart/Contents/css/styles.css", string.Empty);
+    NopHtml.AddScriptParts(ResourceLocation.Footer, "~/Plugins/NopStation.Plugin.Widgets.AjaxCart/Contents/js/public.ajaxcart.js");
+}
+
+<style>
+    @Html.Raw(ajaxCartSettings.UpdateShoppingCartButtonSelector) {
+        display: none;
+    }
+</style>
+
+<script asp-location="Footer">
+    $(document).ready(function () {
+        var localized_data = {};
+        localized_data.AjaxCartFailure = '@T("NopStation.AjaxCart.AjaxCartFailure")';
+
+        NopAjaxCart.init('@Html.Raw(ajaxCartSettings.UpdateShoppingCartButtonSelector)', 
+            '@Html.Raw(ajaxCartSettings.ApplyDiscountCouponCodeButtonSelector)', 
+            '@Html.Raw(ajaxCartSettings.ApplyDiscountCouponCodeInputSelector)', 
+            '@Html.Raw(ajaxCartSettings.ApplyGiftCardCouponCodeButtonSelector)', 
+            '@Html.Raw(ajaxCartSettings.ApplyGiftCardCouponCodeInputSelector)',
+            '@Html.Raw(ajaxCartSettings.ShoppingCartFormSelector)',
+            '@Html.Raw(ajaxCartSettings.OrderSummaryContainerSelector)',
+            '@(storeLocation)ajaxcart/UpdateCart/',                                                                                               
+            '@(storeLocation)ajaxcart/ApplyDiscountCoupon/',
+            '@(storeLocation)ajaxcart/ApplyGiftCard/',                                                                                            
+            '@(storeLocation)ajaxcart/RemoveDiscountCoupon/',
+            '@(storeLocation)ajaxcart/RemoveGiftCardCode/',
+            '@(storeLocation)ajaxcart/UpdateWishlist/',
+            localized_data);
+
+        $("@Html.Raw(ajaxCartSettings.ShoppingCartInputQuantitySelector)").change(function () {
+            NopAjaxCart.updateCart();
+        });
+    });
+            
+    $(document).on('ajaxcart_initialized', function () {
+        new updateQuantityBox();
+    });
+    
+    function updateQuantityBox() {
+        $("@Html.Raw(ajaxCartSettings.ShoppingCartInputQuantitySelector)").each(function () {
+            var html = $(this).prop('outerHTML');
+            $(this).replaceWith('<div class="qty-wrapper"><button class="btn-decrease" onclick="decreaseCartQty(this)" type="button">-</button>' + html +
+                '<button class="btn-increase"onclick="increaseCartQty(this)" type="button">+</button></div>');
+        });
+
+        $("@Html.Raw(ajaxCartSettings.ShoppingCartSelectQuantitySelector)").each(function () {
+            $(this).attr('onchange', 'NopAjaxCart.updateCart();return;')
+        });
+    }
+
+    function decreaseCartQty(btn) {
+        var qtyInput = $(btn).siblings("input");
+        var value = parseInt(qtyInput.val());
+
+        if (value > 1) {
+            qtyInput.val(value - 1);
+            NopAjaxCart.updateCart();
+        }
+    }
+
+    function increaseCartQty(btn) {
+        var qtyInput = $(btn).siblings("input");
+        var value = parseInt(qtyInput.val());
+        qtyInput.val(value + 1);
+        NopAjaxCart.updateCart();
+    }
+
+    function displayAjaxCartLoader(display) {
+        if (display) {
+            $('.ajax-cart-loader-block-window').show();
+        }
+        else {
+            $('.ajax-cart-loader-block-window').hide('slow');
+        }
+    }
+
+</script>
