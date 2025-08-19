@@ -1,0 +1,159 @@
+﻿@model PublicModel
+@inject Nop.Core.IWebHelper webHelper
+@{
+    var supportRtl = await Html.ShouldUseRtlThemeAsync();
+    if (supportRtl)
+    {
+        NopHtml.AddCssFileParts("~/Plugins/NopStation.Plugin.Widgets.BlogNews/Themes/Stafast/Content/css/styles.rtl.css");
+    }
+    else
+    {
+        NopHtml.AddCssFileParts("~/Plugins/NopStation.Plugin.Widgets.BlogNews/Themes/Stafast/Content/css/styles.css");
+    }
+}
+@if (Model.BlogPosts.Any() || Model.NewsItems.Any())
+{
+    <div class="blog-news-area">
+        @if (Model.BlogPosts.Any())
+        {
+            <div class="latest-blog-container container" id="blog-list">
+                <h2 class="title-container">@T("NopStation.BlogNews.Home.LatestBlog")</h2>
+                <div class="single-blog swiper">
+                    <div class="single-row swiper-wrapper" dir="@Html.GetUIDirection(!await Html.ShouldUseRtlThemeAsync())">
+                        @foreach (var item in Model.BlogPosts)
+                        {
+                            <div class="swiper-slide">
+                                <div class="single-item">
+                                    <div class="box-header">
+                                        <img src="@item.PictureUrl" alt="@(!string.IsNullOrEmpty(item.AltAttribute) ? item.AltAttribute : "blog image")" />
+                                    </div>
+                                    <div class="title-wrapper">
+                                        <h3 class="text-ellipsis">@item.Title</h3>
+                                        <div class="date-time"><span class="pr-2">@item.CreatedOnUtcStr</span><span>(@item.TotalComments)</span></div>
+                                    </div>
+                                    <div class="box-body">
+                                        <div class="post-body">
+                                            <p class="main">@Html.Raw(@item.BodyOverview)</p>
+                                        </div>
+                                        <a class="blog-link" href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })">@T("NopStation.BlogNews.Home.LatestBlog.ReadMore")</a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-pagination swiper-pagination-bullets swiper-pagination-horizontal"></div>
+            </div>
+
+            <script asp-location="Footer">
+                $(document).ready(function () {
+                    var e = window, a = 'inner';
+                    if (!('innerWidth' in window)) {
+                        a = 'client';
+                        e = document.documentElement || document.body;
+                    }
+                    var result = { width: e[a + 'Width'], height: e[a + 'Height'] };
+                    var blogcount = false;
+                @if (Model.BlogPosts.Count > 3)
+                {
+                    <text>
+                                    blogcount = true;
+                    </text>
+                }
+                                if (blogcount || result.width < 992) {
+                        $('.single-blog .single-item.swiper-slide').css('flex', 'none');
+                        new Swiper('#blog-list .swiper', {
+                            slidesPerView: 'auto',
+                            loop: true,
+                            pagination: {
+                                clickable: true,
+                                el: '#blog-list .swiper-pagination',
+                            },
+                            navigation: {
+                                nextEl: "#blog-list .swiper-button-next",
+                                prevEl: "#blog-list .swiper-button-prev",
+                            }
+                        });
+                    }
+                });
+            </script>
+        }
+
+    </div>
+
+    @await Component.InvokeAsync("Widget", new { widgetZone = "homepage-blog-news-middle" })
+
+    <div class="blog-news-area">
+        @if (Model.NewsItems.Any())
+        {
+            <div class="news-list-homepage container" id="news-list">
+                <h2 class="title-container">@T("NopStation.BlogNews.Home.LatestNews")</h2>
+                <div class="single-news swiper">
+                    <div class="single-row swiper-wrapper" dir="@Html.GetUIDirection(!await Html.ShouldUseRtlThemeAsync())">
+                        @foreach (var item in Model.NewsItems)
+                        {
+                            <div class="swiper-slide">
+                                <div class="single-item">
+                                    <div class="box-header">
+                                        <img src="@item.PictureUrl" alt="@(!string.IsNullOrEmpty(item.AltAttribute) ? item.AltAttribute : "news image")" />
+                                    </div>
+                                    <div class="title-wrapper">
+                                        <h3 class="text-ellipsis">@item.Title</h3>
+                                        <div class="date-time"><span class="pr-2">@item.CreatedOnUtcStr</span><span>(@item.TotalComments)</span></div>
+                                    </div>
+                                    <div class="box-body">
+                                        <div class="post-body">
+                                            <p> @Html.Raw(@item.ShortDescription)</p>
+                                        </div>
+                                        <a class="blog-link" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">@T("NopStation.BlogNews.Home.LatestNews.ReadMore")</a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-pagination swiper-pagination-bullets swiper-pagination-horizontal"></div>
+            </div>
+
+            <script asp-location="Footer">
+                $(document).ready(function () {
+                    var e = window, a = 'inner';
+                    if (!('innerWidth' in window)) {
+                        a = 'client';
+                        e = document.documentElement || document.body;
+                    }
+                    var result = { width: e[a + 'Width'], height: e[a + 'Height'] };
+
+                    var newscount = false;
+                @if (Model.NewsItems.Count > 3)
+                {
+                    <text>
+                                    newscount = true;
+                    </text>
+                }
+                                if (newscount || result.width < 992) {
+                        $('.single-news .single-item.swiper-slide').css('flex', 'none');
+                        new Swiper('#news-list .swiper', {
+                            slidesPerView: 'auto',
+                            loop: true,
+                            pagination: {
+                                clickable: true,
+                                el: '#news-list .swiper-pagination',
+                            },
+                            navigation: {
+                                nextEl: "#news-list .swiper-button-next",
+                                prevEl: "#news-list .swiper-button-prev",
+                            }
+                        });
+                    }
+                });
+            </script>
+        }
+    </div>
+}
