@@ -1,0 +1,104 @@
+﻿@model FooterDescriptionModel
+
+@if (Model.Description1.Enabled || Model.Description2.Enabled ||
+    Model.Description3.Enabled || Model.Description4.Enabled)
+{
+    <div class="shipping-types-wrapper">
+        <div class="container">
+            <div class="shipping-types row">
+                @if (Model.Description1.Enabled)
+                {
+                    <div class="col-md-3 col-xs-3 col-3">
+                        <div class="shipping-type">
+                            <div class="shipping-type--icon"><img src="@Model.Description1.Picture.ThumbImageUrl" alt="@Model.Description1.Picture.AlternateText" title="@Model.Description1.Picture.Title" class="loading" data-was-processed="true"></div>
+                            <div class="shipping-type--info">
+                                @if (string.IsNullOrWhiteSpace(Model.Description1.Url))
+                                {
+                                    <h3 class="shipping-type--title">
+                                        @Model.Description1.Title
+                                    </h3>
+                                }
+                                else
+                                {
+                                    <h3 class="shipping-type--title">
+                                        <a href="@Model.Description1.Url">@Model.Description1.Title</a>
+                                    </h3>
+                                }
+                                <div class="shipping-type--desc">@Html.Raw(Model.Description1.Text)</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (Model.Description2.Enabled)
+                {
+                    <div class="col-md-3 col-xs-3 col-3">
+                        <div class="shipping-type">
+                            <div class="shipping-type--icon"><img src="@Model.Description2.Picture.ThumbImageUrl" alt="@Model.Description2.Picture.AlternateText" title="@Model.Description2.Picture.Title" class="loading" data-was-processed="true"></div>
+                            <div class="shipping-type--info">
+                                @if (string.IsNullOrWhiteSpace(Model.Description2.Url))
+                                {
+                                    <h3 class="shipping-type--title">
+                                        @Model.Description2.Title
+                                    </h3>
+                                }
+                                else
+                                {
+                                    <h3 class="shipping-type--title">
+                                        <a href="@Model.Description2.Url">@Model.Description2.Title</a>
+                                    </h3>
+                                }
+                                <div class="shipping-type--desc">@Html.Raw(Model.Description2.Text)</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (Model.Description3.Enabled)
+                {
+                    <div class="col-md-3 col-xs-3 col-3">
+                        <div class="shipping-type">
+                            <div class="shipping-type--icon"><img src="@Model.Description3.Picture.ThumbImageUrl" alt="@Model.Description3.Picture.AlternateText" title="@Model.Description3.Picture.Title" class="loading" data-was-processed="true"></div>
+                            <div class="shipping-type--info">
+                                @if (string.IsNullOrWhiteSpace(Model.Description3.Url))
+                                {
+                                    <h3 class="shipping-type--title">
+                                        @Model.Description3.Title
+                                    </h3>
+                                }
+                                else
+                                {
+                                    <h3 class="shipping-type--title">
+                                        <a href="@Model.Description3.Url">@Model.Description3.Title</a>
+                                    </h3>
+                                }
+                                <div class="shipping-type--desc">@Html.Raw(Model.Description3.Text)</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (Model.Description4.Enabled)
+                {
+                    <div class="col-md-3 col-xs-3 col-3">
+                        <div class="shipping-type">
+                            <div class="shipping-type--icon"><img src="@Model.Description4.Picture.ThumbImageUrl" alt="@Model.Description4.Picture.AlternateText" title="@Model.Description4.Picture.Title" class="loading" data-was-processed="true"></div>
+                            <div class="shipping-type--info">
+                                @if (string.IsNullOrWhiteSpace(Model.Description4.Url))
+                                {
+                                    <h3 class="shipping-type--title">
+                                        @Model.Description4.Title
+                                    </h3>
+                                }
+                                else
+                                {
+                                    <h3 class="shipping-type--title">
+                                        <a href="@Model.Description4.Url">@Model.Description4.Title</a>
+                                    </h3>
+                                }
+                                <div class="shipping-type--desc">@Html.Raw(Model.Description4.Text)</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}

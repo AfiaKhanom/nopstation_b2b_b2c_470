@@ -1,0 +1,33 @@
+﻿@model ConfigurationModel
+
+ <div class="card-body">
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-override-store-checkbox asp-for="HideHomePageBestSellers_OverrideForStore" asp-input="HideHomePageBestSellers" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+            <nop-label asp-for="HideHomePageBestSellers" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="HideHomePageBestSellers" />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-override-store-checkbox asp-for="HideHomePageFeaturedCategories_OverrideForStore" asp-input="HideHomePageFeaturedCategories" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+            <nop-label asp-for="HideHomePageFeaturedCategories" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="HideHomePageFeaturedCategories" />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-3">
+            <nop-override-store-checkbox asp-for="HideHomePageProducts_OverrideForStore" asp-input="HideHomePageProducts" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+            <nop-label asp-for="HideHomePageProducts" />
+        </div>
+        <div class="col-md-9">
+            <nop-editor asp-for="HideHomePageProducts" />
+        </div>
+    </div>
+</div>

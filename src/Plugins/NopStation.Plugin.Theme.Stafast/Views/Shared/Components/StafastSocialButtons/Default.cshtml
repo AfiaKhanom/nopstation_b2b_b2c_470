@@ -1,0 +1,10 @@
+﻿@model StafastSocialModel
+
+@if (!string.IsNullOrWhiteSpace(Model.LinkedInLink))
+{
+    <li class="linkedin"><a href="@Model.LinkedInLink" target="_blank" rel="noopener noreferrer">@T("NopStation.Theme.Stafast.Footer.FollowUs.LinkedIn")</a></li>
+}
+@if (!string.IsNullOrWhiteSpace(Model.PinterestLink))
+{
+    <li class="pinterest"><a href="@Model.PinterestLink" target="_blank" rel="noopener noreferrer">@T("NopStation.Theme.Stafast.Footer.FollowUs.Pinterest")</a></li>
+}
