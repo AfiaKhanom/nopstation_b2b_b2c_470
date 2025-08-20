@@ -1,0 +1,32 @@
+﻿.qty-wrapper {
+  position: relative;
+}
+
+.quantity .qty-input {
+  width: 90px !important;
+  height: 30px;
+  padding: 0 20px;
+}
+
+  .quantity .qty-input:focus {
+    outline: none;
+    border: 1px solid #ccc;
+  }
+
+.btn-decrease, .btn-increase {
+  width: 20px;
+  height: 28px;
+  border: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.btn-decrease {
+  left: 1px;
+}
+
+.btn-increase {
+  right: 1px;
+}

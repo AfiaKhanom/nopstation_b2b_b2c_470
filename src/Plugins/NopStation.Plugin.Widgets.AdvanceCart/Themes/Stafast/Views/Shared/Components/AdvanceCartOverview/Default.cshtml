@@ -1,0 +1,40 @@
+﻿@model AdvanceCartProductOverviewModel
+@{
+    var addToCartText = ViewBag.addToCartText ?? "Add to Cart";
+    var addtocartlink = ViewBag.addtocartlink ?? "#";
+}
+
+<div class="buy-quantity-wrapper">
+    @if (!Model.DisableBuyButton)
+    {
+        if (Model.AllowCustomersToSelectQuantityFromProductBox)
+        {
+            if (Model.AllowedQuantities.Count > 0)
+            {
+                <select name="EnteredQuantity" class="qty-dropdown" aria-label=@T("Products.Qty.AriaLabel")>
+                    @foreach (var item in Model.AllowedQuantities)
+                    {
+                        <option value="@item.Value" selected="@item.Selected">@item.Text</option>
+                    }
+                </select>
+            }
+            else
+            {
+                <div class="qty-wrapper">
+                    <button class="btn-decrease" onclick="decreaseProductQty(this)" type="button" aria-label="decrease item qantity"></button>
+                    <input name="EnteredQuantity" value="@Model.EnteredQuantity" class="qty-input" type="text" aria-label=@T("Products.Qty.AriaLabel") />
+                    <button class="btn-increase" onclick="increaseProductQty(this)" type="button" aria-label="increase item qantity"></button>
+                </div>
+            }
+        }
+
+        if (Model.EnableBuyNowButton)
+        {
+            <button type="button" class="buynow-btn" onclick="NopAdvanceCart.addproducttocart_catalog(@Model.Id, true, this);return false;">@T("NopStation.AdvanceCart.BuyNow")</button>
+        }
+        else
+        {
+            <button type="button" class="button-2 add-to-cart-button buynow-btn" title="@(addToCartText)" onclick="AjaxCart.addproducttocart_catalog('@addtocartlink');return false;">@(addToCartText)</button>
+        }
+    }
+</div>

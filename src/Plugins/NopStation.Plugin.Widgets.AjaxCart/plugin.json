@@ -1,0 +1,12 @@
+﻿{
+  "Group": "Nop-Station",
+  "FriendlyName": "Nop-Station Ajax Cart",
+  "SystemName": "NopStation.Plugin.Widgets.AjaxCart",
+  "Version": "4.70.1.0",
+  "SupportedVersions": [ "4.70" ],
+  "Author": "Nop-Station Team",
+  "DisplayOrder": 2,
+  "FileName": "NopStation.Plugin.Widgets.AjaxCart.dll",
+  "Description": "This plugin to manage full ajax based cart and wishlist",
+  "DependsOnSystemNames": [ "NopStation.Core" ]
+}

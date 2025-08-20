@@ -1,0 +1,123 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputPath>..\..\Presentation\Nop.Web\Plugins\NopStation.Plugin.Widgets.AjaxCart</OutputPath>
+    <OutDir>$(OutputPath)</OutDir>
+    <Version>4.70.1.0</Version>
+    <Authors>Nop-Station Team</Authors>
+    <Company>Nop-Station</Company>
+    <Product>Nop-Station Ajax Cart</Product>
+    <AssemblyVersion>4.70.1.0</AssemblyVersion>
+    <FileVersion>4.70.1.0</FileVersion>
+    <NeutralLanguage>en</NeutralLanguage>
+    <Copyright>Nop-Station Team</Copyright>
+    <PackageTags>NopStation,Ajax Cart,NopCommerce,Plugin</PackageTags>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <Description>This plugin to manage full ajax based cart and wishlist.</Description>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Content Remove="Areas\Admin\Views\AjaxCart\Configure.cshtml" />
+    <Content Remove="Areas\Admin\Views\_ViewImports.cshtml" />
+    <Content Remove="Areas\Admin\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="Contents\js\public.ajaxcart.js" />
+    <None Remove="logo.png" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="Contents\js\public.ajaxcart.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="NopStation.Plugin.Misc.Actions">
+      <HintPath>..\NopStation.Plugin.Misc.Core\NopStation.Plugin.Misc.Actions.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\Nop.Core\Nop.Core.csproj">
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\Nop.Data\Nop.Data.csproj">
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\Nop.Services\Nop.Services.csproj">
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Presentation\Nop.Web.Framework\Nop.Web.Framework.csproj">
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Presentation\Nop.Web\Nop.Web.csproj">
+      <Private>false</Private>
+      <CopyLocal>False</CopyLocal>
+    </ProjectReference>
+    <ProjectReference Include="..\NopStation.Plugin.Misc.Core\NopStation.Plugin.Misc.Core.csproj">
+      <Private>false</Private>
+      <CopyLocal>False</CopyLocal>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Themes\Stafast\Views\Shared\Components\AjaxCart\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Themes\Stafast\Views\_ViewImports.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Views\Shared\Components\AjaxCart\Default.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Views\_ViewImports.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+ <ItemGroup>
+   <None Update="Contents\css\styles.css">
+     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+   </None>
+   <None Update="release_note.txt">
+     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+   </None>
+   <None Update="Themes\Stafast\Content\css\ajaxCart.css">
+     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+   </None>
+   <None Update="Themes\Stafast\Content\css\ajaxCart.rtl.css">
+     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+   </None>
+ </ItemGroup>
+
+ <ItemGroup>
+   <None Include="Areas\Admin\Views\AjaxCart\Configure.cshtml">
+     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+   </None>
+   <None Include="Areas\Admin\Views\_ViewImports.cshtml">
+     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+     <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+   </None>
+   <None Include="Areas\Admin\Views\_ViewStart.cshtml">
+     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+     <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+   </None>
+ </ItemGroup>
+
+   <!-- This target execute after "Build" target -->
+  <Target Name="NopTarget" AfterTargets="Build">
+    <!-- Delete unnecessary libraries from plugins path -->
+    <MSBuild Projects="$(MSBuildProjectDirectory)\..\..\Build\ClearPluginAssemblies.proj" Properties="PluginPath=$(MSBuildProjectDirectory)\$(OutDir)" Targets="NopClear" />
+    <!-- Delete extra folders and files from plugin output directory -->
+    <RemoveDir Directories="$(OutDir)\refs;$(OutDir)\ref" />
+    <Delete Files="$(OutDir)\$(AssemblyName).deps.json;$(OutDir)\$(AssemblyName).pdb;$(OutDir)\$(AssemblyName).staticwebassets.runtime.json" />
+  </Target>
+</Project>

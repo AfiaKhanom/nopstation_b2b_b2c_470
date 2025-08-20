@@ -1,0 +1,109 @@
+﻿.announcement-wrapper {
+  position: relative;
+  transition: all 0.3s;
+  background-color: #E3EAF5;
+}
+
+.announcement-wrapper .announcement-bar {
+  position: relative;
+  z-index: 100;
+  color: var(--primary-color);
+  padding: 10px 20px;
+  transition: all 0.3s;
+  max-width: calc(100% - 40px);
+}
+
+.announcement-wrapper .swiper {
+  z-index: 15;
+}
+
+.announcement-wrapper div.announcement-bar {
+  text-align: center;
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+.announcement-wrapper div.announcement-bar .separator {
+  display: none;
+}
+
+.announcement-wrapper .announcement-description {
+  display: none;
+}
+
+.announcement-wrapper #announcement-close {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 15;
+  background: transparent;
+  border: none;
+  color: var(--primary-color);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.announcement-wrapper #announcement-close::before {
+  content: "\e928";
+}
+
+.announcement-wrapper #announcement-minimize {
+  position: absolute;
+  right: 5px;
+  top: 100%;
+  z-index: 15;
+  background: transparent;
+  border: none;
+  color: #fff;
+  background: var(--black);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 20px;
+  width: 20px;
+  border-radius: 0 0 50% 50%;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.announcement-item {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.announcement-wrapper #announcement-minimize::before {
+  content: "\e990";
+  transform: rotateZ(180deg);
+}
+
+.announcement-wrapper.announcement-minimized {
+  font-size: 0;
+}
+
+.announcement-wrapper.announcement-minimized .announcement-bar {
+  padding: 0;
+  font-size: 0;
+}
+
+.announcement-wrapper.announcement-minimized #announcement-close {
+  display: none;
+}
+
+.announcement-wrapper.announcement-minimized #announcement-minimize::before {
+  transform: rotateZ(0);
+}
+
+.announcement-wrapper.announcement-swiper {
+  max-height: 40px;
+}
+
+@media(max-width: 767px) {
+  .announcement-item {
+      font-size: 12px;
+  }
+
+  .announcement-wrapper .announcement-bar {
+      padding: 5px 20px;
+  }
+}

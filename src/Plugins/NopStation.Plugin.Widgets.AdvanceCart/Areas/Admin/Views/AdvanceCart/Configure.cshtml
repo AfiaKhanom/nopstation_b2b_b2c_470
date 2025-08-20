@@ -1,0 +1,155 @@
+﻿@model ConfigurationModel
+@inject Nop.Core.IWebHelper webHelper;
+
+@{
+    Layout = "_AdminLayout";
+    NopHtml.SetActiveMenuItemSystemName("AdvanceCart.Configuration");
+    ViewBag.PageTitle = T("Admin.NopStation.AdvanceCart.Configuration").Text;
+}
+
+<form asp-controller="AdvanceCart" asp-action="Configure" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Admin.NopStation.AdvanceCart.Configuration")
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.Save")
+            </button>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="form-horizontal">
+                @await Component.InvokeAsync(typeof(StoreScopeConfigurationViewComponent))
+                <div asp-validation-summary="All"></div>
+                <div class="cards-group">
+                    <div class="card card-default">
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkbox asp-for="EnableAdvanceCartPlugin_OverrideForStore" asp-input="EnableAdvanceCartPlugin" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="EnableAdvanceCartPlugin" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="EnableAdvanceCartPlugin" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkbox asp-for="EnableAdvanceFlyoutCart_OverrideForStore" asp-input="EnableAdvanceFlyoutCart" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="EnableAdvanceFlyoutCart" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="EnableAdvanceFlyoutCart" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkbox asp-for="EnableBuyNowButton_OverrideForStore" asp-input="EnableBuyNowButton" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="EnableBuyNowButton" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="EnableBuyNowButton" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkbox asp-for="AllowCustomersToSelectQuantityFromProductBox_OverrideForStore" asp-input="AllowCustomersToSelectQuantityFromProductBox" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="AllowCustomersToSelectQuantityFromProductBox" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="AllowCustomersToSelectQuantityFromProductBox" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkbox asp-for="OpenQuickViewIfRedirectToDetailsPageRequired_OverrideForStore" asp-input="OpenQuickViewIfRedirectToDetailsPageRequired" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="OpenQuickViewIfRedirectToDetailsPageRequired" />
+                                </div>
+                                <div class="col-md-9">
+                                    <input asp-for="OpenQuickViewIfRedirectToDetailsPageRequired" asp-disabled="@((!Model.QuickViewPluginActivated).ToString().ToLower())" />
+                                    <em>@T("Admin.NopStation.AdvanceCart.Configuration.QuickViewInatallation.Hint", webHelper.GetStoreLocation())</em>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkbox asp-for="EnableAddedToCartNotificationPopup_OverrideForStore" asp-input="EnableAddedToCartNotificationPopup" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="EnableAddedToCartNotificationPopup" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="EnableAddedToCartNotificationPopup" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkbox asp-for="NotificationPopupProductImageSize_OverrideForStore" asp-input="NotificationPopupProductImageSize" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="NotificationPopupProductImageSize" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="NotificationPopupProductImageSize" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkbox asp-for="ProductBoxAdditionalInfoWidgetZone_OverrideForStore" asp-input="ProductBoxAdditionalInfoWidgetZone" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="ProductBoxAdditionalInfoWidgetZone" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="ProductBoxAdditionalInfoWidgetZone" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkbox asp-for="ProductBoxAddToCartButtonSelector_OverrideForStore" asp-input="ProductBoxAddToCartButtonSelector" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="ProductBoxAddToCartButtonSelector" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="ProductBoxAddToCartButtonSelector" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkDetails asp-for="ProductDetailsAdditionalInfoWidgetZone_OverrideForStore" asp-input="ProductDetailsAdditionalInfoWidgetZone" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="ProductDetailsAdditionalInfoWidgetZone" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="ProductDetailsAdditionalInfoWidgetZone" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkDetails asp-for="TopCartSelector_OverrideForStore" asp-input="TopCartSelector" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="TopCartSelector" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="TopCartSelector" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkDetails asp-for="FlyoutCartSelector_OverrideForStore" asp-input="FlyoutCartSelector" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="FlyoutCartSelector" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="FlyoutCartSelector" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-override-store-checkDetails asp-for="ProductBoxSelector_OverrideForStore" asp-input="ProductBoxSelector" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                    <nop-label asp-for="ProductBoxSelector" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="ProductBoxSelector" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>

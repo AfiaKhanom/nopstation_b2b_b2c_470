@@ -1,0 +1,214 @@
+﻿﻿.cart .cart-quantity {
+  display: inline-block;
+  text-align: right;
+  border: 1px solid #eee;
+  vertical-align: top;
+  min-width: 50px;
+  max-width: 70px;
+  border-radius: 4px;
+}
+
+.cart .cart-quantity ~ button {
+  display: none;
+}
+
+@media (min-width: 1200px) and (max-width: 1599px) {
+  .cart .cart-quantity {
+    width: calc(100% - 110px);
+  }
+}
+
+@media (max-width: 555px) {
+  .cart .cart-quantity {
+    width: 50px;
+    display: inline-flex;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+}
+
+.cart .cart-quantity input {
+  width: calc(100% - 19px);
+  border: none;
+  height: 38px;
+  box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.1) inset;
+}
+
+@media (max-width: 555px) {
+  .cart .cart-quantity input {
+    height: 36px;
+    font-size: 11px;
+    padding: 0;
+    text-align: center;
+  }
+}
+
+.cart .cart-quantity input:focus {
+  outline: none;
+}
+
+.cart .cart-quantity .qty-button {
+  font-size: 8px;
+  height: 20px;
+  line-height: 20px;
+  color: #999;
+  border-width: 0 1px 0 0;
+  border-color: #eee;
+  border-radius: 4px 0 0 0;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+  .cart .cart-quantity .qty-button.btn-decrease {
+    border-width: 1px 1px 0 0;
+    border-radius: 0 0 0 4px;
+  }
+
+@media (max-width: 555px) {
+  .cart .cart-quantity .qty-button {
+    border-width: 0 0 0 1px;
+    height: 18px;
+    display: block;
+  }
+}
+
+.ajax-cart-notification-opened body {
+  overflow: hidden;
+}
+
+.ajax-cart-notification-opened .ui-icon-closethick span {
+  display: none;
+}
+
+.success-notification {
+  padding: 0;
+  z-index: 9999;
+}
+
+@media (max-width: 767px) {
+  .success-notification .product-picture {
+    width: 200px;
+    margin: auto;
+  }
+}
+.success-notification .price {
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 32px;
+  margin-bottom: 15px;
+  color: var(--secondary-color);
+}
+.success-notification .ui-dialog-titlebar-close {
+  border-radius: 50%;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, 0%);
+  height: 22px;
+  width: 22px;
+  transition: all 0.3s;
+  text-align: center;
+}
+@media (max-width: 767px) {
+  .success-notification .ui-dialog-titlebar-close {
+    margin: 0;
+    border-radius: 0;
+    transform: none;
+  }
+}
+.success-notification .ui-dialog-titlebar-close:hover {
+  transform: translate(-50%, 0%) rotateZ(-90deg);
+}
+.success-notification .ui-dialog-titlebar-close::before {
+  content: "\e910";
+  font-family: "icomoon" !important;
+  display: inline-block;
+  color: #fff;
+  position: absolute;
+  font-size: 10px;
+  top: 0;
+  right: 0;
+  z-index: 999;
+  background: var(--secondary-color);
+  height: 100%;
+  width: 100%;
+  opacity: 1;
+  padding: 0;
+  text-indent: 0;
+  line-height: 20px;
+}
+.success-notification .ui-dialog-titlebar {
+  text-align: center;
+  background: var(--off-white);
+  border: none;
+}
+.success-notification .product-name {
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 20px;
+  margin-bottom: 15px;
+}
+.success-notification .buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+@media (max-width: 767px) {
+  .success-notification .buttons {
+    margin: 10px 0;
+  }
+}
+.success-notification .buttons button {
+  height: 35px;
+  color: var(--white);
+  background: var(--black);
+  box-shadow: -1px 2px 3px rgba(124, 116, 116, 0.1);
+  padding: 5px 25px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 14px;
+  margin: 8px 4px;
+  border: none;
+}
+  .success-notification .buttons button.cart-button {
+    background: var(--primary-color);
+  }
+
+@media (max-width: 767px) {
+  .success-notification .buttons button {
+    width: 100%;
+    margin: 0 0 5px;
+  }
+}
+
+.failor-notification {
+  padding: 0;
+}
+
+  .failor-notification .ui-dialog-titlebar {
+    text-align: center;
+    background: var(--off-white);
+    border: none;
+  }
+
+  .failor-notification .warrning {
+    text-align: center;
+    color: var(--red);
+  }
+
+    .failor-notification .warrning h2 {
+      border: 12px;
+      font-weight: normal;
+      border: 1px solid var(--red);
+      margin: 5px 0;
+      padding: 5px 0;
+    }
+
+.ajax-loader {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2);
+}

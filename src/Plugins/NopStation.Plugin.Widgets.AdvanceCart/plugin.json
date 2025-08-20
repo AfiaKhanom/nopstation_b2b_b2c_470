@@ -1,0 +1,12 @@
+﻿{
+  "Group": "Nop-Station",
+  "FriendlyName": "Nop-Station Advance Cart",
+  "SystemName": "NopStation.Plugin.Widgets.AdvanceCart",
+  "Version": "4.70.1.0",
+  "SupportedVersions": [ "4.70" ],
+  "Author": "Nop-Station Team",
+  "DisplayOrder": 1,
+  "FileName": "NopStation.Plugin.Widgets.AdvanceCart.dll",
+  "Description": "This plugin enables Advance Cart on public store.",
+  "DependsOnSystemNames": [ "NopStation.Core" ]
+}
