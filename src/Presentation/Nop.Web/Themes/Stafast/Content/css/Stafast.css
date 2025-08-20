@@ -1647,7 +1647,7 @@ label {
   width: auto;
   max-width: 100px;
   text-align: center;
-  padding: 8px 25px;
+  padding: 8px;
   font-size: 12px;
   line-height: 12px;
   border: 1px solid var(--primary-grey_light);
