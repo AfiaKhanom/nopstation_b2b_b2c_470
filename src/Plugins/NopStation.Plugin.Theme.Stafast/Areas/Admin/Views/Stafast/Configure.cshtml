@@ -1,0 +1,58 @@
+﻿@model ConfigurationModel
+
+@{
+    Layout = "_AdminLayout";
+    NopHtml.SetActiveMenuItemSystemName("Stafast.Configuration");
+
+    ViewBag.PageTitle = T("Admin.NopStation.Theme.Stafast.Configuration").Text;
+
+    var customer = await workContext.GetCurrentCustomerAsync();
+    const string hideColorBlockAttributeName = "StafastConfigurationPage.HideColorBlock";
+    var hideColorBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideColorBlockAttributeName, defaultValue: true);
+
+    const string hideGeneralBlockAttributeName = "StafastConfigurationPage.HideGeneralBlock";
+    var hideGeneralBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideGeneralBlockAttributeName, defaultValue: true);
+    
+    //const string hideCarouselBlockAttributeName = "StafastConfigurationPage.HideCarouselBlock";
+    //var hideCarouselBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideCarouselBlockAttributeName, defaultValue: true);
+
+    const string hideHomePageBlockAttributeName = "StafastConfigurationPage.HideHomePageBlock";
+    var hideHomePageBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideHomePageBlockAttributeName, defaultValue: true);
+    
+    //const string hideHeaderTopBlockAttributeName = "StafastConfigurationPage.HideHeaderTopBlock";
+    //var hideHeaderTopBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideHeaderTopBlockAttributeName, defaultValue: true);
+    
+    const string hideFooterDescriptionBlockAttributeName = "StafastConfigurationPage.HideFooterDescriptionBlock";
+    var hideFooterDescriptionBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideFooterDescriptionBlockAttributeName, defaultValue: true);
+}
+
+<form asp-controller="Stafast" asp-action="Configure" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Admin.NopStation.Theme.Stafast.Configuration")
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.Save")
+            </button>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="form-horizontal">
+                @await Component.InvokeAsync(typeof(StoreScopeConfigurationViewComponent))
+                <div asp-validation-summary="All"></div>
+                <nop-cards id="Stafast-panels">
+                    <nop-card asp-name="Stafast-color" asp-icon="fas fa-palette" asp-title="@T("Admin.NopStation.Theme.Stafast.Configuration.TabTitle.Color")" asp-hide-block-attribute-name="@hideColorBlockAttributeName" asp-hide="@hideColorBlock" asp-advanced="true">@await Html.PartialAsync("_Configure.Color", Model)</nop-card>
+                    <nop-card asp-name="Stafast-info" asp-icon="fas fa-info" asp-title="@T("Admin.NopStation.Theme.Stafast.Configuration.TabTitle.General")" asp-hide-block-attribute-name="@hideGeneralBlockAttributeName" asp-hide="@hideGeneralBlock" asp-advanced="true">@await Html.PartialAsync("_Configure.General", Model)</nop-card>
+                    @*<nop-card asp-name="Stafast-carousel" asp-icon="fas fa-sliders-h" asp-title="@T("Admin.NopStation.Theme.Stafast.Configuration.TabTitle.Carousel")" asp-hide-block-attribute-name="@hideCarouselBlockAttributeName" asp-hide="@hideCarouselBlock" asp-advanced="true">@await Html.PartialAsync("_Configure.Carousel", Model)</nop-card>
+                    *@<nop-card asp-name="Stafast-home" asp-icon="fas fa-home" asp-title="@T("Admin.NopStation.Theme.Stafast.Configuration.TabTitle.HomePage")" asp-hide-block-attribute-name="@hideHomePageBlockAttributeName" asp-hide="@hideHomePageBlock" asp-advanced="true">@await Html.PartialAsync("_Configure.HomePage", Model)</nop-card>
+                   @* <nop-card asp-name="Stafast-top-menu" asp-icon="fas fa-arrow-up" asp-title="@T("Admin.NopStation.Theme.Stafast.Configuration.TabTitle.HeaderTop")" asp-hide-block-attribute-name="@hideHeaderTopBlockAttributeName" asp-hide="@hideHeaderTopBlock" asp-advanced="true">@await Html.PartialAsync("_Configure.HeaderTop", Model)</nop-card>*@
+                    <nop-card asp-name="Stafast-footer-description" asp-icon="fas fa-bars" asp-title="@T("Admin.NopStation.Theme.Stafast.Configuration.TabTitle.FooterDescription")" asp-hide-block-attribute-name="@hideFooterDescriptionBlockAttributeName" asp-hide="@hideFooterDescriptionBlock" asp-advanced="true">@await Html.PartialAsync("_Configure.FooterDescription", Model)</nop-card>
+                </nop-cards>
+            </div>
+        </div>
+    </section>
+</form>
