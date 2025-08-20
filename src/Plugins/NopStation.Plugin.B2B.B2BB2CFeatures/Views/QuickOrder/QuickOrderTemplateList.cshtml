@@ -16,12 +16,6 @@
     var gridName = "quick-order-list-grid";
 }
 <style>
-    body a {
-        font: normal 14px Arial,Helvetica,sans-serif;
-        font-size: 14px;
-        color: #777;
-    }
-
     .header-overlap .header-menu {
         z-index: 5 !important;
     }
@@ -35,9 +29,9 @@
     <div class="page-title">
         <h1>@T("Plugins.Misc.NopStation.B2BB2CFeatures.QuickOrderList")</h1>
     </div>
-    <div class="card card-default">
+    <div class="card card-default custom-container">
         <div class="card-body">
-            <div class="row" style="display: flex;flex-direction: row-reverse;margin:auto">
+            <div class="row mb-4" style="display: flex;flex-direction: row-reverse;margin:auto">
                 <button id="quickListFavouriteButton" name="quickListFavouriteButton" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.AddToQuickListFavourite.Button")" class="btn btn-primary p-2">@T("Plugin.Misc.NopStation.B2BB2CFeatures.AddToQuickListFavourite.Button")</button>
 
                 <button class="btn btn-primary btn-quick-order-action margin-r-10 p-2" id="importFromExcelButton">
@@ -50,7 +44,7 @@
                     <div class="col-md-4" style="margin:auto">
                         <div class="form-group SearchName">
                             <div class="input-inline">
-                                <input asp-for="SearchName" type="text" placeholder="@T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.SearchName")" />
+                                <input class="form-control" asp-for="SearchName" type="text" placeholder="@T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.SearchName")" />
                             </div>
                         </div>
 
@@ -58,13 +52,13 @@
                     <div class="col-md-4" style="margin:auto">
                         <div class="form-group SearchCreatedOn">
                             <div class="input-inline">
-                                <input asp-for="SearchCreatedOn" type="text" placeholder="@T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.SearchCreatedOn")" />
+                                <input class="form-control" asp-for="SearchCreatedOn" type="text" placeholder="@T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.SearchCreatedOn")" />
                             </div>
                         </div>
                     </div>
 
                     <div class="col-md-4" style="margin:auto">
-                        <div class=" form-group text-center">
+                        <div class="form-group text-center">
                             <button type="button" id="search-quick-order" class="btn btn-primary btn-search btn-quick-order-action">
                                 <i class="fa fa-search"></i>
                                 @T("Admin.Common.Search")
@@ -79,81 +73,81 @@
         <div class="card-body">
             @{
                 var gridModel = new DataTablesModel
+            {
+                Name = gridName,
+                UrlRead = new DataUrl("LoadQuickOrderTemplateList", "QuickOrder", new RouteValueDictionary
                 {
-                    Name = gridName,
-                    UrlRead = new DataUrl("LoadQuickOrderTemplateList", "QuickOrder", new RouteValueDictionary
-                    {
-                        [nameof(Model.SearchCreatedOn)] = Model.SearchCreatedOn,
-                        [nameof(Model.SearchName)] = Model.SearchName
-                    }),
-                    UrlDelete = new DataUrl("QuickOrderDelete", "QuickOrder", null),
-                    Length = Model.PageSize,
-                    LengthMenu = Model.AvailablePageSizes,
-                    SearchButtonId = "search-quick-order",
-                    Filters = new List<FilterParameter>
-                    {
-                        new FilterParameter(nameof(Model.SearchName)),
-                        new FilterParameter(nameof(Model.SearchCreatedOn))
-                    }
-                };
+                    [nameof(Model.SearchCreatedOn)] = Model.SearchCreatedOn,
+                    [nameof(Model.SearchName)] = Model.SearchName
+                }),
+                UrlDelete = new DataUrl("QuickOrderDelete", "QuickOrder", null),
+                Length = Model.PageSize,
+                LengthMenu = Model.AvailablePageSizes,
+                SearchButtonId = "search-quick-order",
+                Filters = new List<FilterParameter>
+            {
+            new FilterParameter(nameof(Model.SearchName)),
+            new FilterParameter(nameof(Model.SearchCreatedOn))
+            }
+            };
 
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.Name))
-                {
-                    Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.Name").Text,
-                    Width = "200"
-                });
+            {
+                Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.Name").Text,
+                Width = "200"
+            });
 
                 var formatedRenderDate = new RenderDate();
                 formatedRenderDate.Format = "DD/MM/YYYY";
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.CreatedOn))
-                {
-                    Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.CreatedOn").Text,
-                    Width = "200",
-                    Render = formatedRenderDate
-                });
+            {
+                Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.CreatedOn").Text,
+                Width = "200",
+                Render = formatedRenderDate
+            });
 
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.LastOrderDate))
-                {
-                    Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.LastOrderDate").Text,
-                    Width = "200",
-                    Render = formatedRenderDate
-                });
+            {
+                Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.LastOrderDate").Text,
+                Width = "200",
+                Render = formatedRenderDate
+            });
 
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.TotalOrderItems))
-                {
-                    Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.TotalOrderItems").Text,
-                    Width = "200"
-                });
+            {
+                Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.TotalOrderItems").Text,
+                Width = "200"
+            });
 
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.TotalValueText))
-                {
-                    Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.TotalValue").Text,
-                    Width = "90"
-                });
+            {
+                Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.TotalValue").Text,
+                Width = "90"
+            });
 
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.Id))
-                {
-                    Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.OrderNow").Text,
-                    Width = "200",
-                    Render = new RenderCustom("renderColumnViewOrderNow"),
-                    ClassName = NopColumnClassDefaults.Button
-                });
+            {
+                Title = T("NopStation.B2BB2CFeatures.QuickOrderTemplate.Fields.OrderNow").Text,
+                Width = "200",
+                Render = new RenderCustom("renderColumnViewOrderNow"),
+                ClassName = NopColumnClassDefaults.Button
+            });
 
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.Id))
-                {
-                    Title = T("Admin.Common.Edit").Text,
-                    Width = "100",
-                    ClassName = NopColumnClassDefaults.Button,
-                    Render = new RenderButtonEdit(new DataUrl("/FavouritesDetails/")) // should be matched with route provider
-                });
+            {
+                Title = T("Admin.Common.Edit").Text,
+                Width = "100",
+                ClassName = NopColumnClassDefaults.Button,
+                Render = new RenderButtonEdit(new DataUrl("/FavouritesDetails/")) // should be matched with route provider
+            });
 
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderTemplateModel.Id))
-                {
-                    Title = T("Admin.Common.Delete").Text,
-                    Width = "100",
-                    ClassName = NopColumnClassDefaults.Button,
-                    Render = new RenderButtonRemove(T("Admin.Common.Delete").Text)
-                });
+            {
+                Title = T("Admin.Common.Delete").Text,
+                Width = "100",
+                ClassName = NopColumnClassDefaults.Button,
+                Render = new RenderButtonRemove(T("Admin.Common.Delete").Text)
+            });
             }
             @await Html.PartialAsync("Table", gridModel)
         </div>

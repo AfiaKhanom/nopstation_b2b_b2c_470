@@ -81,10 +81,6 @@
     NopHtml.AppendPageCssClassParts("html-b2b-b2c-feature");
 }
 <style>
-    #add-to-favourite {
-        background-color: #4ab2f1
-    }
-
     .header-overlap .header-menu {
         z-index: 5 !important;
     }
@@ -151,7 +147,7 @@
                                 <th class="product-picture">@T("ShoppingCart.Image")</th>
                             }
                             <th class="product" data-hide="w410, w480, w580, w768">@T("ShoppingCart.Product(s)")</th>
-                            <th class="stock">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).Stock")</th>                            
+                            <th class="stock">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).Stock")</th>
                             @if (Model.ShowVendorName)
                             {
                                 <th class="vendor" data-hide="w410, w480, w580, w768">@T("ShoppingCart.VendorName")</th>
@@ -186,11 +182,11 @@
                                             @if (viewComponentSelector.SelectComponent("LazyLoadImage") != null)
                                             {
                                                 @await Component.InvokeAsync("LazyLoadImage", new (string Key, string Value)[]
-                                                {
-                                                    ("src", item.Picture.ImageUrl),
-                                                    ("alt", item.Picture.AlternateText),
-                                                    ("title", item.Picture.Title)
-                                                })
+                                                         {
+                                ("src", item.Picture.ImageUrl),
+                                ("alt", item.Picture.AlternateText),
+                                ("title", item.Picture.Title)
+                                                         })
                                             }
                                             else
                                             {
@@ -334,17 +330,6 @@
                         }
                     </tbody>
                 </table>
-            </div>
-            @if (Model.IsEditable && Model.Items.Count > 0 && Model.DisplayTaxShippingInfo)
-            {
-                var inclTax = await workContext.GetTaxDisplayTypeAsync() == TaxDisplayType.IncludingTax;
-                //tax info is already included in the price (incl/excl tax). that's why we display only shipping info here
-                //of course, you can modify appropriate locales to include VAT info there
-                <div class="tax-shipping-info">
-                    @T(inclTax ? "ShoppingCart.TaxShipping.InclTax" : "ShoppingCart.TaxShipping.ExclTax", Url.RouteTopicUrl("shippinginfo"))
-                </div>
-            }
-            <div class="cart-options">
                 @if (Model.IsEditable)
                 {
                     <div class="common-buttons">
@@ -356,7 +341,7 @@
                         {
                             <button id="quickListFavouriteButton" name="quickListFavouriteButton" value="@T("Plugin.Misc.NopStation.B2BB2CFeatures.AddToQuickListFavourite.Button")" class="button-2 add-quick-list-favourite-button"><span>@T("Plugin.Misc.NopStation.B2BB2CFeatures.AddToQuickListFavourite.Button")</span></button>
                             <div id="quickListFavouriteDialog" class="modal" title="@T("Plugin.Misc.NopStation.B2BB2CFeatures.AddToQuickListFavourite.Title")">
-                                <div class="modal-content">
+                                <div class="modal-content quick-order-name">
                                     <span id="closeQuickListFavouriteButton" style="top:0px;" class="close">&times;</span>
                                     <div class="form-horizontal">
                                         <div class="row" style="display:flex;">
@@ -383,9 +368,20 @@
                     </div>
                     @await Html.PartialAsync("_CheckoutAttributes", Model)
                 }
-                @await Component.InvokeAsync(typeof(SelectedCheckoutAttributesViewComponent))
-
+                <div class="cart-options">
+                    @await Component.InvokeAsync(typeof(SelectedCheckoutAttributesViewComponent))
+                </div>
             </div>
+            @if (Model.IsEditable && Model.Items.Count > 0 && Model.DisplayTaxShippingInfo)
+            {
+                var inclTax = await workContext.GetTaxDisplayTypeAsync() == TaxDisplayType.IncludingTax;
+                //tax info is already included in the price (incl/excl tax). that's why we display only shipping info here
+                //of course, you can modify appropriate locales to include VAT info there
+                <div class="tax-shipping-info">
+                    @T(inclTax ? "ShoppingCart.TaxShipping.InclTax" : "ShoppingCart.TaxShipping.ExclTax", Url.RouteTopicUrl("shippinginfo"))
+                </div>
+            }
+
             <div class="cart-footer">
                 @await Component.InvokeAsync("Widget", new { widgetZone = PublicWidgetZones.OrderSummaryCartFooter })
                 @if (Model.IsEditable)
@@ -638,7 +634,7 @@
                         return;
                     }
                     else {
-                        @*alert(response.message);
+        @*alert(response.message);
                         var msg = '@T("Plugin.Misc.NopStation.B2BB2CFeatures.LivePriceSync.PriceUpdatedProductSku")';
                         msg = msg + response.data;
                         alert(msg);

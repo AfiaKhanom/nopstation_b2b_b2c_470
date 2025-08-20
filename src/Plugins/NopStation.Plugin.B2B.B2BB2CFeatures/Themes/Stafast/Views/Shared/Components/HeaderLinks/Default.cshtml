@@ -53,14 +53,22 @@
                 {
                     <li>
                         <a href="@Url.RouteUrl("ErpAccountCustomerRegistrationForm", new { returnUrl })" class="ico-register">
-                            @T("Plugin.Misc.NopStation.B2BB2CFeatures.Account.Register.Button.ApplyRegistration")
+                            <label>
+                                <span class="faded">@T("nopstation.theme.stafast.useraccount")</span>
+                                <span>@T("Plugin.Misc.NopStation.B2BB2CFeatures.Account.Register.Button.ApplyRegistration")</span>
+                            </label>
                         </a>
                     </li>
                 }
                 <li>
                     @if (settings.IsB2BUserRegisterAllowed && settings.IsB2CUserRegisterAllowed)
                     {
-                        <a onclick="registerButtonClick()" data-toggle="modal" data-target="#registrationTypeDialog" class="ico-register">@T("account.register.button")</a>
+                        <a onclick="registerButtonClick()" data-toggle="modal" data-target="#registrationTypeDialog" class="ico-register">
+                            <label>
+                                <span class="faded">@T("nopstation.theme.stafast.useraccount")</span>
+                                <span>@T("account.register.button")</span>
+                            </label>
+                        </a>
                         <div id="registrationTypeDialog" class="registration-type-dialog" title='@T("NopStation.B2BB2CFeatures.Register.Notification.Title")' style="display: none;">
                             <div class="dialog-center-register">
                                 <h2>@T("NopStation.B2BB2CFeatures.Register.Notification.Description")</h2>

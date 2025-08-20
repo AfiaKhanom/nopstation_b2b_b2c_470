@@ -27,7 +27,7 @@
         <form id="ErpShiptoAddressForm" asp-controller="ErpCheckout" asp-action="ErpShippingAddress" method="post">
 
             <div class="checkout-shipping-tab checkout-left-section" id="checkoutShippingTabs">
-                <div class="checkout-title">
+                <div class="page-title">
                     <h1>@T("Checkout.ShippingAddress.SelectDeliverOrCollect")</h1>
                 </div>
                 <ul class="tab-links">
@@ -42,11 +42,11 @@
                 @if (Model.ExistingErpShipToAddresses.Count > 0)
                 {
                     <div id="shippingTabDeliver" class="tab-content deliver">
-                        <div class="checkout-title">
-                            <h1 id="delivery-header-text">@T("Checkout.ShippingAddress.SelectYourDeliveryAddress")</h1>
-                        </div>
                         @if (Model.PickupPointsModel == null || !Model.PickupPointsModel.PickupInStoreOnly)
                         {
+                            <div class="checkout-title">
+                                <h1 id="delivery-header-text">@T("Checkout.ShippingAddress.SelectYourDeliveryAddress")</h1>
+                            </div>
                             <!-- Address Modal -->
                             <div id="addressModal" class="modal">
                                 <div class="modal-content">
@@ -117,24 +117,24 @@
                                             @foreach (var item in Model.ExistingErpShipToAddresses)
                                             {
                                                 var addressLine = string.Join(", ", new string[] {
-                                                        item.ShipToName,
-                                                        item.Address1,
-                                                        item.Address2,
-                                                        item.Suburb,
-                                                        item.City,
-                                                        item.StateProvinceName,
-                                                        item.ZipPostalCode
+                                item.ShipToName,
+                                item.Address1,
+                                item.Address2,
+                                item.Suburb,
+                                item.City,
+                                item.StateProvinceName,
+                                item.ZipPostalCode
                                                     }.Where(s => !string.IsNullOrEmpty(s)));
 
                                                 <label id="shipping-address-select" class="address-select-radio">
                                                     <input id="shipToAddress"
-                                                        type="radio"
-                                                        data-id="@item.Id"
-                                                        data-suburb="@item.Suburb"
-                                                        data-city="@item.City"
-                                                        checked="@((Model.ErpShipToAddressId == item.Id) || (Model.ExistingErpShipToAddresses.Count() == 1) ? true : false)"
-                                                        asp-for="@Model.ErpShipToAddressId"
-                                                        value="@item.Id" />
+                                                           type="radio"
+                                                           data-id="@item.Id"
+                                                           data-suburb="@item.Suburb"
+                                                           data-city="@item.City"
+                                                           checked="@((Model.ErpShipToAddressId == item.Id) || (Model.ExistingErpShipToAddresses.Count() == 1) ? true : false)"
+                                                           asp-for="@Model.ErpShipToAddressId"
+                                                           value="@item.Id" />
                                                     <span class="checkmark"></span>
                                                     @(addressLine)
                                                 </label>
@@ -252,14 +252,14 @@
                     </div>
                 </div>
             </div>
-            <div class="section order-summary">
+            <div class="buttons">
+                <button id="shippingaddress-next-button" type="submit" name="nextstep" class="button-1 new-address-next-step-button">@(Model.IsQuoteOrder ? T("Checkout.ConfirmButton") : T("Checkout.NextButton"))</button>
+            </div>
+            <div class="section order-summary order-summury-shipping">
                 <div class="title">
                     <strong>@T("Checkout.OrderSummary")</strong>
                 </div>
                 @await Component.InvokeAsync(typeof(OrderSummaryViewComponent))
-                <div class="buttons">
-                    <button id="shippingaddress-next-button" type="submit" name="nextstep" class="button-1 new-address-next-step-button">@(Model.IsQuoteOrder ? T("Checkout.ConfirmButton") : T("Checkout.NextButton"))</button>
-                </div>
             </div>
         </form>
 
@@ -274,10 +274,10 @@
                 margin-right: 20px;
             }
 
-                .tab-item input[type="radio"] {
-                    display: inline;
-                    margin-right: 5px;
-                }
+            .tab-item input[type="radio"] {
+                display: inline;
+                margin-right: 5px;
+            }
         </style>
 
         <script asp-location="Footer">
@@ -348,9 +348,6 @@
             var cityData = $('input[name="ErpShipToAddressId"]:checked').attr("data-city");
             var shipToAddressId = $('input[name="ErpShipToAddressId"]:checked').attr("data-id");
 
-            //console.log("suburb: " + suburbData);
-            //console.log("city: " + cityData);
-            //console.log("Ship-to-address Id: " + shipToAddressId);
 
             var selectedData = { shipToAddressId: shipToAddressId };
             addAntiForgeryToken(selectedData);
@@ -365,15 +362,12 @@
                         $('#@Html.IdFor(model => model.DeliveryDateString)').prop('required', true);
                         $('#@Html.IdFor(model => model.ErpToDetermineDate)').val(true);
                         ddates.html('');
-                        
-                        //console.log("Delivery dates:", response);
+
 
                         $.each(response.deliveyDates, function (id, option) {
-                            //console.log('Date value: ' + option.Value + ' and text: ' + option.Text);
                             ddates.append($('<option></option>').val(option.Value).html(option.Text));
                         });
-                        
-                        //console.log(ddates);
+
                         ddates.show();
                         $(".FullLoadRequired-div").hide();
                     }
@@ -386,7 +380,7 @@
 
                         $("#deliveryDatePicker").css("display", "block");
                         $("#deliveryDateDropdown").css("display", "none");
-                        
+
                         ddates.html('');
                         ddates.append($('<option selected></option>').val('').html('Select Delivery Date'));
 
@@ -521,14 +515,14 @@
     .checkout-shipping-tab .ui-state-active a::after {
         content: "";
         display: block;
-        background: #0270d3;
+        background: var(--primary-color);
         height: 8px;
         width: 8px;
         border-radius: 50%;
         position: absolute;
-        left: 15px;
-        top: 15px;
-        transform: translate(calc(20px/2 - 4px), calc(20px/2 - 4px));
+        left: 24px;
+        top: 17px;
+        transform: translate(-50%, -50%);
     }
 
     .checkout-shipping-tab .tab-item a::before {
@@ -539,7 +533,7 @@
         width: 20px;
         border-radius: 50%;
         margin-right: 10px;
-        border: 1px solid #0270d3;
+        border: 1px solid var(--primary-color);
         float: left;
     }
 
@@ -555,7 +549,12 @@
 
     .checkout-shipping-tab .tab-content {
         margin: 0px !important;
+        margin-bottom: 15px !important;
         padding: 0 !important;
         background-color: transparent;
+    }
+
+    #delivery-header-text {
+        text-align: center;
     }
 </style> 

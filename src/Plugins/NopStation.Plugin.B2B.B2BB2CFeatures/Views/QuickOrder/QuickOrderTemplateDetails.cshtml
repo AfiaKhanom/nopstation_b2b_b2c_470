@@ -13,12 +13,6 @@
 }
 
 <style>
-    body a {
-        font: normal 14px Arial,Helvetica,sans-serif;
-        font-size: 14px;
-        color: #777;
-    }
-
     .header-overlap .header-menu {
         z-index: 5 !important;
     }
@@ -40,7 +34,7 @@
             <a asp-route="QuickOrder" id="quick-order-back-to-list" class="btn btn-primary back-to-list">@T("NopStation.B2BB2CFeatures.BackToList")</a>
             <div class="quick-order-header-div">
                 <h3 class="quick-order-heading">@Model.Name</h3>
-                <button class="btn-edit-quick-order-head " onclick="showTemplateNameEditField()">@T("common.edit")</button>
+                <button class="btn-edit-quick-order-head" onclick="showTemplateNameEditField()">@T("common.edit")</button>
             </div>
         </div>
         <div class="quick-order-heading-input-div">
@@ -48,7 +42,7 @@
             <button class="btn btn-primary heading-save-btn">@T("Common.Save")</button>
         </div>
         <div class="card card-default">
-            <div class="card-body  quick-order-card-body">
+            <div class="card-body quick-order-card-body">
                 <div class="card-search">
                     <div class="row">
                         <div class="col-md-3 form-group ProductId">
@@ -102,19 +96,18 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4 form-group Quantity">
+                        <div class="col-md-3 form-group Quantity">
                             <div class="row">
                                 <div class="col-md-4">
                                     <nop-label asp-for="@Model.AddQuickOrderItem.Quantity" />
                                 </div>
-                                <div class="col-md-8">
-
-                                    <nop-editor asp-for="@Model.AddQuickOrderItem.Quantity" />
+                                <div class="col-md-8 quantity-box">
+                                    <nop-editor asp-for="@Model.AddQuickOrderItem.Quantity" html-attributes="@(new { min = "0" })" />
                                     <span asp-validation-for="@Model.AddQuickOrderItem.Quantity"></span>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-2 form-group">
+                        <div class="col-md-3 form-group">
                             <button type="button" id="addOrderItem" class="btn btn-primary add-new-record">@T("Admin.Common.AddNewRecord")</button>
                         </div>
                     </div>
@@ -126,9 +119,11 @@
             </div>
         </div>
     </div>
-    <div class="card-body">
-        @{
-            var gridModel = new DataTablesModel
+
+    <div class="card custom-container">
+        <div class="card-body">
+            @{
+                var gridModel = new DataTablesModel
             {
                 Name = "quick-order-item-list-grid",
                 UrlRead = new DataUrl("LoadQuickOrderItemList", "QuickOrder", new RouteValueDictionary
@@ -141,44 +136,44 @@
                 Length = Model.QuickOrderItemSearchModel.PageSize,
                 LengthMenu = Model.QuickOrderItemSearchModel.AvailablePageSizes
             };
-            gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.Name))
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.Name))
             {
                 Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.Name").Text,
                 Width = "400"
             });
-            /*gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.AttributesInfo))
-            {
-                Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.AttributesInfo").Text,
-                Width = "600",
-                Render = new RenderCustom("renderColumnAttributesInfo")
+                /*gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.AttributesInfo))
+                {
+                    Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.AttributesInfo").Text,
+            Width = "600",
+            Render = new RenderCustom("renderColumnAttributesInfo")
             });*/
-            gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.StockAvailability))
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.StockAvailability))
             {
                 Title = string.IsNullOrEmpty(Model.DisplayNameForPrimaryStock) ?
-                T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.StockAvailability").Text :
-                Model.DisplayNameForPrimaryStock,
+            T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.StockAvailability").Text :
+            Model.DisplayNameForPrimaryStock,
                 Width = "100"
             });
-            gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.Price))
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.Price))
             {
                 Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.UnitPrice").Text,
                 Width = "100",
                 ClassName = "price-value-column"
             });
-            /*gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.PricingNotes))
-            {
-                Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.PricingNotes").Text,
-                Width = "100",
-                ClassName = "pricing-notes-column"
+                /*gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.PricingNotes))
+                {
+                    Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.PricingNotes").Text,
+            Width = "100",
+            ClassName = "pricing-notes-column"
             });*/
-            gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.UOM))
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.UOM))
             {
                 Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.UOM").Text,
                 Width = "50",
                 ClassName = "uom-column"
             });
 
-            gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.Quantity))
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.Quantity))
             {
                 Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.Quantity").Text,
                 Width = "50",
@@ -188,20 +183,21 @@
                 Render = new RenderCustom("renderColumnItemQuantity"),
             });
 
-            gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.ValidationResult))
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.ValidationResult))
             {
                 Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.ValidationResult").Text,
                 Width = "200"
             });
-            gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.Id))
+                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.Id))
             {
                 Title = T("Admin.Common.Delete").Text,
                 Width = "100",
                 ClassName = NopColumnClassDefaults.Button,
                 Render = new RenderButtonRemove(T("Admin.Common.Delete").Text)
             });
-        }
-        @await Html.PartialAsync("Table", gridModel)
+            }
+            @await Html.PartialAsync("Table", gridModel)
+        </div>
     </div>
 </div>
 
@@ -215,7 +211,7 @@
             </div>
             <br />
             <div class="quick-order-confirm-buttons">
-                <input type="button" name="accept" onclick="closePopup()" value="@T("common.ok")" class="btn p-2 bg-green" />
+                <input type="button" name="accept" onclick="closePopup()" value="@T("common.ok")" class="btn bg-green p-2" />
             </div>
 
             <script asp-location="Footer">
