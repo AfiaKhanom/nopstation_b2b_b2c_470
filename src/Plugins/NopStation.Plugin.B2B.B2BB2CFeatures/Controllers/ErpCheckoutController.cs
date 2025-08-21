@@ -2628,14 +2628,14 @@ public class ErpCheckoutController : CheckoutController
                 {
                     if (erpAccount != null && (b2BUser != null || b2CUser != null))
                     {
-                        var erpNopUser = b2BUser ?? b2CUser;
-                        var erpOrderTypeId = (int)erpNopUser.ErpUserType;
-                        if(erpNopUser.ErpUserType == ErpUserType.B2BUser)
-                            erpOrderTypeId = (int)ErpOrderType.B2CSalesOrder;
-                        else if (erpNopUser.ErpUserType == ErpUserType.B2CUser)
-                            erpOrderTypeId = (int)ErpOrderType.B2CSalesOrder;
-                        await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, (ErpOrderType)Enum.ToObject(typeof(ErpOrderType), erpOrderTypeId));
-
+                        if (erpAccount != null && b2BUser != null)
+                        {
+                            await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, ErpOrderType.B2BSalesOrder);
+                        }
+                        if (erpAccount != null && b2CUser != null)
+                        {
+                            await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, ErpOrderType.B2CSalesOrder);
+                        }
                         await _erpLogsService.InformationAsync($"B2B Order placed successfully! Order-Id: {placeOrderResult.PlacedOrder.Id}, Erp Order Number: {placeOrderResult.PlacedOrder.CustomOrderNumber}", ErpSyncLevel.Order, customer: currCustomer);
 
                         //erp activity log
