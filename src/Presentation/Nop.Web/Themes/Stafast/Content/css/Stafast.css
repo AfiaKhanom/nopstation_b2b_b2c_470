@@ -11426,3 +11426,10 @@ button#search-product-clear {
   border: 1px solid var(--primary-grey_light);
   border-radius: 3px;
 }
+
+.login-page .returning-wrapper .button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+}

@@ -70,7 +70,7 @@
             }
             else
             {
-                <div class="new-wrapper register-block">
+                <div class="new-wrapper register-block fieldset">
                     <div class="title">
                         <strong>@T("Account.Login.NewCustomer")</strong>
                     </div>
@@ -86,7 +86,7 @@
                             else if (settings.IsB2BUserRegisterAllowed)
                             {
                                 <button type="button" class="button-1 register-button" onclick="location.href='@Url.RouteUrl("B2BRegister")'">@T("Account.Register")</button>
-                            }                          
+                            }
                             else if (settings.IsB2CUserRegisterAllowed)
                             {
                                 <button type="button" class="button-1 register-button" onclick="location.href='@Url.RouteUrl("B2CRegister")'">@T("Account.Register")</button>
@@ -130,15 +130,6 @@
             </script>
 
             <div class="returning-wrapper fieldset">
-
-                <div class="site-logo">
-                    <img src="/images/thumbs/0000030_0000163_UVP-%20logo.png" alt="Site logo" />
-                </div>
-
-                <div class="welcome-image">
-                    <img src="/images/welcome.png" alt="Welcome image" />
-                </div>
-
                 <form asp-route="Login" asp-route-returnurl="@Context.Request.Query["ReturnUrl"]" method="post" autocomplete="off">
                     <div class="title active">
                         <strong>@T("Account.Login.ReturningCustomer")</strong>
@@ -158,7 +149,7 @@
                             {
                                 <div class="inputs">
                                     <label asp-for="Email" asp-postfix=":"></label>
-                                    <input asp-for="Email" class="email" autofocus="autofocus" placeholder="Email"/>
+                                    <input asp-for="Email" class="email" autofocus="autofocus" placeholder="Email" />
                                     <span asp-validation-for="Email"></span>
                                 </div>
                             }
@@ -190,17 +181,20 @@
                         </div>
                         <div class="buttons">
                             <button type="submit" class="button-1 login-button">@T("Account.Login.LoginButton")</button>
-                            <span class="forgot-password">
+
+                            <div class="button-container">
+                                <span class="forgot-password">
                                     <a asp-route="PasswordRecovery">@T("Account.Login.ForgotPassword")</a>
-                            </span>
-                            @if (settings.IsB2BUserRegisterAllowed)
-                            {
-                                <button onclick="registerButtonClick()" data-toggle="modal" data-target="#registrationTypeDialog" type="button" class="button-1 register-button" onclick="location.href='@registerUrl'">@T("Account.Register")</button>
-                            }
-                            else
-                            {
-                                <button type="button" class="button-1 register-button" onclick="location.href='@registerUrl'">@T("Account.Register")</button>
-                            }
+                                </span>
+                                @if (settings.IsB2BUserRegisterAllowed)
+                                {
+                                    <button onclick="registerButtonClick()" data-toggle="modal" data-target="#registrationTypeDialog" type="button" class="button-1 register-button" onclick="location.href='@registerUrl'">@T("Account.Register")</button>
+                                }
+                                else
+                                {
+                                    <button type="button" class="button-1 register-button" onclick="location.href='@registerUrl'">@T("Account.Register")</button>
+                                }
+                            </div>
                         </div>
                     </div>
                 </form>
