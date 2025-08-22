@@ -206,12 +206,12 @@
                     expectedDeliveryRender.Format = B2BB2CFeaturesDefaults.ErpDateFormatForDataTable;
 
                     gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpAccountOrderDetailsModel.ExpectedDelivery))
-            {
-                Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpAccountOrderDetails.Fields.ExpectedDelivery").Text,
-                Width = "200",
-                Render = expectedDeliveryRender,
-                ClassName = "ExpectedDelivery"
-            });
+                    {
+                        Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpAccountOrderDetails.Fields.ExpectedDelivery").Text,
+                        Width = "200",
+                        Render = expectedDeliveryRender,
+						ClassName = "ExpectedDelivery"
+                    });
 
                     if (isB2BUser)
                     {

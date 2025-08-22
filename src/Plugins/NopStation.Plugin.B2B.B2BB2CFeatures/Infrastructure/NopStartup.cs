@@ -29,6 +29,7 @@ using NopStation.Plugin.B2B.ERPIntegrationCore.Services.QuickOrderServices;
 using NopStation.Plugin.Misc.Core.Infrastructure;
 using Nop.Services.Common;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpAccountCreditSyncFunctionality;
+using Nop.Services.Localization;
 
 namespace NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure;
 
@@ -113,10 +114,11 @@ public class NopStartup : INopStartup
             options.Filters.Add<ErpSalesRepActionFilterAttribute>();
             options.Filters.Add<ErpNopUserActionFilterAttribute>();
         });
-        
+
         services.AddScoped<IErpWorkflowMessageService, ErpWorkflowMessageService>();
         services.AddScoped<IErpActivityLogsModelFactory, ErpActivityLogsModelFactory>();
         services.AddScoped<IErpAccountCreditSyncFunctionality, ErpAccountCreditSyncFunctionality>();
+        services.AddScoped<ILocalizationService, OverriddenLocalizationService>();
     }
 
     /// <summary>
@@ -125,7 +127,6 @@ public class NopStartup : INopStartup
     /// <param name="application">Builder for configuring an application's request pipeline</param>
     public void Configure(IApplicationBuilder application)
     {
-
     }
 
     /// <summary>

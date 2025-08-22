@@ -2,6 +2,7 @@
 
 @using Microsoft.AspNetCore.Mvc.ViewComponents
 @using Nop.Core
+@using Nop.Core.Domain.Customers
 @using Nop.Core.Domain.Tax
 @using Nop.Core.Domain.Media
 @using Nop.Core.Domain.Orders
@@ -30,9 +31,11 @@
 @inject IWebHelper webHelper
 @inject OrderSettings orderSettings
 @inject MediaSettings mediaSettings
+@inject ICustomerService customerService
 
 @{
     var currCustomer = await workContext.GetCurrentCustomerAsync();
+	var isGuest = await customerService.IsInCustomerRoleAsync(currCustomer, NopCustomerDefaults.GuestsRoleName);
     var currStore = await storeContext.GetCurrentStoreAsync();
     var shoppingCartItems = await shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.ShoppingCart);
     var b2bOrderId = await genericAttributeService.GetAttributeAsync<int>(currCustomer, B2BB2CFeaturesDefaults.B2BConvertedQuoteB2BOrderId, currStore.Id);
@@ -147,12 +150,10 @@
                                 <th class="product-picture">@T("ShoppingCart.Image")</th>
                             }
                             <th class="product" data-hide="w410, w480, w580, w768">@T("ShoppingCart.Product(s)")</th>
-                            <th class="stock">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).Stock")</th>
                             @if (Model.ShowVendorName)
                             {
                                 <th class="vendor" data-hide="w410, w480, w580, w768">@T("ShoppingCart.VendorName")</th>
                             }
-                            <th class="unit-price wrap-text" data-hide="w410, w480">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).UnitPriceWithOutDiscount")</th>
                             <th class="unit-price discounted-price wrap-text" data-hide="w410, w480">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).UnitPriceWithDiscount")</th>
                             <th class="quantity">@T("ShoppingCart.Quantity")</th>
                             <th class="subtotal wrap-text">@T("ShoppingCart.ItemTotal")</th>
@@ -235,10 +236,6 @@
                                         </div>
                                     }
                                 </td>
-                                <td class="stock" id="productStok_@item.ProductId">
-                                    <label class="td-title">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).Stock"):</label>
-                                    <span class="product-stock"></span>
-                                </td>
                                 @if (Model.ShowVendorName)
                                 {
                                     <td class="vendor">
@@ -246,10 +243,6 @@
                                         <span class="vendor-name">@item.VendorName</span>
                                     </td>
                                 }
-                                <td class="unit-price" id="unitPriceWithOutDiscount_@item.ProductId">
-                                    <label class="td-title">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).UnitPriceWithOutDiscount"):</label>
-                                    <span class="product-unitPriceWithOutDiscount"></span>
-                                </td>
                                 <td class="unit-price">
                                     <label class="td-title">@T("Plugin.Misc.NopStation.B2BB2CFeatures.OrderSummery.Product(s).UnitPriceWithDiscount"):</label>
                                     <span class="product-unit-price">@item.UnitPrice</span>
@@ -507,6 +500,15 @@
                                                 @T("Checkout.Button")
                                             </button>
                                         }
+										@if (isGuest)
+										{
+											<div class="cart-login-message" style="padding: 12px 15px; background-color: #e0f7fa; border: 1px solid #b2ebf2; border-radius: 4px; text-align: center; font-size: 0.95rem; color: #333; margin-bottom: 15px;">
+												<span>@T("nopstation.theme.Stafast.shoppingCart.loginToCheckout")</span>
+												<a href="@Url.RouteUrl("Login")" class="cart-login-link" style="margin-left: 5px; color: #007bff; text-decoration: underline; font-weight: 500;">
+													@T("Account.Login")
+												</a>
+											</div>
+										}
                                     }
                                     else if (isAllowedToPlaceOrder && !isB2BSalesOrderInValid)
                                     {

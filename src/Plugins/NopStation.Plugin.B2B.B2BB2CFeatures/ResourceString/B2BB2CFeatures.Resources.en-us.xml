@@ -4529,11 +4529,7 @@
     <LocaleResource Name="Plugin.Misc.NopStation.B2BB2CFeatures.Fields.SalesOrgName.Hint">
         <Value>Insert ERP Sales Org. Name</Value>
     </LocaleResource>
-
-    <LocaleResource Name="Plugin.Misc.NopStation.B2BB2CFeatures.ErpSalesOrgWarehouse.AlreadyExist">
-        <Value>ERP Warehouse already exists!</Value>
-    </LocaleResource>
-
+    
     <LocaleResource Name="Plugin.Misc.NopStation.B2BB2CFeatures.ErpSalesOrgWarehouse.Fields.Warehouse">
         <Value>Warehouse</Value>
     </LocaleResource>
@@ -4798,15 +4794,7 @@
     <LocaleResource Name="B2BB2CFeatures.ErpAccountCustomerRegistrationForm.Fields.NatureOfBusiness.Hint">
         <Value>Enter Nature Of Business</Value>
     </LocaleResource>
-
-    <LocaleResource Name="B2BB2CFeatures.ErpAccountCustomerRegistrationForm.Fields.NatureOfBusiness">
-        <Value>Nature Of Business</Value>
-    </LocaleResource>
-
-    <LocaleResource Name="B2BB2CFeatures.ErpAccountCustomerRegistrationForm.Fields.NatureOfBusiness.Hint">
-        <Value>Enter Nature Of Business</Value>
-    </LocaleResource>
-
+    
     <LocaleResource Name="B2BB2CFeatures.ErpAccountCustomerRegistrationForm.Fields.RegisteredOfficeAddress">
         <Value>Registered Office Address</Value>
     </LocaleResource>
@@ -5985,7 +5973,7 @@
         <Value>Unit of measure specification attribute</Value>
     </LocaleResource>
     <LocaleResource Name="Plugin.Misc.NopStation.B2BB2CFeatures.Account.Register.Button.ApplyRegistration">
-        <Value>Apply Registration</Value>
+        <Value>Erp Register</Value>
     </LocaleResource>
     <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.QuickOrderTemplate.AddToCartResult">
         <Value>Total items: {0}, {1} item(s) added to cart and {2} item(s) failed to add</Value>
@@ -6193,12 +6181,6 @@
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Field.LastErpProductSyncTimeOnUtc">
         <Value>Last Erp Products Synced On Utc</Value>
     </LocaleResource>
-    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Orders.ErpOrderItem.AccessDenied">
-        <Value>Access Denied</Value>
-    </LocaleResource>    
-    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Orders.ErpOrderItem.NoOrderItemFound">
-        <Value>No order item found with the specified id</Value>
-    </LocaleResource>
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.Field.LastErpProductSyncTimeOnUtc.Hint">
         <Value>The last utc time products were synced</Value>
     </LocaleResource>
@@ -6223,9 +6205,6 @@
     <!-- Card: 3112 - JH Group - 2804 - Not able to delete lines from an order  - 13-Feb-2025 -->
     <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Orders.ErpOrderItem.NoOrderFound">
         <Value>No order found with the specified Id</Value>
-    </LocaleResource>
-    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Orders.ErpOrderItem.VendorAccessDenied">
-        <Value>Vendors cannot access this functionality</Value>
     </LocaleResource>
     <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Admin.Orders.ErpOrderItem.AccessDenied">
         <Value>Access Denied</Value>
@@ -6253,5 +6232,11 @@
     </LocaleResource>
      <LocaleResource Name="nopstation.theme.stafast.newsletter.subtitle">
         <Value>Subtitle</Value>
+    </LocaleResource>
+    <LocaleResource Name="nopstation.theme.Stafast.product.fulldescription.title">
+        <Value>Full Description</Value>
+    </LocaleResource>
+    <LocaleResource Name="nopstation.theme.Stafast.shoppingCart.loginToCheckout">
+        <Value>Please Log in to checkout</Value>
     </LocaleResource>
 </Language>
