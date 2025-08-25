@@ -25,8 +25,8 @@
 
 @section left
 {
-    @await Component.InvokeAsync(typeof(CustomerNavigationViewComponent), 
-    new { selectedTabId = B2BB2CFeaturesDefaults.ErpCustomerNavigationEnum_ErpAccountTransactionsInfo })
+    @await Component.InvokeAsync(typeof(CustomerNavigationViewComponent),
+            new { selectedTabId = B2BB2CFeaturesDefaults.ErpCustomerNavigationEnum_ErpAccountTransactionsInfo })
 }
 
 <style>
@@ -40,7 +40,7 @@
         <h1>@T("Plugin.Misc.NopStation.B2BB2CFeatures.PageTitle.ErpInvoices")</h1>
     </div>
     <div class="page-body">
-        @if (displayErpAccountStatements && Model.IsShowAccountStatementDownloadEnabled)
+        @if (displayErpAccountStatements && Model.IsShowAccountStatementDownloadEnabled || true)
         {
             <div class="fieldset account-statement-section">
                 <div class="form-fields">
@@ -48,22 +48,21 @@
                         <div class="account-monthly-statement-div">
                             <h2 class="account-monthly-statement-title">@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.AccountStatementDownLoad"): </h2>
                         </div>
-                        <div class="account-monthly-statement-btn-div">
-                            <div class="account-monthly-statement-btns">
-                                <div class="account-monthly-statement-div monthly-statement-btn-div">
+                        <div class="account-monthly-statement-btn-div mt-3">
+                            <div class="account-monthly-statement-btns row">
+                                <div class="account-monthly-statement-div monthly-statement-btn-div col-md-4 mb-2">
                                     @*<button class="button-1 account-monthly-statement-btn 30days-statement-btn" onclick="AccountStatementDownload(1)">@T("Plugins.Payment.B2BCustomerAccount.AccountStatement.30DaysStatement")</button>*@
-                                    <button class="button-1 account-monthly-statement-btn 30days-statement-btn" onclick="ErpAccountCommon.downloadFromUrl('@(Url.Action("DownloadAccountStatementByMonth", "ErpAccountPublic", new { accountNo = Model.AccountNumber, monthCount = 1 }))')">@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.AccountStatement.30DaysStatement")</button>
+                                    <button class="button-1 w-100 account-monthly-statement-btn 30days-statement-btn" onclick="ErpAccountCommon.downloadFromUrl('@(Url.Action("DownloadAccountStatementByMonth", "ErpAccountPublic", new { accountNo = Model.AccountNumber, monthCount = 1 }))')">@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.AccountStatement.30DaysStatement")</button>
                                 </div>
-                                <div class="account-monthly-statement-div monthly-statement-btn-div">
+                                <div class="account-monthly-statement-div monthly-statement-btn-div col-md-4 mb-2">
                                     @*<button class="button-1 account-monthly-statement-btn 60days-statement-btn" onclick="AccountStatementDownload(2)">@T("Plugins.Payment.B2BCustomerAccount.AccountStatement.60DaysStatement")</button>*@
-                                    <button class="button-1 account-monthly-statement-btn 60days-statement-btn" onclick="ErpAccountCommon.downloadFromUrl('@(Url.Action("DownloadAccountStatementByMonth", "ErpAccountPublic", new { accountNo = Model.AccountNumber, monthCount = 2 }))')">@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.AccountStatement.60DaysStatement")</button>
+                                    <button class="button-1 w-100 account-monthly-statement-btn 60days-statement-btn" onclick="ErpAccountCommon.downloadFromUrl('@(Url.Action("DownloadAccountStatementByMonth", "ErpAccountPublic", new { accountNo = Model.AccountNumber, monthCount = 2 }))')">@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.AccountStatement.60DaysStatement")</button>
                                 </div>
-                                <div class="account-monthly-statement-div monthly-statement-btn-div">
+                                <div class="account-monthly-statement-div monthly-statement-btn-div col-md-4 mb-2">
                                     @*<button class="button-1 account-monthly-statement-btn 90days-statement-btn" onclick="AccountStatementDownload(3)">@T("Plugins.Payment.B2BCustomerAccount.AccountStatement.90DaysStatement")</button>*@
-                                    <button class="button-1 account-monthly-statement-btn 90days-statement-btn" onclick="ErpAccountCommon.downloadFromUrl('@(Url.Action("DownloadAccountStatementByMonth", "ErpAccountPublic", new { accountNo = Model.AccountNumber, monthCount = 3 }))')">@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.AccountStatement.90DaysStatement")</button>
+                                    <button class="button-1 w-100 account-monthly-statement-btn 90days-statement-btn" onclick="ErpAccountCommon.downloadFromUrl('@(Url.Action("DownloadAccountStatementByMonth", "ErpAccountPublic", new { accountNo = Model.AccountNumber, monthCount = 3 }))')">@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.AccountStatement.90DaysStatement")</button>
                                 </div>
                             </div>
-                            <p>@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.AccountStatement.90DaysStatement")</p>
                         </div>
                     </div>
                 </div>
@@ -78,16 +77,16 @@
                         <div class="form-group row">
                             <div class="col-md-12 text-left">
                                 <div class="my-inputs">
-                                    <input asp-for="SearchDocumentNumberOrName" placeholder="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.Fields.SearchDocumentNumberOrName")" />
+                                    <input class="form-control" asp-for="SearchDocumentNumberOrName" placeholder="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.Fields.SearchDocumentNumberOrName")" />
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <div class="col-md-6 text-left">
+                            <div class="col-md-12 text-left">
                                 <div class="my-inputs">
-                                    <input asp-for="SearchOrderNumberOrName" type="text" placeholder="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.Fields.SearchCustomerOrder")" />
+                                    <input class="form-control" asp-for="SearchOrderNumberOrName" type="text" placeholder="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.Fields.SearchCustomerOrder")" />
                                 </div>
                             </div>
                         </div>
@@ -98,7 +97,7 @@
                         <div class="form-group row">
                             <div class="col-md-12 text-left">
                                 <div class="my-inputs">
-                                    <input asp-for="SearchTransactionFromDate" type="text" placeholder="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.Fields.SearchTransactionFromDate")" onfocus="(this.type='date')" onblur="(this.type='text')" />
+                                    <input class="form-control" asp-for="SearchTransactionFromDate" type="text" placeholder="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.Fields.SearchTransactionFromDate")" onfocus="(this.type='date')" onblur="(this.type='text')" />
                                 </div>
                             </div>
                         </div>
@@ -107,7 +106,7 @@
                         <div class="form-group row">
                             <div class="col-md-12 text-left">
                                 <div class="my-inputs">
-                                    <input asp-for="SearchTransactionToDate" type="text"   placeholder="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.Fields.SearchTransactionToDate")" onfocus="(this.type='date')" onblur="(this.type='text')" />
+                                    <input class="form-control" asp-for="SearchTransactionToDate" type="text" placeholder="@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.Fields.SearchTransactionToDate")" onfocus="(this.type='date')" onblur="(this.type='text')" />
                                 </div>
                             </div>
                         </div>
@@ -126,73 +125,73 @@
             <div class="panel panel-default">
                 <div class="panel-body erp-finantial-transection-data-table">
                     @await Html.PartialAsync("Table", new DataTablesModel
-                    {
-                        Name = "transaction-list-grid",
-                        UrlRead = new DataUrl("LoadErpFinancialTransactionList", "ErpAccountPublic", null),
-                        SearchButtonId = "search-erpAccountsTransaction",
-                        Length = Model.PageSize,
-                        LengthMenu = Model.AvailablePageSizes,
-                        Filters = new List<FilterParameter>
-                        {
-                            new FilterParameter(nameof(Model.SearchDocumentNumberOrName)),
-                            new FilterParameter(nameof(Model.SearchOrderNumberOrName)),
-                            new FilterParameter(nameof(Model.SearchTransactionFromDate)),
-                            new FilterParameter(nameof(Model.SearchTransactionToDate)),
-                            new FilterParameter(nameof(Model.SearchSortOptionId)),
-                        },
-                        ColumnCollection = new List<ColumnProperty>
-                        {
-                            new ColumnProperty(nameof(RecentTransactionModel.PostingDate))
-                            {
-                                Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.PostingDate").Text,
-                                Width = "200",
-                                Render = new RenderDate(),
-                                ClassName = NopColumnClassDefaults.CenterAll + " PostingDate",
-                            },
-                            new ColumnProperty(nameof(RecentTransactionModel.CustomerOrder))
-                            {
-                                Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.CustomerOrder").Text,
-                                //Render = new RenderLink(new DataUrl("~/OrderDetails", nameof(RecentTransactionModel.NopOrderId))),
-                                Width = "200",
-                                ClassName = NopColumnClassDefaults.CenterAll + " CustomerOrder",
-                            },
-                            new ColumnProperty(nameof(RecentTransactionModel.DocumentDisplayName))
-                            {
-                                Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.DocumentType").Text,
-                                Width = "200",
-                                ClassName = NopColumnClassDefaults.CenterAll + " DocumentDisplayName",
-                            },
-                            new ColumnProperty(nameof(RecentTransactionModel.DocumentNo))
-                            {
-                                Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.DocumentNo").Text,
-                                Width = "200",
-                                ClassName = "download-invoices DocumentNo",
-                                Render = new RenderLink(new DataUrl("/ErpAccountPublic/DownloadInvoice/", nameof(RecentTransactionModel.Id))),
-                            },
-                            new ColumnProperty(nameof(RecentTransactionModel.Remaining))
-                            {
-                                Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.Remaining").Text,
-                                Width = "200",
-                                ClassName = NopColumnClassDefaults.CenterAll + " Remaining",
-                            },
-                            new ColumnProperty(nameof(RecentTransactionModel.AmountExVat))
-                            {
-                                Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.AmountExVat").Text,
-                                Width = "200",
-                                ClassName = NopColumnClassDefaults.CenterAll + " AmountExVat",
-                            },
-                            new ColumnProperty(nameof(RecentTransactionModel.DocumentNo))
-                            {
-                                Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.PoDDownload").Text,
-                                Width = "100",
-                                ClassName = NopColumnClassDefaults.Button + " Download-DocumentNo",
-                                Render = new RenderButtonCustom("download-pod", "Download")
-                                {
-                                    Url = Url.Content("~/ErpAccountPublic/DownloadInvoiceFromFtp/")
-                                }
-                            }
-                        }
-                    })
+           {
+               Name = "transaction-list-grid",
+               UrlRead = new DataUrl("LoadErpFinancialTransactionList", "ErpAccountPublic", null),
+               SearchButtonId = "search-erpAccountsTransaction",
+               Length = Model.PageSize,
+               LengthMenu = Model.AvailablePageSizes,
+               Filters = new List<FilterParameter>
+                {
+                new FilterParameter(nameof(Model.SearchDocumentNumberOrName)),
+                new FilterParameter(nameof(Model.SearchOrderNumberOrName)),
+                new FilterParameter(nameof(Model.SearchTransactionFromDate)),
+                new FilterParameter(nameof(Model.SearchTransactionToDate)),
+                new FilterParameter(nameof(Model.SearchSortOptionId)),
+                },
+               ColumnCollection = new List<ColumnProperty>
+                {
+                new ColumnProperty(nameof(RecentTransactionModel.PostingDate))
+                {
+                Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.PostingDate").Text,
+                Width = "200",
+                Render = new RenderDate(),
+                ClassName = NopColumnClassDefaults.CenterAll + " PostingDate",
+                },
+                new ColumnProperty(nameof(RecentTransactionModel.CustomerOrder))
+                {
+                Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.CustomerOrder").Text,
+                //Render = new RenderLink(new DataUrl("~/OrderDetails", nameof(RecentTransactionModel.NopOrderId))),
+                Width = "200",
+                ClassName = NopColumnClassDefaults.CenterAll + " CustomerOrder",
+                },
+                new ColumnProperty(nameof(RecentTransactionModel.DocumentDisplayName))
+                {
+                Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.DocumentType").Text,
+                Width = "200",
+                ClassName = NopColumnClassDefaults.CenterAll + " DocumentDisplayName",
+                },
+                new ColumnProperty(nameof(RecentTransactionModel.DocumentNo))
+                {
+                Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.DocumentNo").Text,
+                Width = "200",
+                ClassName = "download-invoices DocumentNo",
+                Render = new RenderLink(new DataUrl("/ErpAccountPublic/DownloadInvoice/", nameof(RecentTransactionModel.Id))),
+                },
+                new ColumnProperty(nameof(RecentTransactionModel.Remaining))
+                {
+                Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.Remaining").Text,
+                Width = "200",
+                ClassName = NopColumnClassDefaults.CenterAll + " Remaining",
+                },
+                new ColumnProperty(nameof(RecentTransactionModel.AmountExVat))
+                {
+                Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.AmountExVat").Text,
+                Width = "200",
+                ClassName = NopColumnClassDefaults.CenterAll + " AmountExVat",
+                },
+                new ColumnProperty(nameof(RecentTransactionModel.DocumentNo))
+                {
+                Title = T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.FinancialTransaction.Fields.PoDDownload").Text,
+                Width = "100",
+                ClassName = NopColumnClassDefaults.Button + " Download-DocumentNo",
+                Render = new RenderButtonCustom("download-pod", "Download")
+                {
+                Url = Url.Content("~/ErpAccountPublic/DownloadInvoiceFromFtp/")
+                }
+                }
+                }
+           })
                 </div>
             </div>
         }
@@ -234,7 +233,7 @@
                 }
             });
         });
-        
+
     </script>
 
 </div>
