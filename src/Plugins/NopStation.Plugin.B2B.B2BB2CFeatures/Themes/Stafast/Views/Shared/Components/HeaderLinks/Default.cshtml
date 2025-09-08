@@ -24,21 +24,18 @@
     <ul>
         @if (Model.IsAuthenticated)
         {
-            @if (await customerService.IsInCustomerRoleAsync(customer, ERPIntegrationCoreDefaults.B2BSalesRepRoleSystemName) == false)
-            {
-                <li class="user-dropdown dropdown user-account is-loggedin">
-                    <a href="#" class="ico-account" aria-label="user account">
-                        <label>
-                            <span class="faded">@T("nopstation.theme.Stafast.customer.hello")</span>
-                            <span>@Model.CustomerName</span>
-                        </label>
-                    </a>
-                    <ul class="login-dropdown-menu">
-                        <li><a href="@Url.RouteUrl("CustomerInfo")">@T("Account.MyAccount")@*@Model.CustomerName*@</a></li>
-                        <li><a href="@Url.RouteUrl("Logout")" class="ico-logout">@T("Account.Logout")</a></li>
-                    </ul>
-                </li>
-            }
+			<li class="user-dropdown dropdown user-account is-loggedin">
+				<a href="#" class="ico-account" aria-label="user account">
+					<label>
+						<span class="faded">@T("nopstation.theme.Stafast.customer.hello")</span>
+						<span>@Model.CustomerName</span>
+					</label>
+				</a>
+				<ul class="login-dropdown-menu">
+					<li><a href="@Url.RouteUrl("CustomerInfo")">@T("Account.MyAccount")@*@Model.CustomerName*@</a></li>
+					<li><a href="@Url.RouteUrl("Logout")" class="ico-logout">@T("Account.Logout")</a></li>
+				</ul>
+			</li>
         }
         else
         {
