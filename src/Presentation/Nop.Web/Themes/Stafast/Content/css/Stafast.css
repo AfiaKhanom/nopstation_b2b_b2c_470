@@ -1689,7 +1689,7 @@ label {
 .table-wrapper table.forum-table thead th,
 .table-wrapper table.prices-table thead th,
 .table-wrapper table.data-table thead th {
-  background: var(--primary-color);
+  background: var(--black);
   color: var(--white);
   padding: 10px 4px;
 }
@@ -2197,6 +2197,7 @@ html:not(.html-home-page) .master-column-wrapper .login-page .page-title {
   .bar-notification .close {
     top: 50%;
     transform: translateY(-50%);
+    font-size: 14px;
   }
 }
 
@@ -5454,7 +5455,7 @@ li.more-label {
 .payment-method-page .table-wrapper,
 .payment-info-page .table-wrapper,
 .order-confirm-page .table-wrapper {
-  height: 445px;
+  max-height: 445px;
   overflow-y: auto;
 }
 
@@ -7854,12 +7855,14 @@ form > .buttons {
   margin-top: 15px;
   text-align: center;
 }
+
 form > .buttons button {
   width: 100%;
   min-width: 180px;
   padding: 9px 25px;
 }
 @media (min-width: 556px) {
+  .outer.buttons button,
   form > .buttons button {
     width: auto;
   }
@@ -9790,10 +9793,6 @@ form > .buttons button {
 .html-checkout-page:not(.html-order-confirm-page)
   .checkout-data
   .order-progress
-  ~ .shipping-method,
-.html-checkout-page:not(.html-order-confirm-page)
-  .checkout-data
-  .order-progress
   ~ form {
   border: 1px solid var(--primary-grey_light);
   padding: 10px;
@@ -9801,16 +9800,7 @@ form > .buttons button {
   box-shadow: 0px 2px 4px rgba(153, 153, 153, 0.15);
   margin-bottom: 15px;
 }
-.html-checkout-page:not(.html-order-confirm-page)
-  .checkout-data
-  .order-progress
-  ~ .order-summary {
-  border: 2px solid var(--primary-color);
-  box-shadow: 0px 2px 4px rgba(153, 153, 153, 0.15);
-  background: var(--white);
-  border-radius: 3px;
-  padding: 10px;
-}
+
 .html-checkout-page:not(.html-order-confirm-page)
   .checkout-data
   .order-progress
@@ -9823,35 +9813,6 @@ form > .buttons button {
     display: block;
     clear: both;
   }
-  .html-checkout-page:not(.html-order-confirm-page)
-    .checkout-data
-    .order-progress
-    ~ .payment-info,
-  .html-checkout-page:not(.html-order-confirm-page)
-    .checkout-data
-    .order-progress
-    ~ .payment-method,
-  .html-checkout-page:not(.html-order-confirm-page)
-    .checkout-data
-    .order-progress
-    ~ .shipping-method,
-  .html-checkout-page:not(.html-order-confirm-page)
-    .checkout-data
-    .order-progress
-    ~ form {
-    width: calc(100% - 434px - 15px);
-    margin-right: 15px;
-    float: left;
-    padding: 15px;
-  }
-  .html-checkout-page:not(.html-order-confirm-page)
-    .checkout-data
-    .order-progress
-    ~ .order-summary {
-    width: 434px;
-    float: left;
-    padding: 10px;
-  }
 }
 
 .html-checkout-page .order-review-data {
@@ -9859,65 +9820,8 @@ form > .buttons button {
 }
 
 @media (min-width: 1200px) {
-  .html-checkout-page:not(.html-order-confirm-page)
-    .checkout-data
-    .order-progress
-    ~ .order-summary
-    .title {
-    margin-bottom: 0;
-    padding-bottom: 10px;
-  }
-  .html-checkout-page:not(.html-order-confirm-page)
-    .checkout-data
-    .order-progress
-    ~ .order-summary
-    .table-wrapper {
-    width: 100%;
-    box-shadow: none;
-  }
-  .html-checkout-page:not(.html-order-confirm-page)
-    .checkout-data
-    .order-progress
-    ~ .order-summary
-    .table-wrapper
-    .cart
-    tbody {
-    border: none;
-  }
-  .html-checkout-page:not(.html-order-confirm-page)
-    .checkout-data
-    .order-progress
-    ~ .order-summary
-    .table-wrapper
-    .cart
-    tbody
-    td {
-    border-width: 0 0 1px;
-    padding: 15px 4px;
-  }
-  .html-checkout-page:not(.html-order-confirm-page)
-    .checkout-data
-    .order-progress
-    ~ .order-summary
-    .table-wrapper
-    .cart
-    tbody
-    td
-    > :not(.product) {
-    font-size: 13px;
-    line-height: 18px;
-  }
-}
-.html-checkout-page:not(.html-order-confirm-page)
-  .checkout-data
-  .order-progress
-  ~ .order-summary
-  .cart-footer {
-  width: 100%;
-  margin: 0;
-  border: none;
-  padding: 0;
-  box-shadow: none;
+ 
+
 }
 
 @media (min-width: 1200px) {
@@ -10012,13 +9916,6 @@ form > .buttons button {
 .shipping-method-page .method-list li,
 .payment-method-page .method-list li {
   background: var(--white);
-}
-@media (max-width: 1599px) {
-  .shipping-method-page .method-list li {
-    width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-  }
 }
 
 .html-order-completed-page:not(.html-home-page) .order-completed-page {
@@ -11297,7 +11194,11 @@ form > .buttons button {
 }
 
 @media (min-width: 992px) {
-  .order-completed-page .order-summary-content, .payment-info-page .order-summary-content, .payment-method-page .order-summary-content, .order-summury-shipping .order-summary-content {
+  .order-completed-page .order-summary-content,
+  .payment-info-page .order-summary-content,
+  .payment-method-page .order-summary-content,
+  .order-summary .order-summary-content #shopping-cart-form,
+  .order-summury-shipping .order-summary-content {
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
@@ -11486,4 +11387,41 @@ button#search-product-clear {
       text-align: center;
   }
 
+}
+
+.section.payment-info .info table input {
+  border: 1px solid var(--input-border);
+  border-radius: 3px;
+  height: 30px;
+  padding: 5px 10px;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+  color: var(--input-text);
+  transition: all .3s;
+  background-color: var(--input-color);
+}
+
+.section.payment-info .info table td {
+  padding: 3px 0px;
+}
+
+.section.payment-info .info table {
+    max-width: 500px;
+}
+
+.section.payment-info .info {
+  background: var(--white);
+  box-shadow: 0 2px 4px 2px rgba(153,153,153,.15);
+  border-radius: 4px;
+  padding: 15px;
+}
+
+.section.payment-info .info table .field-validation-error {
+    display: block;
+    color: red;
+}
+
+.impersonate span {
+    color: #fff;
 }

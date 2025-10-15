@@ -106,14 +106,8 @@ element {
 
 .bar-notification.success {
   background-color: #4bb07a;
-  height: 56px;
 }
 
-.bar-notification {
-  position: relative;
-  display: none;
-  padding: 10px 20px 10px 7px;
-}
 /*Overriding header z-index*/
 .html-b2b-b2c-feature .header,
 .html-b2b-b2c-feature .header-menu {

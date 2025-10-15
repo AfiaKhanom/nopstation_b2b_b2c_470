@@ -35,7 +35,7 @@
 
 @{
     var currCustomer = await workContext.GetCurrentCustomerAsync();
-	var isGuest = await customerService.IsInCustomerRoleAsync(currCustomer, NopCustomerDefaults.GuestsRoleName);
+    var isGuest = await customerService.IsInCustomerRoleAsync(currCustomer, NopCustomerDefaults.GuestsRoleName);
     var currStore = await storeContext.GetCurrentStoreAsync();
     var shoppingCartItems = await shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.ShoppingCart);
     var b2bOrderId = await genericAttributeService.GetAttributeAsync<int>(currCustomer, B2BB2CFeaturesDefaults.B2BConvertedQuoteB2BOrderId, currStore.Id);
@@ -125,12 +125,10 @@
                             <col width="1" />
                         }
                         <col width="1" />
-                        <col width="1" />
                         @if (Model.ShowVendorName)
                         {
                             <col width="1" />
                         }
-                        <col width="1" />
                         <col width="1" />
                         <col width="1" />
                         <col width="1" />
@@ -500,15 +498,15 @@
                                                 @T("Checkout.Button")
                                             </button>
                                         }
-										@if (isGuest)
-										{
-											<div class="cart-login-message" style="padding: 12px 15px; background-color: #e0f7fa; border: 1px solid #b2ebf2; border-radius: 4px; text-align: center; font-size: 0.95rem; color: #333; margin-bottom: 15px;">
-												<span>@T("nopstation.theme.Stafast.shoppingCart.loginToCheckout")</span>
-												<a href="@Url.RouteUrl("Login")" class="cart-login-link" style="margin-left: 5px; color: #007bff; text-decoration: underline; font-weight: 500;">
-													@T("Account.Login")
-												</a>
-											</div>
-										}
+                                        @if (isGuest)
+                                        {
+                                            <div class="cart-login-message" style="padding: 12px 15px; background-color: #e0f7fa; border: 1px solid #b2ebf2; border-radius: 4px; text-align: center; font-size: 0.95rem; color: #333; margin-bottom: 15px;">
+                                                <span>@T("nopstation.theme.Stafast.shoppingCart.loginToCheckout")</span>
+                                                <a href="@Url.RouteUrl("Login")" class="cart-login-link" style="margin-left: 5px; color: #007bff; text-decoration: underline; font-weight: 500;">
+                                                    @T("Account.Login")
+                                                </a>
+                                            </div>
+                                        }
                                     }
                                     else if (isAllowedToPlaceOrder && !isB2BSalesOrderInValid)
                                     {

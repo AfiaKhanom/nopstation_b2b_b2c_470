@@ -83,14 +83,14 @@
                         @T("Checkout.NoPaymentMethods")
                     </div>
                 }
+                <div class="buttons">
+                    <button type="submit" name="nextstep" class="button-1 payment-method-next-step-button">@T("Checkout.NextButton")</button>
+                </div>
                 <div class="section order-summary">
                     <div class="title">
                         <strong>@T("Checkout.OrderSummary")</strong>
                     </div>
                     @await Component.InvokeAsync(typeof(OrderSummaryViewComponent))
-                    <div class="buttons">
-                        <button type="submit" name="nextstep" class="button-1 payment-method-next-step-button">@T("Checkout.NextButton")</button>
-                    </div>
                 </div>
             </form>
         </div>
