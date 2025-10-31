@@ -11225,16 +11225,19 @@ form > .buttons button {
     margin-bottom: 20px;
 }
 
+.payment-method .method-name,
 .payment-method-page .section .method-name {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
+.payment-method .method-list li .payment-logo,
 .payment-method-page .method-list li .payment-logo {
     width: 80px;
 }
 
+.payment-method .method-list,
 .payment-method-page .method-list {
     align-items: initial;
 }
