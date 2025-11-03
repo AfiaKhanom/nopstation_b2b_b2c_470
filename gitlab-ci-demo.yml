@@ -1,0 +1,53 @@
+stages:
+  - build_publish
+  - deploy
+
+default:
+  tags:
+    - nopstation-live-server
+
+variables:
+  SOLUTION_PATH: "src/NopStation_b2b_b2c_erp_470.sln"
+  PROJECT_PATH: "src/Presentation/Nop.Web"
+  PUBLISH_PATH: "C:/publish_b2b"
+  DEV_SITE: "b2b-admin.nop-station.com"
+  MSDEPLOY_EXE: "C:/Program Files/IIS/Microsoft Web Deploy V3/msdeploy.exe"
+  BRANCH: "demo"
+  EXECUTE: $CI_COMMIT_REF_NAME =~ /demo/
+
+build_publish:
+  stage: build_publish
+  rules:
+    - if: $EXECUTE
+  script:
+    # Clean, restore, build
+    - dotnet clean "$env:SOLUTION_PATH" --configuration Release
+    - dotnet restore "$env:SOLUTION_PATH"
+    - dotnet build "$env:SOLUTION_PATH" --no-restore -c Release
+
+    # Clean up previous publish folder
+    - powershell -Command "if (Test-Path '$env:PUBLISH_PATH') { Remove-Item -Recurse -Force '$env:PUBLISH_PATH' }"
+
+    # Publish with options
+    - dotnet publish "$env:PROJECT_PATH/Nop.Web.csproj" `
+        -c Release `
+        -o "$env:PUBLISH_PATH" `
+        --no-build `
+        /p:CopyRefAssembliesToPublishDirectory=true `
+        /p:UseAppHost=false `
+        /p:PublishTrimmed=false `
+        /p:PublishReadyToRun=false
+
+deploy:
+  stage: deploy
+  rules:
+    - if: $EXECUTE
+  script:
+    - powershell -Command "& '$env:MSDEPLOY_EXE' `
+        -verb:sync `
+        -source:iisApp='$env:PUBLISH_PATH' `
+        -dest:iisApp='$env:DEV_SITE' `
+        -enableRule:AppOffline `
+        -skip:Directory=App_Data `
+        -skip:Directory=wwwroot `
+        -skip:objectName=filePath,absolutePath=web.config"
