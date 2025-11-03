@@ -215,12 +215,10 @@ public class ErpSalesRepService : IErpSalesRepService
                 account = account.Where(c => c.AccountNumber.Contains(erpAccontNo));
             if (!string.IsNullOrWhiteSpace(accountName))
                 account = account.Where(c => c.AccountName.Contains(accountName));
-
+            var customer = _customerRepository.Table.Where(cus=>!cus.Deleted && cus.Active);
             // filter by email or fullName
             if (!string.IsNullOrWhiteSpace(email) || !string.IsNullOrWhiteSpace(fullName))
             {
-                var customer = _customerRepository.Table;
-
                 if (!string.IsNullOrWhiteSpace(email))
                     customer = customer.Where(c => c.Email.Contains(email));
 
@@ -229,14 +227,12 @@ public class ErpSalesRepService : IErpSalesRepService
 
                 if (!string.IsNullOrWhiteSpace(erpAccontNo))
                     account = account.Where(c => c.AccountNumber.Contains(erpAccontNo));
-
-                query = query.Join(
+            }
+            query = query.Join(
                     customer,
                     u => u.NopCustomerId,
                     c => c.Id,
                     (u, c) => u);
-            }
-
             // filter by sales org
             if (salesRepId > 0)
             {
@@ -259,41 +255,6 @@ public class ErpSalesRepService : IErpSalesRepService
                         join a in account on n.ErpAccountId equals a.Id
                         select n;
             }
-
-            // customer role ids
-            var administratorsRoleId = (await _customerServive.GetCustomerRoleBySystemNameAsync(NopCustomerDefaults.AdministratorsRoleName)).Id;
-            var b2BCustomerRoleId = (await _customerServive.GetCustomerRoleBySystemNameAsync(ERPIntegrationCoreDefaults.B2BCustomerRoleSystemName)).Id;
-            var b2CCustomerRoleId = (await _customerServive.GetCustomerRoleBySystemNameAsync(ERPIntegrationCoreDefaults.B2CCustomerRoleSystemName)).Id;
-            var b2bSalesRepId = (await _customerServive.GetCustomerRoleBySystemNameAsync(ERPIntegrationCoreDefaults.B2BSalesRepRoleSystemName)).Id;
-
-            var customerRoleMappings = _customerCustomerRoleMappingRepository.Table;
-
-            // all adminIds
-            var adminCustomerIds = customerRoleMappings
-                .Where(w => w.CustomerRoleId == administratorsRoleId)
-                .Select(s => s.CustomerId)
-                .Distinct();
-
-            // exclude admin users
-            query = query.Where(u => !adminCustomerIds.Contains(u.NopCustomerId));
-
-            //// apply role filtering
-            var selectedIds =
-                    (from n in query
-                     join m in _erpNopUserAccountMapRepository.Table on n.Id equals m.ErpUserId
-                     join crm in customerRoleMappings on n.NopCustomerId equals crm.CustomerId
-                     where !customerRoleMappings.Any(x => x.CustomerId == n.NopCustomerId && x.CustomerRoleId == b2bSalesRepId)
-                        && customerRoleMappings.Any(x => x.CustomerId == n.NopCustomerId &&
-                            (x.CustomerRoleId == b2CCustomerRoleId || x.CustomerRoleId == b2BCustomerRoleId))
-                     select n.Id).Distinct();
-
-            var selectedNopUsers =
-                from n in query
-                join id in selectedIds on n.Id equals id
-                select n;
-
-            query = selectedNopUsers
-                .OrderByDescending(u => u.Id);
 
             return query;
         }, pageIndex, pageSize, getOnlyTotalCount);
@@ -325,7 +286,6 @@ public class ErpSalesRepService : IErpSalesRepService
 
             query = query.Where(v => !v.IsDeleted);
 
-            // filter erpAccounts by account number, account name
             var account = _erpErpAccountRepository?.Table ?? Enumerable.Empty<ErpAccount>().AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(erpAccontNo))
@@ -333,27 +293,21 @@ public class ErpSalesRepService : IErpSalesRepService
 
             if (!string.IsNullOrWhiteSpace(accountName))
                 account = account.Where(c => c.AccountName.Contains(accountName));
-
-            // filter customers by email/fullName
+            var customer = _customerRepository?.Table.Where(cus=>!cus.Deleted && cus.Active);
             if (!string.IsNullOrWhiteSpace(email) || !string.IsNullOrWhiteSpace(fullName))
             {
-                var customer = _customerRepository?.Table ?? Enumerable.Empty<Customer>().AsQueryable();
-
                 if (!string.IsNullOrWhiteSpace(email))
                     customer = customer.Where(c => c.Email.Contains(email));
 
                 if (!string.IsNullOrWhiteSpace(fullName))
                     customer = customer.Where(c => (c.FirstName + " " + c.LastName).Contains(fullName));
-
-                query = query.Join(
+            }
+            query = query.Join(
                     customer,
                     u => u.NopCustomerId,
                     c => c.Id,
                     (u, c) => new { ErPUser = u, Customer = c })
                 .Select(t => t.ErPUser);
-            }
-
-            // filter by salesRep
             if (salesRepId > 0)
             {
                 var salesRepMap = _erpSalesRepErpAccountMapRepository?.Table ?? Enumerable.Empty<ErpSalesRepErpAccountMap>().AsQueryable();
@@ -378,39 +332,6 @@ public class ErpSalesRepService : IErpSalesRepService
                         select n;
             }
 
-            // roles
-            var administratorsRoleId = (await _customerServive?.GetCustomerRoleBySystemNameAsync(NopCustomerDefaults.AdministratorsRoleName))?.Id ?? 0;
-            var b2BCustomerRoleId = (await _customerServive?.GetCustomerRoleBySystemNameAsync(ERPIntegrationCoreDefaults.B2BCustomerRoleSystemName))?.Id ?? 0;
-            var b2CCustomerRoleId = (await _customerServive?.GetCustomerRoleBySystemNameAsync(ERPIntegrationCoreDefaults.B2CCustomerRoleSystemName))?.Id ?? 0;
-            var b2bSalesRepId = (await _customerServive?.GetCustomerRoleBySystemNameAsync(ERPIntegrationCoreDefaults.B2BSalesRepRoleSystemName))?.Id ?? 0;
-
-            var customerRoleMappings = _customerCustomerRoleMappingRepository?.Table;
-
-            // all adminIds
-            var adminCustomerIds = customerRoleMappings
-                .Where(w => w.CustomerRoleId == administratorsRoleId)
-                .Select(s => s.CustomerId)
-                .Distinct();
-
-            // filter by notAdmin role id
-            query = query.Where(u => !adminCustomerIds.Contains(u.NopCustomerId));
-
-            var selectedIds =
-                    (from n in query
-                     join m in _erpNopUserAccountMapRepository.Table on n.Id equals m.ErpUserId
-                     join crm in customerRoleMappings on n.NopCustomerId equals crm.CustomerId
-                     where !customerRoleMappings.Any(x => x.CustomerId == n.NopCustomerId && x.CustomerRoleId == b2bSalesRepId)
-                        && customerRoleMappings.Any(x => x.CustomerId == n.NopCustomerId &&
-                            (x.CustomerRoleId == b2CCustomerRoleId || x.CustomerRoleId == b2BCustomerRoleId))
-                     select n.Id).Distinct();
-
-            var selectedNopUsers =
-                from n in query
-                join id in selectedIds on n.Id equals id
-                select n;
-
-            query = selectedNopUsers
-                .OrderByDescending(u => u.Id);
             return query;
         }, pageIndex, pageSize, getOnlyTotalCount);
 

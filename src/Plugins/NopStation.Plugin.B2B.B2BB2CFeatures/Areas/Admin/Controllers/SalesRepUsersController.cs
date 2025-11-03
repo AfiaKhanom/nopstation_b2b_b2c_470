@@ -221,14 +221,10 @@ public class SalesRepUsersController : NopStationAdminController
         if (erpSalesRepErpAccountMap != null)
         {
             await _erpAccountService.DeleteErpSalesRepErpAccountMapAsync(erpSalesRepErpAccountMap);
-
-            //erp activity log
-            await _erpActivityLogsService.InsertErpActivityAsync("Erp_DeleteErpAccountForErpSalesRepMap",
-                string.Format(await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.ErpActivityLogs.DeleteErpAccountForErpSalesRepMap"),
-                salesRepId, id), new ErpSalesRepErpAccountMap());
         }
-
-        return new NullJsonResult();
+        var salesRep=await _erpSalesRepService.GetErpSalesRepByIdAsync(salesRepId);
+        var model = await _salesRepUserModelFactory.PrepareSalesRepErpUserListModelForSalesRep(new ErpAccountSearchModel(), salesRep);
+        return Json(model);
     }
 
     public async virtual Task<IActionResult> Impersonate(int id)
