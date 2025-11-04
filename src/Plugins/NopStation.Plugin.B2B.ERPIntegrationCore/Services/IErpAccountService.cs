@@ -46,4 +46,5 @@ public interface IErpAccountService
     Task InActiveAllOldAccount(DateTime syncStartTime);
     Task<IList<ErpAccount>> GetErpAccountsOfOnlyActiveErpNopUsersAsync(int salesOrgId = 0, string accountNumber = "");
     Task<IList<ErpAccount>> GetAllErpAccountsBySaleOrgIdAsync(int salesOrgId);
+    Task<ErpAccount> CheckErpAccountExist(string accountNumber, int salesOrgId);
 }

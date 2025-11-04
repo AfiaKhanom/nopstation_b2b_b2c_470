@@ -462,6 +462,14 @@ public class ErpAccountService : IErpAccountService
         );
     }
 
+    public async Task<ErpAccount> CheckErpAccountExist(string accountNumber, int salesOrgId)
+    {
+        return await _erpAccountRepository.Table
+            .Where(a => a.AccountNumber == accountNumber
+                        && a.ErpSalesOrgId == salesOrgId)
+            .FirstOrDefaultAsync();
+    }
+
     #endregion
 
     #endregion

@@ -216,7 +216,17 @@ public class ErpAccountController : NopStationAdminController
             erpAccount.CreatedOnUtc = DateTime.UtcNow;
             erpAccount.CreatedById = currentCustomer.Id;
 
-            await _erpAccountService.InsertErpAccountAsync(erpAccount); 
+            var existingAccount = await _erpAccountService.CheckErpAccountExist(model.AccountNumber, model.ErpSalesOrgId);
+            if (existingAccount != null)
+            {
+                var warningMsg = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.AlreadyExists");
+                _notificationService.WarningNotification(warningMsg);
+
+                model = await _erpAccountModelFactory.PrepareErpAccountModelAsync(model, null);
+                return View(model);
+            }
+
+            await _erpAccountService.InsertErpAccountAsync(erpAccount);
 
             //address
             var address = model.BillingAddress.ToEntity<Address>();
@@ -427,11 +437,11 @@ public class ErpAccountController : NopStationAdminController
 
         var result =
             (from acc in accounts
-                 select new
-                 {
-                     label = $"{acc.AccountNumber} ({acc.AccountName}),",
-                     erpaccountid = acc.Id
-                 }
+             select new
+             {
+                 label = $"{acc.AccountNumber} ({acc.AccountName}),",
+                 erpaccountid = acc.Id
+             }
             ).ToList();
 
         return Json(result);
