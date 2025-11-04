@@ -38,6 +38,7 @@
 
                     <li class="tab-item" id="collect"><a href="#shippingTabCollect">@T("B2B.Shipping.Collect")</a></li>
                 </ul>
+                <input type="hidden" id="PickupInStore" name="PickupInStore" value="false" />
 
                 @if (Model.ExistingErpShipToAddresses.Count > 0)
                 {
@@ -414,12 +415,14 @@
         $('.trigger-ship-to-address-selector-button').hide();
         displayAjaxLoading(true);
         clearShippingOptionAndSavePickupPoint("Collection");
+        $("#PickupInStore").val("true");
     });
 
     $("#deliver").click(function () {
         $('.trigger-ship-to-address-selector-button').show();
         displayAjaxLoading(true);
         clearPickUpPointAndSaveShippingOption();
+        $("#PickupInStore").val("false");
     });
 
     function clearPickUpPointAndSaveShippingOption() {
