@@ -3,6 +3,11 @@
 @{
     var storeScope = await storeContext.GetActiveStoreScopeConfigurationAsync();
     var b2BB2CFeaturesSettings = await settingsService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeScope);
+
+    var passwordErrors = ViewData.ModelState[nameof(Model.Password)]?.Errors
+               .Select(e => e.ErrorMessage)
+               .Where(e => !string.IsNullOrEmpty(e) && e.Contains("<li>"))
+               .ToList();
 }
 
 <div asp-validation-summary="ModelOnly" class="message-error"></div>
@@ -73,7 +78,7 @@
                 <input asp-for="AccountName" />
                 <nop-required />
                 <span asp-validation-for="AccountName"></span>
-            </div>            
+            </div>
         }
     </div>
 </div>
@@ -128,11 +133,11 @@
             <div class="inputs date-of-birth">
                 <label>@T("Account.Fields.DateOfBirth"):</label>
                 <nop-date-picker asp-day-name="@Html.NameFor(x => x.DateOfBirthDay)"
-                             asp-month-name="@Html.NameFor(x => x.DateOfBirthMonth)"
-                             asp-year-name="@Html.NameFor(x => x.DateOfBirthYear)"
-                             asp-begin-year="@(DateTime.Now.AddYears(-110))"
-                             asp-end-year="@(DateTime.UtcNow)"
-                             asp-selected-date="@Model.ParseDateOfBirth()" />
+                                 asp-month-name="@Html.NameFor(x => x.DateOfBirthMonth)"
+                                 asp-year-name="@Html.NameFor(x => x.DateOfBirthYear)"
+                                 asp-begin-year="@(DateTime.Now.AddYears(-110))"
+                                 asp-end-year="@(DateTime.UtcNow)"
+                                 asp-selected-date="@Model.ParseDateOfBirth()" />
 
                 @if (Model.DateOfBirthRequired)
                 {
@@ -204,11 +209,11 @@
         </div>
     </div>
 }
-@if (Model.StreetAddressEnabled || 
-Model.StreetAddress2Enabled || 
-Model.ZipPostalCodeEnabled || 
-Model.CityEnabled || 
-Model.CountyEnabled || 
+@if (Model.StreetAddressEnabled ||
+Model.StreetAddress2Enabled ||
+Model.ZipPostalCodeEnabled ||
+Model.CityEnabled ||
+Model.CountyEnabled ||
 Model.CountryEnabled)
 {
     <div class="fieldset">
@@ -281,10 +286,10 @@ Model.CountryEnabled)
                 <div class="inputs">
                     <label asp-for="CountryId" asp-postfix=":"></label>
                     <select asp-for="CountryId" asp-items="Model.AvailableCountries"
-                    data-trigger="country-select"
-                    data-url="@(Url.RouteUrl("GetStatesByCountryId"))"
-                    data-stateprovince="#@Html.IdFor(model => model.StateProvinceId)"
-                    data-loading="#states-loading-progress"></select>
+                            data-trigger="country-select"
+                            data-url="@(Url.RouteUrl("GetStatesByCountryId"))"
+                            data-stateprovince="#@Html.IdFor(model => model.StateProvinceId)"
+                            data-loading="#states-loading-progress"></select>
                     @if (Model.CountryRequired)
                     {
                         <nop-required />
@@ -388,7 +393,17 @@ Model.CountryEnabled)
             <label asp-for="Password" asp-postfix=":"></label>
             <input asp-for="Password" />
             <nop-required />
-            <span asp-validation-for="Password"></span>
+
+            @if (passwordErrors != null && passwordErrors.Any())
+            {
+                <div style="color: red;">
+                    @foreach (var error in passwordErrors)
+                    {
+                        @Html.Raw(error)
+                    }
+                </div>
+            }
+
         </div>
         <div class="inputs">
             <label asp-for="ConfirmPassword" asp-postfix=":"></label>
@@ -441,7 +456,7 @@ Model.CountryEnabled)
                                 $('#read-privacyinfo').on('click',
                                     function (e) {
                                         displayPopupContentFromUrl(
-                                            '@Url.RouteUrl("TopicPopup", new {SystemName = "privacyinfo"})',
+                                            '@Url.RouteUrl("TopicPopup", new { SystemName = "privacyinfo" })',
                                             '@T("Account.Fields.AcceptPrivacyPolicy")');
                                     });
                             });
