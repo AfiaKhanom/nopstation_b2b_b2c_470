@@ -5,6 +5,7 @@
 @using NopStation.Plugin.B2B.ERPIntegrationCore.Enums
 @inject IErpCustomerFunctionalityService b2BCustomerFunctionality
 @inject IWebHelper webHelper
+@inject Nop.Core.Domain.Shipping.ShippingSettings shippingSettings
 
 @{
     var storeLocation = webHelper.GetStoreLocation();
@@ -36,7 +37,12 @@
                         <li class="tab-item" id="deliver"><a href="#shippingTabDeliver">@T("B2B.Shipping.Deliver")</a></li>
                     }
 
-                    <li class="tab-item" id="collect"><a href="#shippingTabCollect">@T("B2B.Shipping.Collect")</a></li>
+                    @if (shippingSettings.AllowPickupInStore && Model.DisplayPickupInStore)
+                    {
+                        <li class="tab-item" id="collect">
+                            <a href="#shippingTabCollect">@T("B2B.Shipping.Collect")</a>
+                        </li>
+                    }
                 </ul>
                 <input type="hidden" id="PickupInStore" name="PickupInStore" value="false" />
 
