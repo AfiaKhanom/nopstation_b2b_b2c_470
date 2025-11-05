@@ -2328,6 +2328,10 @@
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPrice.RequiredErrMsg.Code">
         <Value>Group Price Code is required</Value>
     </LocaleResource>
+    
+    <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPrice.Price.NonNegative">
+        <Value>Group Price can't be negative</Value>
+    </LocaleResource>
 
     <LocaleResource Name="Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPriceCode.RequiredErrMsg.Code">
         <Value>Group Price Code is required</Value>
