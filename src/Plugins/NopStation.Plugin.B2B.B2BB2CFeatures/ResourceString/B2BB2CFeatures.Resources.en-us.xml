@@ -4815,12 +4815,12 @@
         <Value>Enter Type Of Business</Value>
     </LocaleResource>
 
-    <LocaleResource Name="B2BB2CFeatures.ErpAccountCustomerRegistrationForm.Fields.EstimatePurchasesPerMonthZAR">
-        <Value>Estimate Purchases Per Month ZAR</Value>
+    <LocaleResource Name="B2BB2CFeatures.ErpAccountCustomerRegistrationForm.Fields.EstimatePurchasesPerMonthUSDollar">
+        <Value>Estimate Purchases Per Month US Dollar</Value>
     </LocaleResource>
 
-    <LocaleResource Name="B2BB2CFeatures.ErpAccountCustomerRegistrationForm.Fields.EstimatePurchasesPerMonthZAR.Hint">
-        <Value>Enter Estimate Purchases Per Month ZAR</Value>
+    <LocaleResource Name="B2BB2CFeatures.ErpAccountCustomerRegistrationForm.Fields.EstimatePurchasesPerMonthUSDollar.Hint">
+        <Value>Enter Estimate Purchases Per Month US Dollar</Value>
     </LocaleResource>
 
     <LocaleResource Name="B2BB2CFeatures.ErpAccountCustomerRegistrationForm.Fields.CreditLimitRequired">
@@ -4859,12 +4859,12 @@
         <Value>Search Applications</Value>
     </LocaleResource>
 
-    <LocaleResource Name="B2BB2CFeatures.ErpAccountCustomerRegistrationBankingDetails.Fields.NameOfBanker">
-        <Value>Name Of Banker</Value>
+    <LocaleResource Name="B2BB2CFeatures.ErpAccountCustomerRegistrationBankingDetails.Fields.NameOfBank">
+        <Value>Name of Bank</Value>
     </LocaleResource>
 
-    <LocaleResource Name="B2BB2CFeatures.ErpAccountCustomerRegistrationBankingDetails.Fields.NameOfBanker.Hint">
-        <Value>Enter Name Of Banker</Value>
+    <LocaleResource Name="B2BB2CFeatures.ErpAccountCustomerRegistrationBankingDetails.Fields.NameOfBank.Hint">
+        <Value>Enter Name of Bank</Value>
     </LocaleResource>
 
     <LocaleResource Name="B2BB2CFeatures.ErpAccountCustomerRegistrationBankingDetails.Fields.AccountName">
@@ -5549,12 +5549,12 @@
         <Value>Type Of Business</Value>
     </LocaleResource>
 
-    <LocaleResource Name="B2BB2CFeatures.Admin.ErpRegistrationApplication.ApplicationForm.Fields.EstimatePurchasesPerMonthZAR">
-        <Value>Estimate Purchases Per Month ZAR</Value>
+    <LocaleResource Name="B2BB2CFeatures.Admin.ErpRegistrationApplication.ApplicationForm.Fields.EstimatePurchasesPerMonthUSDollar">
+        <Value>Estimate Purchases Per Month US Dollar</Value>
     </LocaleResource>
 
-    <LocaleResource Name="B2BB2CFeatures.Admin.ErpRegistrationApplication.ApplicationForm.Fields.EstimatePurchasesPerMonthZAR.Hint">
-        <Value>Estimate Purchases Per Month ZAR</Value>
+    <LocaleResource Name="B2BB2CFeatures.Admin.ErpRegistrationApplication.ApplicationForm.Fields.EstimatePurchasesPerMonthUSDollar.Hint">
+        <Value>Estimate Purchases Per Month US Dollar</Value>
     </LocaleResource>
 
     <LocaleResource Name="B2BB2CFeatures.Admin.ErpRegistrationApplication.ApplicationForm.Fields.CreditLimitRequired">
@@ -5701,12 +5701,12 @@
         <Value>Physical Trading Address</Value>
     </LocaleResource>
 
-    <LocaleResource Name="B2BB2CFeatures.Admin.ErpRegistrationApplication.BankingDetails.Fields.NameOfBanker">
-        <Value>Name Of Banker</Value>
+    <LocaleResource Name="B2BB2CFeatures.Admin.ErpRegistrationApplication.BankingDetails.Fields.NameOfBank">
+        <Value>Name of Bank</Value>
     </LocaleResource>
 
-    <LocaleResource Name="B2BB2CFeatures.Admin.ErpRegistrationApplication.BankingDetails.Fields.NameOfBanker.Hint">
-        <Value>Enter Name Of Banker</Value>
+    <LocaleResource Name="B2BB2CFeatures.Admin.ErpRegistrationApplication.BankingDetails.Fields.NameOfBank.Hint">
+        <Value>Enter Name of Bank</Value>
     </LocaleResource>
 
     <LocaleResource Name="B2BB2CFeatures.Admin.ErpRegistrationApplication.BankingDetails.Fields.AccountName">

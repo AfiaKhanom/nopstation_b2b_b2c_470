@@ -67,7 +67,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models.ErpRegistratio
         [NopResourceDisplayName("B2BB2CFeatures.Admin.ErpRegistrationApplication.ApplicationForm.Fields.TypeOfBusiness")]
         public string TypeOfBusiness { get; set; }
 
-        [NopResourceDisplayName("B2BB2CFeatures.Admin.ErpRegistrationApplication.ApplicationForm.Fields.EstimatePurchasesPerMonthZAR")]
+        [NopResourceDisplayName("B2BB2CFeatures.Admin.ErpRegistrationApplication.ApplicationForm.Fields.EstimatePurchasesPerMonthUSDollar")]
         public decimal EstimatePurchasesPerMonthZAR { get; set; }
 
         [NopResourceDisplayName("B2BB2CFeatures.Admin.ErpRegistrationApplication.ApplicationForm.Fields.CreditLimitRequired")]
