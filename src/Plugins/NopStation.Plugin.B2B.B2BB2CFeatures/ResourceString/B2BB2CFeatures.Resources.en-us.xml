@@ -3128,8 +3128,8 @@
         <Value>ERP Invoices</Value>
     </LocaleResource>
 
-    <LocaleResource Name="Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.AccountStatementDownLoad">
-        <Value>Account Statement DownLoad</Value>
+    <LocaleResource Name="Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.AccountStatementDownload">
+        <Value>Account Statement Download</Value>
     </LocaleResource>
 
     <LocaleResource Name="Plugin.Misc.NopStation.B2BB2CFeatures.ErpInvoices.AccountStatement.30DaysStatement">
