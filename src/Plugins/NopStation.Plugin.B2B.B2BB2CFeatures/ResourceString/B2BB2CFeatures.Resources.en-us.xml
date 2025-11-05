@@ -5757,8 +5757,8 @@
         <Value>Trade References</Value>
     </LocaleResource>
 
-    <LocaleResource Name="B2BB2CFeatures.Admin.ErpRegistrationApplication.ApplicationForm.Info.Permises">
-        <Value>Permises</Value>
+    <LocaleResource Name="B2BB2CFeatures.Admin.ErpRegistrationApplication.ApplicationForm.Info.Premises">
+        <Value>Premises</Value>
     </LocaleResource>
 
     <LocaleResource Name="B2BB2CFeatures.Admin.ErpRegistrationApplication.ApplicationForm.PageTitle.AddNew">
