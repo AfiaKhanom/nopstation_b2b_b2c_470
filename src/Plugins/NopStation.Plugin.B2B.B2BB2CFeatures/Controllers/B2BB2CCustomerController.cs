@@ -1408,7 +1408,10 @@ public class B2BB2CCustomerController : CustomerController
     public async Task<IActionResult> SetErpAccount(AccountSwitchModel model)
     {
         var currentCustomer = await _workContext.GetCurrentCustomerAsync();
-
+        if(model.ErpAccountId==0)
+        {
+            return Redirect(model.RedirectUrl);
+        }
         try
         {
             var erpAccount = await _erpAccountService.GetActiveErpAccountByCustomerIdAsync(model.CustomerId);
