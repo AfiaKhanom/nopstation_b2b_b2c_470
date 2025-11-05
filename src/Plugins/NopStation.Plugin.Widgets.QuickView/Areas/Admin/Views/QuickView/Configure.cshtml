@@ -29,24 +29,6 @@
                 <div class="cards-group">
                     <div class="card card-default">
                         <div class="card-body">
-                            <div class="form-group row">
-                                <div class="col-md-4">
-                                    <nop-override-store-checkbox asp-for="ShowAlsoPurchasedProducts_OverrideForStore" asp-input="ShowAlsoPurchasedProducts" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
-                                    <nop-label asp-for="ShowAlsoPurchasedProducts" />
-                                </div>
-                                <div class="col-md-8">
-                                    <nop-editor asp-for="ShowAlsoPurchasedProducts" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <div class="col-md-4">
-                                    <nop-override-store-checkbox asp-for="ShowRelatedProducts_OverrideForStore" asp-input="ShowRelatedProducts" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
-                                    <nop-label asp-for="ShowRelatedProducts" />
-                                </div>
-                                <div class="col-md-8">
-                                    <nop-editor asp-for="ShowRelatedProducts" />
-                                </div>
-                            </div>
                             @if (Model.PictureZoomPluginInstalled)
                             {
                                 <div class="form-group row">
