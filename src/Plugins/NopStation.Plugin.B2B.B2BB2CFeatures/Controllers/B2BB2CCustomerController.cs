@@ -509,7 +509,7 @@ public class B2BB2CCustomerController : CustomerController
                     {
                         ModelState.AddModelError("", await _localizationService.GetResourceAsync("Account.Register.Errors.EmailAlreadyExists"));
                     }
-                    else if (!_b2BB2CFeaturesSettings.UseDefaultAccountForB2CUser && 
+                    else if (!_b2BB2CFeaturesSettings.UseDefaultAccountForB2CUser &&
                         (await _erpAccountService.GetErpAccountByErpAccountNumberAsync(model.B2CIdentificationNumber) != null))
                     {
                         ModelState.AddModelError("", await _localizationService.GetResourceAsync("B2BB2C.Account.Registration.NIDAlreadyExists"));
@@ -1165,8 +1165,8 @@ public class B2BB2CCustomerController : CustomerController
             return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Disabled });
 
         var model = new B2BRegisterModel();
-        model = await _b2BRegisterModelFactory.PrepareB2BRegisterModelAsync(model, false, setDefaultValues: true);
         model.IsB2BUser = false;
+        model = await _b2BRegisterModelFactory.PrepareB2BRegisterModelAsync(model, false, setDefaultValues: true);
 
         return View(model);
     }
@@ -1197,7 +1197,7 @@ public class B2BB2CCustomerController : CustomerController
     [CheckAccessPublicStore(ignore: true)]
     public override async Task<IActionResult> Login(bool? checkoutAsGuest)
     {
-        
+
         var model = await _customerModelFactory.PrepareLoginModelAsync(checkoutAsGuest);
         var customer = await _workContext.GetCurrentCustomerAsync();
 
@@ -1425,7 +1425,7 @@ public class B2BB2CCustomerController : CustomerController
                 erpUser.ErpAccountId = model.ErpAccountId;
 
                 var defaultShipToAddress = (await _erpShipToAddressService.GetErpShipToAddressesByAccountIdAsync(showHidden: false, isActiveOnly: true, accountId: erpUser.ErpAccountId)).FirstOrDefault();
-                
+
                 if (defaultShipToAddress == null)
                 {
                     _notificationService.WarningNotification(
