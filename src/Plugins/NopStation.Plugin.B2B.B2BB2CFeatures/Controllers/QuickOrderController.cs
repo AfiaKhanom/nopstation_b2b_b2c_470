@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Nop.Core;
@@ -366,7 +368,7 @@ public class QuickOrderController : BasePublicController
     }
 
     [HttpPost]
-    public virtual async Task<IActionResult> ProductDetails_AttributeChange(int templateId, int productId, int quantity, bool validateAttributeConditions, 
+    public virtual async Task<IActionResult> ProductDetails_AttributeChange(int templateId, int productId, int quantity, bool validateAttributeConditions,
         bool loadPicture, IFormCollection form)
     {
         var product = await _productService.GetProductByIdAsync(productId);
@@ -457,15 +459,15 @@ public class QuickOrderController : BasePublicController
             }
 
             var warnings = await _shoppingCartService.GetShoppingCartItemWarningsAsync(
-                await _workContext.GetCurrentCustomerAsync(), 
-                ShoppingCartType.Wishlist, 
+                await _workContext.GetCurrentCustomerAsync(),
+                ShoppingCartType.Wishlist,
                 product,
-                (await _storeContext.GetCurrentStoreAsync()).Id, 
-                null, 
-                decimal.Zero, 
-                quantity: model.Quantity, 
+                (await _storeContext.GetCurrentStoreAsync()).Id,
+                null,
+                decimal.Zero,
+                quantity: model.Quantity,
                 addRequiredProducts: false);
-            
+
             if (warnings.Any())
             {
                 var productDeatils = await _productModelFactory.PrepareProductDetailsModelAsync(product);
@@ -586,7 +588,7 @@ public class QuickOrderController : BasePublicController
         }
 
         item.QuickOrderTemplate = await _quickOrderTemplateService.GetQuickOrderTemplateByIdAsync(item.QuickOrderTemplateId);
-        await _quickOrderItemService.UpdateQuickOrderItemAsync(item);       
+        await _quickOrderItemService.UpdateQuickOrderItemAsync(item);
 
         return Json(new { Result = true, Msg = await _localizationService.GetResourceAsync("NopStation.B2BB2CFeatures.QuickOrderItem.QuantityUpdated") });
     }
@@ -692,14 +694,14 @@ public class QuickOrderController : BasePublicController
             pageSize: productNumber,
             showHidden: true);
 
-        var result = 
+        var result =
             (from p in products
-                select new
-                {
-                    label = p.Name + " (" + p.Sku + ")",
-                    productid = p.Id,
-                    productsku = p.Sku
-                }
+             select new
+             {
+                 label = p.Name + " (" + p.Sku + ")",
+                 productid = p.Id,
+                 productsku = p.Sku
+             }
             ).ToList();
         return Json(result);
     }
@@ -760,6 +762,30 @@ public class QuickOrderController : BasePublicController
         {
             success = response
         });
+    }
+
+    public IActionResult DownloadDemoSheet()
+    {
+        using (var workbook = new XLWorkbook())
+        {
+            var worksheet = workbook.Worksheets.Add("QuickOrder");
+            worksheet.Cell(1, 1).Value = "Sku";
+            worksheet.Cell(1, 2).Value = "Quantity";
+
+            worksheet.Cell(2, 1).Value = "ABC123";
+            worksheet.Cell(2, 2).Value = 5;
+            worksheet.Cell(3, 1).Value = "ABC124";
+            worksheet.Cell(3, 2).Value = 10;
+
+            using (var stream = new MemoryStream())
+            {
+                workbook.SaveAs(stream);
+                var content = stream.ToArray();
+                return File(content,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "DemoQuickOrderSheet.xlsx");
+            }
+        }
     }
 
     #endregion
