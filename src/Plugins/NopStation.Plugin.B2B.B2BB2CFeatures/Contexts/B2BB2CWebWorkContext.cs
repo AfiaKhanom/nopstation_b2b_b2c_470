@@ -47,6 +47,7 @@ public class B2BB2CWebWorkContext : IB2BB2CWorkContext
     private readonly TaxSettings _taxSettings;
     private readonly IErpNopUserService _erpNopUserService;
     private readonly IErpAccountService _erpAccountService;
+    private readonly IErpNopUserAccountMapService _erpNopUserAccountMapService;
     private Customer _cachedCustomer;
     private ERPCustomer _cachedERPCustomer;
     private Customer _originalCustomerIfImpersonated;
@@ -75,7 +76,8 @@ public class B2BB2CWebWorkContext : IB2BB2CWorkContext
         LocalizationSettings localizationSettings,
         TaxSettings taxSettings,
         IErpNopUserService erpNopUserService,
-        IErpAccountService erpAccountService)
+        IErpAccountService erpAccountService,
+        IErpNopUserAccountMapService erpNopUserAccountMapService)
     {
         _cookieSettings = cookieSettings;
         _currencySettings = currencySettings;
@@ -94,6 +96,7 @@ public class B2BB2CWebWorkContext : IB2BB2CWorkContext
         _taxSettings = taxSettings;
         _erpNopUserService = erpNopUserService;
         _erpAccountService = erpAccountService;
+        _erpNopUserAccountMapService = erpNopUserAccountMapService;
     }
 
     #endregion
@@ -213,7 +216,8 @@ public class B2BB2CWebWorkContext : IB2BB2CWorkContext
             erpCustomer.ErpNopUser = erpNopUser;
 
             erpCustomer.ErpAccount = await _erpAccountService.GetErpAccountByIdAsync(erpNopUser.ErpAccountId);
-            erpCustomer.CustomerRolesIds = string.Join(',', (await _customerService.GetCustomerRolesAsync(customer)).Select(e => e.Id));
+            var erpNopUserAccountMap = await _erpNopUserAccountMapService.GetErpNopUserAccountMapByAccountAndUserIdAsync(erpNopUser.ErpAccountId, erpNopUser.Id);
+            erpCustomer.CustomerRolesIds = erpNopUserAccountMap?.CustomerRolesIds ?? string.Empty;
         }
 
         return erpCustomer;

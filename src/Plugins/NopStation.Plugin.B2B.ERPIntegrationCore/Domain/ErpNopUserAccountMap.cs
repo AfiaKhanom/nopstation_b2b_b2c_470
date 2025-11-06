@@ -7,4 +7,8 @@ public partial class ErpNopUserAccountMap : BaseEntity
     public int ErpAccountId { get; set; }
 
     public int ErpUserId { get; set; }
+
+    public string CustomerRolesIds { get; set; }
+
+    public int ErpUserTypeId { get; set; }
 }

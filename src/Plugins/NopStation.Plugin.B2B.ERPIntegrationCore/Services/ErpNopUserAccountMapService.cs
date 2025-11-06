@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using LinqToDB;
-using Nop.Core;
 using Nop.Core.Caching;
 using Nop.Data;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
@@ -74,16 +74,29 @@ public class ErpNopUserAccountMapService : IErpNopUserAccountMapService
         return await _erpNopUserAccountMapRepository.GetByIdAsync(id, cache => default);
     }
 
-    public async Task<IPagedList<ErpNopUserAccountMap>> GetAllErpNopUserAccountMapsAsync(int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false)
+    public async Task<IList<ErpNopUserAccountMap>> GetAllErpNopUserAccountMapsAsync(List<int> erpAccountIds = null,
+        List<int> customerRoleIds = null,
+        List<int> erpNopUserIds = null,
+        int erpNopUserTypeId = 0)
     {
-        var erpNopUserAccountMaps = await _erpNopUserAccountMapRepository.GetAllPagedAsync(query =>
+        return await _erpNopUserAccountMapRepository.GetAllAsync(query =>
         {
+            if (erpAccountIds != null && erpAccountIds.Count != 0)
+                query = query.Where(x => erpAccountIds.Contains(x.ErpAccountId));
+
+            if (customerRoleIds != null && customerRoleIds.Count != 0)
+                query = query.Where(x => !string.IsNullOrWhiteSpace(x.CustomerRolesIds) &&
+                    customerRoleIds.Any(roleId => $",{x.CustomerRolesIds},".Contains($",{roleId},")));
+
+            if (erpNopUserIds != null && erpNopUserIds.Count != 0)
+                query = query.Where(x => erpNopUserIds.Contains(x.ErpUserId));
+
+            if (erpNopUserTypeId != 0)
+                query = query.Where(x => x.ErpUserTypeId == erpNopUserTypeId);
+
             query = query.OrderBy(ei => ei.Id);
             return query;
-
-        }, pageIndex, pageSize, getOnlyTotalCount);
-
-        return erpNopUserAccountMaps;
+        });
     }
 
     public async Task<ErpNopUserAccountMap> GetErpNopUserAccountMapByAccountAndUserIdAsync(int accountId, int userId)
@@ -91,19 +104,13 @@ public class ErpNopUserAccountMapService : IErpNopUserAccountMapService
         if (accountId == 0 || userId == 0)
             return null;
 
-        return (await GetAllErpNopUserAccountMapByAccountAndUserIdAsync(accountId, userId)).FirstOrDefault();
-    }
+        var key = _staticCacheManager.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpNopUserAccountMapByErpAccountAndErpUserCacheKey, 
+            accountId, userId);
 
-    public async Task<IList<ErpNopUserAccountMap>> GetAllErpNopUserAccountMapByAccountAndUserIdAsync(int accountId, int userId)
-    {
-        if (accountId == 0 || userId == 0)
-            return null;
+        var query = _erpNopUserAccountMapRepository.Table;
 
-        var key = _staticCacheManager.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpNopUserAccountMapByErpAccountAndErpUserCacheKey, accountId, userId);
-
-        var query = _erpNopUserAccountMapRepository.Table.Where(e => e.ErpAccountId == accountId && e.ErpUserId == userId);
-
-        return await _staticCacheManager.GetAsync(key, async () => await query.ToListAsync());
+        return await _staticCacheManager.GetAsync(key, 
+            async () => await query.FirstOrDefaultAsync(e => e.ErpAccountId == accountId && e.ErpUserId == userId));
     }
 
     public async Task<IList<ErpNopUserAccountMap>> GetAllErpNopUserAccountMapsByUserIdAsync(int userId)
@@ -144,6 +151,27 @@ public class ErpNopUserAccountMapService : IErpNopUserAccountMapService
             return false;
 
         return await GetErpNopUserAccountMapByAccountAndUserIdAsync(erpAccountId, erpUserId) != null;
+    }
+
+    public async Task<IList<int>> GetErpNopUserRolesByErpNopUserAsync(ErpNopUser user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        var listOferpNopUserRoleIds = new List<int>();
+
+        var erpNopUserAccountMap = await GetErpNopUserAccountMapByAccountAndUserIdAsync(user.ErpAccountId, user.Id);
+        if (erpNopUserAccountMap == null)
+            return listOferpNopUserRoleIds;
+
+        var erpNopUserRoleIds = (erpNopUserAccountMap.CustomerRolesIds ?? string.Empty).Split(",");
+
+        foreach (var roleId in erpNopUserRoleIds)
+        {
+            if (!string.IsNullOrEmpty(roleId))
+                listOferpNopUserRoleIds.Add(Convert.ToInt32(roleId));
+        }
+
+        return listOferpNopUserRoleIds;
     }
 
     #endregion

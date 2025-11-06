@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Nop.Services.Localization;
 using Nop.Web.Framework.Validators;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models;
@@ -13,6 +13,14 @@ public partial class ErpNopUserAccountMapValidator : BaseNopValidator<ErpNopUser
         RuleFor(x => x.ErpAccountId)
             .GreaterThan(0)
             .WithMessageAwait(localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.RequiredErrMsg.ErpAccountId"));
+
+        RuleFor(x => x.SelectedCustomerRoleIds)
+            .NotEmpty()
+            .WithMessageAwait(localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.RequiredErrMsg.ErpUserRoleId"));
+
+        RuleFor(x => x.ErpUserTypeId)
+            .GreaterThan(0)
+            .WithMessageAwait(localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpSalesOrg.RequiredErrMsg.ErpUserTypeId"));
 
         SetDatabaseValidationRules<ErpNopUserAccountMap>();
     }

@@ -306,6 +306,22 @@ public class OverridenOrderController : OrderController
         var customer = await _workContext.GetCurrentCustomerAsync();
         var store = await _storeContext.GetCurrentStoreAsync();
 
+        // if cart is in any process, let the process finish first and then add new product to the cart
+        var isCartActivityOn = await _genericAttributeService.GetAttributeAsync<bool>(
+            customer,
+            B2BB2CFeaturesDefaults.IsCartActivityOn,
+            store.Id
+        );
+        if (isCartActivityOn)
+        {
+            _notificationService.WarningNotification(
+                await _localizationService.GetResourceAsync(
+                    "NopStation.Plugin.B2B.B2BB2CFeatures.ShoppingCart.CartActivityOn"
+                )
+            );
+            return RedirectToRoute("ShoppingCart");
+        }
+
         var order = await _orderService.GetOrderByIdAsync(orderId);
         if (order == null || order.Deleted)
             return Challenge();

@@ -49,6 +49,7 @@
     <None Remove="Areas\Admin\Views\ErpLogs\View.cshtml" />
     <None Remove="Areas\Admin\Views\ErpInvoice\_Details.cshtml" />
     <None Remove="Areas\Admin\Views\ErpInvoice\_Details.Info.cshtml" />
+    <None Remove="Areas\Admin\Views\ErpNopUser\NopCustomerForErpUserPopup.cshtml" />
     <None Remove="Areas\Admin\Views\ErpProductPricing\_CreateOrUpdateGroupPrice.cshtml" />
     <None Remove="Areas\Admin\Views\ErpProductPricing\_GroupPriceEditPopUp.cshtml" />
     <None Remove="Areas\Admin\Views\ErpRegistrationApplication\ApplicationEdit.cshtml" />
@@ -94,6 +95,7 @@
     <None Remove="Areas\Admin\Views\Overriden\Edit.cshtml" />
     <None Remove="Areas\Admin\Views\Overriden\_CreateOrUpdate.cshtml" />
     <None Remove="Areas\Admin\Views\Overriden\_CreateOrUpdate.Prices.cshtml" />
+    <None Remove="Areas\Admin\Views\SalesRepresentative\NopCustomerForErpSalesRepPopup.cshtml" />
     <None Remove="Areas\Admin\Views\SalesRepresentative\_CreateOrUpdate.cshtml" />
     <None Remove="Areas\Admin\Views\SalesRepresentative\_CreateOrUpdate.Customer.cshtml" />
     <None Remove="Areas\Admin\Views\SalesRepUsers\List.cshtml" />
@@ -361,6 +363,9 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Areas\Admin\Views\ErpNopUser\NopCustomerForErpUserPopup.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Areas\Admin\Views\ErpProductPricing\_CreateOrUpdateGroupPrice.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -416,6 +421,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Areas\Admin\Views\SalesRepresentative\NopCustomerForErpSalesRepPopup.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Areas\Admin\Views\SalesRepUsers\ErpSalesRepErpAccountAddPopup.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

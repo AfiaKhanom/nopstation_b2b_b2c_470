@@ -37,9 +37,15 @@ public interface IErpAccountService
         int erpAccountStatusTypeId = 0,
         bool filterDeleted = true,
         bool? showHidden = null);
-
-    Task<IPagedList<ErpAccount>> GetAllErpAccountsByIdsAsync(int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false,
-        bool getOnlyTotalCount = false, List<int> accountIds = null, string email = "");
+    Task<IPagedList<ErpAccount>> GetAllErpAccountsByIdsAsync(int pageIndex = 0, 
+        int pageSize = int.MaxValue, 
+        bool showHidden = false,
+        bool getOnlyTotalCount = false, 
+        List<int> accountIds = null, 
+        string email = "");
+    Task<IList<ErpAccount>> GetAllErpAccountsByIdsAsync(bool showHidden = false,
+        List<int> erpAccountIds = null,
+        string email = "");
     Task<ErpAccount> GetErpAccountByErpAccountNumberAsync(string accountNumber);
     Task<ErpAccount> GetActiveErpAccountByCustomerIdAsync(int customerId);
     Task<ErpAccount> GetErpAccountByErpShipToAddressAsync(ErpShipToAddress erpShipToAddress);

@@ -2,6 +2,19 @@
 @using NopStation.Plugin.B2B.ERPIntegrationCore
 @using Nop.Core.Domain.Customers
 
+<script>
+    $(document).ready(function () {
+        toggleRemoveButton();
+    });
+
+    function toggleRemoveButton() {
+        if ($('#@Html.IdFor(model => model.NopCustomerId)').val() > 0) {
+            $('#customer-name-remove').show();
+        } else {
+            $('#customer-name-remove').hide();
+        }
+    }
+</script>
 <div class="card-body">
 
     <div class="form-group row">
@@ -12,15 +25,47 @@
         {
             <div class="col-md-9 justify-content-center align-self-center">
                 <input type="hidden" id="NopCustomerId" name="NopCustomerId" value=@Model.NopCustomerId />
-                <a asp-controller="Customer" asp-action="Edit" asp-route-id="@Model.NopCustomerId">@Model.NopCustomer</a>
+                <a asp-controller="Customer" asp-action="Edit" asp-route-id="@Model.NopCustomerId">@Model.NopCustomerName - (@Model.NopCustomerEmail)</a>
+                &nbsp;
                 <a class="btn btn-primary" asp-action="Impersonate" asp-route-id="@Model.NopCustomerId">Impersonate</a>
             </div>
         }
         else
         {
             <div class="col-md-9">
-                <nop-Select asp-for="NopCustomerId" asp-items="Model.AvailableNopCustomers" asp-required="true" />
+                <input type="hidden" asp-for="NopCustomerId" />
+                <span id="customer-name">@Model.NopCustomerEmail</span>
+                &nbsp;
                 <span asp-validation-for="NopCustomerId"></span>
+                <button type="submit" onclick="javascript:OpenWindow('@(Url.Action("NopCustomerForErpUserPopup", "ErpNopUser",
+                    new {customerIdInput = Html.IdFor(model => model.NopCustomerId), 
+                    customerNameInput = "customer-name", 
+                    btnId = "btnRefreshSelectedCustomer"}))', 800, 850, true); return false;" class="btn btn-primary">
+                    @T("NopStation.Plugin.B2B.B2BB2CFeatures.Customer.Choose")
+                </button>
+                <button type="submit" id="customer-name-remove" class="btn bg-red">
+                    @T("NopStation.Plugin.B2B.B2BB2CFeatures.Customer.Remove")
+                </button>
+                <input type="submit" id="btnRefreshSelectedCustomer" style="display: none" />
+                <script>
+                $(document).ready(function () {
+                    $('#customer-name-remove').click(function () {
+                        $('#customer-name').text('');
+                        $("#@Html.IdFor(model => model.NopCustomerId)").val(0);
+                        toggleRemoveButton();
+                        //return false to don't reload a page
+                        return false;
+                    });
+
+                    $('#btnRefreshSelectedCustomer').click(function () {
+                        toggleRemoveButton();
+
+                        //return false to don't reload a page
+                        return false;
+                    });
+                });
+                </script>
+
             </div>
         }
     </div>
@@ -147,6 +192,19 @@
         }
     </div>
 
+    @if (Model.ErpAccountId > 0)
+    {
+        <div class="form-group row">
+            <div class="col-md-3">
+                <nop-label asp-for="ErpSalesOrgId" />
+            </div>
+            <div class="col-md-9">
+                <input type="hidden" id="ErpSalesOrgId" name="ErpSalesOrgId" value="@Model.ErpSalesOrgId" />
+                <a asp-controller="ErpSalesOrg" asp-action="ErpSalesOrgEdit" asp-route-id="@Model.ErpSalesOrgId">@Model.ErpSalesOrgInfo</a>
+            </div>
+        </div>
+    }
+
     <div class="form-group row">
         <div class="col-md-3">
             <nop-label asp-for="ErpShipToAddressId" />
@@ -177,7 +235,6 @@
                 @Model.CreatedOn
             </div>
         </div>
-
         <div class="form-group row">
             <div class="col-md-3">
                 <nop-label asp-for="UpdatedOn" />
@@ -193,7 +250,6 @@
 <nop-alert asp-alert-id="statesAlert" asp-alert-message="@T("Admin.Common.Alert.States.Failed")" />
 
 <script>
-    // Function to update the ErpShipToAddressId dropdown
     function updateErpShipToAddresses(accountId) {
         $.ajax({
             type: 'GET',
@@ -228,11 +284,9 @@
 
     // Store all available roles with their original state
     var allAvailableRoles = [];
-    var registeredRoleId = null;
 
     // Initialize the ErpShipToAddressId dropdown with the initial value of AccountId
     $(document).ready(function () {
-        // Get the initial value of AccountId
         var initialAccountId = $('#ErpAccountId').val();
         // Call the method to update the ErpShipToAddressId dropdown
         updateErpShipToAddresses(initialAccountId);
@@ -245,36 +299,13 @@
                 value: option.val(),
                 text: option.text()
             });
-
-            // Find and store registered role ID
-            if (option.text().includes('@NopCustomerDefaults.RegisteredRoleName')) {
-                registeredRoleId = option.val();
-            }
         });
-
-        // Add event listener for customer selection change
-        $('#@Html.IdFor(model => model.NopCustomerId)').on('change', handleCustomerChange);
 
         // Trigger the user type change handler with a slight delay
         setTimeout(function() {
             handleUserTypeChange(true); // true indicates initial load
         }, 100);
     });
-
-    // Handle customer dropdown change
-    function handleCustomerChange() {
-        var customerId = $('#@Html.IdFor(model => model.NopCustomerId)').val();
-
-        if (!customerId || customerId === '0') {
-            // If no customer is selected, reset the customer role selection
-            var customerRoleSelect = $('#@Html.IdFor(model => model.SelectedCustomerRoleIds)');
-            customerRoleSelect.val(null).trigger('change');
-        } else {
-            // If a customer is selected, ensure the handleUserTypeChange function is called
-            // which will ensure the Registered role is selected
-            handleUserTypeChange(false);
-        }
-    }
 
     // Attach the change event handler for user type
     $('#ErpUserTypeId').on('change', function() {
@@ -285,14 +316,12 @@
     function handleUserTypeChange(isInitialLoad) {
         var selectedUserType = $('#ErpUserTypeId').val();
         var customerRoleSelect = $('#@Html.IdFor(model => model.SelectedCustomerRoleIds)');
-        var customerId = $('#@Html.IdFor(model => model.NopCustomerId)').val();
 
         // If no user type is selected or it's the default "0" value, hide the customer role section
         if (!selectedUserType || selectedUserType === '0') {
             $('#customerRoleSection').attr('hidden', 'hidden');
             return;
         }
-
         // Show the customer roles section by removing the hidden attribute
         $('#customerRoleSection').removeAttr('hidden');
 
@@ -305,9 +334,20 @@
         // Filter roles based on user type without recreating the dropdown
         var filteredRoles = allAvailableRoles.filter(function(role) {
             if (selectedUserType === '@((int)ErpUserType.B2BUser)') {
-                return !role.text.includes('@ERPIntegrationCoreDefaults.B2CCustomerRole');
+                return !(role.text.includes('@ERPIntegrationCoreDefaults.B2CCustomerRole') || 
+                    role.text.includes('@ERPIntegrationCoreDefaults.B2CCustomerRole') ||
+                    role.text.includes('B2C Registration Unsuccessful') ||
+                    role.text.includes('NoShop') ||
+                    (role.text.includes('B2C') && !role.text.includes('B2B-B2C Admin')));
             } else if (selectedUserType === '@((int)ErpUserType.B2CUser)') {
-                return !role.text.includes('@ERPIntegrationCoreDefaults.B2BCustomerRole');
+                return !(role.text.includes('@ERPIntegrationCoreDefaults.B2BCustomerRole') ||
+                    role.text.includes('@ERPIntegrationCoreDefaults.B2BB2CAdminRole') ||
+                    role.text.includes('@ERPIntegrationCoreDefaults.B2BSalesRepRole') ||
+                    role.text.includes('@ERPIntegrationCoreDefaults.QuickOrderUserRole') ||
+                    role.text.includes('@ERPIntegrationCoreDefaults.B2BQuoteAssistantRole') ||
+                    role.text.includes('@ERPIntegrationCoreDefaults.B2BCustomerAccountingPersonnelRole') ||
+                    role.text.includes('Erp Webhook Manager') ||
+                    (role.text.includes('B2B') && !role.text.includes('B2B-B2C Admin')));
             }
             return true;
         });
@@ -317,23 +357,6 @@
         filteredRoles.forEach(function(role) {
             customerRoleSelect.append(new Option(role.text, role.value, false, selectedRoleIds.includes(role.value)));
         });
-
-        // Ensure registered role is selected if we have a customer
-        if (customerId && customerId !== '0' && registeredRoleId) {
-            // Get current selections after filtering
-            var currentSelections = customerRoleSelect.val() || [];
-
-            // Add registered role if not already selected
-            if (!currentSelections.includes(registeredRoleId)) {
-                currentSelections.push(registeredRoleId);
-                customerRoleSelect.val(currentSelections);
-            }
-        }
-
-        // If no roles are selected, select registered role by default
-        if ((!customerRoleSelect.val() || customerRoleSelect.val().length === 0) && registeredRoleId) {
-            customerRoleSelect.val([registeredRoleId]);
-        }
 
         // Only trigger change if this isn't the initial load
         // This prevents the Select2 from re-rendering unnecessarily

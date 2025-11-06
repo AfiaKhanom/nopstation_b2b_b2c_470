@@ -1,4 +1,5 @@
 @using Nop.Web.Areas.Admin.Models.Common;
+@inject B2BB2CFeaturesSettings b2BB2CFeaturesSettings
 @model ErpNopUserSearchModel
 
 @{
@@ -33,8 +34,6 @@
                                     <span id="search-account-by-code"></span>
                                     <button type="button" id="search-account-clear" class="btn bg-gray" style="display: none; margin-top: 5px;">@T("Admin.Common.Clear")</button>
                                     <input asp-for="AccountId" autocomplete="off" style="display: none;" />
-
-
                                     <script>
                                         $(document).ready(function () {
                                             $('#search-account-code').autocomplete({
@@ -89,6 +88,45 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-7">
+                            <div class="form-group row">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="CustomerRoleIds" />
+                                </div>
+                                <div class="col-md-8" style="max-width: 440px">
+                                    <nop-select asp-for="CustomerRoleIds" asp-items="Model.AvailableCustomerRoles" asp-multiple="true" />
+                                    <script>
+                                        $(document).ready(function () {
+                                            var customerRoleIdsInput = $('#@Html.IdFor(model => model.CustomerRoleIds)');
+                                            customerRoleIdsInput.setOptions({
+                                                customerRoleIdsInput: false,
+                                                filter: "contains"
+                                            });
+
+                                            @if (Model.AvailableCustomerRoles.Count == 0)
+                                            {
+                                                <text>
+                                                    customerRoleIdsInput.setOptions({
+                                                        enable: false,
+                                                        placeholder: '@T("Admin.Customers.Customers.Fields.CustomerRoles.NoRoles")'
+                                                    });
+                                                    customerRoleIdsInput._placeholder();
+                                                    customerRoleIdsInput._enable();
+                                                </text>
+                                            }
+                                        });
+                                    </script>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="ErpNopUserTypeId" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-select asp-for="ErpNopUserTypeId" asp-items="Model.AvailableErpUserTypes" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-group row">
@@ -114,22 +152,25 @@
                     Filters = new List<FilterParameter> 
                     {
                         new FilterParameter(nameof(ErpNopUserSearchModel.AccountId),typeof(string)),
-                        new FilterParameter(nameof(ErpNopUserSearchModel.Email))
+                        new FilterParameter(nameof(ErpNopUserSearchModel.Email),typeof(string)),
+                        new FilterParameter(nameof(ErpNopUserSearchModel.CustomerRoleIds),typeof(string)),
+                        new FilterParameter(nameof(ErpNopUserSearchModel.ErpNopUserTypeId),typeof(string)),
                     },
                     ColumnCollection = new List<ColumnProperty>
                     {
-                        new ColumnProperty(nameof(ErpNopUserAccountModel.AccountNumber))
+                        new ColumnProperty(nameof(ErpNopUserAccountModel.ErpSalesOrgInfo))
+                        {
+                            Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.SalesOrg").Text,
+                            Render = new RenderLink(new DataUrl("~/Admin/ErpSalesOrg/ErpSalesOrgEdit/", nameof(ErpNopUserModel.ErpSalesOrgId))),
+                            Width = "150",
+                            Visible = b2BB2CFeaturesSettings.UseMultiSalesOrg,
+                        },
+                        new ColumnProperty(nameof(ErpNopUserAccountModel.AccountInfo))
                         {
                             Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Field.AccountNumber").Text,
                             Width = "150",
                             ClassName = NopColumnClassDefaults.CenterAll,
                             Render = new RenderLink(new DataUrl("~/Admin/ErpAccount/ErpAccountEdit", nameof(ErpNopUserAccountModel.Id)))
-                        },
-                        new ColumnProperty(nameof(ErpNopUserAccountModel.AccountName))
-                        {
-                            Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Field.AccountName").Text,
-                            Width = "150",
-                            ClassName = NopColumnClassDefaults.CenterAll,
                         },
                         new ColumnProperty(nameof(AddressModel.Email))
                         {
@@ -147,6 +188,12 @@
                         new ColumnProperty(nameof(ErpNopUserAccountModel.SelectedCustomerRoles))
                         {
                             Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.Roles").Text,
+                            Width = "150",
+                            ClassName = NopColumnClassDefaults.CenterAll,
+                        },
+                        new ColumnProperty(nameof(ErpNopUserAccountModel.ErpUserType))
+                        {
+                            Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.ErpUserType").Text,
                             Width = "150",
                             ClassName = NopColumnClassDefaults.CenterAll,
                         },

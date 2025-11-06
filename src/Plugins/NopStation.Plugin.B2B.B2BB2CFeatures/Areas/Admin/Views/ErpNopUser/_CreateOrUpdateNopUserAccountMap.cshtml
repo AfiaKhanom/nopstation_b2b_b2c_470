@@ -1,5 +1,6 @@
-﻿@model ErpNopUserAccountMapModel
+@model ErpNopUserAccountMapModel
 @using NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models
+@using NopStation.Plugin.B2B.ERPIntegrationCore
 
 <div asp-validation-summary="All"></div>
 <input asp-for="Id" type="hidden" />
@@ -27,7 +28,6 @@
                                 <input type="text" id="search-account-code" autocomplete="on" placeholder="Search by Erp Account number" class="form-control" />
                                 <div class="input-group-btn"><span class="required">*</span></div>
                             </div>
-
                             <span id="search-account-by-code"></span>
                             <button type="button" id="search-account-clear" class="btn bg-gray" style="display: none; margin-top: 5px;">@T("Admin.Common.Clear")</button>
                             <input asp-for="ErpAccountId" autocomplete="off" style="display: none;" />
@@ -81,6 +81,141 @@
 
                             </script>
                             <span asp-validation-for="ErpAccountId" id="validationMessageErpAccountId"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <div class="col-md-3">
+                            <nop-label asp-for="ErpUserTypeId" />
+                        </div>
+                        <div class="col-md-9">
+                            <div class="input-group-append input-group-required">
+                                <div class="input-group">
+                                    <nop-select asp-for="ErpUserTypeId" asp-items="Model.AvailableErpUserTypes" />
+                                </div>
+                                <div class="input-group-btn">
+                                    <nop-required />
+                                </div>
+                            </div>
+                            <span asp-validation-for="ErpUserTypeId"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row" id="customerRoleSection" hidden>
+                        <div class="col-md-3">
+                            <nop-label asp-for="SelectedCustomerRoleIds" />
+                        </div>
+                        <div class="col-md-9">
+                            <div class="input-group-append input-group-required">
+                                <div class="input-group">
+                                    <nop-select asp-for="SelectedCustomerRoleIds" asp-items="Model.AvailableCustomerRoles" asp-multiple="true" />
+                                </div>
+                                <div class="input-group-btn">
+                                    <nop-required />
+                                </div>
+                            </div>
+                            <script>
+                                $(document).ready(function () {
+                                    var customerRoleIdsInput = $('#@Html.IdFor(model => model.SelectedCustomerRoleIds)');
+                                    customerRoleIdsInput.setOptions({
+                                        customerRoleIdsInput: false,
+                                        filter: "contains"
+                                    });
+
+                                    @if (Model.AvailableCustomerRoles.Count == 0)
+                                    {
+                                        <text>
+                                            customerRoleIdsInput.setOptions({
+                                                enable: false,
+                                                placeholder: '@T("Admin.Customers.Customers.Fields.CustomerRoles.NoRoles")'
+                                            });
+                                            customerRoleIdsInput._placeholder();
+                                            customerRoleIdsInput._enable();
+                                        </text>
+                                    }
+                                });
+                            </script>
+                            <span asp-validation-for="SelectedCustomerRoleIds" id="validationMessageSelectedCustomerRoleIds"></span>
+                            <script>                                
+                                // Store all available roles with their original state
+                                var allAvailableRoles = [];
+
+                                // Initialize the ErpShipToAddressId dropdown with the initial value of AccountId
+                                $(document).ready(function () {                                    
+                                    // Store all available roles from the select element
+                                    var customerRoleSelect = $('#@Html.IdFor(model => model.SelectedCustomerRoleIds)');
+                                    customerRoleSelect.find('option').each(function() {
+                                        var option = $(this);
+                                        allAvailableRoles.push({
+                                            value: option.val(),
+                                            text: option.text()
+                                        });
+                                    });
+
+                                    // Trigger the user type change handler with a slight delay
+                                    setTimeout(function() {
+                                        handleUserTypeChange(true); // true indicates initial load
+                                    }, 100);
+                                });
+
+                                // Attach the change event handler for user type
+                                $('#ErpUserTypeId').on('change', function() {
+                                    handleUserTypeChange(false);
+                                });
+
+                                // Handle ErpUserTypeId change
+                                function handleUserTypeChange(isInitialLoad) {
+                                    var selectedUserType = $('#ErpUserTypeId').val();
+                                    var customerRoleSelect = $('#@Html.IdFor(model => model.SelectedCustomerRoleIds)');
+
+                                    // If no user type is selected or it's the default "0" value, hide the customer role section
+                                    if (!selectedUserType || selectedUserType === '0') {
+                                        $('#customerRoleSection').attr('hidden', 'hidden');
+                                        return;
+                                    }
+                                    // Show the customer roles section by removing the hidden attribute
+                                    $('#customerRoleSection').removeAttr('hidden');
+
+                                    // Ensure Select2 container has 100% width
+                                    $('.select2-container').css('width', '100%');
+
+                                    // Get currently selected role IDs
+                                    var selectedRoleIds = customerRoleSelect.val() || [];
+
+                                    // Filter roles based on user type without recreating the dropdown
+                                    var filteredRoles = allAvailableRoles.filter(function(role) {
+                                        if (selectedUserType === '@((int)ErpUserType.B2BUser)') {
+                                            return !(role.text.includes('@ERPIntegrationCoreDefaults.B2CCustomerRole') ||
+                                                role.text.includes('@ERPIntegrationCoreDefaults.B2CCustomerRole') ||
+                                                role.text.includes('B2C Registration Unsuccessful') ||
+                                                role.text.includes('NoShop') ||
+                                                (role.text.includes('B2C') && !role.text.includes('B2B-B2C Admin')));
+                                        } else if (selectedUserType === '@((int)ErpUserType.B2CUser)') {
+                                            return !(role.text.includes('@ERPIntegrationCoreDefaults.B2BCustomerRole') ||
+                                                role.text.includes('@ERPIntegrationCoreDefaults.B2BB2CAdminRole') ||
+                                                role.text.includes('@ERPIntegrationCoreDefaults.B2BSalesRepRole') ||
+                                                role.text.includes('@ERPIntegrationCoreDefaults.QuickOrderUserRole') ||
+                                                role.text.includes('@ERPIntegrationCoreDefaults.B2BQuoteAssistantRole') || 
+                                                role.text.includes('@ERPIntegrationCoreDefaults.B2BCustomerAccountingPersonnelRole') ||
+                                                role.text.includes('Erp Webhook Manager') ||
+                                                (role.text.includes('B2B') && !role.text.includes('B2B-B2C Admin')));
+                                        }
+                                        return true;
+                                    });
+
+                                    // Clear the dropdown and add filtered options
+                                    customerRoleSelect.empty();
+                                    filteredRoles.forEach(function(role) {
+                                        customerRoleSelect.append(new Option(role.text, role.value, false, selectedRoleIds.includes(role.value)));
+                                    });
+
+                                    // Only trigger change if this isn't the initial load
+                                    // This prevents the Select2 from re-rendering unnecessarily
+                                    if (!isInitialLoad) {
+                                        customerRoleSelect.trigger('change');
+                                    }
+                                }
+                            </script>
                         </div>
                     </div>
                 </div>

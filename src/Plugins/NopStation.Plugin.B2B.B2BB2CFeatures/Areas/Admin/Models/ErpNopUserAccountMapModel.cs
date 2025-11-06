@@ -1,4 +1,6 @@
-﻿using Nop.Web.Framework.Models;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Nop.Web.Framework.Models;
 using Nop.Web.Framework.Mvc.ModelBinding;
 
 namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Models;
@@ -9,7 +11,9 @@ public record ErpNopUserAccountMapModel : BaseNopEntityModel
 
     public ErpNopUserAccountMapModel()
     {
-
+        AvailableCustomerRoles = new List<SelectListItem>();
+        SelectedCustomerRoleIds = new List<int>();
+        AvailableErpUserTypes = new List<SelectListItem>();
     }
 
     #endregion
@@ -24,6 +28,19 @@ public record ErpNopUserAccountMapModel : BaseNopEntityModel
 
     [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUserAccountMap.Field.ErpUserId")]
     public int ErpUserId { get; set; }
+
+    [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.ErpUserTypeId")]
+    public int ErpUserTypeId { get; set; }
+
+    [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUserAccountMap.Field.CustomerRoles")]
+    public string CustomerRolesIds { get; set; }
+
+    [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUserAccountMap.Field.CustomerRoles")]
+    public IList<int> SelectedCustomerRoleIds { get; set; }
+
+    public IList<SelectListItem> AvailableCustomerRoles { get; set; }
+
+    public IList<SelectListItem> AvailableErpUserTypes { get; set; }
 
     #endregion
 }

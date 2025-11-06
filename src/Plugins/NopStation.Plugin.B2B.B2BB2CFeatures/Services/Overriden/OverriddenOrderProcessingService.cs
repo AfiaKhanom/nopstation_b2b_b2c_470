@@ -521,8 +521,8 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
 
         if (b2BOrderPlaceByCustomerType == ErpUserType.B2BUser)
         {
-            deliveryDate = await _genericAttributeService.GetAttributeAsync<DateTime>(currentCustomer, B2BB2CFeaturesDefaults.SelectedB2BDeliveryDateAttribute, currentStore.Id);
-
+            deliveryDate = 
+                await _genericAttributeService.GetAttributeAsync<DateTime>(currentCustomer, B2BB2CFeaturesDefaults.SelectedB2BDeliveryDateAttribute, currentStore.Id);
         }
 
         var isShippingAddressModifiedInCheckout = await _genericAttributeService.GetAttributeAsync<bool>(currentCustomer, B2BB2CFeaturesDefaults.IsShippingAddressModifiedInCheckoutAttribute, currentStore.Id);
@@ -545,7 +545,7 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
 
         if (order.PickupInStore)
         {
-            erpOrderAdditionalData.ErpShipToAddress = null;
+            erpOrderAdditionalData.ErpShipToAddressId = null;
             erpOrderAdditionalData.SpecialInstructions = specialInstructions;
         }
         else
@@ -564,7 +564,9 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
                     )
                     : null;
 
-            erpShipToAddress ??= order.ShippingAddressId.HasValue ? await _erpShipToAddressService.GetErpShipToAddressByShippingAddressIdAsync(order.ShippingAddressId.Value) : null;
+            erpShipToAddress ??= order.ShippingAddressId.HasValue ? 
+                await _erpShipToAddressService.GetErpShipToAddressByShippingAddressIdAsync(order.ShippingAddressId.Value) : 
+                null;
 
             if (erpShipToAddress != null)
             {
@@ -602,7 +604,6 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
         }
 
         await _orderService.UpdateOrderAsync(order);
-
 
         if (erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2BQuote || 
             erpOrderAdditionalData.ErpOrderType == ErpOrderType.B2CQuote || 

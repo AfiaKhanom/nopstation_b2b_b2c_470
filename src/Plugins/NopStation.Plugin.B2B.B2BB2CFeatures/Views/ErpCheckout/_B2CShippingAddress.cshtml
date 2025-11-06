@@ -196,45 +196,54 @@
                 }
 
                 <div id="shippingTabCollect" class="tab-content collect" style="display: none;">
-                        <div class="checkout-title">
-                            <h1 id="collect-header-text"></h1>
-                        </div>
-                        @if (Model.DisplayPickupInStore && Model.PickupPointsModel.AllowPickupInStore)
-                        {
-                            @await Html.PartialAsync("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/Checkout/_PickupPoints.cshtml", Model.PickupPointsModel)
-                            <a class="trigger-ship-to-address-selector-button button-1">@T("Plugins.Payments.B2BCustomerAccount.B2CShipToAddressSelector")</a>
+                    <div class="checkout-title">
+                        <h1 id="collect-header-text"></h1>
+                    </div>
+                    @if (Model.DisplayPickupInStore && Model.PickupPointsModel.AllowPickupInStore)
+                    {
+                        @await Html.PartialAsync("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/Checkout/_PickupPoints.cshtml", Model.PickupPointsModel)
+                        <a class="trigger-ship-to-address-selector-button button-1">@T("Plugins.Payments.B2BCustomerAccount.B2CShipToAddressSelector")</a>
 
+                        <div class="section select-delivery-date">
+                            <div class="title delivery-date-title">
+                                <strong>@T("NopStation.Plugin.B2B.B2BB2CFeatures.Checkout.CollectionPoint")</strong>
+                            </div>
+                            <p class="collection-message">@T("NopStation.Plugin.B2B.B2BB2CFeatures.Checkout.CollectionMessage")</p>
+                        </div>
+                        
                         <script asp-location="Footer">
                             $(document).ready(function () {
                                 $('#pickup-points-form').hide();
                                 $('.pickup-in-store .selector').hide();
                                 $('.pickup-in-store .description').hide();
 
-                                    $('#deliver').on('click', function () {
-                                        if ($(this).hasClass('ui-state-active')) {
-                                            $('#shipping-addresses-form').show();
-                                            $('#shippingaddress-new-form').show();
-                                            $('#select-delivery-date').show();
-                                            $('#pickup-points-form').hide();
-                                            $('#collect').prop('checked', false);
-                                            $('#collect-header-text').text('');
-                                        }
-                                    });
-
-                                    $('#collect').on('click', function () {
-                                        if ($(this).hasClass('ui-state-active')) {
-                                            $('#shipping-addresses-form').hide();
-                                            $('#shippingaddress-new-form').hide();
-                                            $('#select-delivery-date').hide();
-                                            $('#pickup-points-form').show();
-                                            $('#deliver').prop('checked', false);
-                                            $('#collect-header-text').text('@T("Checkout.ShippingAddress.SelectCollectionPoint")');
-                                        }
-                                    });
+                                $('#deliver').on('click', function () {
+                                    if ($(this).hasClass('ui-state-active')) {
+                                        $('#shipping-addresses-form').show();
+                                        $('#shippingaddress-new-form').show();
+                                        $('#select-delivery-date').show();
+                                        $('#pickup-points-form').hide();
+                                        $('#collect').prop('checked', false);
+                                        $('#collect-header-text').text('');
+                                        $('#PickupInStore').prop('checked', false);
+                                    }
                                 });
-                            </script>
-                        }
-                    </div>                
+
+                                $('#collect').on('click', function () {
+                                    if ($(this).hasClass('ui-state-active')) {
+                                        $('#shipping-addresses-form').hide();
+                                        $('#shippingaddress-new-form').hide();
+                                        $('#select-delivery-date').hide();
+                                        $('#pickup-points-form').show();
+                                        $('#deliver').prop('checked', false);
+                                        $('#collect-header-text').text('@T("Checkout.ShippingAddress.SelectCollectionPoint")');
+                                        $('#PickupInStore').prop('checked', true);
+                                    }
+                                });
+                            });
+                        </script>
+                    }
+                </div>
 
                 <!---Customer reference added for Quote Order -->
                 @if (Model.IsQuoteOrder)

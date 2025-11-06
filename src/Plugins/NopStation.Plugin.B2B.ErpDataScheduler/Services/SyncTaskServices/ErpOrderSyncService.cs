@@ -704,7 +704,6 @@ public class ErpOrderSyncService : IErpOrderSyncService
                 oldErpOrder.DeliveryDate = erpOrder.DeliveryDate;
                 oldErpOrder.IntegrationStatusType = IntegrationStatusType.Confirmed;
                 oldErpOrder.IntegrationError = string.Empty;
-                oldErpOrder.ErpOrderItemAdditionalDatas = new List<ErpOrderItemAdditionalData>();
                 oldErpOrder.QuoteSalesOrderId = 0;
                 oldErpOrder.IntegrationRetries = 0;
                 oldErpOrder.IntegrationErrorDateTimeUtc = null;

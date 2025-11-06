@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -26,20 +27,19 @@ using Nop.Services.Orders;
 using Nop.Services.Stores;
 using Nop.Services.Tax;
 using Nop.Web.Areas.Admin.Factories;
+using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
 using Nop.Web.Areas.Admin.Models.Customers;
 using Nop.Web.Framework.Factories;
-using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
 
 namespace NopStation.Plugin.B2B.B2BB2CFeatures.Areas.Admin.Factories;
 
-public partial class OverridenCustomerModelFactory : CustomerModelFactory
+public partial class OverridenCustomerModelFactory : CustomerModelFactory, IOverridenCustomerModelFactory
 {
     #region Fields
 
     private readonly IErpAccountService _erpAccountService;
-    private readonly IErpCustomerFunctionalityService _erpCustomerFunctionalityService;
     private readonly IErpNopUserService _erpNopUserService;
 
     #endregion
@@ -87,8 +87,7 @@ public partial class OverridenCustomerModelFactory : CustomerModelFactory
         IErpNopUserService erpNopUserService,
         IErpAccountService erpAccountService,
         IAddressService addressService,
-        IWorkContext workContext,
-        IErpCustomerFunctionalityService erpCustomerFunctionalityService) : base(
+        IWorkContext workContext) : base(
             addressSettings,
             customerSettings,
             dateTimeSettings,
@@ -132,7 +131,6 @@ public partial class OverridenCustomerModelFactory : CustomerModelFactory
     {
         _erpNopUserService = erpNopUserService;
         _erpAccountService = erpAccountService;
-        _erpCustomerFunctionalityService = erpCustomerFunctionalityService;
     }
 
     #endregion
@@ -294,7 +292,7 @@ public partial class OverridenCustomerModelFactory : CustomerModelFactory
         //prepare model stores for newsletter subscriptions
         model.AvailableNewsletterSubscriptionStores = (await _storeService.GetAllStoresAsync()).Select(store => new SelectListItem
         {
-            Value = store.Id.ToString(),
+            Value = $"{store.Id}",
             Text = store.Name,
             Selected = model.SelectedNewsletterSubscriptionStoreIds.Contains(store.Id)
         }).ToList();
@@ -314,6 +312,31 @@ public partial class OverridenCustomerModelFactory : CustomerModelFactory
         }
 
         return model;
+    }
+
+    public async IAsyncEnumerable<CustomerModel> PrepareCustomerModelsAsync(IPagedList<Customer> customers)
+    {
+        foreach (var customer in customers)
+        {
+            var customerModel = customer.ToModel<CustomerModel>();
+
+            customerModel.Email = await _customerService.IsRegisteredAsync(customer)
+                ? customer.Email
+                : await _localizationService.GetResourceAsync("Admin.Customers.Guest");
+
+            customerModel.FullName = await _customerService.GetCustomerFullNameAsync(customer);
+            customerModel.Company = await _genericAttributeService.GetAttributeAsync<string>(customer, B2BB2CFeaturesDefaults.CompanyAttribute);
+            customerModel.Phone = await _genericAttributeService.GetAttributeAsync<string>(customer, B2BB2CFeaturesDefaults.PhoneAttribute);
+            customerModel.ZipPostalCode = await _genericAttributeService.GetAttributeAsync<string>(customer, B2BB2CFeaturesDefaults.ZipPostalCodeAttribute);
+
+            customerModel.CreatedOn = await _dateTimeHelper.ConvertToUserTimeAsync(customer.CreatedOnUtc, DateTimeKind.Utc);
+            customerModel.LastActivityDate = await _dateTimeHelper.ConvertToUserTimeAsync(customer.LastActivityDateUtc, DateTimeKind.Utc);
+
+            var roles = await _customerService.GetCustomerRolesAsync(customer);
+            customerModel.CustomerRoleNames = string.Join(", ", roles.Select(role => role.Name));
+
+            yield return customerModel;
+        }
     }
 
     #endregion
