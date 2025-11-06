@@ -408,7 +408,7 @@ public class OverridenShoppingCartController : ShoppingCartController
         if (b2bb2cContext == null || b2bb2cContext.ErpNopUser == null)
         {
             _notificationService.WarningNotification("Erp Accounts Need for Checkout");
-            return RedirectToAction(nameof(Cart));
+            return RedirectToRoute("ShoppingCart");
         }
 
         var currCustomer = await _workContext.GetCurrentCustomerAsync();

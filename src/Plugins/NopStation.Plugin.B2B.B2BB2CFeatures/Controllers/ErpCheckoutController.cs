@@ -71,7 +71,7 @@ public class ErpCheckoutController : CheckoutController
     private readonly IErpAccountCreditSyncFunctionality _erpAccountCreditSyncFunctionality;
     private static readonly string[] _separator = ["___"];
 
-    #endregion
+    #endregion Fields
 
     #region Ctor
 
@@ -165,7 +165,7 @@ public class ErpCheckoutController : CheckoutController
         _erpAccountCreditSyncFunctionality = erpAccountCreditSyncFunctionality;
     }
 
-    #endregion
+    #endregion Ctor
 
     #region Utilities
 
@@ -177,7 +177,6 @@ public class ErpCheckoutController : CheckoutController
 
         if (b2BAccount != null && b2BUser != null)
             await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.B2BQouteOrderAttribute, false, store.Id);
-
         else if (b2BAccount != null && b2CUser != null)
             await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.B2CQouteOrderAttribute, false, store.Id);
     }
@@ -191,7 +190,6 @@ public class ErpCheckoutController : CheckoutController
 
         if (b2BAccount != null && b2BUser != null)
             isQuoteOrder = await _genericAttributeService.GetAttributeAsync<bool>(currCustomer, B2BB2CFeaturesDefaults.B2BQouteOrderAttribute, currStore.Id);
-
         else if (b2BAccount != null && b2CUser != null)
             isQuoteOrder = await _genericAttributeService.GetAttributeAsync<bool>(currCustomer, B2BB2CFeaturesDefaults.B2CQouteOrderAttribute, currStore.Id);
 
@@ -220,16 +218,16 @@ public class ErpCheckoutController : CheckoutController
 
     private async Task<bool> IsUserValid(ErpAccount erpAccount)
     {
-        if (erpAccount == null || 
-            !await IsUserPermittedToPlaceOrderOrQuote() || 
-            await _erpCustomerFunctionalityService.IsSalesOrderInvalidForCurrentCustomerAsync() || 
+        if (erpAccount == null ||
+            !await IsUserPermittedToPlaceOrderOrQuote() ||
+            await _erpCustomerFunctionalityService.IsSalesOrderInvalidForCurrentCustomerAsync() ||
             _orderSettings.CheckoutDisabled)
             return false;
 
         return true;
     }
 
-    #endregion
+    #endregion Utilities
 
     #region Methods (Common)
 
@@ -267,11 +265,11 @@ public class ErpCheckoutController : CheckoutController
         var downloadableProductsRequireRegistration =
             _customerSettings.RequireRegistrationForDownloadableProducts && await _productService.HasAnyDownloadableProductAsync(cartProductIds);
 
-        if (await _customerService.IsGuestAsync(customer) && 
+        if (await _customerService.IsGuestAsync(customer) &&
             (!_orderSettings.AnonymousCheckoutAllowed || downloadableProductsRequireRegistration))
             return Challenge();
 
-        var paymentMethods = await 
+        var paymentMethods = await
             (await _paymentPluginManager.LoadActivePluginsAsync(customer, store.Id))
             .WhereAwait(async pm => !await pm.HidePaymentMethodAsync(cart))
             .ToListAsync();
@@ -362,7 +360,7 @@ public class ErpCheckoutController : CheckoutController
             }
         }
 
-        #endregion
+        #endregion B2B
 
         if (order == null || order.Deleted || customer.Id != order.CustomerId)
             return Challenge();
@@ -376,7 +374,7 @@ public class ErpCheckoutController : CheckoutController
         return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/Checkout/Completed.cshtml", model);
     }
 
-    #endregion
+    #endregion Methods (Common)
 
     #region Methods (Multistep Checkout)
 
@@ -517,7 +515,7 @@ public class ErpCheckoutController : CheckoutController
             return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/ErpCheckout/BillingAddress.cshtml", b2BBillingAddressModel);
         }
 
-        #endregion
+        #endregion B2B
 
         var model = await _checkoutModelFactory.PrepareBillingAddressModelAsync(cart, prePopulateNewAddressWithCustomerFields: true);
 
@@ -554,7 +552,18 @@ public class ErpCheckoutController : CheckoutController
 
         var store = await _storeContext.GetCurrentStoreAsync();
         var cart = await _shoppingCartService.GetShoppingCartAsync(customer, ShoppingCartType.ShoppingCart, store.Id);
-
+        if (await IsQuoteOrderAsync())
+        {
+            var erpUser = await _erpNopUserService.GetErpNopUserByCustomerIdAsync(customer.Id);
+            var erpshipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdAsync(erpUser.ShippingErpShipToAddressId);
+            var shiptoAddress = await _addressService.GetAddressByIdAsync(erpshipToAddress.AddressId);
+            customer.ShippingAddressId = erpshipToAddress.AddressId;
+            await _customerService.UpdateCustomerAsync(customer);
+            await _customerService.InsertCustomerAddressAsync(customer, shiptoAddress);
+            await _genericAttributeService.SaveAttributeAsync<ShippingOption>(customer, NopCustomerDefaults.SelectedShippingOptionAttribute, null, store.Id);
+            await _genericAttributeService.SaveAttributeAsync<PickupPoint>(customer, NopCustomerDefaults.SelectedPickupPointAttribute, null, store.Id);
+            return RedirectToRoute("CheckoutConfirm");
+        }
         //ship to the same address?
         //by default Shipping is available if the country is not specified
         var shippingAllowed = !_addressSettings.CountryEnabled || ((await _countryService.GetCountryByAddressAsync(address))?.AllowsShipping ?? false);
@@ -565,7 +574,7 @@ public class ErpCheckoutController : CheckoutController
             //reset selected shipping method (in case if "pick up in store" was selected)
             await _genericAttributeService.SaveAttributeAsync<ShippingOption>(customer, NopCustomerDefaults.SelectedShippingOptionAttribute, null, store.Id);
             await _genericAttributeService.SaveAttributeAsync<PickupPoint>(customer, NopCustomerDefaults.SelectedPickupPointAttribute, null, store.Id);
-            //limitation - "Ship to the same address" doesn't properly work in "pick up in store only" case (when no shipping plugins are available) 
+            //limitation - "Ship to the same address" doesn't properly work in "pick up in store only" case (when no shipping plugins are available)
             return RedirectToRoute("CheckoutShippingMethod");
         }
 
@@ -622,7 +631,18 @@ public class ErpCheckoutController : CheckoutController
             customer.BillingAddressId = billingAddress?.Id;
             await _customerService.UpdateCustomerAsync(customer);
             await _customerService.InsertCustomerAddressAsync(customer, billingAddress);
-
+            if (await IsQuoteOrderAsync())
+            {
+                var erpUser = await _erpNopUserService.GetErpNopUserByCustomerIdAsync(customer.Id);
+                var erpshipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdAsync(erpUser.ShippingErpShipToAddressId);
+                var shiptoAddress = await _addressService.GetAddressByIdAsync(erpshipToAddress.AddressId);
+                customer.ShippingAddressId = erpshipToAddress.AddressId;
+                await _customerService.UpdateCustomerAsync(customer);
+                await _customerService.InsertCustomerAddressAsync(customer, shiptoAddress);
+                await _genericAttributeService.SaveAttributeAsync<ShippingOption>(customer, NopCustomerDefaults.SelectedShippingOptionAttribute, null, store.Id);
+                await _genericAttributeService.SaveAttributeAsync<PickupPoint>(customer, NopCustomerDefaults.SelectedPickupPointAttribute, null, store.Id);
+                return RedirectToRoute("CheckoutConfirm");
+            }
             //ship to the same address?
             if (_shippingSettings.ShipToSameAddress && model.ShipToSameAddress && await _shoppingCartService.ShoppingCartRequiresShippingAsync(cart))
             {
@@ -634,7 +654,7 @@ public class ErpCheckoutController : CheckoutController
                 await _genericAttributeService.SaveAttributeAsync<ShippingOption>(customer, NopCustomerDefaults.SelectedShippingOptionAttribute, null, store.Id);
                 await _genericAttributeService.SaveAttributeAsync<PickupPoint>(customer, NopCustomerDefaults.SelectedPickupPointAttribute, null, store.Id);
 
-                //limitation - "Ship to the same address" doesn't properly work in "pick up in store only" case (when no shipping plugins are available) 
+                //limitation - "Ship to the same address" doesn't properly work in "pick up in store only" case (when no shipping plugins are available)
                 return RedirectToRoute("CheckoutShippingMethod");
             }
 
@@ -674,7 +694,7 @@ public class ErpCheckoutController : CheckoutController
         if (!await _shoppingCartService.ShoppingCartRequiresShippingAsync(cart))
             return RedirectToRoute("CheckoutShippingMethod");
 
-        #endregion
+        #endregion Check settings
 
         await _erpAccountCreditSyncFunctionality.LiveErpAccountCreditCheckAsync(b2BAccount, customer);
 
@@ -686,7 +706,7 @@ public class ErpCheckoutController : CheckoutController
             return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/ErpCheckout/ShippingAddress.cshtml", b2BShipToAddressModel);
         }
 
-        #endregion
+        #endregion B2B User
 
         #region B2C User
 
@@ -704,7 +724,7 @@ public class ErpCheckoutController : CheckoutController
             return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/ErpCheckout/ShippingAddress.cshtml", b2CShipToAddressModel);
         }
 
-        #endregion
+        #endregion B2C User
 
         //model
         var model = await _checkoutModelFactory.PrepareShippingAddressModelAsync(cart, prePopulateNewAddressWithCustomerFields: true);
@@ -881,7 +901,7 @@ public class ErpCheckoutController : CheckoutController
         else if (ModelState.IsValid && erpUser.ErpUserType == ErpUserType.B2CUser && shipToAddress != null && model.ErpShipToAddressId > 0)
         {
             if (shipToAddress.AddressId == 0)
-                throw new Exception("Ship to Address can't be loaded");            
+                throw new Exception("Ship to Address can't be loaded");
 
             //special Instruction set at generic attribute
             if (!string.IsNullOrEmpty(model.SpecialInstructions?.Trim()))
@@ -915,7 +935,7 @@ public class ErpCheckoutController : CheckoutController
 
         // If we got this far, something failed, redisplay form
         var erpShipToAddressModel = await _erpCheckoutModelFactory.PrepareCheckoutB2BShippingAddressModelAsync(cart, b2BUser, b2BAccount);
-        
+
         if (erpUser.ErpUserType == ErpUserType.B2CUser)
         {
             erpShipToAddressModel = await _erpCheckoutModelFactory.PrepareCheckoutB2CShippingAddressModelAsync(cart, b2CUser, b2BAccount);
@@ -1022,7 +1042,7 @@ public class ErpCheckoutController : CheckoutController
             await _genericAttributeService.SaveAttributeAsync<PickupPoint>(customer, NopCustomerDefaults.SelectedPickupPointAttribute, null, store.Id);
         }
 
-        //parse selected method 
+        //parse selected method
         if (string.IsNullOrEmpty(shippingoption))
             return await ShippingMethod();
         var splittedOption = shippingoption.Split(new[] { "___" }, StringSplitOptions.RemoveEmptyEntries);
@@ -1081,7 +1101,7 @@ public class ErpCheckoutController : CheckoutController
         if (await _customerService.IsGuestAsync(customer) && !_orderSettings.AnonymousCheckoutAllowed)
             return Challenge();
 
-        #endregion
+        #endregion Check settings
 
         await _erpAccountCreditSyncFunctionality.LiveErpAccountCreditCheckAsync(b2BAccount, customer);
 
@@ -1145,7 +1165,7 @@ public class ErpCheckoutController : CheckoutController
                 return RedirectToRoute("CheckoutPaymentMethod");
             }
 
-            #endregion
+            #endregion Quote place
         }
         catch (Exception ex)
         {
@@ -1232,7 +1252,7 @@ public class ErpCheckoutController : CheckoutController
             await _genericAttributeService.SaveAttributeAsync<string>(customer, NopCustomerDefaults.SelectedPaymentMethodAttribute, null, store.Id);
             return RedirectToRoute("CheckoutPaymentInfo");
         }
-        //payment method 
+        //payment method
         if (string.IsNullOrEmpty(paymentmethod))
             return await PaymentMethod();
 
@@ -1325,7 +1345,7 @@ public class ErpCheckoutController : CheckoutController
         if (await _customerService.IsGuestAsync(customer) && !_orderSettings.AnonymousCheckoutAllowed)
             return Challenge();
 
-        #endregion
+        #endregion Check settings
 
         //Check whether payment workflow is required
         var isPaymentWorkflowRequired = await _orderProcessingService.IsPaymentWorkflowRequiredAsync(cart);
@@ -1428,7 +1448,7 @@ public class ErpCheckoutController : CheckoutController
                         if (b2BAccount != null)
                         {
                             if (b2BUser != null && b2BUser.Id > 0)
-                            {                               
+                            {
                                 await _overriddenOrderProcessingService.PlaceErpOrderAtNopAsync(placeOrderResult.PlacedOrder, ErpOrderType.B2BSalesOrder);
                             }
                             else if (b2CUser != null && b2CUser.Id > 0)
@@ -1513,7 +1533,6 @@ public class ErpCheckoutController : CheckoutController
     [HttpPost, ActionName("Confirm")]
     public override async Task<IActionResult> ConfirmOrder(bool captchaValid)
     {
-
         var (b2BAccount, b2BUser, b2CUser) = await GetB2BAccountAndUserOfCurrentCustomerAsync();
 
         if (!await IsUserValid(b2BAccount))
@@ -1897,7 +1916,7 @@ public class ErpCheckoutController : CheckoutController
         return View("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/ErpCheckout/ShippingAddress.cshtml", b2CShipToAddressModel);
     }
 
-    #endregion
+    #endregion Methods (Multistep Checkout)
 
     #region Methods (One page checkout)
 
@@ -1937,7 +1956,7 @@ public class ErpCheckoutController : CheckoutController
         await _erpAccountCreditSyncFunctionality.LiveErpAccountCreditCheckAsync(b2BAccount, customer);
 
         if (paymentMethod.SkipPaymentInfo ||
-            (paymentMethod.PaymentMethodType == PaymentMethodType.Redirection && 
+            (paymentMethod.PaymentMethodType == PaymentMethodType.Redirection &&
             _paymentSettings.SkipPaymentInfoStepForRedirectionPaymentMethods))
         {
             var paymentInfo = new ProcessPaymentRequest();
@@ -1988,8 +2007,8 @@ public class ErpCheckoutController : CheckoutController
 
             var paymentMethodModel = await _checkoutModelFactory.PreparePaymentMethodModelAsync(cart, filterByCountryId);
 
-            if (_paymentSettings.BypassPaymentMethodSelectionIfOnlyOne && 
-                paymentMethodModel.PaymentMethods.Count == 1 && 
+            if (_paymentSettings.BypassPaymentMethodSelectionIfOnlyOne &&
+                paymentMethodModel.PaymentMethods.Count == 1 &&
                 !paymentMethodModel.DisplayRewardPoints)
             {
                 var selectedPaymentMethodSystemName = paymentMethodModel.PaymentMethods[0].PaymentMethodSystemName;
@@ -2139,7 +2158,32 @@ public class ErpCheckoutController : CheckoutController
 
                     await _addressService.UpdateAddressAsync(customerBillingAddress);
                 }
+                if (await IsQuoteOrderAsync())
+                {
+                    var address = await _addressService.GetAddressByIdAsync(customer.BillingAddressId ?? 0);
+                    var country = await _countryService.GetCountryByAddressAsync(address);
 
+                    var erpUser = b2BUser == null ? b2CUser : b2BUser;
+                    var erpshipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdAsync(erpUser.ShippingErpShipToAddressId);
+                    var shiptoAddress = await _addressService.GetAddressByIdAsync(erpshipToAddress.AddressId);
+                    customer.ShippingAddressId = erpshipToAddress.AddressId;
+
+                    await _customerService.UpdateCustomerAsync(customer);
+                    await _customerService.InsertCustomerAddressAsync(customer, address);
+                    await _customerService.InsertCustomerAddressAsync(customer, shiptoAddress);
+                    await _genericAttributeService.SaveAttributeAsync<ShippingOption>(customer, NopCustomerDefaults.SelectedShippingOptionAttribute, null, store.Id);
+                    await _genericAttributeService.SaveAttributeAsync<PickupPoint>(customer, NopCustomerDefaults.SelectedPickupPointAttribute, null, store.Id);
+                    var confirmOrderModel = await _checkoutModelFactory.PrepareConfirmOrderModelAsync(cart);
+                    return Json(new
+                    {
+                        update_section = new UpdateSectionJsonModel
+                        {
+                            name = "confirm-order",
+                            html = await RenderPartialViewToStringAsync("~/Views/Checkout/OpcConfirmOrder.cshtml", confirmOrderModel)
+                        },
+                        goto_section = "confirm_order"
+                    });
+                }
                 if (await _shoppingCartService.ShoppingCartRequiresShippingAsync(cart))
                 {
                     var address = await _addressService.GetAddressByIdAsync(customer.BillingAddressId ?? 0);
@@ -2275,7 +2319,7 @@ public class ErpCheckoutController : CheckoutController
                         }
                     }
 
-                    #endregion
+                    #endregion Erp Order Additional Data
 
                     return await OpcLoadStepAfterShippingMethod(cart);
                 }
@@ -2484,8 +2528,7 @@ public class ErpCheckoutController : CheckoutController
                     await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.B2CSpecialInstructions, specialInstruction, store.Id);
                 }
 
-                #endregion
-
+                #endregion Erp Order Additional Data
 
                 return await OpcLoadStepAfterShippingAddress(cart);
             }
@@ -2742,7 +2785,7 @@ public class ErpCheckoutController : CheckoutController
                 await _genericAttributeService.SaveAttributeAsync<PickupPoint>(customer, NopCustomerDefaults.SelectedPickupPointAttribute, null, store.Id);
             }
 
-            //parse selected method 
+            //parse selected method
             if (string.IsNullOrEmpty(shippingoption))
                 throw new Exception("Selected shipping method can't be parsed");
             var splittedOption = shippingoption.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
@@ -2807,7 +2850,7 @@ public class ErpCheckoutController : CheckoutController
             if (await _customerService.IsGuestAsync(customer) && !_orderSettings.AnonymousCheckoutAllowed)
                 throw new Exception("Anonymous checkout is not allowed");
 
-            //payment method 
+            //payment method
             if (string.IsNullOrEmpty(paymentmethod))
                 throw new Exception("Selected payment method can't be parsed");
 
@@ -2991,7 +3034,7 @@ public class ErpCheckoutController : CheckoutController
         }
     }
 
-    #endregion
+    #endregion Methods (One page checkout)
 
     #region B2B Checkout Data
 
@@ -3050,7 +3093,6 @@ public class ErpCheckoutController : CheckoutController
         {
             Data = model
         });
-
     }
 
     [HttpPost]
@@ -3125,5 +3167,5 @@ public class ErpCheckoutController : CheckoutController
         return Json(await RenderViewComponentToStringAsync(typeof(OrderTotalsViewComponent), new { isEditable = false }));
     }
 
-    #endregion
+    #endregion B2B Checkout Data
 }

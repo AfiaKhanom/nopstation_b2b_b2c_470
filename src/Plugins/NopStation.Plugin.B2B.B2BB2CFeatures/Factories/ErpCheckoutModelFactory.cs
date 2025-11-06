@@ -435,13 +435,20 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
     public async Task<CheckoutErpBillingAddressModel> PrepareCheckoutErpBillingAddressModelAsync(IList<ShoppingCartItem> cart, ErpAccount b2BAccount)
     {
         var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
+        var store=await _storeContext.GetCurrentStoreAsync();
+        var isQuoteOrder = await _genericAttributeService.GetAttributeAsync<bool>(currentCustomer, B2BB2CFeaturesDefaults.B2CQouteOrderAttribute, store.Id);
         var model = new CheckoutErpBillingAddressModel
         {
             ShipToSameAddressAllowed = _shippingSettings.ShipToSameAddress && await _shoppingCartService.ShoppingCartRequiresShippingAsync(cart),
             //allow customers to enter (choose) a shipping address if "Disable Billing address step" setting is enabled
             ShipToSameAddress = !_orderSettings.DisableBillingAddressCheckoutStep
         };
-
+        if(isQuoteOrder)
+        {
+            model.ShipToSameAddress=true;
+            model.ShipToSameAddressAllowed=true;
+            model.IsQuoteOrder=true;
+        }
         model.ErpBillingAddress = model.ErpBillingAddress ?? new ErpBillingAddressModel();
         if (b2BAccount != null)
         {
@@ -786,13 +793,15 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
             throw new ArgumentNullException(nameof(cart));
 
         var b2BAccount = await _erpAccountService.GetErpAccountByIdAsync(b2BUser.ErpAccountId);
+        var currentCustomer=await _workContext.GetCurrentCustomerAsync();
+        var isQuoteOrder = await _genericAttributeService.GetAttributeAsync<bool>(currentCustomer, B2BB2CFeaturesDefaults.B2BQouteOrderAttribute, (await _storeContext.GetCurrentStoreAsync()).Id);
         var model = new ErpOnePageCheckoutModel
         {
             ShippingRequired = true,
             DisableBillingAddressCheckoutStep = _orderSettings.DisableBillingAddressCheckoutStep && b2BAccount?.BillingAddressId != null,
             CheckoutErpBillingAddress = await PrepareCheckoutErpBillingAddressModelAsync(cart, b2BAccount),
             CheckoutErpShipToAddress = await PrepareCheckoutB2BShippingAddressModelAsync(cart, b2BUser, b2BAccount),
-            IsQuoteOrder = await _genericAttributeService.GetAttributeAsync<bool>(await _b2BB2CWorkContext.GetWorkingCurrencyAsync(), B2BB2CFeaturesDefaults.B2BQouteOrderAttribute, (await _storeContext.GetCurrentStoreAsync()).Id),
+            IsQuoteOrder = isQuoteOrder,
             DisplayCaptcha = await _customerService.IsGuestAsync(await _customerService.GetShoppingCartCustomerAsync(cart))
                 && _captchaSettings.Enabled && _captchaSettings.ShowOnCheckoutPageForGuests,
             IsReCaptchaV3 = _captchaSettings.CaptchaType == CaptchaType.ReCaptchaV3,
