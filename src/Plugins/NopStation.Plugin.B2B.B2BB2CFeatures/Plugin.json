@@ -2,7 +2,7 @@
   "Group": "Nop-Station",
   "FriendlyName": "NopStation B2BB2CFeatures",
   "SystemName": "NopStation.Plugin.B2B.B2BB2CFeatures",
-  "Version": "4.70.2.57",
+  "Version": "4.70.2.61",
   "SupportedVersions": [ "4.70" ],
   "Author": "nopstation team",
   "DisplayOrder": 1,

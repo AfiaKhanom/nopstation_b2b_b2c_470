@@ -273,11 +273,14 @@
                         <input type="file" id="importexcelfile" name="importexcelfile" class="form-control" />
                     </div>
                 </div>
-                <div class="row form-horizontal" style="display: flex;flex-direction: row-reverse;padding:10px;">
+                <div class="row form-horizontal" style="display: flex; flex-direction: row-reverse; padding: 10px; gap: 5px;">
 
                     <button type="submit" class="btn btn-primary float-right" onclick="displayAjaxLoading(true)">
                         @T("Admin.Common.ImportFromExcel")
                     </button>
+                    <a asp-controller="QuickOrder" asp-action="DownloadDemoSheet" class="btn btn-primary float-left">
+                        Download Sample
+                    </a>
 
                 </div>
 

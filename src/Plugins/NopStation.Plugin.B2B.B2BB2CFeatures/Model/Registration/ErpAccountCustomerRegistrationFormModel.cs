@@ -1,5 +1,4 @@
 ﻿using Nop.Web.Framework.Mvc.ModelBinding;
-using Nop.Web.Models.Common;
 
 namespace NopStation.Plugin.B2B.B2BB2CFeatures.Model.Registration
 {
@@ -59,7 +58,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Model.Registration
         [NopResourceDisplayName("B2BB2CFeatures.ErpAccountCustomerRegistrationForm.Fields.TypeOfBusiness")]
         public string TypeOfBusiness { get; set; }
 
-        [NopResourceDisplayName("B2BB2CFeatures.ErpAccountCustomerRegistrationForm.Fields.EstimatePurchasesPerMonthZAR")]
+        [NopResourceDisplayName("B2BB2CFeatures.ErpAccountCustomerRegistrationForm.Fields.EstimatePurchasesPerMonthUSDollar")]
         public decimal EstimatePurchasesPerMonthZAR { get; set; }
 
         [NopResourceDisplayName("B2BB2CFeatures.ErpAccountCustomerRegistrationForm.Fields.CreditLimitRequired")]

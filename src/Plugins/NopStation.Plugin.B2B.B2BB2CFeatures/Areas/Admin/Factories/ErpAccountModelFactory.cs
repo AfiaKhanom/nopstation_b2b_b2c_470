@@ -274,6 +274,8 @@ public class ErpAccountModelFactory : IErpAccountModelFactory
             model.IsActive = true;
 
             await _addressModelFactory.PrepareAddressModelAsync(model.BillingAddress, null);
+            SetAddressFieldsAsRequired(model.BillingAddress);
+
             return model;
         }
         else
