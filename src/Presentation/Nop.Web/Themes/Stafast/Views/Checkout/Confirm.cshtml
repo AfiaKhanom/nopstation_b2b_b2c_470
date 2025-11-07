@@ -16,6 +16,10 @@
     <div class="page-body checkout-data">
         @await Component.InvokeAsync(typeof(CheckoutProgressViewComponent), new { step = CheckoutProgressStep.Confirm })
         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutConfirmTop, additionalData = Model })
+        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutConfirmBottom, additionalData = Model })
+        <div class="section order-summary">
+            @await Component.InvokeAsync(typeof(OrderSummaryViewComponent), new { prepareAndDisplayOrderReviewData = true })
+        </div>
         <div class="section confirm-order">
             <form asp-route="CheckoutConfirm" method="post" id="confirm-order-form">
                 <script asp-location="Footer">
@@ -64,7 +68,7 @@
                                         $('#read-terms').on('click',
                                             function(e) {
                                                 e.preventDefault();
-                                                displayPopupContentFromUrl('@Url.RouteUrl("TopicPopup", new {SystemName = "conditionsofuse"})', '@T("Checkout.TermsOfService")');
+                                                displayPopupContentFromUrl('@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofuse" })', '@T("Checkout.TermsOfService")');
                                             });
                                     });
                                 </script>
@@ -105,10 +109,6 @@
                     </div>
                 }
             </form>
-        </div>
-        @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutConfirmBottom, additionalData = Model })
-        <div class="section order-summary">
-            @await Component.InvokeAsync(typeof(OrderSummaryViewComponent), new { prepareAndDisplayOrderReviewData = true })
         </div>
     </div>
 </div>

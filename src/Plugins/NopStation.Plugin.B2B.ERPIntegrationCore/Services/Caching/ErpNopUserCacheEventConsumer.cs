@@ -25,5 +25,6 @@ public class ErpNopUserCacheEventConsumer : CacheEventConsumer<ErpNopUser>
         await RemoveAsync(ERPIntegrationCoreDefaults.ErpNopUserByCustomerAndErpAccountCacheKey, entity.NopCustomerId, entity.ErpAccountId);
         await RemoveAsync(ERPIntegrationCoreDefaults.ErpNopUserByCustomerCacheKey, entity.NopCustomerId);
         await RemoveAsync(ERPIntegrationCoreDefaults.ErpNopUserByCustomerAndErpAccountCacheKey, entity.NopCustomerId, entity.ErpAccountId);
+        await RemoveAsync(ERPIntegrationCoreDefaults.ErpAccountByCustomerIdCacheKey, entity.NopCustomerId);
     }
 }

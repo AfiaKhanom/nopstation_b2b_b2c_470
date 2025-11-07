@@ -57,7 +57,8 @@ public class PublicHeaderViewComponent : NopViewComponent
             model.AvailableErpAccounts.Add(new SelectListItem
             {
                 Text = await _localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.List.Select"),
-                Value = "0"
+                Value = "0",
+                Disabled = true, 
             });
 
             foreach (var map in mappedAccounts)

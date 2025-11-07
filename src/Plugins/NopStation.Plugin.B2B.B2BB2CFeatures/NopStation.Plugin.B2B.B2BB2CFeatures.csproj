@@ -274,6 +274,7 @@
     <None Remove="Views\ErpCheckout\_CreateOrUpdateErpBillingAddresses.cshtml" />
     <None Remove="Views\ErpCheckout\_CreateOrUpdateErpShiptoAddresses.cshtml" />
     <None Remove="Views\ErpCheckout\_OpcCreateOrUpdateErpShiptoAddresses.cshtml" />
+    <None Remove="Views\ErpCheckout\_PickupPoints.cshtml" />
     <None Remove="Views\Order\Details.cshtml" />
     <None Remove="Views\Order\ErpB2bOrderDetails.cshtml" />
     <None Remove="Views\QuickOrder\CreateQuickOrder.cshtml" />
@@ -1107,6 +1108,11 @@
     </Content>
     <Content Include="Views\ErpCheckout\_OpcCreateOrUpdateErpShiptoAddresses.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ErpCheckout\_PickupPoints.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="Views\Order\Details.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
