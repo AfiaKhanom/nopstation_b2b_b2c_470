@@ -328,12 +328,6 @@ public class B2BAccountPaymentProcessor : BasePlugin, IPaymentMethod, INopStatio
         {
             warnings.Add(await _localizationService.GetResourceAsync("Plugins.Payments.NopStation.B2B.Account.Validation.InsufficientErpAccountBalance"));
         }
-
-        if (shoppingCartTotalBase > erpAccount.CurrentBalance && shoppingCartTotalBase > erpAccount.CreditLimitAvailable && !erpAccount.AllowOverspend)
-        {
-            warnings.Add(await _localizationService.GetResourceAsync("Plugins.Payments.NopStation.B2B.Account.Validation.InsufficientErpAccountBalance"));
-        }
-
         return warnings;
     }
 

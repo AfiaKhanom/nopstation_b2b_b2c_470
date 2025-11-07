@@ -70,6 +70,7 @@ public class ErpCheckoutController : CheckoutController
     private readonly ICustomerActivityService _customerActivityService;
     private readonly IErpAccountCreditSyncFunctionality _erpAccountCreditSyncFunctionality;
     private static readonly string[] _separator = ["___"];
+    private static readonly string[] formats = new[] { "d/M/yyyy", "dd/MM/yyyy" };
 
     #endregion Fields
 
@@ -822,42 +823,37 @@ public class ErpCheckoutController : CheckoutController
         {
             ModelState.AddModelError("", error);
         }
+        var formats = new[] { "d/M/yyyy", "dd/MM/yyyy", "M/d/yyyy", "MM/dd/yyyy" }; 
+        DateTime date;
 
-        var date = model.DeliveryDate;
-
-        // validate DeliveryDate
         if (!model.ErpToDetermineDate)
         {
-            if (model.CustomDeliveryDateString is null)
+            if (string.IsNullOrWhiteSpace(model.CustomDeliveryDateString))
             {
                 ModelState.AddModelError("CustomDeliveryDateString", "Please provide a valid delivery date");
             }
-            else
+            else if (!DateTime.TryParseExact(model.CustomDeliveryDateString, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
             {
-                if (DateTime.TryParseExact(model.CustomDeliveryDateString, "dd/MM/yyyy", new CultureInfo("en-GB"), DateTimeStyles.None, out var dateTimeForDelivery))
-                    date = dateTimeForDelivery;
-
-                if (date < DateTime.Now.Date)
-                {
-                    ModelState.AddModelError("CustomDeliveryDateString", "Please provide a valid delivery date");
-                }
+                ModelState.AddModelError("CustomDeliveryDateString", "Please provide a valid delivery date format (dd/MM/yyyy)");
+            }
+            else if (date < DateTime.Now.Date)
+            {
+                ModelState.AddModelError("CustomDeliveryDateString", "Delivery date cannot be earlier than today");
             }
         }
         else
         {
-            if (model.DeliveryDateString is null)
+            if (string.IsNullOrWhiteSpace(model.DeliveryDateString))
             {
                 ModelState.AddModelError("DeliveryDateString", "Please provide a valid delivery date");
             }
-            else
+            else if (!DateTime.TryParseExact(model.DeliveryDateString, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
             {
-                if (DateTime.TryParseExact(model.DeliveryDateString, "dd/MM/yyyy", new CultureInfo("en-GB"), DateTimeStyles.None, out var dateTimeForDelivery))
-                    date = dateTimeForDelivery;
-
-                if (date < DateTime.Now.Date)
-                {
-                    ModelState.AddModelError("DeliveryDateString", "Please provide a valid delivery date");
-                }
+                ModelState.AddModelError("DeliveryDateString", "Please provide a valid delivery date format (dd/MM/yyyy)");
+            }
+            else if (date < DateTime.Now.Date)
+            {
+                ModelState.AddModelError("DeliveryDateString", "Delivery date cannot be earlier than today");
             }
         }
 
@@ -868,8 +864,6 @@ public class ErpCheckoutController : CheckoutController
         {
             if (shipToAddress.AddressId == 0)
                 throw new Exception("Ship to Address can't be loaded");
-
-            //special Instruction set at generic attribute
             if (!string.IsNullOrEmpty(model.SpecialInstructions?.Trim()))
             {
                 await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.ProvidedB2BSpecialInstructions, model.SpecialInstructions?.Trim(), store.Id);
@@ -880,7 +874,6 @@ public class ErpCheckoutController : CheckoutController
             {
                 await _genericAttributeService.SaveAttributeAsync(customer, B2BB2CFeaturesDefaults.ProvidedB2BCustomerReferenceAsPO, model.CustomerReference?.Trim(), store.Id);
             }
-
             // no need to check allow address edit
             erpUser.ShippingErpShipToAddressId = shipToAddress.Id;
             await _erpNopUserService.UpdateErpNopUserAsync(erpUser);

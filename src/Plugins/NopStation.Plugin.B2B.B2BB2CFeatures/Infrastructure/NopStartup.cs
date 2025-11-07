@@ -5,7 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nop.Core.Infrastructure;
 using Nop.Services.Catalog;
+using Nop.Services.Common;
 using Nop.Services.Customers;
+using Nop.Services.Localization;
 using Nop.Services.Orders;
 using Nop.Web.Controllers;
 using Nop.Web.Factories;
@@ -19,6 +21,7 @@ using NopStation.Plugin.B2B.B2BB2CFeatures.Factories.ErpOrderDetails;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Factories.QuickOrder;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Helpers;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Services.Customers;
+using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpAccountCreditSyncFunctionality;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpPriceSyncFunctionality;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpSpecificationAttributeService;
@@ -27,9 +30,6 @@ using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ExportManager;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Services.Overriden;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services.QuickOrderServices;
 using NopStation.Plugin.Misc.Core.Infrastructure;
-using Nop.Services.Common;
-using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpAccountCreditSyncFunctionality;
-using Nop.Services.Localization;
 
 namespace NopStation.Plugin.B2B.B2BB2CFeatures.Infrastructure;
 
@@ -119,6 +119,7 @@ public class NopStartup : INopStartup
         services.AddScoped<IErpActivityLogsModelFactory, ErpActivityLogsModelFactory>();
         services.AddScoped<IErpAccountCreditSyncFunctionality, ErpAccountCreditSyncFunctionality>();
         services.AddScoped<ILocalizationService, OverriddenLocalizationService>();
+        services.AddScoped<IShoppingCartModelFactory, OverridenShoppingCartModelFactory>();
     }
 
     /// <summary>

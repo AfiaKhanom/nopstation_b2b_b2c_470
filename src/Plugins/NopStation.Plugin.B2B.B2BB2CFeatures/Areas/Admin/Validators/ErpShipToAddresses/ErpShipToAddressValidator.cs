@@ -26,9 +26,9 @@ public partial class ErpShipToAddressValidator : BaseNopValidator<ErpShipToAddre
             .GreaterThan(0)
             .WithMessageAwait(localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpShipToAddress.RequiredErrMsg.ValueCanNotBeEmpty.ErpAccountId"));
 
-        RuleFor(x => x.RepNumber)
-            .NotEmpty()
-            .WithMessageAwait(localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpShipToAddress.RequiredErrMsg.ValueCanNotBeEmpty.RepNumber"));
+        //RuleFor(x => x.RepNumber)
+        //    .NotEmpty()
+        //    .WithMessageAwait(localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpShipToAddress.RequiredErrMsg.ValueCanNotBeEmpty.RepNumber"));
 
         //for address model, these are fixed from factory
         RuleFor(x => x.AddressModel.FirstName)

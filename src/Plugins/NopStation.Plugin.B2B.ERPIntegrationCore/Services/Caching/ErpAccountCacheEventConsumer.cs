@@ -8,7 +8,7 @@ public class ErpAccountCacheEventConsumer : CacheEventConsumer<ErpAccount>
 {
     protected override async Task ClearCacheAsync(ErpAccount entity, EntityEventType entityEventType)
     {
-        await RemoveAsync(ERPIntegrationCoreDefaults.ErpAccountByIdCacheKey, entity.Id);
+        await RemoveAsync(ERPIntegrationCoreDefaults.ErpAccountByIdCacheKey, entity.Id, true);
         await RemoveAsync(ERPIntegrationCoreDefaults.ErpAccountByIdWithActiveCacheKey, entity.Id);
         await RemoveAsync(ERPIntegrationCoreDefaults.ErpAccountByErpShipToAddressCacheKey, entity.BillingAddressId);
         await RemoveAsync(ERPIntegrationCoreDefaults.ErpAccountByAccountNumberCacheKey, entity.AccountNumber);
@@ -25,5 +25,6 @@ public class ErpAccountCacheEventConsumer : CacheEventConsumer<ErpAccount>
         await RemoveByPrefixAsync(ERPIntegrationCoreDefaults.ErpAccountListPrefixCacheKey);
         await RemoveByPrefixAsync(ERPIntegrationCoreDefaults.ErpAccountPagedByIdsPrefixCacheKey);
         await RemoveByPrefixAsync(ERPIntegrationCoreDefaults.ErpAccountOfActiveNopUsersPrefixCacheKey);
+        await RemoveByPrefixAsync(ERPIntegrationCoreDefaults.ErpProductInfoSpecificationAttributeOptionIdsByNamesErpAccountId, entity.Id);
     }
 }

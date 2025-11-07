@@ -113,66 +113,66 @@
                                     });
                                     var geocoder = new google.maps.Geocoder();
                                     var infowindow = new google.maps.InfoWindow();
-                                    @for (var i = 0; i < Model.PickupPoints.Count; i++)
-                                    {
-                                        var point = Model.PickupPoints[i];
-                                        var value = $"{point.Id}___{point.ProviderSystemName}";
-                                        var pickupPointInfo = Html.Raw($@"<div class='pickup-point-info'><ul><li><strong>{point.Name}</strong></li><li>{point.OpeningHours}</li><li>{point.PickupFee}</li></ul></div>");
-                                        if (point.Latitude != null && point.Longitude != null)
+                            @for (var i = 0; i < Model.PickupPoints.Count; i++)
+                            {
+                                var point = Model.PickupPoints[i];
+                                var value = $"{point.Id}___{point.ProviderSystemName}";
+                                var pickupPointInfo = Html.Raw($@"<div class='pickup-point-info'><ul><li><strong>{point.Name}</strong></li><li>{point.OpeningHours}</li><li>{point.PickupFee}</li></ul></div>");
+                                if (point.Latitude != null && point.Longitude != null)
+                                {
+                                    <text>
+                                                        (function () {
+                                                            var marker = new google.maps.Marker({
+                                                                map: googleMap,
+                                                                title: "@point.Name",
+                                                                position: new google.maps.LatLng(@point.Latitude, @point.Longitude),
+                                                                icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                                                            });
+                                                            markers.set("@value", marker);
+                                                            google.maps.event.addListener(marker, 'click', function () {
+                                                                $('#pickup-points-select').val("@value");
+                                                                googleMap.setCenter(this.getPosition());
+                                                                infowindow.setContent("@pickupPointInfo");
+                                                                infowindow.open(googleMap, marker);
+                                                            });
+                                        @if (i == 0)
                                         {
-                                            <text>
-                                                (function () {
-                                                    var marker = new google.maps.Marker({
-                                                        map: googleMap,
-                                                        title: "@point.Name",
-                                                        position: new google.maps.LatLng(@point.Latitude, @point.Longitude),
-                                                        icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
-                                                    });
-                                                    markers.set("@value", marker);
-                                                    google.maps.event.addListener(marker, 'click', function () {
-                                                        $('#pickup-points-select').val("@value");
-                                                        googleMap.setCenter(this.getPosition());
-                                                        infowindow.setContent("@pickupPointInfo");
-                                                        infowindow.open(googleMap, marker);
-                                                    });
-                                                    @if (i == 0)
-                                                    {
-                                                        <text>googleMap.setCenter(marker.getPosition()); </text>
-                                                    }
-                                                }());
-                                            </text>
+                                            <text>googleMap.setCenter(marker.getPosition()); </text>
                                         }
-                                        else
+                                                        }());
+                                    </text>
+                                }
+                                else
+                                {
+                                    var address = $"{point.Address} {point.City} {point.ZipPostalCode} {point.CountryName}";
+                                    <text>
+                                                    var interval_@i = setInterval(function () {
+                                                        geocoder.geocode({ 'address': "@address" }, function (results, status) {
+                                                            if (status === google.maps.GeocoderStatus.OK) {
+                                                                var marker = new google.maps.Marker({
+                                                                    map: googleMap,
+                                                                    title: "@point.Name",
+                                                                    position: results[0].geometry.location,
+                                                                    icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                                                                });
+                                                                markers.set("@value", marker);
+                                                                google.maps.event.addListener(marker, 'click', function () {
+                                                                    $('#pickup-points-select').val("@value");
+                                                                    googleMap.setCenter(this.getPosition());
+                                                                    infowindow.setContent("@pickupPointInfo");
+                                                                    infowindow.open(googleMap, marker);
+                                                                });
+                                        @if (i == 0)
                                         {
-                                            var address = $"{point.Address} {point.City} {point.ZipPostalCode} {point.CountryName}";
-                                            <text>
-                                            var interval_@i = setInterval(function () {
-                                                geocoder.geocode({ 'address': "@address" }, function (results, status) {
-                                                    if (status === google.maps.GeocoderStatus.OK) {
-                                                        var marker = new google.maps.Marker({
-                                                            map: googleMap,
-                                                            title: "@point.Name",
-                                                            position: results[0].geometry.location,
-                                                            icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
-                                                        });
-                                                        markers.set("@value", marker);
-                                                        google.maps.event.addListener(marker, 'click', function () {
-                                                            $('#pickup-points-select').val("@value");
-                                                            googleMap.setCenter(this.getPosition());
-                                                            infowindow.setContent("@pickupPointInfo");
-                                                            infowindow.open(googleMap, marker);
-                                                        });
-                                                        @if (i == 0)
-                                                        {
-                                                            <text>googleMap.setCenter(marker.getPosition()); </text>
-                                                        }
-                                                        clearInterval(interval_@i);
-                                                    }
-                                                })
-                                            }, 250);
-                                            </text>
+                                            <text>googleMap.setCenter(marker.getPosition()); </text>
                                         }
-                                    }
+                                                                clearInterval(interval_@i);
+                                                            }
+                                                        })
+                                                    }, 250);
+                                    </text>
+                                }
+                            }
 
                                     $('#pickup-points-select').on('change', function () {
                                         new google.maps.event.trigger(markers.get(this.value), 'click');
@@ -272,10 +272,8 @@
                                 var addressLine = "";
                                 addressLine += b2BShipTo.ShipToCode;
                                 addressLine += ", " + b2BShipTo.ShipToName;
-                                //how should we render "FormattedCustomAddressAttributes" here?
                                 <option value="@(b2BShipTo.Id)" selected="@(Model.ErpShipToAddress.Id==b2BShipTo.Id? true : false)">@(addressLine)</option>
                             }
-                            @*<option hidden value="" selected="@(true)">@T("Checkout.NewAddress")</option>*@
                         </select>
                     </div>
                 </div>

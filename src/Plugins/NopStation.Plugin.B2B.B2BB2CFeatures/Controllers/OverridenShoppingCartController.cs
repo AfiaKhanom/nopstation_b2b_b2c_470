@@ -8,6 +8,7 @@ using Nop.Core;
 using Nop.Core.Caching;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Customers;
+using Nop.Core.Domain.Logging;
 using Nop.Core.Domain.Media;
 using Nop.Core.Domain.Orders;
 using Nop.Core.Domain.Security;
@@ -42,6 +43,7 @@ using NopStation.Plugin.B2B.B2BB2CFeatures.Services.ErpCustomerFunctionality;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Model;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
+using static Nop.Web.Models.ShoppingCart.ShoppingCartModel;
 
 namespace NopStation.Plugin.B2B.B2BB2CFeatures.Controllers;
 
@@ -62,7 +64,7 @@ public class OverridenShoppingCartController : ShoppingCartController
     private readonly IOrderProcessingService _orderProcessingService;
     private readonly IErpSalesOrgService _erpSalesOrgService;
 
-    #endregion
+    #endregion Fields
 
     #region Ctor
 
@@ -168,7 +170,7 @@ public class OverridenShoppingCartController : ShoppingCartController
         _erpSalesOrgService = erpSalesOrgService;
     }
 
-    #endregion
+    #endregion Ctor
 
     #region Utilities
 
@@ -320,24 +322,35 @@ public class OverridenShoppingCartController : ShoppingCartController
         }
     }
 
-    #endregion
+    #endregion Utilities
 
     #region Shopping cart
 
     public override async Task<IActionResult> Cart()
     {
-        if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.EnableShoppingCart))
-            return RedirectToRoute("Homepage");
+        try
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.EnableShoppingCart))
+                return RedirectToRoute("Homepage");
 
-        var currCustomer = await _workContext.GetCurrentCustomerAsync();
-        var store = await _storeContext.GetCurrentStoreAsync();
-        var cart = await _shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.ShoppingCart, store.Id);
-        var model = new ShoppingCartModel();
-        model = await _shoppingCartModelFactory.PrepareShoppingCartModelAsync(model, cart);
+            var currCustomer = await _workContext.GetCurrentCustomerAsync();
+            var store = await _storeContext.GetCurrentStoreAsync();
+            var cart = await _shoppingCartService.GetShoppingCartAsync(currCustomer, ShoppingCartType.ShoppingCart, store.Id);
+            var model = new ShoppingCartModel();
+            model = await _shoppingCartModelFactory.PrepareShoppingCartModelAsync(model, cart);
 
-        await LiveErpAccountCreditCheckByCustomerAsync(currCustomer);
-
-        return View(model);
+            await LiveErpAccountCreditCheckByCustomerAsync(currCustomer);
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            await _logger.InsertLogAsync(LogLevel.Error, "Shopping Cart Page Error", ex.ToString());
+            var model = new ShoppingCartModel
+            {
+                Items = new List<ShoppingCartItemModel>()
+            };
+            return View(model);
+        }
     }
 
     [HttpPost, ActionName("Cart")]
@@ -665,7 +678,7 @@ public class OverridenShoppingCartController : ShoppingCartController
         }
     }
 
-    #endregion
+    #endregion Shopping cart
 
     #region B2B Extra
 
@@ -713,13 +726,12 @@ public class OverridenShoppingCartController : ShoppingCartController
         }
         finally
         {
-            // reset cart activity attribute 
+            // reset cart activity attribute
             await _genericAttributeService.SaveAttributeAsync(currentCustomer, B2BB2CFeaturesDefaults.IsCartActivityOn, false, store.Id);
         }
 
         return Json(new { success = true });
     }
-
 
     // for cart page
     public async Task<IActionResult> CheckCartItemQuotePriceChangeWarning()
@@ -757,7 +769,6 @@ public class OverridenShoppingCartController : ShoppingCartController
                         }
                     }
                 }
-
             }
         }
         return Json(new
@@ -766,5 +777,5 @@ public class OverridenShoppingCartController : ShoppingCartController
         });
     }
 
-    #endregion
+    #endregion B2B Extra
 }

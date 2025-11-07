@@ -536,9 +536,10 @@ public class OverriddenOrderProcessingService : OrderProcessingService, IOverrid
         }
         else
         {
-            specialInstructions = await _genericAttributeService.GetAttributeAsync<String>(currentCustomer, B2BB2CFeaturesDefaults.B2CSpecialInstructions, currentStore.Id);
+            specialInstructions = await _genericAttributeService.GetAttributeAsync<String>(currentCustomer, B2BB2CFeaturesDefaults.ProvidedB2BSpecialInstructions, currentStore.Id);
         }
-
+        await _genericAttributeService.SaveAttributeAsync<string>(currentCustomer, B2BB2CFeaturesDefaults.ProvidedB2BSpecialInstructions, null, currentStore.Id);
+        await _genericAttributeService.SaveAttributeAsync<string>(currentCustomer, B2BB2CFeaturesDefaults.ProvidedB2BCustomerReferenceAsPO, null, currentStore.Id);
         erpOrderAdditionalData.CustomerReference = $"{customerReference}";
         erpOrderAdditionalData.DeliveryDate = deliveryDate;
         erpOrderAdditionalData.IsShippingAddressModified = isShippingAddressModifiedInCheckout;

@@ -8,8 +8,8 @@
 
 @{
     var storeLocation = webHelper.GetStoreLocation();
-    var datePickerFormat = Html.GetJQueryDateFormat();//java-script format
-    var minDate = DateTime.Today.AddDays(1).ToString("dd-MM-yyyy");
+    var datePickerFormat = "dd/mm/yy";
+    var minDate = DateTime.Today.ToString("yyyy-MM-dd");
 }
 
 <style>
@@ -27,10 +27,10 @@
         <form id="ErpShiptoAddressForm" asp-controller="ErpCheckout" asp-action="ErpShippingAddress" method="post">
 
             <div class="checkout-shipping-tab checkout-left-section" id="checkoutShippingTabs">
-                <div class="page-title">
+                <div class="page-title" style="@(Model.ExistingErpShipToAddresses.Count == 0 && Model.PickupPointsModel.PickupInStoreOnly ? "display:none;" : string.Empty)">
                     <h1>@T("Checkout.ShippingAddress.SelectDeliverOrCollect")</h1>
                 </div>
-                <ul class="tab-links">
+                <ul class="tab-links" style="@(Model.ExistingErpShipToAddresses.Count == 0 && Model.PickupPointsModel.PickupInStoreOnly ? "display:none;" : string.Empty)">
                     @if (Model.ExistingErpShipToAddresses.Count > 0)
                     {
                         <li class="tab-item" id="deliver"><a href="#shippingTabDeliver">@T("B2B.Shipping.Deliver")</a></li>
@@ -38,7 +38,6 @@
 
                     <li class="tab-item" id="collect"><a href="#shippingTabCollect">@T("B2B.Shipping.Collect")</a></li>
                 </ul>
-
                 @if (Model.ExistingErpShipToAddresses.Count > 0)
                 {
                     <div id="shippingTabDeliver" class="tab-content deliver">
@@ -58,8 +57,8 @@
 
                             <script asp-location="Footer">
                                 function editSelectedAddress() {
-                                    var selectedAddress = $('input[type="radio"][data-id]:checked');
-                                    var shipToId = selectedAddress.data('id');
+                                    var selectedOption = $('#shipToAddress option:selected');
+                                    var shipToId = selectedOption.val();
                                     loadB2BShipToAddress(shipToId);
                                 }
 
@@ -113,37 +112,39 @@
                                         <div class="title">
                                             <strong>@T("Checkout.SelectShippingAddress")</strong>
                                         </div>
-                                        <div class="shipping-address-body" style="text-align:center;">
-                                            @foreach (var item in Model.ExistingErpShipToAddresses)
-                                            {
-                                                var addressLine = string.Join(", ", new string[] {
-                                item.ShipToName,
-                                item.Address1,
-                                item.Address2,
-                                item.Suburb,
-                                item.City,
-                                item.StateProvinceName,
-                                item.ZipPostalCode
-                                                    }.Where(s => !string.IsNullOrEmpty(s)));
 
-                                                <label id="shipping-address-select" class="address-select-radio">
-                                                    <input id="shipToAddress"
-                                                           type="radio"
-                                                           data-id="@item.Id"
-                                                           data-suburb="@item.Suburb"
-                                                           data-city="@item.City"
-                                                           checked="@((Model.ErpShipToAddressId == item.Id) || (Model.ExistingErpShipToAddresses.Count() == 1) ? true : false)"
-                                                           asp-for="@Model.ErpShipToAddressId"
-                                                           value="@item.Id" />
-                                                    <span class="checkmark"></span>
-                                                    @(addressLine)
-                                                </label>
-                                                <br />
-                                            }
-                                            <br />
+                                        <div class="shipping-address-body" style="text-align:center;">
+                                            <select id="shipToAddress"
+                                                    asp-for="ErpShipToAddressId"
+                                                    class="form-control">
+                                                @foreach (var item in Model.ExistingErpShipToAddresses)
+                                                {
+                                                    var addressLine = string.Join(", ", new string[] {
+                                    item.ShipToName,
+                                    item.Address1,
+                                    item.Address2,
+                                    item.Suburb,
+                                    item.City,
+                                    item.StateProvinceName,
+                                    item.ZipPostalCode
+                                                            }.Where(s => !string.IsNullOrEmpty(s)));
+
+                                                    <option value="@item.Id"
+                                                            data-suburb="@item.Suburb"
+                                                            data-city="@item.City"
+                                                            selected="@((Model.ErpShipToAddressId == item.Id) || (Model.ExistingErpShipToAddresses.Count() == 1) ? "selected" : null)">
+                                                        @addressLine
+                                                    </option>
+                                                }
+                                            </select>
+
+                                            <br /><br />
+
                                             @if (Model.AllowAddressEdit)
                                             {
-                                                <button class="edit-ship-to" onclick="editSelectedAddress(); return false;">Edit Address</button>
+                                                <button class="edit-ship-to" onclick="editSelectedAddress(); return false;">
+                                                    @T("B2BB2CFeatures.ErpShipToAddress.Edit")
+                                                </button>
                                             }
                                         </div>
                                     </div>
@@ -160,15 +161,14 @@
                                 <input asp-for="IsFullLoadRequired" type="hidden" />
                                 <input asp-for="ErpToDetermineDate" type="hidden" />
                                 <div class="delivery-date-body">
-                                    <div id="deliveryDatePicker" class="inputs" style="@(Model.ErpToDetermineDate == true ? "display: none; text-align: center;" : "display: block; text-align: center;")">
+                                    <div id="deliveryDatePicker" class="inputs" style="@(Model.ErpToDetermineDate ? "display: none; text-align: center;" : "display: block; text-align: center;")">
                                         <input asp-for="CustomDeliveryDateString" type="text" />
                                         <span asp-validation-for="CustomDeliveryDateString"></span>
                                     </div>
                                     <script asp-location="Footer">
                                         $('#CustomDeliveryDateString').datepicker({
                                             dateFormat: '@datePickerFormat',
-                                            minDate: new Date('@minDate'),
-                                            maxDate: new Date('@Model.MaxDeliveryDate')
+                                            minDate: new Date('@minDate')
                                         });
                                     </script>
                                     @if (Model.ErpToDetermineDate)
@@ -206,6 +206,7 @@
                                         $('#pickup-points-form').hide();
                                         $('#collect').prop('checked', false);
                                         $('#collect-header-text').text('');
+                                        $('#PickupInStore').prop('checked', false);
                                     }
                                 });
 
@@ -217,8 +218,14 @@
                                         $('#pickup-points-form').show();
                                         $('#deliver').prop('checked', false);
                                         $('#collect-header-text').text('@T("Checkout.ShippingAddress.SelectCollectionPoint")');
+                                        $('#PickupInStore').prop('checked', true);
                                     }
                                 });
+                            @if (Model.PickupPointsModel.AllowPickupInStore && Model.PickupPointsModel.PickupInStoreOnly)
+                            {
+                                @:$('#pickup-points-form').show();
+                                @:$('#collect-header-text').text('@T("Checkout.ShippingAddress.SelectCollectionPoint")');
+                            }
                             });
                         </script>
                     }
@@ -274,10 +281,10 @@
                 margin-right: 20px;
             }
 
-            .tab-item input[type="radio"] {
-                display: inline;
-                margin-right: 5px;
-            }
+                .tab-item input[type="radio"] {
+                    display: inline;
+                    margin-right: 5px;
+                }
         </style>
 
         <script asp-location="Footer">
@@ -348,6 +355,9 @@
             var cityData = $('input[name="ErpShipToAddressId"]:checked').attr("data-city");
             var shipToAddressId = $('input[name="ErpShipToAddressId"]:checked').attr("data-id");
 
+            console.log("suburb: " + suburbData);
+            console.log("city: " + cityData);
+            console.log("Ship-to-address Id: " + shipToAddressId);
 
             var selectedData = { shipToAddressId: shipToAddressId };
             addAntiForgeryToken(selectedData);
@@ -363,11 +373,14 @@
                         $('#@Html.IdFor(model => model.ErpToDetermineDate)').val(true);
                         ddates.html('');
 
+                        console.log("Delivery dates:", response);
 
                         $.each(response.deliveyDates, function (id, option) {
+                            console.log('Date value: ' + option.Value + ' and text: ' + option.Text);
                             ddates.append($('<option></option>').val(option.Value).html(option.Text));
                         });
 
+                        console.log(ddates);
                         ddates.show();
                         $(".FullLoadRequired-div").hide();
                     }
@@ -465,21 +478,21 @@
     $(function () {
         $.validator.unobtrusive.parse("#ErpShiptoAddressForm");
         $('#ErpShiptoAddressForm').submit(function (e) {
-            var isErpToDetermineDate = @Model.ErpToDetermineDate;
-            var isFullLoadRequired = @Model.IsFullLoadRequired;
+            var isErpToDetermineDate = true;
+            var isFullLoadRequired = false;
             var isPISChecked = $('#PickupInStore').is(':checked');
             var showLoadingIndicator = true;
 
-            if (!(isPISChecked || isErpToDetermineDate == 'false' || isFullLoadRequired == 'true') && !$('#DeliveryDateString').val()) {
+            if (!(isPISChecked || isErpToDetermineDate == 'false' || isFullLoadRequired == 'true')
+                && !$('#DeliveryDateString').val()) {
                 showLoadingIndicator = false;
             }
 
             if (!isPISChecked) {
-                var addressSelections = $("input:radio[name='SelectedShipToAddress.Id']");
+                var addressSelections = $("input:radio[name='ErpShipToAddressId']");
                 if (addressSelections && addressSelections.filter(':checked').length === 0) {
                     showLoadingIndicator = false;
                     $(".shipping-address-body span.field-validation-error").remove();
-                    $(".shipping-address-body").append('<span class="shipping-address-error field-validation-error">@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.CustomerReference.B2BShipToAddress.Required")</span>');
                 }
                 else {
                     $(".shipping-address-body span.field-validation-error").remove();
