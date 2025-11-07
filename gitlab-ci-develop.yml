@@ -1,6 +1,7 @@
 stages:
   - build_publish
   - deploy
+  - rollback
 
 default:
   tags:
@@ -9,11 +10,13 @@ default:
 variables:
   SOLUTION_PATH: "src/NopStation_b2b_b2c_erp_470.sln"
   PROJECT_PATH: "src/Presentation/Nop.Web"
-  PUBLISH_PATH: "C:/publish_b2b"
-  DEV_SITE: "b2b-demo.nop-station.com"
+  PUBLISH_PATH: "C:/publish_b2b_dev"
+  DEV_SITE: "b2b-dev.nop-station.com"
   MSDEPLOY_EXE: "C:/Program Files/IIS/Microsoft Web Deploy V3/msdeploy.exe"
-  BRANCH: "demo"
-  EXECUTE: $CI_COMMIT_REF_NAME =~ /demo/
+  DEPLOY_DIR: "C:\\inetpub\\wwwroot\\b2b.nop-station.com\\Plugins"
+  BACKUP_DIR: "C:\\Users\\nopapp\\Desktop\\gitlab-ci-cd\\backup\\b2b.nop-station.com"
+  BRANCH: "develop"
+  EXECUTE: $CI_COMMIT_REF_NAME =~ /develop/
 
 build_publish:
   stage: build_publish
@@ -43,6 +46,7 @@ deploy:
   rules:
     - if: $EXECUTE
   script:
+    - xcopy $DEPLOY_DIR $BACKUP_DIR /y /c /h /e /r /s
     - powershell -Command "& '$env:MSDEPLOY_EXE' `
         -verb:sync `
         -source:iisApp='$env:PUBLISH_PATH' `
@@ -51,3 +55,15 @@ deploy:
         -skip:Directory=App_Data `
         -skip:Directory=wwwroot `
         -skip:objectName=filePath,absolutePath=web.config"
+
+rollback:
+  stage: rollback
+  rules:
+    - if: $EXECUTE
+  dependencies:
+    - deploy
+  when: on_failure
+  script:
+    - echo "Deploy failed. Rolling back to previous version..."
+    - xcopy "$BACKUP_DIR\\" "$DEPLOY_DIR" /y /c /h /e /r /s
+
