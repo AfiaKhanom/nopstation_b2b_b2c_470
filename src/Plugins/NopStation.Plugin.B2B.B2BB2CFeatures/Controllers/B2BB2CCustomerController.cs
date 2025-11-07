@@ -1165,8 +1165,8 @@ public class B2BB2CCustomerController : CustomerController
             return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Disabled });
 
         var model = new B2BRegisterModel();
-        model = await _b2BRegisterModelFactory.PrepareB2BRegisterModelAsync(model, false, setDefaultValues: true);
         model.IsB2BUser = false;
+        model = await _b2BRegisterModelFactory.PrepareB2BRegisterModelAsync(model, false, setDefaultValues: true);
 
         return View(model);
     }

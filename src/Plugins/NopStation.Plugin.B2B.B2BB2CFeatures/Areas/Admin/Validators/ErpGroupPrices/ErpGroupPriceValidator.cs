@@ -15,5 +15,9 @@ public partial class ErpGroupPriceValidator : BaseNopValidator<ErpPriceGroupProd
             .WithMessageAwait(localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPrice.RequiredErrMsg.Code"));
 
         SetDatabaseValidationRules<ErpGroupPriceCode>();
+
+        RuleFor(x => x.Price)
+            .GreaterThanOrEqualTo(0)
+            .WithMessageAwait(localizationService.GetResourceAsync("Plugin.Misc.NopStation.ERPIntegrationCore.ErpGroupPrice.Price.NonNegative"));
     }
 }
