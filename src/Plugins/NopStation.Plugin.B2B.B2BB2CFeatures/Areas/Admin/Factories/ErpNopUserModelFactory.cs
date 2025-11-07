@@ -51,7 +51,6 @@ public class ErpNopUserModelFactory : IErpNopUserModelFactory
     private readonly IErpShipToAddressService _erpShipToAddressService;
     private readonly B2BB2CFeaturesSettings _b2BB2CFeaturesSettings;
     private readonly IErpCustomerFunctionalityService _erpCustomerFunctionalityService;
-    private readonly IB2BFeaturesCommonHelper _b2BFeaturesCommonHelper;
     private readonly IAclSupportedModelFactory _aclSupportedModelFactory;
     private readonly IRepository<Customer> _customerRepository;
     private readonly IRepository<ErpNopUser> _erpNopUserRepository;
@@ -79,7 +78,6 @@ public class ErpNopUserModelFactory : IErpNopUserModelFactory
         IErpShipToAddressService erpShipToAddressService,
         B2BB2CFeaturesSettings b2BB2CFeaturesSettings,
         IErpCustomerFunctionalityService erpCustomerFunctionalityService,
-        IB2BFeaturesCommonHelper b2BFeaturesCommonHelper,
         IAclSupportedModelFactory aclSupportedModelFactory,
         IRepository<Customer> customerRepository,
         IRepository<ErpNopUser> erpNopUserRepository,
@@ -103,7 +101,6 @@ public class ErpNopUserModelFactory : IErpNopUserModelFactory
         _erpShipToAddressService = erpShipToAddressService;
         _b2BB2CFeaturesSettings = b2BB2CFeaturesSettings;
         _erpCustomerFunctionalityService = erpCustomerFunctionalityService;
-        _b2BFeaturesCommonHelper = b2BFeaturesCommonHelper;
         _aclSupportedModelFactory = aclSupportedModelFactory;
         _customerRepository = customerRepository;
         _erpNopUserRepository = erpNopUserRepository;
@@ -825,6 +822,11 @@ public class ErpNopUserModelFactory : IErpNopUserModelFactory
         );
 
         return model;
+    }
+
+    public Task<ErpNopUserAccountMapModel> PrepareErpNopUserModelAsync(ErpNopUserAccountMapModel model, ErpNopUserAccountMap erpNopUserAccountMap)
+    {
+        throw new NotImplementedException();
     }
 
     #endregion
