@@ -10,7 +10,7 @@ namespace NopStation.Plugin.B2B.B2BB2CFeatures.Model.Registration
 
         public int FormId { get; set; }
 
-        [NopResourceDisplayName("B2BB2CFeatures.ErpAccountCustomerRegistrationBankingDetails.Fields.NameOfBanker")]
+        [NopResourceDisplayName("B2BB2CFeatures.ErpAccountCustomerRegistrationBankingDetails.Fields.NameOfBank")]
         public string NameOfBanker { get; set; }
 
         [NopResourceDisplayName("B2BB2CFeatures.ErpAccountCustomerRegistrationBankingDetails.Fields.AccountName")]

@@ -250,7 +250,7 @@ public class ErpAccountService : IErpAccountService
                         .Distinct();
                 }
 
-                query = query.OrderBy(ea => ea.Id);
+                query = query.OrderByDescending(ea => ea.CreatedOnUtc);
                 return query;
 
             }, pageIndex, pageSize, getOnlyTotalCount)

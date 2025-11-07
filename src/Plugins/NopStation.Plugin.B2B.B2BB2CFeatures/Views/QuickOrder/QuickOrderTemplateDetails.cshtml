@@ -143,10 +143,10 @@
             });
                 /*gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.AttributesInfo))
                 {
-                    Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.AttributesInfo").Text,
-            Width = "600",
-            Render = new RenderCustom("renderColumnAttributesInfo")
-            });*/
+                Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.AttributesInfo").Text,
+                Width = "600",
+                Render = new RenderCustom("renderColumnAttributesInfo")
+                });*/
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.StockAvailability))
             {
                 Title = string.IsNullOrEmpty(Model.DisplayNameForPrimaryStock) ?
@@ -162,10 +162,10 @@
             });
                 /*gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.PricingNotes))
                 {
-                    Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.PricingNotes").Text,
-            Width = "100",
-            ClassName = "pricing-notes-column"
-            });*/
+                Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.PricingNotes").Text,
+                Width = "100",
+                ClassName = "pricing-notes-column"
+                });*/
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.UOM))
             {
                 Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.UOM").Text,
@@ -227,6 +227,22 @@
     function renderColumnInfo(data, type, row, meta) {
         return '<a class="btn btn-info" href=/' + data + '><i class="fa fa-eye"></i>Info</a>';
     }
+    $(document).on('blur', '.item-quantity', function () {
+        const itemId = $(this).data('itemid');
+        const newQuantity = parseInt($(this).val());
+        if (isNaN(newQuantity) || newQuantity < 1) {
+            displayBarNotification('Quantity must be at least 1.', 'error', 0);
+            $(this).val(1);
+            return;
+        }
+        UpdateQuantity('update', itemId, newQuantity);
+    });
+    $(document).on('keypress', '.item-quantity', function (e) {
+        if (e.which === 13) {
+            $(this).blur();
+        }
+    });
+
     $(".pencil-img").click(function () {
         showTemplateNameEditField()
     });
@@ -396,9 +412,37 @@
 
 <script type="text/javascript" asp-location="Footer">
     function renderColumnItemQuantity(data, type, row, meta) {
-        return '<div style="display: flex;justify - content: space-between;"><button class="btn btn - info" onclick=\"UpdateQuantity(\'minus\',' + row.Id + ')\">-</button><input style="width:50px;text-align: center;" class="item - quantity" data-itemid="' + row.Id + '" value="' + row.Quantity + '"/><button class="btn btn - info" onclick=\"UpdateQuantity(\'plus\',' + row.Id + ')\">+</button></div>';
+        return `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <button class="btn btn-info btn-sm" onclick="UpdateQuantity('minus', ${row.Id})">-</button>
+                <input
+                    type="number"
+                    min="1"
+                    style="width:50px; text-align:center;"
+                    class="item-quantity"
+                    data-itemid="${row.Id}"
+                    value="${row.Quantity}"
+                />
+                <button class="btn btn-info btn-sm" onclick="UpdateQuantity('plus', ${row.Id})">+</button>
+            </div>`;
     }
 
+    $(document).on('blur', '.item-quantity', function () {
+
+        const itemId = $(this).data('itemid');
+        const newQuantity = parseInt($(this).val());
+        if (isNaN(newQuantity) || newQuantity < 1) {
+            displayBarNotification('Quantity must be at least 1.', 'error', 0);
+            $(this).val(1);
+            return;
+        }
+        UpdateQuantity('update', itemId, newQuantity);
+    });
+    $(document).on('keypress', '.item-quantity', function (e) {
+        if (e.which === 13) {
+            $(this).blur();
+        }
+    });
     function placeQuickOrderFromDetails(templateId) {
         $.ajax({
             cache: false,

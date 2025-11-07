@@ -152,6 +152,7 @@ public static class ERPIntegrationCoreDefaults
     #region ERP Account Cache keys and Prefixes
 
     // Prefixes
+    public static string ErpProductInfoSpecificationAttributeOptionIdsByNamesErpAccountId => "ErpProductInfoSpecificationAttributeOptionIdsByNamesErpAccountId.{0}";
     public static string ErpAccountByIdPrefixCacheKey => "Nop.erpaccount.byid.";
     public static string ErpAccountByErpShipToAddressPrefixCacheKey => "Nop.erpaccount.byshiptoaddress.";
     public static string ErpSalesRepErpAccountMapByIdsPrefixCacheKey => "Nop.erpsalesreperpaccountmap.byids.";
