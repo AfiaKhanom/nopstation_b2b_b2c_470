@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Nop.Core;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Enums;
 
@@ -70,14 +69,4 @@ public partial class ErpOrderAdditionalData : BaseEntity
     public DateTime? ChangedOnUtc { get; set; }
 
     public int ChangedById { get; set; }
-
-    #region Navigation Property
-
-    public virtual ErpAccount ErpAccount { get; set; }
-
-    public virtual ErpShipToAddress ErpShipToAddress { get; set; }
-
-    public List<ErpOrderItemAdditionalData> ErpOrderItemAdditionalDatas { get; set; }
-
-    #endregion
 }

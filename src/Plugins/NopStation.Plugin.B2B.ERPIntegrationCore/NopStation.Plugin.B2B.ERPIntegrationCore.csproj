@@ -68,16 +68,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="DBScript\Update_ErpNopUserAccountMap_CustomerRolesIds_UserTypes.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="DBScript\DBScript.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="logo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DBScript\" />
   </ItemGroup>
 
   <!-- This target execute after "Build" target -->

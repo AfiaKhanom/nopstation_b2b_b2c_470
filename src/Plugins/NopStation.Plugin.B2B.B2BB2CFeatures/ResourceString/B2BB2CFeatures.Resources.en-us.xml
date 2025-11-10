@@ -6247,4 +6247,11 @@
     <LocaleResource Name="nopstation.theme.Stafast.shoppingCart.loginToCheckout">
         <Value>Please Log in to checkout</Value>
     </LocaleResource>
+
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Customer.Choose">
+        <Value>Choose Customer</Value>
+    </LocaleResource>
+    <LocaleResource Name="NopStation.Plugin.B2B.B2BB2CFeatures.Customer.Remove">
+        <Value>Remove Customer</Value>
+    </LocaleResource>
 </Language>

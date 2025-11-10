@@ -69,6 +69,8 @@ public class ErpCheckoutController : CheckoutController
     private readonly IErpActivityLogsService _erpActivityLogsService;
     private readonly ICustomerActivityService _customerActivityService;
     private readonly IErpAccountCreditSyncFunctionality _erpAccountCreditSyncFunctionality;
+    private readonly IOrderTotalCalculationService _orderTotalCalculationService;
+    private readonly ICurrencyService _currencyService;
     private static readonly string[] _separator = ["___"];
     private static readonly string[] formats = new[] { "d/M/yyyy", "dd/MM/yyyy" };
 
@@ -119,7 +121,9 @@ public class ErpCheckoutController : CheckoutController
         IErpOrderDetailsModelFactory erpOrderDetailsModelFactory,
         IErpActivityLogsService erpActivityLogsService,
         ICustomerActivityService customerActivityService,
-        IErpAccountCreditSyncFunctionality erpAccountCreditSyncFunctionality) : base(addressSettings,
+        IErpAccountCreditSyncFunctionality erpAccountCreditSyncFunctionality,
+        IOrderTotalCalculationService orderTotalCalculationService,
+        ICurrencyService currencyService) : base(addressSettings,
             captchaSettings,
             customerSettings,
             addressModelFactory,
@@ -164,6 +168,8 @@ public class ErpCheckoutController : CheckoutController
         _erpActivityLogsService = erpActivityLogsService;
         _customerActivityService = customerActivityService;
         _erpAccountCreditSyncFunctionality = erpAccountCreditSyncFunctionality;
+        _orderTotalCalculationService = orderTotalCalculationService;
+        _currencyService = currencyService;
     }
 
     #endregion Ctor
@@ -1366,6 +1372,14 @@ public class ErpCheckoutController : CheckoutController
 
             //session save
             await HttpContext.Session.SetAsync("OrderPaymentInfo", paymentInfo);
+
+            // for non b2b account, display confirm form
+            if (b2BAccount == null)
+            {
+                b2BAccount = await _erpCustomerFunctionalityService.GetActiveErpAccountByCustomerAsync(customer);
+                if (b2BAccount == null)
+                    return RedirectToRoute("CheckoutConfirm");
+            }
 
             // for b2b account. place order from here (no need to display confirm page)
             try

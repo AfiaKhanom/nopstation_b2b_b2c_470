@@ -238,20 +238,17 @@
                 </div>
 
                 <!---Customer reference added for Quote Order -->
-                @if (Model.IsQuoteOrder)
-                {
-                    <div class="section quote-customer-reference">
-                        <div class="title quote-customer-reference-title">
-                            <strong>@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.CustomerReference")</strong>
-                        </div>
-                        <div class="quote-customer-reference-body">
-                            <div id="customerReferenceText" class="inputs" style="text-align: center;">
-                                <input asp-for="CustomerReference" class="quote-customer-reference-input" placeholder="@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.CustomerReference.Hint")" />
-                                <span class="shipping-address-error" asp-validation-for="CustomerReference"></span>
-                            </div>
+                <div class="section quote-customer-reference">
+                    <div class="title quote-customer-reference-title">
+                        <strong>@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.CustomerReference")</strong>
+                    </div>
+                    <div class="quote-customer-reference-body">
+                        <div id="customerReferenceText" class="inputs" style="text-align: center;">
+                            <input asp-for="CustomerReference" class="quote-customer-reference-input" placeholder="@T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpOrder.Fields.CustomerReference.Hint")" />
+                            <span class="shipping-address-error" asp-validation-for="CustomerReference"></span>
                         </div>
                     </div>
-                }
+                </div>
 
                 <div class="section special-instructions">
                     <div class="title special-instructions-title">

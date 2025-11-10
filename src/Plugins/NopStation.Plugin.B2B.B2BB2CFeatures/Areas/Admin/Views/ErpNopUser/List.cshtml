@@ -145,10 +145,10 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-md-4">
-                                        <nop-label asp-for="ErpUserTypeId" />
+                                        <nop-label asp-for="ErpNopUserTypeId" />
                                     </div>
                                     <div class="col-md-8">
-                                        <nop-select asp-for="ErpUserTypeId" asp-items="Model.AvailableErpUserTypes" />
+                                        <nop-select asp-for="ErpNopUserTypeId" asp-items="Model.AvailableErpUserTypes" />
                                     </div>
                                 </div>
                             </div>
@@ -185,28 +185,35 @@
                                     new FilterParameter(nameof(Model.Email), typeof(string)),
                                     new FilterParameter(nameof(Model.ShowInActive), typeof(string)),
                                     new FilterParameter(nameof(Model.SalesOrgId), typeof(string)),
-                                    new FilterParameter(nameof(Model.ErpUserTypeId), typeof(string)),
+                                    new FilterParameter(nameof(Model.ErpNopUserTypeId), typeof(string)),
                                 },
                                 ColumnCollection = new List<ColumnProperty>
                                 {
-                                    new ColumnProperty(nameof(ErpNopUserModel.NopCustomer))
+                                    new ColumnProperty(nameof(ErpNopUserModel.Id))
+                                    {
+                                        IsMasterCheckBox = true,
+                                        Render = new RenderCheckBox("checkbox_erpnopusers"),
+                                        ClassName = NopColumnClassDefaults.CenterAll,
+                                        Width = "50",
+                                    },
+                                    new ColumnProperty(nameof(ErpNopUserModel.NopCustomerName))
                                     {
                                         Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.NopCustomer").Text,
                                         Render = new RenderLink(new DataUrl("~/Admin/Customer/Edit", nameof(ErpNopUserModel.NopCustomerId))),
                                         Width = "200"
+                                    },
+                                    new ColumnProperty(nameof(ErpNopUserModel.ErpSalesOrgInfo))
+                                    {
+                                        Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.SalesOrg").Text,
+                                        Render = new RenderLink(new DataUrl("~/Admin/ErpSalesOrg/ErpSalesOrgEdit/", nameof(ErpNopUserModel.ErpSalesOrgId))),
+                                        Width = "150",
+                                        Visible = b2BB2CFeaturesSettings.UseMultiSalesOrg,
                                     },
                                     new ColumnProperty(nameof(ErpNopUserModel.ErpAccountInfo))
                                     {
                                         Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.ErpAccount").Text,
                                         Render = new RenderLink(new DataUrl("~/Admin/ErpAccount/ErpAccountEdit/", nameof(ErpNopUserModel.ErpAccountId))),
                                         Width = "100"
-                                    },
-                                    new ColumnProperty(nameof(ErpNopUserModel.ErpSalesOrg))
-                                    {
-                                        Title = T("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.SalesOrg").Text,
-                                        Render = new RenderLink(new DataUrl("~/Admin/ErpSalesOrg/ErpSalesOrgEdit/", nameof(ErpNopUserModel.ErpSalesOrgId))),
-                                        Width = "150",
-                                        Visible = b2BB2CFeaturesSettings.UseMultiSalesOrg ? true : false,
                                     },
                                     new ColumnProperty(nameof(ErpNopUserModel.ErpShipToAddressId))
                                     {

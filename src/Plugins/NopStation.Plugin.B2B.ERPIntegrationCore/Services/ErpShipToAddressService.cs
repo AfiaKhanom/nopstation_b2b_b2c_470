@@ -303,8 +303,8 @@ public class ErpShipToAddressService : IErpShipToAddressService
 
     public async Task<List<ErpShipToAddress>> GetErpShipToAddressesByCustomerAddressesAsync(int customerId, 
         int erpAccountId = 0, 
-        bool isActiveOnly = true,
-        bool filterOutDeleted = true)
+        int erpShipToAddressCreatedByTypeId = 0, 
+        bool showHidden = false)
     {
         var erpShipToAddresses = await _erpShipToAddressRepository.GetAllAsync(query =>
         {
@@ -313,14 +313,11 @@ public class ErpShipToAddressService : IErpShipToAddressService
                     where customerAddressMapping.CustomerId == customerId
                     select shipToAddress;
 
-            if (filterOutDeleted)
-            {
-                query = query.Where(v => !v.IsDeleted);
-            }
+            query = query.Where(v => !v.IsDeleted);            
 
             query = query.Distinct();
 
-            if (isActiveOnly)
+            if (showHidden)
             {
                 query = query.Where(v => v.IsActive);
             }
@@ -332,7 +329,7 @@ public class ErpShipToAddressService : IErpShipToAddressService
                     accountMap => accountMap.ErpShiptoAddressId,
                     (shipToAddress, accountMap) => new { shipToAddress, accountMap })
                     .Where(@t => @t.accountMap.ErpAccountId == erpAccountId && 
-                    @t.accountMap.ErpShipToAddressCreatedByTypeId == (int)ErpShipToAddressCreatedByType.Admin)
+                    @t.accountMap.ErpShipToAddressCreatedByTypeId == erpShipToAddressCreatedByTypeId)
                     .Select(@t => @t.shipToAddress);
             }
 

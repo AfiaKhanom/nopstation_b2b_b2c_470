@@ -5,7 +5,7 @@ workflow:
       when: always
 
 include:
-  - local: gitlab-ci-live-deploy.yml
+  - local: gitlab-ci-develop.yml
     rules:
       - if: $CI_COMMIT_REF_NAME =~ /develop/
 

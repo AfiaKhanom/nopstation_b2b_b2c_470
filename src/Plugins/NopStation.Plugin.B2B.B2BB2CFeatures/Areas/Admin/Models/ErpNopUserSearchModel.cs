@@ -13,10 +13,8 @@ public record ErpNopUserSearchModel : BaseSearchModel
     {
         AvailableErpUserTypes = new List<SelectListItem>();
         AvailableErpShipToAddresses = new List<SelectListItem>();
-        AvailableErpSalesOrgs = new List<SelectListItem>();
-        AvailableErpAccounts = new List<SelectListItem>();
-        AvailableErpAccountsForAUser = new List<SelectListItem>();
         ShowInActiveOption = new List<SelectListItem>();
+        CustomerRoleIds = new List<int>();
     }
 
     #endregion
@@ -27,6 +25,12 @@ public record ErpNopUserSearchModel : BaseSearchModel
 
     [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUserSearchModel.AccountNumber")]
     public int AccountId { get; set; }
+
+    [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUserSearchModel.FirstName")]
+    public string FirstName { get; set; }
+
+    [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUserSearchModel.LastName")]
+    public string LastName { get; set; }
 
     [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUserSearchModel.Name")]
     public string Name { get; set; }
@@ -41,16 +45,16 @@ public record ErpNopUserSearchModel : BaseSearchModel
     public int ErpShipToAddressId { get; set; }
 
     [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUserSearchModel.ErpUserTypeId")]
-    public int ErpUserTypeId { get; set; }
+    public int ErpNopUserTypeId { get; set; }
 
     [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUserSearchModel.Show")]
     public int ShowInActive { get; set; }
 
+    [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUserAccountMap.Field.CustomerRoles")]
+    public IList<int> CustomerRoleIds { get; set; }
+
     public IList<SelectListItem> AvailableErpUserTypes { get; set; }
-    public IList<SelectListItem> AvailableErpAccounts { get; set; }
-    public IList<SelectListItem> AvailableErpAccountsForAUser { get; set; }
     public IList<SelectListItem> AvailableErpShipToAddresses { get; set; }
-    public IList<SelectListItem> AvailableErpSalesOrgs { get; set; }
     public IList<SelectListItem> AvailableCustomerRoles { get; set; }
     public IList<SelectListItem> ShowInActiveOption { get; set; }
 

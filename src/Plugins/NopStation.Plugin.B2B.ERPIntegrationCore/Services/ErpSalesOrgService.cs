@@ -180,7 +180,22 @@ public class ErpSalesOrgService : IErpSalesOrgService
                        select salesOrg).FirstOrDefaultAsync();
     }
 
-    #endregion Read
+    public async Task<IList<ErpSalesOrg>> GetErpSalesOrgsAsync(bool isActive = true, bool filterOutDeleted = true)
+    {
+        var erpSalesOrgs = await _erpErpSalesOrgRepository.GetAllAsync(query =>
+        {
+            if (isActive)
+                query = query.Where(v => v.IsActive);
+            if (filterOutDeleted)
+                query = query.Where(v => !v.IsDeleted);
+            query = query.OrderBy(ea => ea.Id);
+            return query;
+        });
+
+        return erpSalesOrgs;
+    }
+
+    #endregion
 
     #endregion Methods
 }

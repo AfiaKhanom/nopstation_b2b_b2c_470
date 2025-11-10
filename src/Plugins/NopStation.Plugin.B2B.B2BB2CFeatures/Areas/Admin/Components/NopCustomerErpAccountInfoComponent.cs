@@ -193,12 +193,15 @@ public class NopCustomerErpAccountInfoComponent : NopViewComponent
             ErpShipToAddress erpShipToAddress = null;
             if (erpAccount?.Id > 0)
             {
-                if (_b2BB2CFeaturesSettings.UseDefaultAccountForB2CUser && erpNopUser.ErpUserType == ErpUserType.B2CUser)
+                if (_b2BB2CFeaturesSettings.UseDefaultAccountForB2CUser && 
+                    erpNopUser.ErpUserType == ErpUserType.B2CUser)
                 {
                     erpShipToAddress = (await _erpShipToAddressService.
-                        GetErpShipToAddressesByCustomerAddressesAsync(customerId: erpNopUser.NopCustomerId, 
+                        GetErpShipToAddressesByCustomerAddressesAsync(
+                        customerId: erpNopUser.NopCustomerId, 
                         erpAccountId: erpAccount.Id, 
-                        filterOutDeleted: false))
+                        erpShipToAddressCreatedByTypeId: (int)ErpShipToAddressCreatedByType.Admin,
+                        showHidden: false))
                         .FirstOrDefault();
                 }
                 else

@@ -50,10 +50,10 @@ public interface IErpShipToAddressService
 
     Task<ErpShipToAddress> GetCustomerBillingAddressAsync(ErpAccount erpAccount);
 
-    Task<List<ErpShipToAddress>> GetErpShipToAddressesByCustomerAddressesAsync(int customerId, 
-        int erpAccountId = 0, 
-        bool isActiveOnly = true, 
-        bool filterOutDeleted = true);
+    Task<List<ErpShipToAddress>> GetErpShipToAddressesByCustomerAddressesAsync(int customerId,
+        int erpAccountId = 0,
+        int erpShipToAddressCreatedByTypeId = 0,
+        bool showHidden = false);
 
     Task<ErpShipToAddress> GetErpShipToAddressByShipToCodeAndErpAccountIdAsync(string shipToCode, int erpAccountId);
 

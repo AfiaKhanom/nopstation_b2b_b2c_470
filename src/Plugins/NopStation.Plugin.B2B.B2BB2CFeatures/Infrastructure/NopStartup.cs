@@ -9,6 +9,7 @@ using Nop.Services.Common;
 using Nop.Services.Customers;
 using Nop.Services.Localization;
 using Nop.Services.Orders;
+using Nop.Services.Security;
 using Nop.Web.Controllers;
 using Nop.Web.Factories;
 using NopStation.Plugin.B2B.B2BB2CFeatures.ActionFilters;
@@ -115,10 +116,15 @@ public class NopStartup : INopStartup
             options.Filters.Add<ErpNopUserActionFilterAttribute>();
         });
 
+        services.AddScoped<IOverridenCustomerModelFactory, Areas.Admin.Factories.OverridenCustomerModelFactory>();
+
         services.AddScoped<IErpWorkflowMessageService, ErpWorkflowMessageService>();
         services.AddScoped<IErpActivityLogsModelFactory, ErpActivityLogsModelFactory>();
         services.AddScoped<IErpAccountCreditSyncFunctionality, ErpAccountCreditSyncFunctionality>();
         services.AddScoped<ILocalizationService, OverriddenLocalizationService>();
+
+        services.AddScoped<IPermissionService, OverriddenPermissionService>();
+        services.AddScoped<ICustomerService, OverriddenCustomerService>();
         services.AddScoped<IShoppingCartModelFactory, OverridenShoppingCartModelFactory>();
     }
 

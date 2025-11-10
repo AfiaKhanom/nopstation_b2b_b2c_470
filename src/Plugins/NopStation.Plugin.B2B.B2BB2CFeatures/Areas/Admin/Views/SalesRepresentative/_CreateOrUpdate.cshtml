@@ -37,6 +37,34 @@
                                 <div class="col-md-9">
                                     <nop-select asp-for="NopCustomerId" asp-items="Model.AvailableCustomers" asp-required="true" />
                                     <span asp-validation-for="NopCustomerId"></span>
+                                    <button type="submit" onclick="javascript:OpenWindow('@(Url.Action("NopCustomerForErpSalesRepPopup", "SalesRepresentative",
+                                                                                        new {customerIdInput = Html.IdFor(model => model.NopCustomerId),
+                                                                                            customerNameInput = "customer-name", btnId = "btnRefreshSelectedCustomer"}))', 800, 850, true); return false;" class="btn btn-primary">
+                                        @T("NopStation.Plugin.B2B.B2BB2CFeatures.Customer.Choose")
+                                    </button>
+                                    <button type="submit" id="customer-name-remove" class="btn bg-red">
+                                        @T("NopStation.Plugin.B2B.B2BB2CFeatures.Customer.Remove")
+                                    </button>
+                                    <input type="submit" id="btnRefreshSelectedCustomer" style="display: none" />
+                                    <script>
+                                    $(document).ready(function () {
+                                        $('#customer-name-remove').click(function () {
+                                            $('#customer-name').text('');
+                                            $("#@Html.IdFor(model => model.NopCustomerId)").val(0);
+                                            toggleRemoveButton();
+                                            //return false to don't reload a page
+                                            return false;
+                                        });
+
+                                        $('#btnRefreshSelectedCustomer').click(function () {
+                                            toggleRemoveButton();
+
+                                            //return false to don't reload a page
+                                            return false;
+                                        });
+                                    });
+                                    </script>
+
                                 </div>
                             }
                         </div>

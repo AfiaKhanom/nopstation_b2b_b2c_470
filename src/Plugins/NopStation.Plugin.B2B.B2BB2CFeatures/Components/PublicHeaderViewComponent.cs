@@ -69,7 +69,7 @@ public class PublicHeaderViewComponent : NopViewComponent
                     model.AvailableErpAccounts.Add(new SelectListItem
                     {
                         Text = account.AccountName ?? "",
-                        Value = account.Id.ToString(),
+                        Value = $"{account.Id}",
                         Selected = erpCustomer.ErpAccount.Id == account.Id
                     });
                 }

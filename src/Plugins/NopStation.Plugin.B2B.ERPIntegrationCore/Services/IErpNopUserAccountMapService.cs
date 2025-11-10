@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Nop.Core;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
 
 namespace NopStation.Plugin.B2B.ERPIntegrationCore.Services;
@@ -19,10 +18,15 @@ public interface IErpNopUserAccountMapService
 
     Task<IList<ErpNopUserAccountMap>> GetAllErpNopUserAccountMapsByAccountIdAsync(int accountId);
 
-    Task<IPagedList<ErpNopUserAccountMap>> GetAllErpNopUserAccountMapsAsync(int pageIndex = 0, int pageSize = int.MaxValue, bool getOnlyTotalCount = false);
+    Task<IList<ErpNopUserAccountMap>> GetAllErpNopUserAccountMapsAsync(List<int> erpAccountIds = null, 
+        List<int> customerRoleIds = null, 
+        List<int> erpNopUserIds = null, 
+        int erpNopUserTypeId = 0);
 
     Task<ErpNopUserAccountMap> GetErpNopUserAccountMapByAccountAndUserIdAsync(int accountId, int userId);
 
     Task<bool> CheckAnyErpNopUserAccountMapExistWithAccountIdAndUserIdAsync(int erpAccountId, int erpUserId);
+
+    Task<IList<int>> GetErpNopUserRolesByErpNopUserAsync(ErpNopUser user);
 }
 

@@ -227,22 +227,6 @@
     function renderColumnInfo(data, type, row, meta) {
         return '<a class="btn btn-info" href=/' + data + '><i class="fa fa-eye"></i>Info</a>';
     }
-    $(document).on('blur', '.item-quantity', function () {
-        const itemId = $(this).data('itemid');
-        const newQuantity = parseInt($(this).val());
-        if (isNaN(newQuantity) || newQuantity < 1) {
-            displayBarNotification('Quantity must be at least 1.', 'error', 0);
-            $(this).val(1);
-            return;
-        }
-        UpdateQuantity('update', itemId, newQuantity);
-    });
-    $(document).on('keypress', '.item-quantity', function (e) {
-        if (e.which === 13) {
-            $(this).blur();
-        }
-    });
-
     $(".pencil-img").click(function () {
         showTemplateNameEditField()
     });

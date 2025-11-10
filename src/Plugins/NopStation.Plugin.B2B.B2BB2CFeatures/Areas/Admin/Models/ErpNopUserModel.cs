@@ -13,7 +13,6 @@ public record ErpNopUserModel : BaseNopEntityModel
 
     public ErpNopUserModel()
     {
-        AvailableErpAccounts = new List<SelectListItem>();
         AvailableNopCustomers = new List<SelectListItem>();
         AvailableErpUserTypes = new List<SelectListItem>();
         AvailableAddresses = new List<SelectListItem>();
@@ -30,7 +29,7 @@ public record ErpNopUserModel : BaseNopEntityModel
     public int NopCustomerId { get; set; }
 
     [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.NopCustomer")]
-    public string NopCustomer { get; set; }
+    public string NopCustomerName { get; set; }
 
     [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.NopCustomerEmail")]
     public string NopCustomerEmail { get; set; }
@@ -42,7 +41,8 @@ public record ErpNopUserModel : BaseNopEntityModel
     public string ErpAccountInfo { get; set; }
 
     [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.ErpSalesOrg")]
-    public string ErpSalesOrg { get; set; }
+    public string ErpSalesOrgInfo { get; set; }
+
     public int ErpSalesOrgId { get; set; }
 
     [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.ErpShipToAddressId")]
@@ -50,7 +50,6 @@ public record ErpNopUserModel : BaseNopEntityModel
 
     [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.ErpShipToAddress")]
     public AddressModel ErpShipToAddress { get; set; }
-    public string Email { get; set; }
 
     [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.BillingErpShipToAddressId")]
     public int BillingErpShipToAddressId { get; set; }
@@ -91,7 +90,6 @@ public record ErpNopUserModel : BaseNopEntityModel
     [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.SelectedCustomerRoles")]
     public string? SelectedCustomerRoles { get; set; }
 
-    public IList<SelectListItem> AvailableErpAccounts { get; set; }
 
     public IList<SelectListItem> AvailableNopCustomers { get; set; }
 

@@ -1,8 +1,8 @@
-﻿using FluentMigrator.Builders.Create.Table;
+﻿using System.Data;
+using FluentMigrator.Builders.Create.Table;
 using Nop.Data.Extensions;
 using Nop.Data.Mapping.Builders;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
-using System.Data;
 
 namespace NopStation.Plugin.B2B.ERPIntegrationCore.Data.Builders;
 
@@ -18,7 +18,9 @@ public class ErpNopUserAccountMapBuilder : NopEntityBuilder<ErpNopUserAccountMap
     {
         table
             .WithColumn(nameof(ErpNopUserAccountMap.ErpAccountId)).AsInt32().ForeignKey<ErpAccount>(onDelete: Rule.None)
-            .WithColumn(nameof(ErpNopUserAccountMap.ErpUserId)).AsInt32().ForeignKey<ErpNopUser>(onDelete: Rule.None);
+            .WithColumn(nameof(ErpNopUserAccountMap.ErpUserId)).AsInt32().ForeignKey<ErpNopUser>(onDelete: Rule.None)
+            .WithColumn(nameof(ErpNopUserAccountMap.ErpUserTypeId)).AsInt32().Nullable()
+            .WithColumn(nameof(ErpNopUserAccountMap.CustomerRolesIds)).AsString(int.MaxValue).Nullable().WithDefaultValue(string.Empty);
     }
 
     #endregion

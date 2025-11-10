@@ -23,13 +23,12 @@ public record ErpNopUserAccountModel : BaseNopEntityModel
 
     #region Properties
 
-    [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Field.AccountNumber")]
-    public string AccountNumber { get; set; }
-
-    [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Field.AccountName")]
-    public string AccountName { get; set; }
+    [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Field.AccountInfo")]
+    public string AccountInfo { get; set; }
 
     [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpAccount.Field.ErpSalesOrgId")]
+    public string ErpSalesOrgInfo { get; set; }
+
     public int ErpSalesOrgId { get; set; }
     public int? BillingAddressId { get; set; }
 
@@ -137,6 +136,10 @@ public record ErpNopUserAccountModel : BaseNopEntityModel
 
     [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.SelectedCustomerRoles")]
     public string SelectedCustomerRoles { get; set; }
+
+    [NopResourceDisplayName("Plugin.Misc.NopStation.ERPIntegrationCore.ErpNopUser.Field.ErpUserType")]
+    public int ErpUserTypeId { get; set; }
+    public string ErpUserType { get; set; }
 
     public IList<SelectListItem> ErpAccountStatusTypes { get; set; }
 

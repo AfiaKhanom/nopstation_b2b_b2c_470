@@ -75,15 +75,15 @@ public class ErpOrderModelFactory : IErpOrderModelFactory
             pageIndex: searchModel.Page - 1,
             pageSize: searchModel.PageSize);
 
-        foreach (var item in orderPerAccounts)
-        {
-            item.ErpAccount = await _erpAccountService.GetErpAccountByIdAsync(item.ErpAccountId);
-        }
+        var erpAccounts = await _erpAccountService.GetAllErpAccountsByIdsAsync(
+            erpAccountIds: orderPerAccounts.Select(o => o.ErpAccountId).Distinct().ToList());
 
         var model = await new ErpOrderAdditionalDataListModel().PrepareToGridAsync(searchModel, orderPerAccounts, () =>
         {
             return orderPerAccounts.SelectAwait(async orderPerAccount =>
             {
+                var account = erpAccounts.FirstOrDefault(x => x.Id == orderPerAccount.ErpAccountId);
+
                 var erpOrderModel = new ErpOrderAdditionalDataModel
                 {
                     Id = orderPerAccount.Id,
@@ -96,7 +96,7 @@ public class ErpOrderModelFactory : IErpOrderModelFactory
                     IntegrationStatusTypeId = orderPerAccount.IntegrationStatusTypeId,
                     IntegrationStatusType = await _localizationService.GetLocalizedEnumAsync(orderPerAccount.IntegrationStatusType),
                     ErpAccountId = orderPerAccount.ErpAccountId,
-                    ErpAccountName = orderPerAccount.ErpAccount != null ? orderPerAccount.ErpAccount.AccountNumber : "",
+                    ErpAccountName = $"{account?.AccountName} ({account?.AccountNumber})",
                 };
 
                 if (orderPerAccount.ErpOrderType == ErpOrderType.B2BQuote)
@@ -134,11 +134,8 @@ public class ErpOrderModelFactory : IErpOrderModelFactory
         ArgumentNullException.ThrowIfNull(searchModel);
 
         searchModel.AvailableErpOrderTypeOptions = await _commonHelper.PrepareDropdownDataFromEnumAsync<ErpOrderType>();
-
         searchModel.AvailableIntegrationStatusTypeOptions = await _commonHelper.PrepareDropdownDataFromEnumAsync<IntegrationStatusType>();
-
         searchModel.AvailableErpOrderOriginTypeOptions = await _commonHelper.PrepareDropdownDataFromEnumAsync<ErpOrderOriginType>();
-
         searchModel.AvailableCustomerTypes = await _commonHelper.PrepareDropdownDataFromEnumAsync<ErpUserType>();
 
         searchModel.SetGridPageSize();
@@ -157,34 +154,29 @@ public class ErpOrderModelFactory : IErpOrderModelFactory
             model.ErpOrderTypeId = erpOrderAdditionalData.ErpOrderTypeId;
             model.ErpOrderType = await _localizationService.GetLocalizedEnumAsync(erpOrderAdditionalData.ErpOrderType);
             model.ErpAccountId = erpOrderAdditionalData.ErpAccountId;
-            model.OrderPlacedByNopCustomerEmail = erpOrderAdditionalData.OrderPlacedByNopCustomerId > 0 ? (await _customerService.GetCustomerByIdAsync(erpOrderAdditionalData.OrderPlacedByNopCustomerId))?.Email ?? string.Empty : string.Empty;
-            if (string.IsNullOrEmpty(model.ErpAccountName) || string.IsNullOrEmpty(erpOrderAdditionalData.ErpAccount?.AccountNumber))
+            model.OrderPlacedByNopCustomerEmail = erpOrderAdditionalData.OrderPlacedByNopCustomerId > 0 
+                ? (await _customerService.GetCustomerByIdAsync(erpOrderAdditionalData.OrderPlacedByNopCustomerId))?.Email ?? string.Empty 
+                : string.Empty;
+
+            if (string.IsNullOrWhiteSpace(model.ErpAccountName) && erpOrderAdditionalData.ErpAccountId > 0)
             {
                 var erpAccount = await _erpAccountService.GetErpAccountByIdAsync(erpOrderAdditionalData.ErpAccountId);
-                if (erpAccount != null)
-                {
-                    model.ErpAccountName = string.Concat(erpAccount.AccountName, " (", erpAccount.AccountNumber, ")");
-                    model.ErpAccountSalesOrganisationName = erpAccount.ErpSalesOrgId > 0 ? (await _erpSalesOrgService.GetErpSalesOrgByIdAsync(erpAccount.ErpSalesOrgId))?.Name ?? string.Empty : string.Empty;
-                }
-            }
-            else
-            {
-                model.ErpAccountName = erpOrderAdditionalData.ErpAccount?.AccountName + " (" + erpOrderAdditionalData.ErpAccount?.AccountNumber + ")";
-                model.ErpAccountSalesOrganisationName = erpOrderAdditionalData.ErpAccount?.ErpSalesOrgId > 0 ? (await _erpSalesOrgService.GetErpSalesOrgByIdAsync(erpOrderAdditionalData.ErpAccount.ErpSalesOrgId))?.Name ?? string.Empty : string.Empty;
+                var erpSalesOrg = await _erpSalesOrgService.GetErpSalesOrgByIdAsync(erpAccount.ErpSalesOrgId);
+                model.ErpAccountName = $"{erpAccount.AccountName} - ({erpAccount.AccountNumber})";
+                model.ErpAccountSalesOrganisationId = erpAccount.ErpSalesOrgId;
+                model.ErpAccountSalesOrganisationName = erpAccount.ErpSalesOrgId > 0 
+                    ? erpSalesOrg?.Name ?? string.Empty 
+                    : string.Empty;
             }
 
             model.ErpShipToAddressId = erpOrderAdditionalData.ErpShipToAddressId;
-            if (string.IsNullOrEmpty(model.ErpShipToName))
+            if (string.IsNullOrWhiteSpace(model.ErpShipToName))
             {
                 var erpShipAddress = await _erpShipToAddressService.GetErpShipToAddressByIdAsync(erpOrderAdditionalData.ErpShipToAddressId ?? 0);
                 if (erpShipAddress != null)
                 {
                     model.ErpShipToName = erpShipAddress.ShipToName;
                 }
-            }
-            else
-            {
-                model.ErpShipToName = erpOrderAdditionalData.ErpShipToAddress?.ShipToName;
             }
 
             var nopOrder = await _orderService.GetOrderByIdAsync(model.NopOrderId);
@@ -200,12 +192,18 @@ public class ErpOrderModelFactory : IErpOrderModelFactory
             model.IntegrationStatusType = await _localizationService.GetLocalizedEnumAsync(erpOrderAdditionalData.IntegrationStatusType);
             model.IntegrationError = erpOrderAdditionalData.IntegrationError;
             model.IntegrationRetries = erpOrderAdditionalData.IntegrationRetries ?? 0;
-            model.IntegrationErrorDateTime = !erpOrderAdditionalData.IntegrationErrorDateTimeUtc.HasValue ? model.IntegrationErrorDateTime
+
+            model.IntegrationErrorDateTime = !erpOrderAdditionalData.IntegrationErrorDateTimeUtc.HasValue 
+                ? model.IntegrationErrorDateTime 
                 : await _dateTimeHelper.ConvertToUserTimeAsync(erpOrderAdditionalData.IntegrationErrorDateTimeUtc.Value, DateTimeKind.Utc);
-            model.LastERPUpdate = !erpOrderAdditionalData.LastERPUpdateUtc.HasValue ? model.LastERPUpdate
-            : await _dateTimeHelper.ConvertToUserTimeAsync(erpOrderAdditionalData.LastERPUpdateUtc.Value, DateTimeKind.Utc);
+
+            model.LastERPUpdate = !erpOrderAdditionalData.LastERPUpdateUtc.HasValue 
+                ? model.LastERPUpdate 
+                : await _dateTimeHelper.ConvertToUserTimeAsync(erpOrderAdditionalData.LastERPUpdateUtc.Value, DateTimeKind.Utc);
+
             if (erpOrderAdditionalData.ChangedOnUtc.HasValue)
                 model.ChangedOn = await _dateTimeHelper.ConvertToUserTimeAsync(erpOrderAdditionalData.ChangedOnUtc.Value, DateTimeKind.Utc);
+
             model.ChangedById = erpOrderAdditionalData.ChangedById;
             var customer = await _customerService.GetCustomerByIdAsync(erpOrderAdditionalData.ChangedById);
             model.ChangedByCustomerEmail = customer?.Email;
@@ -287,6 +285,7 @@ public class ErpOrderModelFactory : IErpOrderModelFactory
 
             erpOrderModel.ErpOrderItems.Add(erpOrderItemModel);
         }
+
         return erpOrderModel;
     }
 

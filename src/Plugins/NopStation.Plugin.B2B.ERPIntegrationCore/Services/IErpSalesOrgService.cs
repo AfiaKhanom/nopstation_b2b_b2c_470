@@ -32,4 +32,6 @@ public interface IErpSalesOrgService
     Task<ErpSalesOrg> GetSalesOrgByCodeAsync(string salesorgCode);
 
     Task<ErpSalesOrg> GetSalesOrgByWarehouseCodeAsync(string warehouseCode);
+
+    Task<IList<ErpSalesOrg>> GetErpSalesOrgsAsync(bool isActive = true, bool filterOutDeleted = true);
 }
