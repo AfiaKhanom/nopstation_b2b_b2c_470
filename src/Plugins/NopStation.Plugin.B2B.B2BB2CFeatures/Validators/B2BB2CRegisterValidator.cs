@@ -32,7 +32,7 @@ public partial class B2BB2CRegisterValidator : BaseNopValidator<B2BRegisterModel
         RuleFor(x => x.AccountName)
             .NotEmpty()
             .When(x => !x.IsB2BUser)
-            .WithMessageAwait(localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.Register.Fields.AccountName.Required")); 
+            .WithMessageAwait(localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.Register.Fields.AccountName.Required"));
         RuleFor(x => x.ZipPostalCode)
             .NotEmpty()
             .When(x => !x.IsB2BUser)
@@ -46,9 +46,9 @@ public partial class B2BB2CRegisterValidator : BaseNopValidator<B2BRegisterModel
             .When(x => !x.IsB2BUser)
             .WithMessageAwait(localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.Register.Fields.Email.StreetAddressRequired"));
         RuleFor(x => x.StreetAddress2)
-            .NotEmpty()
-            .When(x => !x.IsB2BUser)
-            .WithMessageAwait(localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.Register.Fields.Email.StreetAddress2Required"));
+             .NotEmpty()
+             .When(x => !x.IsB2BUser && customerSettings.StreetAddress2Required)
+             .WithMessageAwait(localizationService.GetResourceAsync("Plugin.Misc.NopStation.B2BB2CFeatures.Register.Fields.Email.StreetAddress2Required"));
         RuleFor(x => x.CountryId)
             .GreaterThan(0)
             .When(x => !x.IsB2BUser)

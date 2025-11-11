@@ -7,6 +7,7 @@ using Nop.Core;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Common;
 using Nop.Core.Domain.Customers;
+using Nop.Core.Domain.Directory;
 using Nop.Core.Domain.Gdpr;
 using Nop.Core.Domain.Security;
 using Nop.Core.Domain.Tax;
@@ -20,7 +21,6 @@ using Nop.Web.Models.Customer;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Helpers;
 using NopStation.Plugin.B2B.B2BB2CFeatures.Model.Registration;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Services;
-using Nop.Core.Domain.Directory;
 
 namespace NopStation.Plugin.B2B.B2BB2CFeatures.Factories;
 
@@ -152,7 +152,7 @@ public class B2BRegisterModelFactory : IB2BRegisterModelFactory
         model.StreetAddressRequired = true;
         model.StreetAddressEnabled = true;
         model.StreetAddress2Enabled = true;
-        model.StreetAddress2Required = true;
+        model.StreetAddress2Required = _customerSettings.StreetAddress2Required;
         model.ZipPostalCodeEnabled = true;
         model.ZipPostalCodeRequired = true;
         model.CountryEnabled = true;

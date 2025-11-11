@@ -961,8 +961,8 @@ public class B2BB2CCustomerController : CustomerController
                             erpNopUser);
 
                         var b2BB2CustomerRole = await _customerService.GetCustomerRoleBySystemNameAsync(
-                            model.IsB2BUser ? 
-                            ERPIntegrationCoreDefaults.B2BCustomerRole : 
+                            model.IsB2BUser ?
+                            ERPIntegrationCoreDefaults.B2BCustomerRole :
                             ERPIntegrationCoreDefaults.B2CCustomerRole);
 
                         //prepare and save erpNopUser
@@ -1188,8 +1188,8 @@ public class B2BB2CCustomerController : CustomerController
             return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.Disabled });
 
         var model = new B2BRegisterModel();
-        model.IsB2BUser = false;
         model = await _b2BRegisterModelFactory.PrepareB2BRegisterModelAsync(model, false, setDefaultValues: true);
+        model.IsB2BUser = false;
 
         return View(model);
     }
