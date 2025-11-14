@@ -1,8 +1,4 @@
-﻿@using Nop.Core;
-@using Nop.Services.Cms;
-@using Nop.Services.Configuration;
-@using Nop.Services.Localization;
-@using Nop.Services.Media;
+﻿@using Nop.Services.Media;
 
 @model NewsletterBoxModel
 
@@ -21,10 +17,9 @@
         {
             backgroundImageUrl = await pictureService.GetPictureUrlAsync(pictureId);
         }
-       
     }
-
 }
+
 <div class="newsletter">
     <div class="newsletter-container">
         <div class="sub-title">
@@ -34,7 +29,9 @@
             <div class="newsletter-email">
                 <input asp-for="NewsletterEmail" id="newsletter-email" class="newsletter-subscribe-text" placeholder=@T("Newsletter.Email.Placeholder") aria-label="@T("Newsletter.Subscribe")" />
 
-                <button type="button" id="newsletter-subscribe-button" class="button-1 newsletter-subscribe-button">@T(Model.AllowToUnsubscribe ? "Newsletter.Options.Send" : "Newsletter.Options.Subscribe")</button>
+                <button type="button" id="newsletter-subscribe-button" class="button-1 newsletter-subscribe-button">
+                    @T(Model.AllowToUnsubscribe ? "Newsletter.Options.Send" : "Newsletter.Options.Subscribe")
+                </button>
 
                 @if (Model.AllowToUnsubscribe)
                 {
@@ -49,19 +46,23 @@
                         </span>
                     </div>
                 }
+
                 @if (Model.DisplayCaptcha)
                 {
                     <nop-captcha />
                 }
             </div>
+
             <div class="newsletter-validation">
                 <span id="subscribe-loading-progress" style="display: none;" class="please-wait">@T("Common.Wait")</span>
                 <span asp-validation-for="NewsletterEmail"></span>
             </div>
         </div>
+
         <div class="newsletter-result" id="newsletter-result-block"></div>
+
         <script asp-location="Footer">
-                async function getCaptchaToken(action, reCaptchaPublicKey, isReCaptchaV3) {
+            async function getCaptchaToken(action, reCaptchaPublicKey, isReCaptchaV3) {
                 var recaptchaToken = '';
                 if (isReCaptchaV3) {
                     grecaptcha.ready(() => {
@@ -74,24 +75,28 @@
                         await new Promise(t => setTimeout(t, 100));
                     }
                 } else {
-                    recaptchaToken = $('#newsletter-subscribe-block .captcha-box textarea[name="g-recaptcha-response"').val();
+                    recaptchaToken = $('#newsletter-subscribe-block .captcha-box textarea[name="g-recaptcha-response"]').val();
                 }
 
                 return recaptchaToken;
             }
-                function newsletter_subscribe(subscribe) {
+            async function newsletter_subscribe(subscribe) {
                 var subscribeProgress = $("#subscribe-loading-progress");
                 subscribeProgress.show();
-                 var captchaTok = '';
+
+                var captchaTok = '';
                 if (@Model.DisplayCaptcha.ToString().ToLowerInvariant() == true) {
                     captchaTok = await getCaptchaToken('SubscribeNewsletter', '@Model.ReCaptchaPublicKey', @Model.IsReCaptchaV3.ToString().ToLowerInvariant());
                 }
+
                 var postData = {
                     subscribe: subscribe,
                     email: $("#newsletter-email").val(),
                     'g-recaptcha-response': captchaTok
                 };
+
                 addAntiForgeryToken(postData);
+
                 $.ajax({
                     cache: false,
                     type: "POST",
@@ -116,22 +121,26 @@
             }
 
             $(document).ready(function () {
-                $('#newsletter-subscribe-button').on('click', function () {
-                    @if (Model.AllowToUnsubscribe)
-                    {
-                        <text>if ($('#newsletter_subscribe').is(':checked')) {
-                        newsletter_subscribe('true');
-                    } else {
-                        newsletter_subscribe('false');
-                    }</text>
-                    }
-                    else
-                    {
-                        <text>newsletter_subscribe('true');</text>
-                    }
+                $('#newsletter-subscribe-button').on('click', async function () {
+            @if (Model.AllowToUnsubscribe)
+            {
+                <text>
+                                if ($('#newsletter_subscribe').is(':checked')) {
+                                    await newsletter_subscribe('true');
+                                } else {
+                                    await newsletter_subscribe('false');
+                                }
+                </text>
+            }
+            else
+            {
+                <text>await newsletter_subscribe('true');</text>
+            }
                 });
+
                 $("#newsletter-email").on("keydown", function (event) {
                     if (event.keyCode == 13) {
+                        console.log("enter pressed");
                         $("#newsletter-subscribe-button").trigger("click");
                         return false;
                     }

@@ -1797,7 +1797,7 @@ public class ErpCheckoutController : CheckoutController
 
             if (modelShipToAddress.AllowEdit)
             {
-                var lastShippingB2BShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdWithActiveAsync(user.ErpShipToAddressId);
+                var lastShippingB2BShipToAddress = await _erpShipToAddressService.GetErpShipToAddressByIdWithActiveAsync(modelShipToAddress.Id);
 
                 if (lastShippingB2BShipToAddress == null)
                 {

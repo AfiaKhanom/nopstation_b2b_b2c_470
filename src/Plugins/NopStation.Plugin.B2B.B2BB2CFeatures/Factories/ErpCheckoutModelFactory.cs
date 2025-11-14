@@ -66,7 +66,7 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
     private readonly CaptchaSettings _captchaSettings;
     private readonly B2BB2CFeaturesSettings _b2BB2CFeaturesSettings;
 
-    #endregion
+    #endregion Fields
 
     #region Ctor
 
@@ -135,7 +135,7 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
         _b2BB2CFeaturesSettings = b2BB2CFeaturesSettings;
     }
 
-    #endregion
+    #endregion Ctor
 
     #region Method
 
@@ -435,7 +435,7 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
     public async Task<CheckoutErpBillingAddressModel> PrepareCheckoutErpBillingAddressModelAsync(IList<ShoppingCartItem> cart, ErpAccount b2BAccount)
     {
         var currentCustomer = await _b2BB2CWorkContext.GetCurrentCustomerAsync();
-        var store=await _storeContext.GetCurrentStoreAsync();
+        var store = await _storeContext.GetCurrentStoreAsync();
         var isQuoteOrder = await _genericAttributeService.GetAttributeAsync<bool>(currentCustomer, B2BB2CFeaturesDefaults.B2CQouteOrderAttribute, store.Id);
         var model = new CheckoutErpBillingAddressModel
         {
@@ -443,11 +443,11 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
             //allow customers to enter (choose) a shipping address if "Disable Billing address step" setting is enabled
             ShipToSameAddress = !_orderSettings.DisableBillingAddressCheckoutStep
         };
-        if(isQuoteOrder)
+        if (isQuoteOrder)
         {
-            model.ShipToSameAddress=true;
-            model.ShipToSameAddressAllowed=true;
-            model.IsQuoteOrder=true;
+            model.ShipToSameAddress = true;
+            model.ShipToSameAddressAllowed = true;
+            model.IsQuoteOrder = true;
         }
         model.ErpBillingAddress = model.ErpBillingAddress ?? new ErpBillingAddressModel();
         if (b2BAccount != null)
@@ -580,6 +580,27 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
                     City = nopAddressForModifiedShipToAddress?.City,
                     StateProvinceName = stateProvince?.Name,
                     ZipPostalCode = nopAddressForModifiedShipToAddress?.ZipPostalCode,
+                    CountryName = country?.Name
+                });
+            }
+            var shipToAddresses = await _erpShipToAddressService.GetErpShipToAddressesByAccountIdAsync(showHidden: false, isActiveOnly: true, accountId: b2BAccount.Id);
+            shipToAddresses = shipToAddresses.Where(x => x.Id != modifiedShipToAddressIdOnCheckout).ToList();
+            foreach (var shipTo in shipToAddresses)
+            {
+                nopAddress = await _addressService.GetAddressByIdAsync(shipTo.AddressId) ?? new Address();
+                var country = await _countryService.GetCountryByIdAsync(nopAddress.CountryId ?? 0);
+                var stateProvince = await _stateProvinceService.GetStateProvinceByIdAsync(nopAddress.StateProvinceId ?? 0);
+                model.ExistingErpShipToAddresses.Add(new ErpShipToAddressModelForCheckout
+                {
+                    Id = shipTo.Id,
+                    ShipToCode = shipTo.ShipToCode,
+                    ShipToName = shipTo.ShipToName,
+                    Address1 = nopAddress?.Address1,
+                    Address2 = nopAddress?.Address2,
+                    Suburb = shipTo.Suburb,
+                    City = nopAddress?.City,
+                    StateProvinceName = stateProvince?.Name,
+                    ZipPostalCode = nopAddress?.ZipPostalCode,
                     CountryName = country?.Name
                 });
             }
@@ -793,7 +814,7 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
             throw new ArgumentNullException(nameof(cart));
 
         var b2BAccount = await _erpAccountService.GetErpAccountByIdAsync(b2BUser.ErpAccountId);
-        var currentCustomer=await _workContext.GetCurrentCustomerAsync();
+        var currentCustomer = await _workContext.GetCurrentCustomerAsync();
         var isQuoteOrder = await _genericAttributeService.GetAttributeAsync<bool>(currentCustomer, B2BB2CFeaturesDefaults.B2BQouteOrderAttribute, (await _storeContext.GetCurrentStoreAsync()).Id);
         var model = new ErpOnePageCheckoutModel
         {
@@ -888,7 +909,7 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
         if (deliveryDateResponse != null && deliveryDateResponse.IsFullLoadRequired)
             return (null, true);
 
-        #endregion
+        #endregion Call By Suburb
 
         #region Call By City
 
@@ -901,7 +922,7 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
         if (deliveryDateResponse != null && deliveryDateResponse.IsFullLoadRequired)
             return (null, true);*/
 
-        #endregion
+        #endregion Call By City
 
         if (deliveryDateResponse == null || deliveryDateResponse.DeliveryDates.Count < 1)
         {
@@ -1035,16 +1056,43 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
                     SalesOrganisationCode = b2BSalesOrg.Code
                 });
             }
-        }
-        else
-        {
             var shipToAddresses = new List<ErpShipToAddress>();
 
             if (!_b2BB2CFeaturesSettings.UseDefaultAccountForB2CUser)
                 shipToAddresses = (List<ErpShipToAddress>)await _erpShipToAddressService.GetErpShipToAddressesByAccountIdAsync(showHidden: false, isActiveOnly: true, accountId: b2BAccount.Id);
             else
                 shipToAddresses = await _erpShipToAddressService.GetErpShipToAddressesByCustomerAddressesAsync(customerId: currentCustomer.Id, erpAccountId: b2CUser.ErpAccountId);
-
+            shipToAddresses = shipToAddresses.Where(x => x.Id != modifiedShipToAddressIdOnCheckout).ToList();
+            foreach (var shipTo in shipToAddresses)
+            {
+                nopAddress = await _addressService.GetAddressByIdAsync(shipTo.AddressId);
+                var country = await _countryService.GetCountryByIdAsync(nopAddress.CountryId ?? 0);
+                var stateProvince = await _stateProvinceService.GetStateProvinceByIdAsync(nopAddress.StateProvinceId ?? 0);
+                model.ExistingErpShipToAddresses.Add(new ErpShipToAddressModelForCheckout
+                {
+                    Id = shipTo.Id,
+                    ShipToCode = shipTo.ShipToCode,
+                    ShipToName = shipTo.ShipToName,
+                    Address1 = nopAddress?.Address1,
+                    Address2 = nopAddress?.Address2,
+                    Suburb = shipTo.Suburb,
+                    City = nopAddress?.City,
+                    StateProvinceName = stateProvince?.Name,
+                    ZipPostalCode = nopAddress?.ZipPostalCode,
+                    CountryName = country?.Name,
+                    ErpSalesOrganizationId = b2BSalesOrg.Id,
+                    SalesOrganisationCode = b2BSalesOrg.Code
+                });
+            }
+        }
+        else
+        {
+            var shipToAddresses = new List<ErpShipToAddress>();
+            if (!_b2BB2CFeaturesSettings.UseDefaultAccountForB2CUser)
+                shipToAddresses = (List<ErpShipToAddress>)await _erpShipToAddressService.GetErpShipToAddressesByAccountIdAsync(showHidden: false, isActiveOnly: true, accountId: b2BAccount.Id);
+            else
+                shipToAddresses = await _erpShipToAddressService.GetErpShipToAddressesByCustomerAddressesAsync(customerId: currentCustomer.Id, erpAccountId: b2CUser.ErpAccountId);
+            shipToAddresses = shipToAddresses.Where(x => x.Id != modifiedShipToAddressIdOnCheckout).ToList();
             foreach (var shipTo in shipToAddresses)
             {
                 nopAddress = await _addressService.GetAddressByIdAsync(shipTo.AddressId);
@@ -1083,7 +1131,6 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
             ErpSalesOrganizationId = b2BSalesOrg.Id,
             SalesOrganisationCode = b2BSalesOrg.Code
         };
-
 
         if (_addressSettings.PreselectCountryIfOnlyOne && countries.Count == 1)
         {
@@ -1152,5 +1199,5 @@ public class ErpCheckoutModelFactory : IErpCheckoutModelFactory
         return model;
     }
 
-    #endregion
+    #endregion Method
 }

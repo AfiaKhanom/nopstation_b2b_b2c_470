@@ -24,10 +24,10 @@
 </style>
 
 <div class="product-essential">
-    <div class="popup-header">        
+    <div class="popup-header">
         <h1 class="product-name">
             Edit (@Model.ShipToCode, @Model.ShipToName)
-        </h1>        
+        </h1>
     </div>
     <div class="product-content">
         <form id="ErpShipToAddressPopUpForm" asp-action="ErpShipToAddressPopUp" asp-controller="ErpCheckout" method="post">
@@ -151,3 +151,27 @@
         </form>
     </div>
 </div>
+<script>
+    $(document).ready(function () {
+        $(document).on('change', '[data-trigger="country-select"]', function () {
+            var url = $(this).data('url');
+            var stateDropdown = $($(this).data('stateprovince'));
+            var loading = $($(this).data('loading'));
+
+            loading.show();
+
+            $.get(url, { countryId: $(this).val() }, function (data) {
+                stateDropdown.empty();
+
+                $.each(data, function (i, option) {
+                    stateDropdown.append($('<option/>')
+                        .attr('value', option.id)
+                        .text(option.name));
+                });
+
+                loading.hide();
+            });
+        });
+        $('[data-trigger="country-select"]').trigger('change');
+    });
+</script>

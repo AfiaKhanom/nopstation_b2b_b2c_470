@@ -812,6 +812,8 @@ public class B2BB2CCustomerController : CustomerController
                             {
                                 #region Prepare and save ErpAccount
 
+                                var salesOrgId = _b2BB2CFeaturesSettings.DefaultB2COrganizationId == 0 ? 1 : _b2BB2CFeaturesSettings.DefaultB2COrganizationId;
+
                                 erpAccount = new ErpAccount
                                 {
                                     AccountNumber = accountNumber,
@@ -826,7 +828,7 @@ public class B2BB2CCustomerController : CustomerController
                                     IsActive = true,
                                     CreatedOnUtc = DateTime.UtcNow,
                                     CreatedById = customer.Id,
-                                    ErpSalesOrgId = _b2BB2CFeaturesSettings.DefaultB2COrganizationId,
+                                    ErpSalesOrgId = salesOrgId,
                                 };
 
                                 await _erpAccountService.InsertErpAccountAsync(erpAccount);

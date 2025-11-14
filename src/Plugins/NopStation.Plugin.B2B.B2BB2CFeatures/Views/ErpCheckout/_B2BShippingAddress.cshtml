@@ -127,11 +127,11 @@
                                                 {
                                                     var addressLine = string.Join(", ", new string[] {
                                     item.ShipToName,
+                                    item.CountryName,
+                                    item.StateProvinceName,
+                                    item.City,
                                     item.Address1,
                                     item.Address2,
-                                    item.Suburb,
-                                    item.City,
-                                    item.StateProvinceName,
                                     item.ZipPostalCode
                                                             }.Where(s => !string.IsNullOrEmpty(s)));
 

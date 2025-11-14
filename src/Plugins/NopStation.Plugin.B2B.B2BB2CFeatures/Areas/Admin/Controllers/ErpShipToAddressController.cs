@@ -119,6 +119,8 @@ public class ErpShipToAddressController : NopStationAdminController
             var address = model.AddressModel.ToEntity<Address>();
             await _addressService.InsertAddressAsync(address);
             var erpShipToAddress = model.ToEntity<ErpShipToAddress>();
+            erpShipToAddress.RepNumber=model.RepNumber??string.Empty;
+            erpShipToAddress.Suburb=model.Suburb??string.Empty;
             erpShipToAddress.AddressId = address.Id;
             erpShipToAddress.CreatedOnUtc = DateTime.UtcNow;
             erpShipToAddress.CreatedById = currentCustomer.Id;
