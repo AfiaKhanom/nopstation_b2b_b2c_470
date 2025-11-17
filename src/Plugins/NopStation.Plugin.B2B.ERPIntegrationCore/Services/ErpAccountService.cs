@@ -26,7 +26,7 @@ public class ErpAccountService : IErpAccountService
     private readonly IRepository<Address> _addressRepository;
     private readonly IErpNopUserService _erpNopUserService;
 
-    #endregion
+    #endregion Fields
 
     #region Ctor
 
@@ -51,7 +51,7 @@ public class ErpAccountService : IErpAccountService
         _staticCacheManager = staticCacheManager;
     }
 
-    #endregion
+    #endregion Ctor
 
     #region Methods
 
@@ -82,7 +82,7 @@ public class ErpAccountService : IErpAccountService
         await _erpAccountRepository.UpdateAsync(erpAccounts);
     }
 
-    #endregion
+    #endregion Insert/Update
 
     #region Delete
 
@@ -101,12 +101,13 @@ public class ErpAccountService : IErpAccountService
             await DeleteErpAccountAsync(erpAccount);
         }
     }
+
     public async Task DeleteErpSalesRepErpAccountMapAsync(ErpSalesRepErpAccountMap salesRepErpAccountMap)
     {
         await _erpSalesRepErpAccountMapRepository.DeleteAsync(salesRepErpAccountMap);
     }
 
-    #endregion
+    #endregion Delete
 
     #region Read
 
@@ -252,7 +253,6 @@ public class ErpAccountService : IErpAccountService
 
                 query = query.OrderByDescending(ea => ea.CreatedOnUtc);
                 return query;
-
             }, pageIndex, pageSize, getOnlyTotalCount)
         );
     }
@@ -331,11 +331,11 @@ public class ErpAccountService : IErpAccountService
         );
     }
 
-    public async Task<IPagedList<ErpAccount>> GetAllErpAccountsByIdsAsync(int pageIndex = 0, 
-        int pageSize = int.MaxValue, 
+    public async Task<IPagedList<ErpAccount>> GetAllErpAccountsByIdsAsync(int pageIndex = 0,
+        int pageSize = int.MaxValue,
         bool showHidden = false,
-        bool getOnlyTotalCount = false, 
-        List<int> accountIds = null, 
+        bool getOnlyTotalCount = false,
+        List<int> accountIds = null,
         string email = "")
     {
         var key = _staticCacheManager.PrepareKeyForDefaultCache(
@@ -365,7 +365,6 @@ public class ErpAccountService : IErpAccountService
 
                 query = query.OrderBy(ea => ea.Id);
                 return query;
-
             }, pageIndex, pageSize, getOnlyTotalCount)
         );
     }
@@ -395,7 +394,6 @@ public class ErpAccountService : IErpAccountService
 
             query = query.OrderBy(ea => ea.Id);
             return query;
-
         });
     }
 
@@ -450,22 +448,14 @@ public class ErpAccountService : IErpAccountService
 
     public async Task<ErpAccount> GetActiveErpAccountByCustomerIdAsync(int customerId)
     {
-        var key = _staticCacheManager.PrepareKeyForDefaultCache(
-            ERPIntegrationCoreDefaults.ErpAccountByCustomerIdCacheKey,
-            customerId
-        );
-
-        return await _staticCacheManager.GetAsync(key, async () =>
+        var erpNopUser = await _erpNopUserService.GetErpNopUserByCustomerIdAsync(customerId);
+        if (erpNopUser != null && !erpNopUser.IsDeleted && erpNopUser.IsActive)
         {
-            var erpNopUser = await _erpNopUserService.GetErpNopUserByCustomerIdAsync(customerId);
-            if (erpNopUser != null && !erpNopUser.IsDeleted && erpNopUser.IsActive)
-            {
-                var erpAccount = await GetErpAccountByIdWithActiveAsync(erpNopUser.ErpAccountId);
-                if (erpAccount != null)
-                    return erpAccount;
-            }
-            return null;
-        });
+            var erpAccount = await GetErpAccountByIdWithActiveAsync(erpNopUser.ErpAccountId);
+            if (erpAccount != null)
+                return erpAccount;
+        }
+        return null;
     }
 
     public async Task InActiveAllOldAccount(DateTime syncStartTime)
@@ -503,7 +493,7 @@ public class ErpAccountService : IErpAccountService
             .FirstOrDefaultAsync();
     }
 
-    #endregion
+    #endregion Read
 
-    #endregion
+    #endregion Methods
 }

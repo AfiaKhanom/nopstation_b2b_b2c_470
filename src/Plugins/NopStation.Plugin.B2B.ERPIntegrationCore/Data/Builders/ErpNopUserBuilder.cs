@@ -1,4 +1,5 @@
 ﻿using FluentMigrator.Builders.Create.Table;
+using Nop.Core.Domain.Customers;
 using Nop.Data.Extensions;
 using Nop.Data.Mapping.Builders;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
@@ -17,7 +18,7 @@ public class ErpNopUserBuilder : NopEntityBuilder<ErpNopUser>
     public override void MapEntity(CreateTableExpressionBuilder table)
     {
         table
-            .WithColumn(nameof(ErpNopUser.NopCustomerId)).AsInt32() 
+            .WithColumn(nameof(ErpNopUser.NopCustomerId)).AsInt32().ForeignKey<Customer>(onDelete:Rule.None)
             .WithColumn(nameof(ErpNopUser.ErpAccountId)).AsInt32().ForeignKey<ErpAccount>(onDelete: Rule.None)
             .WithColumn(nameof(ErpNopUser.ErpShipToAddressId)).AsInt32().ForeignKey<ErpShipToAddress>(onDelete: Rule.None)
             .WithColumn(nameof(ErpNopUser.BillingErpShipToAddressId)).AsInt32()

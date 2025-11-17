@@ -196,10 +196,12 @@ public class ErpNopUserService : IErpNopUserService
             return null;
 
         var key = _staticCacheManager.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpNopUserByCustomerCacheKey, customerId);
-
-        var query = _erpNopUserRepository.Table.Where(enu=> enu.NopCustomerId == customerId && !enu.IsDeleted && enu.IsActive);
-
-        return await _staticCacheManager.GetAsync(key, async () => await query.FirstOrDefaultAsync());
+        return await _staticCacheManager.GetAsync(key, async () => 
+        {
+            return await _erpNopUserRepository.Table
+                .Where(enu => enu.NopCustomerId == customerId && !enu.IsDeleted && enu.IsActive)
+                .FirstOrDefaultAsync();
+        });
     }
 
     /// <summary>
