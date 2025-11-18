@@ -273,10 +273,10 @@
                                                     
                                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(ErpOrderAdditionalDataModel.Id))
                                 {
-                                    Title = T("Admin.Common.Edit").Text,
+                                    Title = @T("Admin.Common.View").Text,
                                     Width = "100",
                                     ClassName = NopColumnClassDefaults.Button,
-                                    Render = new RenderButtonEdit(new DataUrl("Edit"))
+                                    Render = new RenderButtonView(new DataUrl("Edit"))
                                 });
                             }
                             @await Html.PartialAsync("Table", gridModel)
