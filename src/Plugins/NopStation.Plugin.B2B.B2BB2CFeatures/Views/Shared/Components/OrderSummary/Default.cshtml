@@ -334,6 +334,7 @@
                             <div id="quickListFavouriteDialog" class="modal" title="@T("Plugin.Misc.NopStation.B2BB2CFeatures.AddToQuickListFavourite.Title")">
                                 <div class="modal-content quick-order-name">
                                     <span id="closeQuickListFavouriteButton" style="top:0px;" class="close">&times;</span>
+
                                     <div class="form-horizontal">
                                         <div class="row" style="display:flex;">
                                             <div class="col-md-4">
@@ -345,7 +346,7 @@
                                             </div>
                                             <div class="col-md-8">
                                                 <input type="text" id="templateName" name="templateName" class="form-control" />
-                                                <button type="submit" class="btn btn-primary" id="add-to-favourite" onclick="return false;">
+                                                <button type="submit" class="btn btn-primary" id="add-to-favourite">
                                                     @T("Plugin.Misc.NopStation.B2BB2CFeatures.AddToQuickListFavouriteButton.Save")
                                                 </button>
                                             </div>
@@ -666,11 +667,6 @@
             return (!str || str.length === 0);
         }
 
-        $("#quickListFavouriteButton").click(function (event) {
-            event.preventDefault();
-            $("#quickListFavouriteDialog").css("display", "block");
-        });
-
         $(document).ready(function () {
             ajaxB2BOrderSummeryDataLoad.loadCurrentCartItemsLiveStockCheck();
             ajaxB2BOrderSummeryDataLoad.loadOrderSummeryItemB2BData();
@@ -794,30 +790,56 @@
 
 
 <script asp-location="Footer">
+    var quickListFavouriteSubmitting = false;
+
+    function resetQuickListFavouriteState() {
+        quickListFavouriteSubmitting = false;
+        $("#add-to-favourite").prop("disabled", false);
+    }
+
+    function openQuickListFavouriteDialog() {
+        resetQuickListFavouriteState();
+        $("#quickListFavouriteDialog").css("display", "block");
+    }
+
     $("#closeQuickListFavouriteButton").click(function (event) {
+        event.preventDefault();
         $("#quickListFavouriteDialog").css("display", "none");
+        resetQuickListFavouriteState();
     });
+
     $("#quickListFavouriteButton").click(function (event) {
         event.preventDefault();
-        $("#quickListFavouriteDialog").css("display", "block");
-
+        openQuickListFavouriteDialog();
     });
 
     $("#add-to-favourite").click(function (event) {
+        event.preventDefault();
+
+        if (quickListFavouriteSubmitting) {
+            return;
+        }
+
+        var $button = $(this);
         var url = "/QuickOrder/CreateUsingCart";
         var templateNameValue = $("#templateName").val();
         var postData = {
             templateName: templateNameValue
         };
 
+        quickListFavouriteSubmitting = true;
+        $button.prop("disabled", true);
+
         $.ajax({
             type: "POST",
             url: url,
             data: addAntiForgeryToken(postData),
-            success: function (response) {
+            success: function () {
                 location.reload();
             },
             error: function (error) {
+                quickListFavouriteSubmitting = false;
+                $button.prop("disabled", false);
                 alert("Error:", error);
             }
         });
@@ -838,5 +860,17 @@
             $('body').removeClass('header-overlap');
         });
     });
+    $(document).on('submit', '.quick-order-create-form', function (e) {
 
+        $(this).find('input[type="submit"]').prop('disabled', true);
+
+        $('#quickListFavouriteDialog').hide();
+        resetQuickListFavouriteState();
+
+    });
+
+    $('#quickListFavouriteDialog').on('show.bs.modal', function () {
+        $(this).find('input[type="submit"]').prop('disabled', false);
+        resetQuickListFavouriteState();
+    });
 </script>
