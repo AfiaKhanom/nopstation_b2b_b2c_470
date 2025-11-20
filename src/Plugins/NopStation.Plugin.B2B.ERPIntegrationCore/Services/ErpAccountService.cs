@@ -185,19 +185,13 @@ public class ErpAccountService : IErpAccountService
             return null;
 
         var key = _staticCacheManager.PrepareKeyForDefaultCache(ERPIntegrationCoreDefaults.ErpAccountByIdWithActiveCacheKey, id);
-
-        var query = _erpAccountRepository.Table.FirstOrDefaultAsync(x => x.Id == id && x.IsActive && !x.IsDeleted);
-
-        return await _staticCacheManager.GetAsync(key, async () => await query);
+        return await _staticCacheManager.GetAsync(key, async () => await _erpAccountRepository.Table.FirstOrDefaultAsync(x => x.Id == id && x.IsActive && !x.IsDeleted));
     }
 
     public async Task<IList<ErpAccount>> GetAllErpAccountsAsync()
     {
         var key = ERPIntegrationCoreDefaults.ErpAccountAllActiveCacheKey;
-
-        var query = _erpAccountRepository.Table.Where(v => v.IsActive && !v.IsDeleted).OrderBy(ea => ea.Id);
-
-        return await _staticCacheManager.GetAsync(key, async () => await query.ToListAsync());
+        return await _staticCacheManager.GetAsync(key, async () => await _erpAccountRepository.Table.Where(v => v.IsActive && !v.IsDeleted).OrderBy(ea => ea.Id).ToListAsync());
     }
 
     public async Task<IPagedList<ErpAccount>> GetAllErpAccountsAsync(int pageIndex = 0,
@@ -438,12 +432,14 @@ public class ErpAccountService : IErpAccountService
             accountNumber
         );
 
-        var query = from c in _erpAccountRepository.Table
-                    where c.AccountNumber == accountNumber && !c.IsDeleted
-                    orderby c.Id
-                    select c;
-
-        return await _staticCacheManager.GetAsync(key, async () => await query.FirstOrDefaultAsync());
+        return await _staticCacheManager.GetAsync(key, async () =>
+        {
+            var query = from c in _erpAccountRepository.Table
+                        where c.AccountNumber == accountNumber && !c.IsDeleted
+                        orderby c.Id
+                        select c;
+            return await query.FirstOrDefaultAsync();
+        });
     }
 
     public async Task<ErpAccount> GetActiveErpAccountByCustomerIdAsync(int customerId)

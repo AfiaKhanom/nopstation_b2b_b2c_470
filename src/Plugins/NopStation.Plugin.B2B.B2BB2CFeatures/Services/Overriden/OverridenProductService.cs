@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Linq;
 using System.Threading.Tasks;
-using DocumentFormat.OpenXml.Spreadsheet;
-using MailKit.Search;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Nop.Core;
 using Nop.Core.Caching;
@@ -13,7 +11,6 @@ using Nop.Core.Domain.Common;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Discounts;
 using Nop.Core.Domain.Localization;
-using Nop.Core.Domain.Orders;
 using Nop.Core.Domain.Shipping;
 using Nop.Data;
 using Nop.Services.Catalog;
@@ -21,7 +18,6 @@ using Nop.Services.Common;
 using Nop.Services.Configuration;
 using Nop.Services.Customers;
 using Nop.Services.Localization;
-using Nop.Services.Orders;
 using Nop.Services.Security;
 using Nop.Services.Shipping.Date;
 using Nop.Services.Stores;
@@ -50,7 +46,9 @@ public class OverridenProductService : ProductService
     private readonly IGenericAttributeService _genericAttributeService;
     private readonly ISettingService _settingService;
     private readonly IStoreContext _storeContext;
-    #endregion
+    private readonly IRepository<SpecificationAttributeOption> _specificationAttributeOptionRepository;
+
+    #endregion Fields
 
     #region Ctor
 
@@ -103,7 +101,8 @@ public class OverridenProductService : ProductService
         IErpSpecialPriceService erpSpecialPriceService,
         IErpNopUserService erpNopUserService,
         IErpWarehouseSalesOrgMapService erpWarehouseSalesOrgMapService,
-        IGenericAttributeService genericAttributeService
+        IGenericAttributeService genericAttributeService,
+        IRepository<SpecificationAttributeOption> specificationAttributeOptionRepository
         ) : base(catalogSettings,
             commonSettings,
             aclService,
@@ -154,9 +153,10 @@ public class OverridenProductService : ProductService
         _genericAttributeService = genericAttributeService;
         _settingService = settingService;
         _storeContext = storeContext;
+        _specificationAttributeOptionRepository = specificationAttributeOptionRepository;
     }
 
-    #endregion
+    #endregion Ctor
 
     #region Utilites
 
@@ -230,7 +230,7 @@ public class OverridenProductService : ProductService
             return stockMessage;
         }
 
-        #endregion
+        #endregion B2B
 
         if (!product.DisplayStockAvailability)
             return string.Empty;
@@ -272,9 +272,11 @@ public class OverridenProductService : ProductService
                         : string.Format(await _localizationService.GetResourceAsync("Products.Availability.AvailabilityRange"),
                             await _localizationService.GetLocalizedAsync(productAvailabilityRange, range => range.Name));
                     break;
+
                 case BackorderMode.AllowQtyBelow0:
                     stockMessage = await _localizationService.GetResourceAsync("Products.Availability.InStock");
                     break;
+
                 case BackorderMode.AllowQtyBelow0AndNotifyCustomer:
                     stockMessage = productAvailabilityRange == null
                         ? await _localizationService.GetResourceAsync("Products.Availability.Backordering")
@@ -287,7 +289,7 @@ public class OverridenProductService : ProductService
         return stockMessage;
     }
 
-    #endregion
+    #endregion Utilites
 
     #region Methods
 
@@ -353,6 +355,7 @@ public class OverridenProductService : ProductService
         bool? overridePublished = null)
     {
         #region Default Nop
+
         _b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(storeId);
         //some databases don't support int.MaxValue
         if (pageSize == int.MaxValue)
@@ -582,7 +585,7 @@ public class OverridenProductService : ProductService
                 select p;
         }
 
-        #endregion
+        #endregion Default Nop
 
         #region B2B
 
@@ -630,7 +633,7 @@ public class OverridenProductService : ProductService
             }
         }
 
-        #endregion
+        #endregion B2B
 
         if (filteredSpecOptions?.Count > 0)
         {
@@ -706,7 +709,7 @@ public class OverridenProductService : ProductService
             }
         }
 
-        #endregion
+        #endregion B2B
 
         var query = from p in _productRepository.Table
                     orderby p.DisplayOrder, p.Id
@@ -747,66 +750,44 @@ public class OverridenProductService : ProductService
     /// <returns>Product</returns>
     public override async Task<Product> GetProductByIdAsync(int productId)
     {
-        var store = await _storeContext.GetCurrentStoreAsync();
-        _b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(store.Id);
         if (productId == 0)
             return null;
 
-        var key = _staticCacheManager.PrepareKeyForDefaultCache(B2BB2CFeaturesDefaults.ProductsByIdCacheKey, productId);
-        var product = await _staticCacheManager.GetAsync(key, async () =>
+        var store = await _storeContext.GetCurrentStoreAsync();
+
+        var product = await _productRepository.GetByIdAsync(productId);
+
+        if (product == null)
+            return null;
+
+        if (!_b2BB2CFeaturesSettings.UsePrefilterFacet)
+            return product;
+
+        var b2bAccount = await GetErpAccountByCurrentCustomerAsync();
+        if (b2bAccount == null)
+            return product;
+
+        var productSpecOptionIds = (await _specificationAttributeService
+            .GetProductSpecificationAttributesAsync(product.Id))
+            .Select(x => x.SpecificationAttributeOptionId)
+            .ToList();
+
+        if (!productSpecOptionIds.Any())
+            return null;
+
+        var specificationAttributeOptions = await _specificationAttributeService
+            .GetSpecificationAttributeOptionsByIdsAsync(productSpecOptionIds.ToArray());
+        var facetList = b2bAccount.PreFilterFacets.ToLower().Split(',').ToList();
+
+        specificationAttributeOptions = specificationAttributeOptions
+            .Where(sao => facetList.Contains(sao.Name.ToLower().Trim()) &&
+                          sao.SpecificationAttributeId == _b2BB2CFeaturesSettings.PreFilterFacetSpecificationAttributeId)
+            .ToList();
+
+        if (!specificationAttributeOptions.Any())
         {
-            return await _productRepository.GetByIdAsync(productId);
-        });
-
-        #region B2B
-
-        var b2BAccount = await GetErpAccountByCurrentCustomerAsync();
-
-        if (b2BAccount != null && _b2BB2CFeaturesSettings.UsePrefilterFacet)
-        {
-            var productSpecificationAttributes = await _specificationAttributeService.GetProductSpecificationAttributesAsync(product.Id);
-            var productSpecificationAttributeIds = productSpecificationAttributes.Select(x => x.SpecificationAttributeOptionId);
-
-            var filteredSpecs = await _erpSpecificationAttributeService.GetSpecificationAttributeOptionIdsByNames(_b2BB2CFeaturesSettings.PreFilterFacetSpecificationAttributeId, b2BAccount.PreFilterFacets?.Trim(), b2BAccount.Id);
-            var specialIncludeSpecIds = await _erpSpecificationAttributeService.GetSpecificationAttributeOptionIdsByNames(_b2BB2CFeaturesSettings.PreFilterFacetSpecificationAttributeId, "" /*b2BAccount.SpecialIncludes?.Trim()*/, b2BAccount.Id);
-            var specialExcludeSpecIds = await _erpSpecificationAttributeService.GetSpecificationAttributeOptionIdsForExcludeByNames(_b2BB2CFeaturesSettings.PreFilterFacetSpecificationAttributeId, "" /*b2BAccount.SpecialExcludes?.Trim()*/);
-
-            if (specialIncludeSpecIds != null && specialIncludeSpecIds.Any())
-            {
-                foreach (var includeSpecId in specialIncludeSpecIds)
-                {
-                    if (!filteredSpecs.Contains(includeSpecId))
-                        filteredSpecs.Add(includeSpecId);
-                }
-            }
-
-            if (specialIncludeSpecIds != null && specialIncludeSpecIds.Any())
-            {
-                foreach (var includeSpecId in specialIncludeSpecIds)
-                {
-                    if (!filteredSpecs.Contains(includeSpecId))
-                        filteredSpecs.Add(includeSpecId);
-                }
-            }
-
-            var commonSpecIds = filteredSpecs.Intersect(productSpecificationAttributeIds);
-
-            if (!commonSpecIds.Any())
-            {
-                return null;
-            }
-            if (specialExcludeSpecIds != null && specialExcludeSpecIds.Any() && productSpecificationAttributeIds != null && productSpecificationAttributeIds.Any())
-            {
-                var commonSpecificationIds = specialExcludeSpecIds.Intersect(productSpecificationAttributeIds);
-                if (commonSpecificationIds.Any())
-                {
-                    return null;
-                }
-            }
-
+            return null;
         }
-
-        #endregion
 
         return product;
     }
@@ -818,115 +799,78 @@ public class OverridenProductService : ProductService
     /// <returns>Products</returns>
     public override async Task<IList<Product>> GetProductsByIdsAsync(int[] productIds)
     {
-        var store = await _storeContext.GetCurrentStoreAsync();
-        _b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(store.Id);
         if (productIds == null || productIds.Length == 0)
             return new List<Product>();
 
-        var query = from p in _productRepository.Table
-                    where productIds.Contains(p.Id) && !p.Deleted
-                    select p;
+        var products = await _productRepository.GetByIdsAsync(productIds, cache => default, false);
 
-        IList<int> filteredSpecs = null;
-        IList<int> excludeFilteredSpecs = null;
-
-        #region B2B
+        if (!_b2BB2CFeaturesSettings.UsePrefilterFacet)
+        {
+            return products;
+        }
 
         var b2BAccount = await GetErpAccountByCurrentCustomerAsync();
-
-        if (b2BAccount != null && _b2BB2CFeaturesSettings.UsePrefilterFacet)
+        if (b2BAccount == null)
         {
-            filteredSpecs = await _erpSpecificationAttributeService.GetSpecificationAttributeOptionIdsByNames(_b2BB2CFeaturesSettings.PreFilterFacetSpecificationAttributeId, b2BAccount.PreFilterFacets?.Trim(), b2BAccount.Id);
+            return products;
+        }
+        Array.Sort(productIds);
+        var idsHash = string.Join(",", productIds).GetHashCode();
+        var key = _staticCacheManager.PrepareKeyForDefaultCache(
+            B2BB2CFeaturesDefaults.ErpProductsByIdsCacheKey,
+            b2BAccount.Id,
+            idsHash
+        );
 
-            //ToDo : No specialInclude property found in entity
-            var specialIncludeSpecIds = await _erpSpecificationAttributeService.GetSpecificationAttributeOptionIdsByNames(_b2BB2CFeaturesSettings.PreFilterFacetSpecificationAttributeId, "", b2BAccount.Id);
+        return await _staticCacheManager.GetAsync(key, async () =>
+        {
+            var preFilterFacets = b2BAccount.PreFilterFacets?.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                  ?? Array.Empty<string>();
 
-            if (specialIncludeSpecIds != null && specialIncludeSpecIds.Any())
-            {
-                foreach (var includeSpecId in specialIncludeSpecIds)
-                {
-                    if (!filteredSpecs.Contains(includeSpecId))
-                        filteredSpecs.Add(includeSpecId);
-                }
-            }
-
-            if (filteredSpecs == null)
+            var allIncludeFacets = preFilterFacets;
+            if (!allIncludeFacets.Any())
             {
                 return new List<Product>();
             }
+            var specAttributeId = _b2BB2CFeaturesSettings.PreFilterFacetSpecificationAttributeId;
 
-            excludeFilteredSpecs = new List<int>();
+            var productSpecInfoQuery =
+                from p in _productRepository.Table
+                where productIds.Contains(p.Id) && !p.Deleted
+                join psa in _productSpecificationAttributeRepository.Table on p.Id equals psa.ProductId
+                join sao in _specificationAttributeOptionRepository.Table on psa.SpecificationAttributeOptionId equals sao.Id
+                where sao.SpecificationAttributeId == specAttributeId
+                select new { p.Id, sao.Name };
 
-            var specialExcludeSpecIds = await _erpSpecificationAttributeService.GetSpecificationAttributeOptionIdsForExcludeByNames(_b2BB2CFeaturesSettings.PreFilterFacetSpecificationAttributeId, "" /*b2BAccount.SpecialExcludes?.Trim()*/);
+            var productSpecInfo = await productSpecInfoQuery.ToListAsync();
 
-            if (specialExcludeSpecIds != null && specialExcludeSpecIds.Any())
+            var allowedProductIds = new HashSet<int>();
+            var excludedProductIds = new HashSet<int>();
+
+            foreach (var group in productSpecInfo.GroupBy(p => p.Id))
             {
-                foreach (var excludeSpecId in specialExcludeSpecIds)
+                var productId = group.Key;
+                var specOptionNames = group.Select(g => g.Name).ToHashSet();
+
+                if (specOptionNames.Overlaps(allIncludeFacets))
                 {
-                    if (!excludeFilteredSpecs.Contains(excludeSpecId))
-                        excludeFilteredSpecs.Add(excludeSpecId);
+                    allowedProductIds.Add(productId);
                 }
             }
-        }
 
-        if (filteredSpecs != null && b2BAccount != null)
-        {
-            if (excludeFilteredSpecs != null && excludeFilteredSpecs.Any())
-            {
-                var excludedProductIds = await _erpSpecificationAttributeService.GetProductIdBySpecificationAttributeOptionNames(_b2BB2CFeaturesSettings.PreFilterFacetSpecificationAttributeId, "" /*b2BAccount.SpecialExcludes?.Trim()*/, b2BAccount.Id);
+            allowedProductIds.ExceptWith(excludedProductIds);
 
-                query = from p in query
-                        join psa in _productSpecificationAttributeRepository.Table
-                        on p.Id equals psa.ProductId
-                        where filteredSpecs.Contains(psa.SpecificationAttributeOptionId) && !excludedProductIds.Contains(p.Id)
-                        select p;
-            }
-            else
-            {
-                query = from p in query
-                        join psa in _productSpecificationAttributeRepository.Table
-                        on p.Id equals psa.ProductId
-                        where filteredSpecs.Contains(psa.SpecificationAttributeOptionId)
-                        select p;
-            }
-        }
-
-        #endregion
-
-        var products = query.ToList();
-        //sort by passed identifiers
-        var sortedProducts = new List<Product>();
-        foreach (var id in productIds)
-        {
-            var product = products.Find(x => x.Id == id);
-            if (product != null)
-                sortedProducts.Add(product);
-        }
-
-        return sortedProducts;
+            return products.Where(p => allowedProductIds.Contains(p.Id)).ToList();
+        });
     }
 
-    /// <summary>
-    /// Get total quantity
-    /// </summary>
-    /// <param name="product">Product</param>
-    /// <param name="useReservedQuantity">
-    /// A value indicating whether we should consider "Reserved Quantity" property 
-    /// when "multiple warehouses" are used
-    /// </param>
-    /// <param name="warehouseId">
-    /// Warehouse identifier. Used to limit result to certain warehouse.
-    /// Used only with "multiple warehouses" enabled.
-    /// </param>
-    /// <returns>Result</returns>
-    /// 
     public override async Task<int> GetTotalStockQuantityAsync(Product product, bool useReservedQuantity = true, int warehouseId = 0)
     {
         var store = await _storeContext.GetCurrentStoreAsync();
         _b2BB2CFeaturesSettings = await _settingService.LoadSettingAsync<B2BB2CFeaturesSettings>(store.Id);
         if (product == null)
             throw new ArgumentNullException(nameof(product));
-        
+
         if (product.ManageInventoryMethod != ManageInventoryMethod.ManageStock)
         {
             var categoryIds = new List<int>();
@@ -982,7 +926,7 @@ public class OverridenProductService : ProductService
             return (int)totalStock;
         }
 
-        #endregion
+        #endregion B2B
 
         var pwi = _productWarehouseInventoryRepository.Table.Where(wi => wi.ProductId == product.Id);
 
@@ -1099,7 +1043,7 @@ public class OverridenProductService : ProductService
                 }
             }
 
-            #endregion
+            #endregion B2B
 
             //apply store mapping constraints
             query = await _storeMappingService.ApplyStoreMapping(query, storeId);
@@ -1221,7 +1165,7 @@ public class OverridenProductService : ProductService
                 }
             }
 
-            #endregion
+            #endregion B2B
 
             //apply store mapping constraints
             query = await _storeMappingService.ApplyStoreMapping(query, storeId);
@@ -1335,7 +1279,7 @@ public class OverridenProductService : ProductService
             }
         }
 
-        #endregion
+        #endregion B2B
 
         query = await _aclService.ApplyAcl(query, customer);
 
@@ -1370,58 +1314,44 @@ public class OverridenProductService : ProductService
 
         #region B2B
 
-        var b2BAccount = await GetErpAccountByCurrentCustomerAsync();
+        if (product == null)
+            return null;
 
-        if (b2BAccount != null && _b2BB2CFeaturesSettings.UsePrefilterFacet)
+        if (!_b2BB2CFeaturesSettings.UsePrefilterFacet)
+            return product;
+
+        var b2bAccount = await GetErpAccountByCurrentCustomerAsync();
+        if (b2bAccount == null)
+            return product;
+
+        var productSpecOptionIds = (await _specificationAttributeService
+            .GetProductSpecificationAttributesAsync(product.Id))
+            .Select(x => x.SpecificationAttributeOptionId)
+            .ToList();
+
+        if (!productSpecOptionIds.Any())
+            return null;
+
+        var specificationAttributeOptions = await _specificationAttributeService
+            .GetSpecificationAttributeOptionsByIdsAsync(productSpecOptionIds.ToArray());
+        var facetList = b2bAccount.PreFilterFacets.ToLower().Split(',').ToList();
+
+        specificationAttributeOptions = specificationAttributeOptions
+            .Where(sao => facetList.Contains(sao.Name.ToLower().Trim()) &&
+                          sao.SpecificationAttributeId == _b2BB2CFeaturesSettings.PreFilterFacetSpecificationAttributeId)
+            .ToList();
+
+        if (!specificationAttributeOptions.Any())
         {
-            var productSpecificationAttributes = await _specificationAttributeService.GetProductSpecificationAttributesAsync(product.Id);
-            var productSpecificationAttributeIds = productSpecificationAttributes.Select(x => x.SpecificationAttributeOptionId);
-
-            var filteredSpecs = await _erpSpecificationAttributeService.GetSpecificationAttributeOptionIdsByNames(_b2BB2CFeaturesSettings.PreFilterFacetSpecificationAttributeId, b2BAccount.PreFilterFacets?.Trim(), b2BAccount.Id);
-            var specialIncludeSpecIds = await _erpSpecificationAttributeService.GetSpecificationAttributeOptionIdsByNames(_b2BB2CFeaturesSettings.PreFilterFacetSpecificationAttributeId, "" /*b2BAccount.SpecialIncludes?.Trim()*/, b2BAccount.Id);
-            var specialExcludeSpecIds = await _erpSpecificationAttributeService.GetSpecificationAttributeOptionIdsForExcludeByNames(_b2BB2CFeaturesSettings.PreFilterFacetSpecificationAttributeId, "" /*b2BAccount.SpecialExcludes?.Trim()*/);
-
-            if (specialIncludeSpecIds != null && specialIncludeSpecIds.Any())
-            {
-                foreach (var includeSpecId in specialIncludeSpecIds)
-                {
-                    if (!filteredSpecs.Contains(includeSpecId))
-                        filteredSpecs.Add(includeSpecId);
-                }
-            }
-
-            if (specialIncludeSpecIds != null && specialIncludeSpecIds.Any())
-            {
-                foreach (var includeSpecId in specialIncludeSpecIds)
-                {
-                    if (!filteredSpecs.Contains(includeSpecId))
-                        filteredSpecs.Add(includeSpecId);
-                }
-            }
-
-            var commonSpecIds = filteredSpecs.Intersect(productSpecificationAttributeIds);
-
-            if (!commonSpecIds.Any())
-            {
-                return null;
-            }
-            if (specialExcludeSpecIds != null && specialExcludeSpecIds.Any() && productSpecificationAttributeIds != null && productSpecificationAttributeIds.Any())
-            {
-                var commonSpecificationIds = specialExcludeSpecIds.Intersect(productSpecificationAttributeIds);
-                if (commonSpecificationIds.Any())
-                {
-                    return null;
-                }
-            }
-
+            return null;
         }
 
-        #endregion
+        #endregion B2B
 
         return product;
     }
 
-    #endregion
+    #endregion Product
 
-    #endregion
+    #endregion Methods
 }

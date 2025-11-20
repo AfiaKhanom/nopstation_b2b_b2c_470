@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using FluentMigrator.Builders.Create.Table;
+using Nop.Core.Domain.Catalog;
 using Nop.Data.Extensions;
 using Nop.Data.Mapping.Builders;
 using NopStation.Plugin.B2B.ERPIntegrationCore.Domain;
@@ -17,7 +18,7 @@ public class ErpSpecialPriceBuilder : NopEntityBuilder<ErpSpecialPrice>
     public override void MapEntity(CreateTableExpressionBuilder table)
     {
         table
-            .WithColumn(nameof(ErpSpecialPrice.NopProductId)).AsInt32()
+            .WithColumn(nameof(ErpSpecialPrice.NopProductId)).AsInt32().ForeignKey<Product>(onDelete:Rule.None)
             .WithColumn(nameof(ErpSpecialPrice.Price)).AsDecimal(18, 4)
             .WithColumn(nameof(ErpSpecialPrice.ListPrice)).AsDecimal(18, 4)
             .WithColumn(nameof(ErpSpecialPrice.PercentageOfAllocatedStock)).AsDecimal(18, 4).Nullable()
