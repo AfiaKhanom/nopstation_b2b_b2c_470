@@ -143,10 +143,10 @@
             });
                 /*gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.AttributesInfo))
                 {
-                Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.AttributesInfo").Text,
-                Width = "600",
-                Render = new RenderCustom("renderColumnAttributesInfo")
-                });*/
+                    Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.AttributesInfo").Text,
+            Width = "600",
+            Render = new RenderCustom("renderColumnAttributesInfo")
+            });*/
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.StockAvailability))
             {
                 Title = string.IsNullOrEmpty(Model.DisplayNameForPrimaryStock) ?
@@ -162,10 +162,10 @@
             });
                 /*gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.PricingNotes))
                 {
-                Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.PricingNotes").Text,
-                Width = "100",
-                ClassName = "pricing-notes-column"
-                });*/
+                    Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.PricingNotes").Text,
+            Width = "100",
+            ClassName = "pricing-notes-column"
+            });*/
                 gridModel.ColumnCollection.Add(new ColumnProperty(nameof(QuickOrderItemModel.UOM))
             {
                 Title = T("NopStation.B2BB2CFeatures.QuickOrderItemModel.Fields.UOM").Text,
@@ -211,7 +211,7 @@
             </div>
             <br />
             <div class="quick-order-confirm-buttons">
-                <input type="button" name="accept" onclick="closePopup()" value="@T("common.ok")" class="btn bg-green p-2" />
+                <input type="button" name="accept" onclick="closePopup()" value="@T("common.ok")" class="btn-primary button-1 p-2" />
             </div>
 
             <script asp-location="Footer">

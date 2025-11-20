@@ -1143,6 +1143,43 @@ body {
   }
 }
 
+.bar-notification .content,
+.bar-notification .content-wrapper > .content {
+  padding: 0;
+}
+
+.bar-notification p.content,
+.bar-notification p,
+.bar-notification .content-wrapper > p.content {
+  padding: 0;
+  margin: 0;
+}
+
+body .btn-info {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--white);
+}
+
+body .btn-info:active,
+body .btn-info:focus,
+body .btn-info:hover {
+  background-color: var(--primary-color)!important;
+  border-color: var(--primary-color)!important;
+  color: var(--secondary-color)!important;
+}
+
+input.item-quantity[type=number] {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+input.item-quantity[type=number]::-webkit-inner-spin-button,
+input.item-quantity[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none; /* Chrome, Safari, Edge */
+  margin: 0;
+}
+
+
 .eu-cookie-bar-notification .content,
 .newsletter,
 .footer-lower,
@@ -2260,6 +2297,10 @@ html:not(.html-home-page) .master-column-wrapper .login-page .page-title {
   color: var(--white);
   text-decoration: none;
   padding: 0 10px;
+}
+
+.admin-header-links a:hover {
+  color: var(--white);
 }
 
 .sticky-header-added .header-wrapper {
