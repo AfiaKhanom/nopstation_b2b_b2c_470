@@ -99,16 +99,18 @@
     </script>
 }
 
-<div class="page order-details-page">
+<div class="page order-details-page  order-completed-page">
     @if (!Model.PrintMode)
     {
         <div class="page-title">
             <h1>@T("Order.OrderInformation")</h1>
-            <a href="@Url.RouteUrl("PrintOrderDetails", new { orderId = Model.Id })" target="_blank" class="button-2 print-order-button">@T("Order.Print")</a>
-            @if (!Model.PdfInvoiceDisabled)
-            {
-                <a href="@Url.RouteUrl("GetOrderPdfInvoice", new { orderId = Model.Id })" class="button-2 pdf-invoice-button">@T("Order.GetPDFInvoice")</a>
-            }
+            <div class="buttons-container">
+                <a class="btn btn-primary button-2 print-order-button" href="@Url.RouteUrl("PrintOrderDetails", new { orderId = Model.Id })" target="_blank" class="button-2 print-order-button">@T("Order.Print")</a>
+                @if (!Model.PdfInvoiceDisabled)
+                {
+                    <a href="@Url.RouteUrl("GetOrderPdfInvoice", new { orderId = Model.Id })" class="button-2 pdf-invoice-button">@T("Order.GetPDFInvoice")</a>
+                }
+            </div>
             @* @if (isB2BUser)
             {
                 <a href="@Url.RouteUrl("B2BOrderInvoiceList", new { orderId = Model.Id })" class="button-2 b2b-invoice-button">@T("B2B.Order.B2BOrderInvoiceList")</a>
@@ -357,14 +359,14 @@
                                         @Model.ShippingAddress.Address2
                                     </li>
                                 }
-                                @if (Model.ShippingAddress.CityEnabled && 
-                                !string.IsNullOrEmpty(Model.ShippingAddress.City) ||
-                                Model.ShippingAddress.CountyEnabled && 
-                                !string.IsNullOrEmpty(Model.ShippingAddress.County) ||
-                                Model.ShippingAddress.StateProvinceEnabled && 
-                                !string.IsNullOrEmpty(Model.ShippingAddress.StateProvinceName) ||
-                                Model.ShippingAddress.ZipPostalCodeEnabled && 
-                                !string.IsNullOrEmpty(Model.ShippingAddress.ZipPostalCode))
+                                @if (Model.ShippingAddress.CityEnabled &&
+                               !string.IsNullOrEmpty(Model.ShippingAddress.City) ||
+                               Model.ShippingAddress.CountyEnabled &&
+                               !string.IsNullOrEmpty(Model.ShippingAddress.County) ||
+                               Model.ShippingAddress.StateProvinceEnabled &&
+                               !string.IsNullOrEmpty(Model.ShippingAddress.StateProvinceName) ||
+                               Model.ShippingAddress.ZipPostalCodeEnabled &&
+                               !string.IsNullOrEmpty(Model.ShippingAddress.ZipPostalCode))
                                 {
                                     <li class="city-state-zip">
                                         @if (Model.ShippingAddress.CityEnabled && !string.IsNullOrEmpty(Model.ShippingAddress.City))
@@ -651,10 +653,7 @@
                 </div>
             }
             @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderDetailsPageBeforeproducts, additionalData = Model })
-            <div class="section products">
-                <div class="title">
-                    <strong>@T("Order.Product(s)")</strong>
-                </div>
+            <div class="order-summary-content">
                 <div class="table-wrapper">
                     <table class="data-table">
                         <colgroup>
@@ -802,35 +801,7 @@
                         @T(inclTax ? "Order.TaxShipping.InclTax" : "Order.TaxShipping.ExclTax", Url.RouteTopicUrl("shippinginfo"))
                     </div>
                 }
-            </div>
-            @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderDetailsPageAfterproducts, additionalData = Model })
-            <div class="section options">
-                @if (!string.IsNullOrEmpty(Model.CheckoutAttributeInfo))
-                {
-                    <div class="selected-checkout-attributes">
-                        @Html.Raw(Model.CheckoutAttributeInfo)
-                    </div>
-                }
-            </div>
-            <div class="row">
-                <div class="float-left" style="float: left">
-                    <div class="cart-collaterals">
-                        <div class="deals">
-                            @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderSummaryContentDeals, additionalData = Model })
-                        </div>
-                    </div>
-                    @* <div class="p-3" style="text-align:left;">
-                        <h2>@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpAccountDataModel.ErpAccountDetails")</h2>
-                    </div>
-                    <div class="Erp-info-list" style="font-size:16px;">
-                        <p class="erp-Acc-No">@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpAccountDataModel.AccNo"): @Model.ErpAccountDataModel.AccountNumber</p>
-                        <p class="ErpAccount">@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpAccountDataModel.Name"): @Model.ErpAccountDataModel.Name</p>
-                        <p class="ErpAccount">@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpAccountDataModel.CreditLimitAvailable"): @Model.ErpAccountDataModel.CreditLimitAvailableStr</p>
-                        <p class="ErpAccount">@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpAccountDataModel.CreditLimitUsed"): @Model.ErpAccountDataModel.CreditLimitUsedStr</p>
-                        <p class="ErpAccount">@T("Plugin.Misc.NopStation.B2BB2CFeatures.ErpAccountDataModel.Balance"): @Model.ErpAccountDataModel.CurrentBalanceStr</p>
-                    </div> *@
-                </div>
-                <div class="float-right" style="float:right">
+                <div class="cart-footer">
                     <div class="section totals">
                         <div class="total-info">
                             <table class="cart-total">
@@ -957,14 +928,26 @@
                                 }
                                 @if (Model.IsReturnRequestAllowed)
                                 {
-                                    <button type="button" class="button-2 return-items-button" 
-                                    onclick="setLocation('@Url.RouteUrl("ReturnRequest", new { orderId = Model.Id })')">@T("Order.ReturnItems")</button>
+                                    <button type="button" class="button-2 return-items-button"
+                                            onclick="setLocation('@Url.RouteUrl("ReturnRequest", new { orderId = Model.Id })')">
+                                        @T("Order.ReturnItems")
+                                    </button>
                                 }
                             </div>
                         }
                     </div>
                 </div>
             </div>
+            @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderDetailsPageAfterproducts, additionalData = Model })
+            <div class="section options">
+                @if (!string.IsNullOrEmpty(Model.CheckoutAttributeInfo))
+                {
+                    <div class="selected-checkout-attributes">
+                        @Html.Raw(Model.CheckoutAttributeInfo)
+                    </div>
+                }
+            </div>
+
         }
         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.OrderDetailsPageBottom, additionalData = Model })
     </div>
