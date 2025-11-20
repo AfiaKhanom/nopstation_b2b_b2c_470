@@ -3,6 +3,8 @@
 
 @{
     Layout = "_Root";
+    NopHtml.AppendPageCssClassParts("collumn-one-page");
+    NopHtml.AppendPageCssClassParts("html-sales-rep-customer");
     //page title
     ViewBag.PageTitle = T("NopStation.Plugin.NopStation.B2BB2CFeatures.Admin.MappedCustomers").Text;
     //active menu item (system name)
@@ -16,6 +18,10 @@
 }
 
 <style>
+    .html-sales-rep-customer .header-upper {
+        justify-content: space-between;
+    }
+
     .srearch-cus-imp {
         padding-left: 50px;
         padding-right: 30px;
@@ -24,153 +30,155 @@
     }
 </style>
 
-<form asp-controller="CustomerImpersonate" asp-action="List" method="post">
-    <div class="content-header clearfix">
-        <h1 class="float-left">
-            @T("NopStation.Plugin.NopStation.B2BB2CFeatures.Admin.MappedCustomers")
-        </h1>
-        <div class="float-right">
+<div class="page-body">
+    <form asp-controller="CustomerImpersonate" asp-action="List" method="post">
+        <div class="content-header clearfix">
+            <h1 class="float-left">
+                @T("NopStation.Plugin.NopStation.B2BB2CFeatures.Admin.MappedCustomers")
+            </h1>
+            <div class="float-right">
+            </div>
         </div>
-    </div>
 
-    <section class="content">
-        <div class="container-fluid">
-            <div class="form-horizontal">
-                <div class="cards-group">
-                    <div class="card card-default card-search">
-                        <div class="card-body">
-                            <div class="row srearch-cus-imp">
-                                <div class="search-text">@T("Admin.Common.Search")</div>
-                            </div>
-                            <div class="search-body">
-                                <div class="row">
-                                    <div class="col-md-5">
-                                        <div class="form-group row">
-                                            <div class="col-md-4">
-                                                <nop-label asp-for="SearchERPAccountName" />
-                                            </div>
-                                            <div class="col-md-8">
-                                                <nop-editor asp-for="SearchERPAccountName" />
-                                            </div>
-                                        </div>
-                                        <div class="form-group row">
-                                            <div class="col-md-4">
-                                                <nop-label asp-for="SearchCustomerFullName" />
-                                            </div>
-                                            <div class="col-md-8">
-                                                <nop-editor asp-for="SearchCustomerFullName" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-7">
-                                        <div class="form-group row">
-                                            <div class="col-md-4">
-                                                <nop-label asp-for="SearchERPAccountNumber" />
-                                            </div>
-                                            <div class="col-md-8">
-                                                <nop-editor asp-for="SearchERPAccountNumber" />
-                                            </div>
-                                        </div>
-                                        <div class="form-group row">
-                                            <div class="col-md-4">
-                                                <nop-label asp-for="SearchCustomerEmail" />
-                                            </div>
-                                            <div class="col-md-8">
-                                                <nop-editor asp-for="SearchCustomerEmail" />
-                                            </div>
-                                        </div>
-                                    </div>
+        <section class="content">
+            <div class="container-fluid">
+                <div class="form-horizontal">
+                    <div class="cards-group">
+                        <div class="card card-default card-search">
+                            <div class="card-body">
+                                <div class="row srearch-cus-imp">
+                                    <div class="search-text">@T("Admin.Common.Search")</div>
                                 </div>
-                                <div class="row">
-                                    <div class="text-center col-12">
-                                        <button type="button" id="search-customers" class="btn btn-primary btn-search">
-                                            <i class="fas fa-search"></i>
-                                            @T("Admin.Common.Search")
-                                        </button>
+                                <div class="search-body">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="form-group row">
+                                                <div class="col-md-4">
+                                                    <nop-label asp-for="SearchERPAccountName" />
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <nop-editor asp-for="SearchERPAccountName" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-md-4">
+                                                    <nop-label asp-for="SearchCustomerFullName" />
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <nop-editor asp-for="SearchCustomerFullName" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <div class="form-group row">
+                                                <div class="col-md-4">
+                                                    <nop-label asp-for="SearchERPAccountNumber" />
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <nop-editor asp-for="SearchERPAccountNumber" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-md-4">
+                                                    <nop-label asp-for="SearchCustomerEmail" />
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <nop-editor asp-for="SearchCustomerEmail" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="text-center col-12">
+                                            <button type="button" id="search-customers" class="btn btn-primary btn-search">
+                                                <i class="fas fa-search"></i>
+                                                @T("Admin.Common.Search")
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="card card-default">
-                    <div class="card-body">
-                        @{
-                            var gridModel = new DataTablesModel
+                    <div class="card card-default">
+                        <div class="card-body">
+                            @{
+                                var gridModel = new DataTablesModel
+            {
+                Name = "customers-grid",
+                UrlRead = new DataUrl("SalesRepUsersList", "CustomerImpersonate", new RouteValueDictionary { [nameof(SalesRepUserSearchModel.SearchERPAccountNumber)] = Model.SearchERPAccountNumber }),
+                SearchButtonId = "search-customers",
+                Length = Model.PageSize,
+                LengthMenu = Model.AvailablePageSizes,
+                Filters = new List<FilterParameter>
                             {
-                                Name = "customers-grid",
-                                UrlRead = new DataUrl("SalesRepUsersList", "CustomerImpersonate", new RouteValueDictionary { [nameof(SalesRepUserSearchModel.SearchERPAccountNumber)] = Model.SearchERPAccountNumber }),
-                                SearchButtonId = "search-customers",
-                                Length = Model.PageSize,
-                                LengthMenu = Model.AvailablePageSizes,
-                                Filters = new List<FilterParameter>
-                                {
-                                    new FilterParameter(nameof(Model.SearchERPAccountNumber)),
-                                    new FilterParameter(nameof(Model.SearchERPAccountName)),
-                                    new FilterParameter(nameof(Model.SearchCustomerFullName)),
-                                    new FilterParameter(nameof(Model.SearchCustomerEmail)),
-                                }
-                            };
-                                            
-                            gridModel.ColumnCollection.Add(new ColumnProperty(nameof(SalesRepUserModel.ErpAccountNumber))
-                            {
-                                Title = T("Plugin.Misc.NopStation.B2BB2CFeaturesErpNopUser.Fields.ErpAccountNumber").Text
-                            });
-                                            
-                            gridModel.ColumnCollection.Add(new ColumnProperty(nameof(SalesRepUserModel.ErpAccountName))
-                            {
-                                Title = T("Plugin.Misc.NopStation.B2BB2CFeaturesErpNopUser.Fields.ErpAccountName").Text
-                            });
-                                            
-                            gridModel.ColumnCollection.Add(new ColumnProperty(nameof(SalesRepUserModel.CustomerFullName))
-                            {
-                                Title = T("Plugin.Misc.NopStation.B2BB2CFeaturesErpNopUser.Fields.CustomerFullName").Text,
-                            });
-                                            
-                            gridModel.ColumnCollection.Add(new ColumnProperty(nameof(SalesRepUserModel.CustomerEmail))
-                            {
-                                Title = T("Plugin.Misc.NopStation.B2BB2CFeaturesErpNopUser.Fields.CustomerEmail").Text,
-                            });
-                                            
-                            gridModel.ColumnCollection.Add(new ColumnProperty(nameof(SalesRepUserModel.ErpUserType))
-                            {
-                                Title = T("Plugin.Misc.NopStation.B2BB2CFeaturesErpNopUser.Fields.ErpUserType").Text,
-                            });
-                                            
-                            gridModel.ColumnCollection.Add(new ColumnProperty(nameof(SalesRepUserModel.NopCustomerId))
-                            {
-                                Title = T("Plugin.Misc.NopStation.B2BB2CFeaturesErpNopUser.Button.Impersonate").Text,
-                                Width = "80",
-                                ClassName = NopColumnClassDefaults.Button,
-                                Render = new RenderButtonCustom(NopButtonClassDefaults.Primary, T("NopStation.Plugin.NopStation.B2BB2CFeatures.Admin.Customer.Impersonate").Text)
-                                {
-                                    OnClickFunctionName = "ImpersonateCustomer"
-                                }
-                            });
-                        }
-                        @await Html.PartialAsync("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/Shared/Table.cshtml", gridModel)
+                            new FilterParameter(nameof(Model.SearchERPAccountNumber)),
+                            new FilterParameter(nameof(Model.SearchERPAccountName)),
+                            new FilterParameter(nameof(Model.SearchCustomerFullName)),
+                            new FilterParameter(nameof(Model.SearchCustomerEmail)),
+                            }
+            };
+
+                                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(SalesRepUserModel.ErpAccountNumber))
+            {
+                Title = T("Plugin.Misc.NopStation.B2BB2CFeaturesErpNopUser.Fields.ErpAccountNumber").Text
+            });
+
+                                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(SalesRepUserModel.ErpAccountName))
+            {
+                Title = T("Plugin.Misc.NopStation.B2BB2CFeaturesErpNopUser.Fields.ErpAccountName").Text
+            });
+
+                                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(SalesRepUserModel.CustomerFullName))
+            {
+                Title = T("Plugin.Misc.NopStation.B2BB2CFeaturesErpNopUser.Fields.CustomerFullName").Text,
+            });
+
+                                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(SalesRepUserModel.CustomerEmail))
+            {
+                Title = T("Plugin.Misc.NopStation.B2BB2CFeaturesErpNopUser.Fields.CustomerEmail").Text,
+            });
+
+                                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(SalesRepUserModel.ErpUserType))
+            {
+                Title = T("Plugin.Misc.NopStation.B2BB2CFeaturesErpNopUser.Fields.ErpUserType").Text,
+            });
+
+                                gridModel.ColumnCollection.Add(new ColumnProperty(nameof(SalesRepUserModel.NopCustomerId))
+            {
+                Title = T("Plugin.Misc.NopStation.B2BB2CFeaturesErpNopUser.Button.Impersonate").Text,
+                Width = "80",
+                ClassName = NopColumnClassDefaults.Button,
+                Render = new RenderButtonCustom(NopButtonClassDefaults.Primary, T("NopStation.Plugin.NopStation.B2BB2CFeatures.Admin.Customer.Impersonate").Text)
+                {
+                    OnClickFunctionName = "ImpersonateCustomer"
+                }
+            });
+                            }
+                            @await Html.PartialAsync("~/Plugins/NopStation.Plugin.B2B.B2BB2CFeatures/Views/Shared/Table.cshtml", gridModel)
+                        </div>
+                        <script>
+                            function ImpersonateCustomer(customerId) {
+                                var id = parseInt(customerId);
+                                var postData = {
+                                    Id: id
+                                };
+                                addAntiForgeryToken(postData);
+                                $.ajax({
+                                    cache: false,
+                                    type: "POST",
+                                    url: "@Html.Raw(Url.Action("Impersonate", "CustomerImpersonate"))",
+                                    data: postData,
+                                    success: function (data, textStatus, jqXHR) {
+                                        location.href = "/";
+                                    }
+                                });
+                            }
+                        </script>
                     </div>
-                    <script>
-                        function ImpersonateCustomer(customerId) {
-                            var id = parseInt(customerId);
-                            var postData = {
-                                Id: id
-                            };
-                            addAntiForgeryToken(postData);
-                            $.ajax({
-                                cache: false,
-                                type: "POST",
-                                url: "@Html.Raw(Url.Action("Impersonate", "CustomerImpersonate"))",
-                                data: postData,
-                                success: function (data, textStatus, jqXHR) {
-                                    location.href = "/";
-                                }
-                            });
-                        }
-                    </script>
                 </div>
             </div>
-        </div>
-    </section>
-</form>
+        </section>
+    </form>
+</div>
