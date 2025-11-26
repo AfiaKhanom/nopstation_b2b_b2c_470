@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Localization;
 using Nop.Core.Domain.Orders;
@@ -19,13 +22,16 @@ public class CustomPdfService : IPdfService
 {
     private readonly IPdfService _defaultPdfService;
     private readonly IOrderPdfDesignerService _orderPdfDesignerService;
+    private readonly ILogger<CustomPdfService> _logger;
 
     public CustomPdfService(
         IPdfService defaultPdfService,
-        IOrderPdfDesignerService orderPdfDesignerService)
+        IOrderPdfDesignerService orderPdfDesignerService,
+        ILogger<CustomPdfService> logger)
     {
         _defaultPdfService = defaultPdfService;
         _orderPdfDesignerService = orderPdfDesignerService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -39,9 +45,10 @@ public class CustomPdfService : IPdfService
             var pdfBytes = await _orderPdfDesignerService.RenderTemplateToPdfAsync(order);
             await stream.WriteAsync(pdfBytes, 0, pdfBytes.Length);
         }
-        catch
+        catch (Exception ex)
         {
-            // If our custom PDF generation fails, fall back to default
+            // Log the error and fall back to default
+            _logger.LogWarning(ex, "Custom PDF generation failed for order {OrderId}. Falling back to default PDF service.", order.Id);
             await _defaultPdfService.PrintOrderToPdfAsync(stream, order, language, store, vendor);
         }
     }
@@ -54,7 +61,7 @@ public class CustomPdfService : IPdfService
         // For multiple orders, we'll use our custom PDF for each order
         try
         {
-            using var zipArchive = new System.IO.Compression.ZipArchive(stream, System.IO.Compression.ZipArchiveMode.Create, true);
+            using var zipArchive = new ZipArchive(stream, ZipArchiveMode.Create, true);
 
             foreach (var order in orders)
             {
@@ -66,9 +73,10 @@ public class CustomPdfService : IPdfService
                 await entryStream.WriteAsync(pdfBytes, 0, pdfBytes.Length);
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // If our custom PDF generation fails, fall back to default
+            // Log the error and fall back to default
+            _logger.LogWarning(ex, "Custom PDF generation failed for bulk export. Falling back to default PDF service.");
             await _defaultPdfService.PrintOrdersToPdfAsync(stream, orders, language, vendor);
         }
     }
@@ -111,16 +119,17 @@ public class CustomPdfService : IPdfService
             var pdfBytes = await _orderPdfDesignerService.RenderTemplateToPdfAsync(order);
             
             // Save to temp file
-            var fileName = $"order_{order.CustomOrderNumber ?? order.Id.ToString()}_{System.Guid.NewGuid()}.pdf";
-            var filePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), fileName);
+            var fileName = $"order_{order.CustomOrderNumber ?? order.Id.ToString()}_{Guid.NewGuid()}.pdf";
+            var filePath = Path.Combine(Path.GetTempPath(), fileName);
             
-            await System.IO.File.WriteAllBytesAsync(filePath, pdfBytes);
+            await File.WriteAllBytesAsync(filePath, pdfBytes);
             
             return filePath;
         }
-        catch
+        catch (Exception ex)
         {
-            // If our custom PDF generation fails, fall back to default
+            // Log the error and fall back to default
+            _logger.LogWarning(ex, "Custom PDF save to disk failed for order {OrderId}. Falling back to default PDF service.", order.Id);
             return await _defaultPdfService.SaveOrderPdfToDiskAsync(order, language, vendor);
         }
     }

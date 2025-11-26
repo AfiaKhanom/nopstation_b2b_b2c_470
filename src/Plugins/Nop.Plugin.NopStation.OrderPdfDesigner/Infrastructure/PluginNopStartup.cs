@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Nop.Core.Infrastructure;
 using Nop.Plugin.NopStation.OrderPdfDesigner.Services;
 using Nop.Services.Common;
@@ -33,11 +34,12 @@ public class PluginNopStartup : INopStartup
             // Get the default PdfService implementation
             var defaultPdfService = ActivatorUtilities.CreateInstance<PdfService>(serviceProvider);
             
-            // Get our custom service
+            // Get our custom service and logger
             var orderPdfDesignerService = serviceProvider.GetRequiredService<IOrderPdfDesignerService>();
+            var logger = serviceProvider.GetRequiredService<ILogger<CustomPdfService>>();
             
             // Return wrapped service
-            return new CustomPdfService(defaultPdfService, orderPdfDesignerService);
+            return new CustomPdfService(defaultPdfService, orderPdfDesignerService, logger);
         }));
     }
 
