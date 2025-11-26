@@ -37,6 +37,17 @@ The Order PDF Designer plugin provides a fully-editable, single global PDF templ
 - **Permission Protected**: ManageOrderPdfDesigner permission
 - **Integrated Menu**: Appears in NopStation plugin menu
 
+### Automatic Override of Default NopCommerce PDF Service
+- **Seamless Integration**: Automatically replaces NopCommerce's default order PDF generation
+- **System-Wide Override**: All order PDF generation throughout NopCommerce uses your custom templates
+- **Fallback Protection**: If custom PDF generation fails, automatically falls back to default NopCommerce PDF
+- **Compatible Areas**: Overrides PDF generation in:
+  - Admin order details (Print Invoice)
+  - Order management (Export to PDF)
+  - Customer portal (Download Invoice)
+  - Email attachments (if configured)
+  - Bulk PDF exports
+
 ## Installation
 
 1. Copy the plugin folder to `/Plugins/Nop.Plugin.NopStation.OrderPdfDesigner`
@@ -58,6 +69,41 @@ The Order PDF Designer plugin provides a fully-editable, single global PDF templ
 1. Enter an **Order ID** in the preview section
 2. Click **Preview Order** to view rendered HTML in a modal
 3. Click **Generate PDF** to download the PDF file
+
+## How the Override Works
+
+Once installed, the plugin automatically intercepts NopCommerce's default PDF service:
+
+### Automatic System-Wide Override
+
+The plugin uses the **Decorator Pattern** to wrap NopCommerce's `IPdfService`:
+
+1. **During Plugin Startup**: The plugin registers `CustomPdfService` which decorates the default `PdfService`
+2. **Service Resolution**: When any part of NopCommerce requests `IPdfService`, it gets our `CustomPdfService` instead
+3. **PDF Generation**: All calls to `PrintOrderToPdfAsync()` are routed through our custom templates
+4. **Fallback Safety**: If custom PDF generation fails, the call automatically falls back to NopCommerce's default implementation
+
+### What Gets Overridden
+
+✅ **Order PDFs** - Uses custom templates
+- Admin → Order Details → Print Invoice
+- Admin → Orders → Export to PDF
+- Customer portal → Order History → Download Invoice
+- Email attachments (when configured)
+
+✅ **Bulk Order Exports** - Each order uses custom template
+- Admin → Orders → Export selected orders
+
+❌ **Packaging Slips** - Uses default NopCommerce implementation
+❌ **Product Catalogs** - Uses default NopCommerce implementation
+
+### Testing the Override
+
+1. Install and configure the plugin with custom templates
+2. Navigate to **Admin → Sales → Orders**
+3. Select any order and click **Print Invoice** or **PDF Invoice**
+4. The generated PDF will use your custom template
+5. No additional configuration needed - it works automatically!
 
 ## PDF Rendering Integration
 
@@ -123,6 +169,11 @@ The plugin includes a placeholder `PdfRendererService` that returns HTML with a 
 - **OrderPdfDesignerService**: Template rendering and token replacement
 - **IPdfRendererService**: PDF generation abstraction
 - **PdfRendererService**: PDF renderer implementation (placeholder)
+- **CustomPdfService**: Decorator that overrides NopCommerce's default `IPdfService`
+  - Intercepts all `PrintOrderToPdfAsync()` calls system-wide
+  - Routes order PDF generation through custom templates
+  - Falls back to default implementation on error
+  - Preserves default behavior for packaging slips and product catalogs
 
 ### Controllers
 - **OrderPdfDesignerAdminController**: Admin UI controller
