@@ -23,6 +23,7 @@ public class OrderPdfDesignerService : IOrderPdfDesignerService
     private readonly IWorkContext _workContext;
     private readonly IStoreContext _storeContext;
     private readonly IPdfRendererService _pdfRendererService;
+    private readonly IEmailAccountService _emailAccountService;
 
     public OrderPdfDesignerService(
         ISettingService settingService,
@@ -31,7 +32,8 @@ public class OrderPdfDesignerService : IOrderPdfDesignerService
         ILocalizationService localizationService,
         IWorkContext workContext,
         IStoreContext storeContext,
-        IPdfRendererService pdfRendererService)
+        IPdfRendererService pdfRendererService,
+        IEmailAccountService emailAccountService)
     {
         _settingService = settingService;
         _messageTokenProvider = messageTokenProvider;
@@ -40,6 +42,7 @@ public class OrderPdfDesignerService : IOrderPdfDesignerService
         _workContext = workContext;
         _storeContext = storeContext;
         _pdfRendererService = pdfRendererService;
+        _emailAccountService = emailAccountService;
     }
 
     /// <summary>
@@ -76,9 +79,12 @@ public class OrderPdfDesignerService : IOrderPdfDesignerService
         var tokens = new List<Token>();
         var store = await _storeContext.GetCurrentStoreAsync();
         var languageId = (await _workContext.GetWorkingLanguageAsync()).Id;
+        var emailAccount = (await _emailAccountService.GetAllEmailAccountsAsync()).FirstOrDefault();
 
         await _messageTokenProvider.AddOrderTokensAsync(tokens, order, languageId);
-        await _messageTokenProvider.AddStoreTokensAsync(tokens, store);
+        
+        if (emailAccount != null)
+            await _messageTokenProvider.AddStoreTokensAsync(tokens, store, emailAccount);
 
         // Assemble sections in the specified order
         var htmlBuilder = new StringBuilder();

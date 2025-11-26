@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nop.Core.Infrastructure;
+using Nop.Plugin.NopStation.OrderPdfDesigner.Services;
+using NopStation.Plugin.Misc.Core.Infrastructure;
 
 namespace Nop.Plugin.NopStation.OrderPdfDesigner.Infrastructure;
 
@@ -17,6 +19,10 @@ public class PluginNopStartup : INopStartup
     /// <param name="configuration">Configuration of the application</param>
     public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
+        services.AddNopStationServices("Nop.Plugin.NopStation.OrderPdfDesigner");
+
+        services.AddScoped<IOrderPdfDesignerService, OrderPdfDesignerService>();
+        services.AddScoped<IPdfRendererService, PdfRendererService>();
     }
 
     /// <summary>

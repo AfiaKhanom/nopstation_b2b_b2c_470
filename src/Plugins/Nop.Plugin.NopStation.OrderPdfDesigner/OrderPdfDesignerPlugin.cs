@@ -213,4 +213,16 @@ public class OrderPdfDesignerPlugin : BasePlugin, IAdminMenuPlugin, INopStationP
             await _nopStationCoreService.ManageSiteMapAsync(rootNode, menuItem, NopStationMenuType.Plugin);
         }
     }
+
+    /// <summary>
+    /// Gets plugin resources
+    /// </summary>
+    public List<KeyValuePair<string, string>> PluginResouces()
+    {
+        return new List<KeyValuePair<string, string>>
+        {
+            new KeyValuePair<string, string>("Plugins.NopStation.OrderPdfDesigner.Menu.OrderPdfDesigner", "Order PDF Designer"),
+            new KeyValuePair<string, string>("Plugins.NopStation.OrderPdfDesigner.Menu.Configuration", "Configuration")
+        };
+    }
 }
