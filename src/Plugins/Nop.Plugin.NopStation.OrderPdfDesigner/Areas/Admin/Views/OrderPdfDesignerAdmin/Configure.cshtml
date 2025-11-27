@@ -30,7 +30,10 @@
             $.ajax({
                 url: '@Url.Action("Preview", "OrderPdfDesignerAdmin")',
                 type: 'POST',
-                data: { orderId: orderId },
+                data: { 
+                    orderId: orderId,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
                 success: function (response) {
                     if (response.success) {
                         // Note: This intentionally renders admin-generated HTML from template.
@@ -41,8 +44,8 @@
                         alert('Error: ' + response.message);
                     }
                 },
-                error: function () {
-                    alert('Error loading preview');
+                error: function (xhr, status, error) {
+                    alert('Error loading preview: ' + error);
                 }
             });
         });
