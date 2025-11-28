@@ -11,6 +11,7 @@ using Nop.Core.Domain.Shipping;
 using Nop.Core.Domain.Stores;
 using Nop.Core.Domain.Vendors;
 using Nop.Services.Common;
+using Nop.Services.Configuration;
 
 namespace Nop.Plugin.NopStation.OrderPdfDesigner.Services;
 
@@ -22,16 +23,41 @@ public class CustomPdfService : IPdfService
 {
     private readonly IPdfService _defaultPdfService;
     private readonly IOrderPdfDesignerService _orderPdfDesignerService;
+    private readonly ISettingService _settingService;
     private readonly ILogger<CustomPdfService> _logger;
 
     public CustomPdfService(
         IPdfService defaultPdfService,
         IOrderPdfDesignerService orderPdfDesignerService,
+        ISettingService settingService,
         ILogger<CustomPdfService> logger)
     {
         _defaultPdfService = defaultPdfService;
         _orderPdfDesignerService = orderPdfDesignerService;
+        _settingService = settingService;
         _logger = logger;
+    }
+
+    /// <summary>
+    /// Check if plugin is properly configured with template content
+    /// </summary>
+    private async Task<bool> IsPluginConfiguredAsync()
+    {
+        try
+        {
+            var settings = await _settingService.LoadSettingAsync<OrderPdfDesignerSettings>();
+            
+            // Check if at least one section has content (not just the default placeholder)
+            return !string.IsNullOrWhiteSpace(settings.ServerSectionHeader) ||
+                   !string.IsNullOrWhiteSpace(settings.HeaderDetails) ||
+                   !string.IsNullOrWhiteSpace(settings.AddressSection) ||
+                   !string.IsNullOrWhiteSpace(settings.ProductSection) ||
+                   !string.IsNullOrWhiteSpace(settings.OrderSummarySection);
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     /// <summary>
@@ -39,18 +65,30 @@ public class CustomPdfService : IPdfService
     /// </summary>
     public virtual async Task PrintOrderToPdfAsync(Stream stream, Order order, Language language = null, Store store = null, Vendor vendor = null)
     {
-        try
-        {
-            // Use our custom PDF designer to generate the PDF
-            var pdfBytes = await _orderPdfDesignerService.RenderTemplateToPdfAsync(order);
-            await stream.WriteAsync(pdfBytes, 0, pdfBytes.Length);
-        }
-        catch (Exception ex)
-        {
-            // Log the error and fall back to default
-            _logger.LogWarning(ex, "Custom PDF generation failed for order {OrderId}. Falling back to default PDF service.", order.Id);
-            await _defaultPdfService.PrintOrderToPdfAsync(stream, order, language, store, vendor);
-        }
+        // Always use the default NopCommerce PDF service for reliable PDF generation
+        // The custom template HTML is available for preview, but PDF generation requires
+        // a proper HTML-to-PDF library integration (QuestPDF, Puppeteer, wkhtmltopdf, etc.)
+        // 
+        // To enable custom PDF output:
+        // 1. Install an HTML-to-PDF library (e.g., QuestPDF, IronPDF, SelectPdf)
+        // 2. Update PdfRendererService.ConvertHtmlToPdfAsync() to use the library
+        // 3. Uncomment the code below
+        //
+        // if (await IsPluginConfiguredAsync())
+        // {
+        //     try
+        //     {
+        //         var pdfBytes = await _orderPdfDesignerService.RenderTemplateToPdfAsync(order);
+        //         await stream.WriteAsync(pdfBytes, 0, pdfBytes.Length);
+        //         return;
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         _logger.LogWarning(ex, "Custom PDF generation failed for order {OrderId}. Falling back to default.", order.Id);
+        //     }
+        // }
+        
+        await _defaultPdfService.PrintOrderToPdfAsync(stream, order, language, store, vendor);
     }
 
     /// <summary>
@@ -58,27 +96,8 @@ public class CustomPdfService : IPdfService
     /// </summary>
     public virtual async Task PrintOrdersToPdfAsync(Stream stream, IList<Order> orders, Language language = null, Vendor vendor = null)
     {
-        // For multiple orders, we'll use our custom PDF for each order
-        try
-        {
-            using var zipArchive = new ZipArchive(stream, ZipArchiveMode.Create, true);
-
-            foreach (var order in orders)
-            {
-                var fileName = $"order_{order.CustomOrderNumber ?? order.Id.ToString()}.pdf";
-                var entry = zipArchive.CreateEntry(fileName);
-
-                using var entryStream = entry.Open();
-                var pdfBytes = await _orderPdfDesignerService.RenderTemplateToPdfAsync(order);
-                await entryStream.WriteAsync(pdfBytes, 0, pdfBytes.Length);
-            }
-        }
-        catch (Exception ex)
-        {
-            // Log the error and fall back to default
-            _logger.LogWarning(ex, "Custom PDF generation failed for bulk export. Falling back to default PDF service.");
-            await _defaultPdfService.PrintOrdersToPdfAsync(stream, orders, language, vendor);
-        }
+        // Use default NopCommerce PDF service for reliable PDF generation
+        await _defaultPdfService.PrintOrdersToPdfAsync(stream, orders, language, vendor);
     }
 
     /// <summary>
@@ -113,24 +132,7 @@ public class CustomPdfService : IPdfService
     /// </summary>
     public virtual async Task<string> SaveOrderPdfToDiskAsync(Order order, Language language = null, Vendor vendor = null)
     {
-        try
-        {
-            // Generate custom PDF
-            var pdfBytes = await _orderPdfDesignerService.RenderTemplateToPdfAsync(order);
-            
-            // Save to temp file
-            var fileName = $"order_{order.CustomOrderNumber ?? order.Id.ToString()}_{Guid.NewGuid()}.pdf";
-            var filePath = Path.Combine(Path.GetTempPath(), fileName);
-            
-            await File.WriteAllBytesAsync(filePath, pdfBytes);
-            
-            return filePath;
-        }
-        catch (Exception ex)
-        {
-            // Log the error and fall back to default
-            _logger.LogWarning(ex, "Custom PDF save to disk failed for order {OrderId}. Falling back to default PDF service.", order.Id);
-            return await _defaultPdfService.SaveOrderPdfToDiskAsync(order, language, vendor);
-        }
+        // Use default NopCommerce PDF service for reliable PDF generation
+        return await _defaultPdfService.SaveOrderPdfToDiskAsync(order, language, vendor);
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Nop.Core.Infrastructure;
 using Nop.Plugin.NopStation.OrderPdfDesigner.Services;
 using Nop.Services.Common;
+using Nop.Services.Configuration;
 using NopStation.Plugin.Misc.Core.Infrastructure;
 
 namespace Nop.Plugin.NopStation.OrderPdfDesigner.Infrastructure;
@@ -37,12 +38,13 @@ public class PluginNopStartup : INopStartup
             // Get the original PdfService (now registered as concrete type)
             var defaultPdfService = serviceProvider.GetRequiredService<PdfService>();
             
-            // Get our custom service and logger
+            // Get our custom service, setting service and logger
             var orderPdfDesignerService = serviceProvider.GetRequiredService<IOrderPdfDesignerService>();
+            var settingService = serviceProvider.GetRequiredService<ISettingService>();
             var logger = serviceProvider.GetRequiredService<ILogger<CustomPdfService>>();
             
             // Return wrapped service
-            return new CustomPdfService(defaultPdfService, orderPdfDesignerService, logger);
+            return new CustomPdfService(defaultPdfService, orderPdfDesignerService, settingService, logger);
         }));
     }
 
