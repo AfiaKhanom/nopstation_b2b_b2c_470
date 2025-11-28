@@ -27,12 +27,15 @@ public class PluginNopStartup : INopStartup
         services.AddScoped<IOrderPdfDesignerService, OrderPdfDesignerService>();
         services.AddScoped<IPdfRendererService, PdfRendererService>();
 
-        // Override the default IPdfService with our custom implementation
-        // This will intercept all PDF generation calls and use our custom templates
+        // Use the Decorate pattern to wrap the original IPdfService
+        // First, register the original PdfService with a different key
+        services.AddScoped<PdfService>();
+        
+        // Then replace IPdfService with our custom implementation that wraps the original
         services.Replace(ServiceDescriptor.Scoped<IPdfService>(serviceProvider =>
         {
-            // Get the default PdfService implementation
-            var defaultPdfService = ActivatorUtilities.CreateInstance<PdfService>(serviceProvider);
+            // Get the original PdfService (now registered as concrete type)
+            var defaultPdfService = serviceProvider.GetRequiredService<PdfService>();
             
             // Get our custom service and logger
             var orderPdfDesignerService = serviceProvider.GetRequiredService<IOrderPdfDesignerService>();
