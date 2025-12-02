@@ -1,0 +1,12 @@
+{
+  "Group": "Nop-Station",
+  "FriendlyName": "Order PDF Designer",
+  "SystemName": "Nop.Plugin.NopStation.OrderPdfDesigner",
+  "Version": "4.70.1.0",
+  "SupportedVersions": [ "4.70" ],
+  "Author": "Nop-Station Team",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.NopStation.OrderPdfDesigner.dll",
+  "Description": "Provides a fully-editable Order PDF template with token support for generating customized order PDFs.",
+  "DependsOnSystemNames": [ "NopStation.Core" ]
+}

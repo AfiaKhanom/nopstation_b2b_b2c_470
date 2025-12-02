@@ -1,0 +1,550 @@
+@model ConfigurationModel
+@{
+    Layout = "_AdminLayout";
+    NopHtml.SetActiveMenuItemSystemName("OrderPdfDesigner.Configuration");
+    ViewBag.PageTitle = T("Plugins.NopStation.OrderPdfDesigner.Menu.Configuration").Text;
+}
+
+<!-- Include html2pdf.js library for client-side PDF generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script>
+    var currentPreviewHtml = null;  // Store the preview HTML for PDF generation
+    
+    $(document).ready(function () {
+        // Token helper functionality
+        $('.insert-token-btn').click(function () {
+            var token = $(this).data('token');
+            var targetEditor = $(this).data('target');
+            
+            // Get the TinyMCE editor instance
+            var editor = tinymce.get(targetEditor);
+            if (editor) {
+                editor.insertContent(token);
+            }
+        });
+
+        // Preview functionality
+        $('#preview-btn').click(function () {
+            var orderId = $('#preview-order-id').val();
+            if (!orderId) {
+                alert('Please enter an Order ID');
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("Preview", "OrderPdfDesignerAdmin")',
+                type: 'POST',
+                data: { 
+                    orderId: orderId,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function (response) {
+                    if (response.success) {
+                        // Note: This intentionally renders admin-generated HTML from template.
+                        // The admin is a trusted user who designs the PDF template.
+                        currentPreviewHtml = response.html;  // Store for PDF generation
+                        $('#preview-content').html(response.html);
+                        $('#preview-modal').modal('show');
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('Error loading preview: ' + error);
+                }
+            });
+        });
+
+        // Generate PDF button handler - converts preview HTML to PDF
+        $('#generate-pdf-btn').click(function (e) {
+            e.preventDefault();
+            
+            var orderId = $('#preview-order-id').val();
+            if (!orderId) {
+                alert('Please enter an Order ID');
+                return false;
+            }
+            
+            // Check if preview HTML is available
+            if (!currentPreviewHtml) {
+                alert('Please click "Preview Order" first to load the order data before generating PDF.');
+                return false;
+            }
+            
+            // Show loading message
+            var $btn = $(this);
+            var originalText = $btn.html();
+            $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Generating PDF...');
+            
+            // Create a temporary container for PDF generation
+            var element = document.createElement('div');
+            element.innerHTML = currentPreviewHtml;
+            element.style.width = '210mm';  // A4 width
+            element.style.padding = '10mm';
+            element.style.background = 'white';
+            
+            // Configure html2pdf options
+            var opt = {
+                margin: [10, 10, 10, 10],  // top, left, bottom, right in mm
+                filename: 'Order_' + orderId + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            // Generate and download PDF
+            html2pdf().set(opt).from(element).save()
+                .then(function () {
+                    // Reset button state
+                    $btn.prop('disabled', false).html(originalText);
+                })
+                .catch(function (error) {
+                    console.error('PDF generation error:', error);
+                    alert('Error generating PDF: ' + error.message);
+                    $btn.prop('disabled', false).html(originalText);
+                });
+            
+            return false;
+        });
+    });
+
+    function showTokens(sectionId) {
+        $('#token-section-' + sectionId).toggle();
+    }
+</script>
+
+<style>
+    .token-helper {
+        margin-top: 10px;
+        padding: 10px;
+        background: #f5f5f5;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        display: none;
+    }
+    .token-btn-group {
+        margin-bottom: 5px;
+    }
+    .insert-token-btn {
+        margin: 2px;
+        font-size: 11px;
+    }
+</style>
+
+<form asp-controller="OrderPdfDesignerAdmin" asp-action="Configure" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Plugins.NopStation.OrderPdfDesigner.Menu.Configuration")
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-save"></i>
+                @T("Admin.Common.Save")
+            </button>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="form-horizontal">
+                <div asp-validation-summary="All"></div>
+                
+                <div class="cards-group">
+                    <!-- Server Section Header -->
+                    <div class="card card-default">
+                        <div class="card-header">
+                            @T("Plugins.NopStation.OrderPdfDesigner.Fields.ServerSectionHeader")
+                            <button type="button" class="btn btn-sm btn-info float-right" onclick="showTokens('header')">
+                                <i class="fas fa-code"></i> @T("Plugins.NopStation.OrderPdfDesigner.AvailableTokens")
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <nop-editor asp-for="ServerSectionHeader" asp-template="RichEditor" />
+                                    <span asp-validation-for="ServerSectionHeader"></span>
+                                </div>
+                            </div>
+                            <div id="token-section-header" class="token-helper">
+                                <strong>Available Tokens:</strong>
+                                <div class="token-btn-group">
+                                    @foreach (var token in Model.AvailableTokens)
+                                    {
+                                        <button type="button" class="btn btn-sm btn-outline-secondary insert-token-btn" 
+                                                data-token="@token.Key" data-target="ServerSectionHeader">
+                                            @token.Key
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Header Details -->
+                    <div class="card card-default">
+                        <div class="card-header">
+                            @T("Plugins.NopStation.OrderPdfDesigner.Fields.HeaderDetails")
+                            <button type="button" class="btn btn-sm btn-info float-right" onclick="showTokens('headerdetails')">
+                                <i class="fas fa-code"></i> @T("Plugins.NopStation.OrderPdfDesigner.AvailableTokens")
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <nop-editor asp-for="HeaderDetails" asp-template="RichEditor" />
+                                    <span asp-validation-for="HeaderDetails"></span>
+                                </div>
+                            </div>
+                            <div id="token-section-headerdetails" class="token-helper">
+                                <strong>Available Tokens:</strong>
+                                <div class="token-btn-group">
+                                    @foreach (var token in Model.AvailableTokens)
+                                    {
+                                        <button type="button" class="btn btn-sm btn-outline-secondary insert-token-btn" 
+                                                data-token="@token.Key" data-target="HeaderDetails">
+                                            @token.Key
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address Section -->
+                    <div class="card card-default">
+                        <div class="card-header">
+                            @T("Plugins.NopStation.OrderPdfDesigner.Fields.AddressSection")
+                            <button type="button" class="btn btn-sm btn-info float-right" onclick="showTokens('address')">
+                                <i class="fas fa-code"></i> @T("Plugins.NopStation.OrderPdfDesigner.AvailableTokens")
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <nop-editor asp-for="AddressSection" asp-template="RichEditor" />
+                                    <span asp-validation-for="AddressSection"></span>
+                                </div>
+                            </div>
+                            <div id="token-section-address" class="token-helper">
+                                <strong>Available Tokens:</strong>
+                                <div class="token-btn-group">
+                                    @foreach (var token in Model.AvailableTokens)
+                                    {
+                                        <button type="button" class="btn btn-sm btn-outline-secondary insert-token-btn" 
+                                                data-token="@token.Key" data-target="AddressSection">
+                                            @token.Key
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Section -->
+                    <div class="card card-default">
+                        <div class="card-header">
+                            @T("Plugins.NopStation.OrderPdfDesigner.Fields.ProductSection")
+                            <button type="button" class="btn btn-sm btn-info float-right" onclick="showTokens('product')">
+                                <i class="fas fa-code"></i> @T("Plugins.NopStation.OrderPdfDesigner.AvailableTokens")
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <nop-editor asp-for="ProductSection" asp-template="RichEditor" />
+                                    <span asp-validation-for="ProductSection"></span>
+                                </div>
+                            </div>
+                            <div id="token-section-product" class="token-helper">
+                                <strong>Available Tokens:</strong>
+                                <div class="token-btn-group">
+                                    @foreach (var token in Model.AvailableTokens)
+                                    {
+                                        <button type="button" class="btn btn-sm btn-outline-secondary insert-token-btn" 
+                                                data-token="@token.Key" data-target="ProductSection">
+                                            @token.Key
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Note Section -->
+                    <div class="card card-default">
+                        <div class="card-header">
+                            @T("Plugins.NopStation.OrderPdfDesigner.Fields.NoteSection")
+                            <button type="button" class="btn btn-sm btn-info float-right" onclick="showTokens('note')">
+                                <i class="fas fa-code"></i> @T("Plugins.NopStation.OrderPdfDesigner.AvailableTokens")
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <nop-editor asp-for="NoteSection" asp-template="RichEditor" />
+                                    <span asp-validation-for="NoteSection"></span>
+                                </div>
+                            </div>
+                            <div id="token-section-note" class="token-helper">
+                                <strong>Available Tokens:</strong>
+                                <div class="token-btn-group">
+                                    @foreach (var token in Model.AvailableTokens)
+                                    {
+                                        <button type="button" class="btn btn-sm btn-outline-secondary insert-token-btn" 
+                                                data-token="@token.Key" data-target="NoteSection">
+                                            @token.Key
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary Section -->
+                    <div class="card card-default">
+                        <div class="card-header">
+                            @T("Plugins.NopStation.OrderPdfDesigner.Fields.OrderSummarySection")
+                            <button type="button" class="btn btn-sm btn-info float-right" onclick="showTokens('summary')">
+                                <i class="fas fa-code"></i> @T("Plugins.NopStation.OrderPdfDesigner.AvailableTokens")
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <nop-editor asp-for="OrderSummarySection" asp-template="RichEditor" />
+                                    <span asp-validation-for="OrderSummarySection"></span>
+                                </div>
+                            </div>
+                            <div id="token-section-summary" class="token-helper">
+                                <strong>Available Tokens:</strong>
+                                <div class="token-btn-group">
+                                    @foreach (var token in Model.AvailableTokens)
+                                    {
+                                        <button type="button" class="btn btn-sm btn-outline-secondary insert-token-btn" 
+                                                data-token="@token.Key" data-target="OrderSummarySection">
+                                            @token.Key
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="card card-default">
+                        <div class="card-header">
+                            @T("Plugins.NopStation.OrderPdfDesigner.Fields.Footer")
+                            <button type="button" class="btn btn-sm btn-info float-right" onclick="showTokens('footer')">
+                                <i class="fas fa-code"></i> @T("Plugins.NopStation.OrderPdfDesigner.AvailableTokens")
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <nop-editor asp-for="Footer" asp-template="RichEditor" />
+                                    <span asp-validation-for="Footer"></span>
+                                </div>
+                            </div>
+                            <div id="token-section-footer" class="token-helper">
+                                <strong>Available Tokens:</strong>
+                                <div class="token-btn-group">
+                                    @foreach (var token in Model.AvailableTokens)
+                                    {
+                                        <button type="button" class="btn btn-sm btn-outline-secondary insert-token-btn" 
+                                                data-token="@token.Key" data-target="Footer">
+                                            @token.Key
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer Description -->
+                    <div class="card card-default">
+                        <div class="card-header">
+                            @T("Plugins.NopStation.OrderPdfDesigner.Fields.FooterDescription")
+                            <button type="button" class="btn btn-sm btn-info float-right" onclick="showTokens('footerdesc')">
+                                <i class="fas fa-code"></i> @T("Plugins.NopStation.OrderPdfDesigner.AvailableTokens")
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <nop-editor asp-for="FooterDescription" asp-template="RichEditor" />
+                                    <span asp-validation-for="FooterDescription"></span>
+                                </div>
+                            </div>
+                            <div id="token-section-footerdesc" class="token-helper">
+                                <strong>Available Tokens:</strong>
+                                <div class="token-btn-group">
+                                    @foreach (var token in Model.AvailableTokens)
+                                    {
+                                        <button type="button" class="btn btn-sm btn-outline-secondary insert-token-btn" 
+                                                data-token="@token.Key" data-target="FooterDescription">
+                                            @token.Key
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PDF Settings -->
+                    <div class="card card-default">
+                        <div class="card-header">
+                            PDF Generation Settings
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="PaperSize" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-select asp-for="PaperSize" asp-items="@(new SelectList(Model.PaperSizes))" />
+                                    <span asp-validation-for="PaperSize"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="MarginTop" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="MarginTop" />
+                                    <span asp-validation-for="MarginTop"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="MarginBottom" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="MarginBottom" />
+                                    <span asp-validation-for="MarginBottom"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="MarginLeft" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="MarginLeft" />
+                                    <span asp-validation-for="MarginLeft"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="MarginRight" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="MarginRight" />
+                                    <span asp-validation-for="MarginRight"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="EnableImageInsertion" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="EnableImageInsertion" />
+                                    <span asp-validation-for="EnableImageInsertion"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preview & Generate -->
+                    <div class="card card-default">
+                        <div class="card-header">
+                            Preview & Generate PDF
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <label>Order ID for Preview/PDF:</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="number" id="preview-order-id" class="form-control" placeholder="Enter Order ID" />
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" id="preview-btn" class="btn btn-info">
+                                        <i class="fas fa-eye"></i> @T("Plugins.NopStation.OrderPdfDesigner.PreviewOrder")
+                                    </button>
+                                    <button type="button" id="generate-pdf-btn" class="btn btn-success">
+                                        <i class="fas fa-file-pdf"></i> @T("Plugins.NopStation.OrderPdfDesigner.GeneratePdf")
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>
+
+<!-- Preview Modal -->
+<div class="modal fade" id="preview-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Order PDF Preview</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="preview-content"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="download-preview-pdf-btn" class="btn btn-success">
+                    <i class="fas fa-download"></i> Download as PDF
+                </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Download preview as PDF button handler
+    $(document).ready(function() {
+        $('#download-preview-pdf-btn').click(function() {
+            var orderId = $('#preview-order-id').val();
+            if (!currentPreviewHtml) {
+                alert('No preview available');
+                return;
+            }
+            
+            var $btn = $(this);
+            var originalText = $btn.html();
+            $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Generating...');
+            
+            // Create temporary container
+            var element = document.createElement('div');
+            element.innerHTML = currentPreviewHtml;
+            element.style.width = '210mm';
+            element.style.padding = '10mm';
+            element.style.background = 'white';
+            
+            var opt = {
+                margin: [10, 10, 10, 10],
+                filename: 'Order_' + orderId + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(element).save()
+                .then(function() {
+                    $btn.prop('disabled', false).html(originalText);
+                })
+                .catch(function(error) {
+                    console.error('PDF generation error:', error);
+                    alert('Error generating PDF: ' + error.message);
+                    $btn.prop('disabled', false).html(originalText);
+                });
+        });
+    });
+</script>
