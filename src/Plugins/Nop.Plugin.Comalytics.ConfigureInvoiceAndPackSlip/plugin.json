@@ -1,0 +1,11 @@
+{
+  "Group": "Comalytics",
+  "FriendlyName": "Configure Invoice and Pack Slip",
+  "SystemName": "Comalytics.ConfigureInvoiceAndPackSlip",
+  "Version": "4.70.0.1",
+  "SupportedVersions": [ "4.70" ],
+  "Author": "Comalytics Team",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Comalytics.ConfigureInvoiceAndPackSlip.dll",
+  "Description": "Generate custom invoice and packing slip PDFs with QuestPDF and Chromium rendering options, token support, multi-language templates, and batch processing."
+}
