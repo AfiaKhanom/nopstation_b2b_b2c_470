@@ -5,7 +5,12 @@
     ViewBag.PageTitle = T("Plugins.NopStation.OrderPdfDesigner.Menu.Configuration").Text;
 }
 
+<!-- Include html2pdf.js library for client-side PDF generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 <script>
+    var currentPreviewHtml = null;  // Store the preview HTML for PDF generation
+    
     $(document).ready(function () {
         // Token helper functionality
         $('.insert-token-btn').click(function () {
@@ -38,6 +43,7 @@
                     if (response.success) {
                         // Note: This intentionally renders admin-generated HTML from template.
                         // The admin is a trusted user who designs the PDF template.
+                        currentPreviewHtml = response.html;  // Store for PDF generation
                         $('#preview-content').html(response.html);
                         $('#preview-modal').modal('show');
                     } else {
@@ -50,27 +56,54 @@
             });
         });
 
-        // Generate PDF button handler
+        // Generate PDF button handler - converts preview HTML to PDF
         $('#generate-pdf-btn').click(function (e) {
+            e.preventDefault();
+            
             var orderId = $('#preview-order-id').val();
             if (!orderId) {
                 alert('Please enter an Order ID');
-                e.preventDefault();
                 return false;
             }
             
-            var form = $(this).closest('form');
-            var actionUrl = '@Url.Action("GeneratePdf", "OrderPdfDesignerAdmin")' + '?orderId=' + orderId;
+            // Check if preview HTML is available
+            if (!currentPreviewHtml) {
+                alert('Please click "Preview Order" first to load the order data before generating PDF.');
+                return false;
+            }
             
-            // Temporarily change form action and submit
-            var originalAction = form.attr('action');
-            form.attr('action', actionUrl);
-            form.submit();
+            // Show loading message
+            var $btn = $(this);
+            var originalText = $btn.html();
+            $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Generating PDF...');
             
-            // Restore original action (though form will navigate away)
-            setTimeout(function() {
-                form.attr('action', originalAction);
-            }, 100);
+            // Create a temporary container for PDF generation
+            var element = document.createElement('div');
+            element.innerHTML = currentPreviewHtml;
+            element.style.width = '210mm';  // A4 width
+            element.style.padding = '10mm';
+            element.style.background = 'white';
+            
+            // Configure html2pdf options
+            var opt = {
+                margin: [10, 10, 10, 10],  // top, left, bottom, right in mm
+                filename: 'Order_' + orderId + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            // Generate and download PDF
+            html2pdf().set(opt).from(element).save()
+                .then(function () {
+                    // Reset button state
+                    $btn.prop('disabled', false).html(originalText);
+                })
+                .catch(function (error) {
+                    console.error('PDF generation error:', error);
+                    alert('Error generating PDF: ' + error.message);
+                    $btn.prop('disabled', false).html(originalText);
+                });
             
             return false;
         });
@@ -465,8 +498,53 @@
                 <div id="preview-content"></div>
             </div>
             <div class="modal-footer">
+                <button type="button" id="download-preview-pdf-btn" class="btn btn-success">
+                    <i class="fas fa-download"></i> Download as PDF
+                </button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Download preview as PDF button handler
+    $(document).ready(function() {
+        $('#download-preview-pdf-btn').click(function() {
+            var orderId = $('#preview-order-id').val();
+            if (!currentPreviewHtml) {
+                alert('No preview available');
+                return;
+            }
+            
+            var $btn = $(this);
+            var originalText = $btn.html();
+            $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Generating...');
+            
+            // Create temporary container
+            var element = document.createElement('div');
+            element.innerHTML = currentPreviewHtml;
+            element.style.width = '210mm';
+            element.style.padding = '10mm';
+            element.style.background = 'white';
+            
+            var opt = {
+                margin: [10, 10, 10, 10],
+                filename: 'Order_' + orderId + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(element).save()
+                .then(function() {
+                    $btn.prop('disabled', false).html(originalText);
+                })
+                .catch(function(error) {
+                    console.error('PDF generation error:', error);
+                    alert('Error generating PDF: ' + error.message);
+                    $btn.prop('disabled', false).html(originalText);
+                });
+        });
+    });
+</script>
