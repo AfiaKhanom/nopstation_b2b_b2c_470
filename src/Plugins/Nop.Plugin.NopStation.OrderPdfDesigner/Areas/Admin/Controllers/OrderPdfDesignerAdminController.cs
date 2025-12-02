@@ -1,8 +1,10 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Nop.Core;
+using Nop.Services.Common;
 using Nop.Services.Configuration;
 using Nop.Services.Localization;
 using Nop.Services.Messages;
@@ -28,6 +30,7 @@ public class OrderPdfDesignerAdminController : BasePluginController
     private readonly IPermissionService _permissionService;
     private readonly IOrderService _orderService;
     private readonly IOrderPdfDesignerService _orderPdfDesignerService;
+    private readonly IPdfService _pdfService;
 
     public OrderPdfDesignerAdminController(
         ISettingService settingService,
@@ -35,7 +38,8 @@ public class OrderPdfDesignerAdminController : BasePluginController
         INotificationService notificationService,
         IPermissionService permissionService,
         IOrderService orderService,
-        IOrderPdfDesignerService orderPdfDesignerService)
+        IOrderPdfDesignerService orderPdfDesignerService,
+        IPdfService pdfService)
     {
         _settingService = settingService;
         _localizationService = localizationService;
@@ -43,6 +47,7 @@ public class OrderPdfDesignerAdminController : BasePluginController
         _permissionService = permissionService;
         _orderService = orderService;
         _orderPdfDesignerService = orderPdfDesignerService;
+        _pdfService = pdfService;
     }
 
     public async Task<IActionResult> Configure()
@@ -145,7 +150,13 @@ public class OrderPdfDesignerAdminController : BasePluginController
                 return RedirectToAction("Configure");
             }
 
-            var pdfBytes = await _orderPdfDesignerService.RenderTemplateToPdfAsync(order);
+            // Use the default NopCommerce PDF service to generate a valid PDF
+            // The custom template HTML is available for preview, but PDF generation
+            // requires a proper HTML-to-PDF library integration
+            using var stream = new MemoryStream();
+            await _pdfService.PrintOrderToPdfAsync(stream, order);
+            var pdfBytes = stream.ToArray();
+            
             var fileName = $"Order_{order.CustomOrderNumber ?? order.Id.ToString()}.pdf";
 
             return File(pdfBytes, "application/pdf", fileName);
