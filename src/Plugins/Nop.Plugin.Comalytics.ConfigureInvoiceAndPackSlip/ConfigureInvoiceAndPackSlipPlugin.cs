@@ -41,7 +41,7 @@ namespace Nop.Plugin.Comalytics.ConfigureInvoiceAndPackSlip
 
         public override string GetConfigurationPageUrl()
         {
-            return $"{_webHelper.GetStoreLocation()}Admin/ConfigureInvoiceAndPackSlip/Configure";
+            return $"{_webHelper.GetStoreLocation()}Admin/ConfigureInvoiceAndPackSlipAdmin/Configure";
         }
 
         public override async Task InstallAsync()
