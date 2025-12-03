@@ -159,6 +159,7 @@ namespace Nop.Plugin.Comalytics.ConfigureInvoiceAndPackSlip
                 ["Plugins.Comalytics.ConfigureInvoiceAndPackSlip.InvoiceTemplates.List"] = "Invoice Templates",
                 ["Plugins.Comalytics.ConfigureInvoiceAndPackSlip.InvoiceTemplates.AddNew"] = "Add New Template",
                 ["Plugins.Comalytics.ConfigureInvoiceAndPackSlip.InvoiceTemplates.Edit"] = "Edit Template",
+                ["Plugins.Comalytics.ConfigureInvoiceAndPackSlip.InvoiceTemplates.BackToList"] = "back to template list",
                 ["Plugins.Comalytics.ConfigureInvoiceAndPackSlip.InvoiceTemplates.Name"] = "Name",
                 ["Plugins.Comalytics.ConfigureInvoiceAndPackSlip.InvoiceTemplates.Store"] = "Store",
                 ["Plugins.Comalytics.ConfigureInvoiceAndPackSlip.InvoiceTemplates.Language"] = "Language",
