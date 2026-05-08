@@ -11,11 +11,9 @@ namespace NopStation.Plugin.B2B.ErpDataScheduler.Infrastructure;
 public class SchedulerNopStartup : INopStartup
 {
     public int Order => 1;
-    public static string CorsClient = "B2bErpDataScheduler";
 
     public void Configure(IApplicationBuilder application)
     {
-        application.UseCors(CorsClient);
     }
 
     public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
@@ -47,16 +45,6 @@ public class SchedulerNopStartup : INopStartup
         });
 
         #endregion
-
-        services.AddCors(opt =>
-        {
-            opt.AddPolicy(CorsClient, policy =>
-            {
-                policy
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
-            });
-        });
 
         services.AddScoped<INopStationScheduler, NopStationScheduler>();
     }
