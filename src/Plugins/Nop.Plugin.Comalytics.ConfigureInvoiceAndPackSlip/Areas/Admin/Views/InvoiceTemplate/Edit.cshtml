@@ -1,0 +1,19 @@
+@model InvoiceTemplateModel
+
+@{
+    ViewBag.PageTitle = T("Plugins.Comalytics.ConfigureInvoiceAndPackSlip.InvoiceTemplates.Edit").Text;
+    NopHtml.SetActiveMenuItemSystemName("ConfigureInvoiceAndPackSlip.InvoiceTemplates");
+}
+
+<form asp-controller="InvoiceTemplate" asp-action="Edit" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Plugins.Comalytics.ConfigureInvoiceAndPackSlip.InvoiceTemplates.Edit") - @Model.Name
+            <small>
+                <i class="fas fa-arrow-circle-left"></i>
+                <a asp-action="List">@T("Plugins.Comalytics.ConfigureInvoiceAndPackSlip.InvoiceTemplates.BackToList")</a>
+            </small>
+        </h1>
+    </div>
+    @await Html.PartialAsync("_CreateOrUpdate", Model)
+</form>

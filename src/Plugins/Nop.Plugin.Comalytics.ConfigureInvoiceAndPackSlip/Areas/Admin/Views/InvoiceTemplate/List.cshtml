@@ -1,0 +1,98 @@
+@model InvoiceTemplateSearchModel
+
+@{
+    ViewBag.PageTitle = T("Plugins.Comalytics.ConfigureInvoiceAndPackSlip.InvoiceTemplates.List").Text;
+    NopHtml.SetActiveMenuItemSystemName("ConfigureInvoiceAndPackSlip.InvoiceTemplates");
+}
+
+<div class="content-header clearfix">
+    <h1 class="float-left">
+        @T("Plugins.Comalytics.ConfigureInvoiceAndPackSlip.InvoiceTemplates.List")
+    </h1>
+    <div class="float-right">
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus-square"></i>
+            @T("Plugins.Comalytics.ConfigureInvoiceAndPackSlip.InvoiceTemplates.AddNew")
+        </a>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="form-horizontal">
+            <div class="cards-group">
+                <div class="card card-default">
+                    <div class="card-body">
+                        @await Html.PartialAsync("Table", new DataTablesModel
+                        {
+                            Name = "invoicetemplates-grid",
+                            UrlRead = new DataUrl("List", "InvoiceTemplate", null),
+                            Length = Model.PageSize,
+                            LengthMenu = Model.AvailablePageSizes,
+                            ColumnCollection = new List<ColumnProperty>
+                            {
+                                new ColumnProperty(nameof(InvoiceTemplateModel.Name))
+                                {
+                                    Title = T("Plugins.Comalytics.ConfigureInvoiceAndPackSlip.InvoiceTemplates.Name").Text,
+                                    Width = "200"
+                                },
+                                new ColumnProperty(nameof(InvoiceTemplateModel.StoreId))
+                                {
+                                    Title = T("Plugins.Comalytics.ConfigureInvoiceAndPackSlip.InvoiceTemplates.Store").Text,
+                                    Width = "150",
+                                    Render = new RenderCustom("renderStoreId")
+                                },
+                                new ColumnProperty(nameof(InvoiceTemplateModel.LanguageId))
+                                {
+                                    Title = T("Plugins.Comalytics.ConfigureInvoiceAndPackSlip.InvoiceTemplates.Language").Text,
+                                    Width = "150",
+                                    Render = new RenderCustom("renderLanguageId")
+                                },
+                                new ColumnProperty(nameof(InvoiceTemplateModel.IsDefault))
+                                {
+                                    Title = T("Plugins.Comalytics.ConfigureInvoiceAndPackSlip.InvoiceTemplates.IsDefault").Text,
+                                    Width = "100",
+                                    Render = new RenderBoolean()
+                                },
+                                new ColumnProperty(nameof(InvoiceTemplateModel.RenderModeId))
+                                {
+                                    Title = T("Plugins.Comalytics.ConfigureInvoiceAndPackSlip.InvoiceTemplates.RenderMode").Text,
+                                    Width = "120",
+                                    Render = new RenderCustom("renderRenderMode")
+                                },
+                                new ColumnProperty(nameof(InvoiceTemplateModel.Id))
+                                {
+                                    Title = T("Admin.Common.Edit").Text,
+                                    Width = "100",
+                                    ClassName = NopColumnClassDefaults.Button,
+                                    Render = new RenderButtonEdit(new DataUrl("Edit"))
+                                },
+                                new ColumnProperty(nameof(InvoiceTemplateModel.Id))
+                                {
+                                    Title = T("Admin.Common.Delete").Text,
+                                    Width = "100",
+                                    ClassName = NopColumnClassDefaults.Button,
+                                    Render = new RenderButtonRemove(T("Admin.Common.Delete").Text)
+                                }
+                            }
+                        })
+
+                        <script>
+                            function renderStoreId(data, type, row, meta) {
+                                return data === 0 ? '@T("Admin.Common.All")' : data;
+                            }
+                            function renderLanguageId(data, type, row, meta) {
+                                return data === 0 ? '@T("Admin.Common.All")' : data;
+                            }
+                            function renderRenderMode(data, type, row, meta) {
+                                return data === 1 ? 'QuestPDF' : 'Chromium';
+                            }
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<nop-delete-confirmation asp-model-id="0" asp-button-id="0" asp-action="Delete" />

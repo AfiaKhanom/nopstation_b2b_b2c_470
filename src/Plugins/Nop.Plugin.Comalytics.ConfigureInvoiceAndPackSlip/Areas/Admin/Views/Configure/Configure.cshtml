@@ -1,0 +1,156 @@
+@model ConfigurationModel
+
+@{
+    Layout = "_ConfigurePlugin";
+}
+
+<form asp-controller="ConfigureInvoiceAndPackSlipAdmin" asp-action="Configure" method="post">
+    <div class="cards-group">
+        <div class="card card-default">
+            <div class="card-body">
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="PdfRendererProvider" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-select asp-for="PdfRendererProvider" asp-items="Model.AvailableRenderers" />
+                        <span asp-validation-for="PdfRendererProvider"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="PageOrientation" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-select asp-for="PageOrientation" asp-items="Model.AvailablePageOrientations" />
+                        <span asp-validation-for="PageOrientation"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="PageSize" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-select asp-for="PageSize" asp-items="Model.AvailablePageSizes" />
+                        <span asp-validation-for="PageSize"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="TopMargin" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="TopMargin" />
+                        <span asp-validation-for="TopMargin"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="BottomMargin" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="BottomMargin" />
+                        <span asp-validation-for="BottomMargin"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="LeftMargin" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="LeftMargin" />
+                        <span asp-validation-for="LeftMargin"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="RightMargin" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="RightMargin" />
+                        <span asp-validation-for="RightMargin"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="FontFamily" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="FontFamily" />
+                        <span asp-validation-for="FontFamily"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="FontSize" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="FontSize" />
+                        <span asp-validation-for="FontSize"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="EnableRtl" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="EnableRtl" />
+                        <span asp-validation-for="EnableRtl"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="MaxPictureWidth" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="MaxPictureWidth" />
+                        <span asp-validation-for="MaxPictureWidth"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="MaxPictureHeight" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="MaxPictureHeight" />
+                        <span asp-validation-for="MaxPictureHeight"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="EmbedFonts" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="EmbedFonts" />
+                        <span asp-validation-for="EmbedFonts"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="NumberOfCopies" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="NumberOfCopies" />
+                        <span asp-validation-for="NumberOfCopies"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="EnableBackgroundProcessing" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="EnableBackgroundProcessing" />
+                        <span asp-validation-for="EnableBackgroundProcessing"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-9 offset-md-3">
+                        <button type="submit" name="save" class="btn btn-primary">
+                            @T("Admin.Common.Save")
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
